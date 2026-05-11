@@ -146,3 +146,5 @@ For more detailed and up-to-date memory guidance, see:
 
 
 https://github.com/rclement/pydata-paris-2025-modelship-demo
+
+## [Notes on availability](notes-on-availability/index.md)
