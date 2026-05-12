@@ -1,5 +1,19 @@
 # [Issuing warnings](https://docs.python.org/3/c-api/exceptions.html#issuing-warnings)
 
-Local notes keyed to the official documentation: [Issuing warnings](https://docs.python.org/3/c-api/exceptions.html#issuing-warnings).
+Local notes on **Issuing warnings**, part of [*Exception Handling*](https://docs.python.org/3/c-api/exceptions.html). This page summarizes patterns; authoritative text stays upstream.
+
+- Follow the **[official section](https://docs.python.org/3/c-api/exceptions.html#issuing-warnings)** for exact signatures, deprecation notes, and edge cases.
+- Most helpers advertise failures via `NULL` / `-1` and the **error indicator**; treat success paths carefully when references are borrowed vs new.
+- Threading semantics are easy to violate in C extensions; skim the threading chapter alongside this section.
+
+```c
+#include <Python.h>
+
+// Raising in C: use PyErr_SetString / PyErr_Format; return NULL or -1 as documented.
+if (arg == NULL) {
+    PyErr_SetString(PyExc_TypeError, "argument must not be NULL");
+    return NULL;
+}
+```
 
 Parent: [Exception Handling](../index.md)

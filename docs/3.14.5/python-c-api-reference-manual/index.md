@@ -1,6 +1,6 @@
 # [Python C API Reference Manual](https://docs.python.org/3/c-api/index.html)
 
-This manual documents the API used by C and C++ programmers who want to write extension modules or embed Python. It is a companion to [Extending and Embedding the Python Interpreter](https://docs.python.org/3/extending/index.html), which describes the general principles of extension writing but does not document the API functions in detail.
+Structured mirror of the **[Python/C API Reference Manual](https://docs.python.org/3/c-api/index.html)**. Subpages scrape canonical Sphinx anchors (`_c_api_toc.json`). Tutorial-style layering lives in **[Extending and Embedding](https://docs.python.org/3/extending/index.html)**.
 
 ## Table of Contents
 
