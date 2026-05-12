@@ -103,8 +103,9 @@ Follow the Tutorial skill: indented bullets ↔ directory depth, **or** numeral 
 - **Commit messages:** one line ≤120 chars if committing; respect project rules.
 
 **Repo tooling (python-programming-guide):** repeatable scrapes —
-`scripts/scrape_reference_toc.py` + `scripts/enrich_reference_markdown.py` for **`reference`**;
-`scripts/scrape_c_api_toc.py` + `scripts/enrich_c_api_markdown.py` for **`c-api`**.
+`scripts/scrape_reference_toc.py` + `scripts/enrich_reference_markdown.py` (**`reference`**);
+`scripts/scrape_c_api_toc.py` + `scripts/enrich_c_api_markdown.py` (**`c-api`**);
+`scripts/scrape_extending_toc.py` + `scripts/enrich_extending_markdown.py` (**`extending`**).
 
 ---
 
