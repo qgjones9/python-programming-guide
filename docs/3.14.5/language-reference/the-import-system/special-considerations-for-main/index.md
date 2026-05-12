@@ -1,0 +1,17 @@
+# [5.8. Special considerations for __main__](https://docs.python.org/3/reference/import.html#special-considerations-for-main)
+
+Scratch notes on **5.8. Special considerations for __main__** within [*5. The import system*](https://docs.python.org/3/reference/import.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/import.html#special-considerations-for-main)** open.
+
+- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/import.html#special-considerations-for-main)** — especially footnotes about implementation.
+- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
+- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+
+```python
+# Names bind to objects; multiple names may reference the same value (aliases).
+nums = []
+alias = nums
+alias.append(1)
+assert nums == [1]
+```
+
+Parent: [5. The import system](../index.md)

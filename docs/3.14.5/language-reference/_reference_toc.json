@@ -1,0 +1,441 @@
+[
+  {
+    "chapter_title": "1. Introduction",
+    "chapter_slug": "introduction",
+    "chapter_page": "introduction.html",
+    "chapter_url": "https://docs.python.org/3/reference/introduction.html",
+    "subsections": [
+      {
+        "title": "1.1. Alternate Implementations",
+        "slug": "alternate-implementations",
+        "canonical": "https://docs.python.org/3/reference/introduction.html#alternate-implementations"
+      },
+      {
+        "title": "1.2. Notation",
+        "slug": "notation",
+        "canonical": "https://docs.python.org/3/reference/introduction.html#notation"
+      }
+    ]
+  },
+  {
+    "chapter_title": "2. Lexical analysis",
+    "chapter_slug": "lexical-analysis",
+    "chapter_page": "lexical_analysis.html",
+    "chapter_url": "https://docs.python.org/3/reference/lexical_analysis.html",
+    "subsections": [
+      {
+        "title": "2.1. Line structure",
+        "slug": "line-structure",
+        "canonical": "https://docs.python.org/3/reference/lexical_analysis.html#line-structure"
+      },
+      {
+        "title": "2.2. Other tokens",
+        "slug": "other-tokens",
+        "canonical": "https://docs.python.org/3/reference/lexical_analysis.html#other-tokens"
+      },
+      {
+        "title": "2.3. Names (identifiers and keywords)",
+        "slug": "names-identifiers-and-keywords",
+        "canonical": "https://docs.python.org/3/reference/lexical_analysis.html#names-identifiers-and-keywords"
+      },
+      {
+        "title": "2.4. Literals",
+        "slug": "literals",
+        "canonical": "https://docs.python.org/3/reference/lexical_analysis.html#literals"
+      },
+      {
+        "title": "2.5. String and Bytes literals",
+        "slug": "string-and-bytes-literals",
+        "canonical": "https://docs.python.org/3/reference/lexical_analysis.html#string-and-bytes-literals"
+      },
+      {
+        "title": "2.6. Numeric literals",
+        "slug": "numeric-literals",
+        "canonical": "https://docs.python.org/3/reference/lexical_analysis.html#numeric-literals"
+      },
+      {
+        "title": "2.7. Operators and delimiters",
+        "slug": "operators-and-delimiters",
+        "canonical": "https://docs.python.org/3/reference/lexical_analysis.html#operators-and-delimiters"
+      }
+    ]
+  },
+  {
+    "chapter_title": "3. Data model",
+    "chapter_slug": "data-model",
+    "chapter_page": "datamodel.html",
+    "chapter_url": "https://docs.python.org/3/reference/datamodel.html",
+    "subsections": [
+      {
+        "title": "3.1. Objects, values and types",
+        "slug": "objects-values-and-types",
+        "canonical": "https://docs.python.org/3/reference/datamodel.html#objects-values-and-types"
+      },
+      {
+        "title": "3.2. The standard type hierarchy",
+        "slug": "the-standard-type-hierarchy",
+        "canonical": "https://docs.python.org/3/reference/datamodel.html#the-standard-type-hierarchy"
+      },
+      {
+        "title": "3.3. Special method names",
+        "slug": "special-method-names",
+        "canonical": "https://docs.python.org/3/reference/datamodel.html#special-method-names"
+      },
+      {
+        "title": "3.4. Coroutines",
+        "slug": "coroutines",
+        "canonical": "https://docs.python.org/3/reference/datamodel.html#coroutines"
+      }
+    ]
+  },
+  {
+    "chapter_title": "4. Execution model",
+    "chapter_slug": "execution-model",
+    "chapter_page": "executionmodel.html",
+    "chapter_url": "https://docs.python.org/3/reference/executionmodel.html",
+    "subsections": [
+      {
+        "title": "4.1. Structure of a program",
+        "slug": "structure-of-a-program",
+        "canonical": "https://docs.python.org/3/reference/executionmodel.html#structure-of-a-program"
+      },
+      {
+        "title": "4.2. Naming and binding",
+        "slug": "naming-and-binding",
+        "canonical": "https://docs.python.org/3/reference/executionmodel.html#naming-and-binding"
+      },
+      {
+        "title": "4.3. Exceptions",
+        "slug": "exceptions",
+        "canonical": "https://docs.python.org/3/reference/executionmodel.html#exceptions"
+      },
+      {
+        "title": "4.4. Runtime Components",
+        "slug": "runtime-components",
+        "canonical": "https://docs.python.org/3/reference/executionmodel.html#runtime-components"
+      }
+    ]
+  },
+  {
+    "chapter_title": "5. The import system",
+    "chapter_slug": "the-import-system",
+    "chapter_page": "import.html",
+    "chapter_url": "https://docs.python.org/3/reference/import.html",
+    "subsections": [
+      {
+        "title": "5.1. importlib",
+        "slug": "importlib",
+        "canonical": "https://docs.python.org/3/reference/import.html#importlib"
+      },
+      {
+        "title": "5.2. Packages",
+        "slug": "packages",
+        "canonical": "https://docs.python.org/3/reference/import.html#packages"
+      },
+      {
+        "title": "5.3. Searching",
+        "slug": "searching",
+        "canonical": "https://docs.python.org/3/reference/import.html#searching"
+      },
+      {
+        "title": "5.4. Loading",
+        "slug": "loading",
+        "canonical": "https://docs.python.org/3/reference/import.html#loading"
+      },
+      {
+        "title": "5.5. The Path Based Finder",
+        "slug": "the-path-based-finder",
+        "canonical": "https://docs.python.org/3/reference/import.html#the-path-based-finder"
+      },
+      {
+        "title": "5.6. Replacing the standard import system",
+        "slug": "replacing-the-standard-import-system",
+        "canonical": "https://docs.python.org/3/reference/import.html#replacing-the-standard-import-system"
+      },
+      {
+        "title": "5.7. Package Relative Imports",
+        "slug": "package-relative-imports",
+        "canonical": "https://docs.python.org/3/reference/import.html#package-relative-imports"
+      },
+      {
+        "title": "5.8. Special considerations for __main__",
+        "slug": "special-considerations-for-main",
+        "canonical": "https://docs.python.org/3/reference/import.html#special-considerations-for-main"
+      },
+      {
+        "title": "5.9. References",
+        "slug": "references",
+        "canonical": "https://docs.python.org/3/reference/import.html#references"
+      }
+    ]
+  },
+  {
+    "chapter_title": "6. Expressions",
+    "chapter_slug": "expressions",
+    "chapter_page": "expressions.html",
+    "chapter_url": "https://docs.python.org/3/reference/expressions.html",
+    "subsections": [
+      {
+        "title": "6.1. Arithmetic conversions",
+        "slug": "arithmetic-conversions",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#arithmetic-conversions"
+      },
+      {
+        "title": "6.2. Atoms",
+        "slug": "atoms",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#atoms"
+      },
+      {
+        "title": "6.3. Primaries",
+        "slug": "primaries",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#primaries"
+      },
+      {
+        "title": "6.4. Await expression",
+        "slug": "await-expression",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#await-expression"
+      },
+      {
+        "title": "6.5. The power operator",
+        "slug": "the-power-operator",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#the-power-operator"
+      },
+      {
+        "title": "6.6. Unary arithmetic and bitwise operations",
+        "slug": "unary-arithmetic-and-bitwise-operations",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#unary-arithmetic-and-bitwise-operations"
+      },
+      {
+        "title": "6.7. Binary arithmetic operations",
+        "slug": "binary-arithmetic-operations",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations"
+      },
+      {
+        "title": "6.8. Shifting operations",
+        "slug": "shifting-operations",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#shifting-operations"
+      },
+      {
+        "title": "6.9. Binary bitwise operations",
+        "slug": "binary-bitwise-operations",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#binary-bitwise-operations"
+      },
+      {
+        "title": "6.10. Comparisons",
+        "slug": "comparisons",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#comparisons"
+      },
+      {
+        "title": "6.11. Boolean operations",
+        "slug": "boolean-operations",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#boolean-operations"
+      },
+      {
+        "title": "6.12. Assignment expressions",
+        "slug": "assignment-expressions",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#assignment-expressions"
+      },
+      {
+        "title": "6.13. Conditional expressions",
+        "slug": "conditional-expressions",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#conditional-expressions"
+      },
+      {
+        "title": "6.14. Lambdas",
+        "slug": "lambda",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#lambda"
+      },
+      {
+        "title": "6.15. Expression lists",
+        "slug": "expression-lists",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#expression-lists"
+      },
+      {
+        "title": "6.16. Evaluation order",
+        "slug": "evaluation-order",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#evaluation-order"
+      },
+      {
+        "title": "6.17. Operator precedence",
+        "slug": "operator-precedence",
+        "canonical": "https://docs.python.org/3/reference/expressions.html#operator-precedence"
+      }
+    ]
+  },
+  {
+    "chapter_title": "7. Simple statements",
+    "chapter_slug": "simple-statements",
+    "chapter_page": "simple_stmts.html",
+    "chapter_url": "https://docs.python.org/3/reference/simple_stmts.html",
+    "subsections": [
+      {
+        "title": "7.1. Expression statements",
+        "slug": "expression-statements",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#expression-statements"
+      },
+      {
+        "title": "7.2. Assignment statements",
+        "slug": "assignment-statements",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#assignment-statements"
+      },
+      {
+        "title": "7.3. The assert statement",
+        "slug": "the-assert-statement",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#the-assert-statement"
+      },
+      {
+        "title": "7.4. The pass statement",
+        "slug": "the-pass-statement",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#the-pass-statement"
+      },
+      {
+        "title": "7.5. The del statement",
+        "slug": "the-del-statement",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#the-del-statement"
+      },
+      {
+        "title": "7.6. The return statement",
+        "slug": "the-return-statement",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#the-return-statement"
+      },
+      {
+        "title": "7.7. The yield statement",
+        "slug": "the-yield-statement",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#the-yield-statement"
+      },
+      {
+        "title": "7.8. The raise statement",
+        "slug": "the-raise-statement",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#the-raise-statement"
+      },
+      {
+        "title": "7.9. The break statement",
+        "slug": "the-break-statement",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#the-break-statement"
+      },
+      {
+        "title": "7.10. The continue statement",
+        "slug": "the-continue-statement",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#the-continue-statement"
+      },
+      {
+        "title": "7.11. The import statement",
+        "slug": "the-import-statement",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#the-import-statement"
+      },
+      {
+        "title": "7.12. The global statement",
+        "slug": "the-global-statement",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#the-global-statement"
+      },
+      {
+        "title": "7.13. The nonlocal statement",
+        "slug": "the-nonlocal-statement",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#the-nonlocal-statement"
+      },
+      {
+        "title": "7.14. The type statement",
+        "slug": "the-type-statement",
+        "canonical": "https://docs.python.org/3/reference/simple_stmts.html#the-type-statement"
+      }
+    ]
+  },
+  {
+    "chapter_title": "8. Compound statements",
+    "chapter_slug": "compound-statements",
+    "chapter_page": "compound_stmts.html",
+    "chapter_url": "https://docs.python.org/3/reference/compound_stmts.html",
+    "subsections": [
+      {
+        "title": "8.1. The if statement",
+        "slug": "the-if-statement",
+        "canonical": "https://docs.python.org/3/reference/compound_stmts.html#the-if-statement"
+      },
+      {
+        "title": "8.2. The while statement",
+        "slug": "the-while-statement",
+        "canonical": "https://docs.python.org/3/reference/compound_stmts.html#the-while-statement"
+      },
+      {
+        "title": "8.3. The for statement",
+        "slug": "the-for-statement",
+        "canonical": "https://docs.python.org/3/reference/compound_stmts.html#the-for-statement"
+      },
+      {
+        "title": "8.4. The try statement",
+        "slug": "the-try-statement",
+        "canonical": "https://docs.python.org/3/reference/compound_stmts.html#the-try-statement"
+      },
+      {
+        "title": "8.5. The with statement",
+        "slug": "the-with-statement",
+        "canonical": "https://docs.python.org/3/reference/compound_stmts.html#the-with-statement"
+      },
+      {
+        "title": "8.6. The match statement",
+        "slug": "the-match-statement",
+        "canonical": "https://docs.python.org/3/reference/compound_stmts.html#the-match-statement"
+      },
+      {
+        "title": "8.7. Function definitions",
+        "slug": "function-definitions",
+        "canonical": "https://docs.python.org/3/reference/compound_stmts.html#function-definitions"
+      },
+      {
+        "title": "8.8. Class definitions",
+        "slug": "class-definitions",
+        "canonical": "https://docs.python.org/3/reference/compound_stmts.html#class-definitions"
+      },
+      {
+        "title": "8.9. Coroutines",
+        "slug": "coroutines",
+        "canonical": "https://docs.python.org/3/reference/compound_stmts.html#coroutines"
+      },
+      {
+        "title": "8.10. Type parameter lists",
+        "slug": "type-parameter-lists",
+        "canonical": "https://docs.python.org/3/reference/compound_stmts.html#type-parameter-lists"
+      },
+      {
+        "title": "8.11. Annotations",
+        "slug": "annotations",
+        "canonical": "https://docs.python.org/3/reference/compound_stmts.html#annotations"
+      }
+    ]
+  },
+  {
+    "chapter_title": "9. Top-level components",
+    "chapter_slug": "top-level-components",
+    "chapter_page": "toplevel_components.html",
+    "chapter_url": "https://docs.python.org/3/reference/toplevel_components.html",
+    "subsections": [
+      {
+        "title": "9.1. Complete Python programs",
+        "slug": "complete-python-programs",
+        "canonical": "https://docs.python.org/3/reference/toplevel_components.html#complete-python-programs"
+      },
+      {
+        "title": "9.2. File input",
+        "slug": "file-input",
+        "canonical": "https://docs.python.org/3/reference/toplevel_components.html#file-input"
+      },
+      {
+        "title": "9.3. Interactive input",
+        "slug": "interactive-input",
+        "canonical": "https://docs.python.org/3/reference/toplevel_components.html#interactive-input"
+      },
+      {
+        "title": "9.4. Expression input",
+        "slug": "expression-input",
+        "canonical": "https://docs.python.org/3/reference/toplevel_components.html#expression-input"
+      }
+    ]
+  },
+  {
+    "chapter_title": "10. Full Grammar specification",
+    "chapter_slug": "full-grammar-specification",
+    "chapter_page": "grammar.html",
+    "chapter_url": "https://docs.python.org/3/reference/grammar.html",
+    "subsections": []
+  }
+]
