@@ -1,0 +1,20 @@
+{
+  "isinstance": "Returns True when an object is an instance of a class or any of several types.",
+  "issubclass": "Returns True when a class is a subclass of another class or any type in a tuple.",
+  "iter": "Returns an iterator over an iterable, or repeatedly calls a callable until a sentinel.",
+  "len": "Returns the number of items in a sequence or collection.",
+  "list": "Creates a mutable ordered sequence, optionally copied from an iterable.",
+  "locals": "Returns a mapping of local variable names to their current values.",
+  "map": "Applies a function to each item of one or more iterables, yielding results lazily.",
+  "max": "Returns the largest item in an iterable or the largest of two or more arguments.",
+  "memoryview": "Creates a zero-copy view over a buffer-supporting object's binary data.",
+  "min": "Returns the smallest item in an iterable or the smallest of two or more arguments.",
+  "next": "Retrieves the next item from an iterator, with an optional default if exhausted.",
+  "object": "The ultimate base class for all Python classes; returns a featureless instance.",
+  "oct": "Converts an integer to an octal string prefixed with 0o.",
+  "open": "Opens a file and returns a file object for reading, writing, or updating.",
+  "ord": "Returns the Unicode code point for a one-character string, or a byte value for length-1 bytes.",
+  "pow": "Raises base to exp, optionally modulo mod; supports efficient modular exponentiation.",
+  "print": "Writes objects as text to a stream, separated by sep and terminated with end.",
+  "property": "Defines managed attributes with getter, setter, deleter, and optional docstring."
+}

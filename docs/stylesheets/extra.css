@@ -1,0 +1,50 @@
+/* Python brand palette — Material for MkDocs custom scheme */
+
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #3776ab;
+  --md-primary-fg-color--light: #4b8bbe;
+  --md-primary-fg-color--dark: #2b5b84;
+  --md-primary-bg-color: #ffffff;
+  --md-accent-fg-color: #ffd343;
+  --md-accent-fg-color--transparent: #ffd3431a;
+  --md-default-fg-color: #000000;
+  --md-default-fg-color--light: #1e415e;
+  --md-default-fg-color--lighter: #545b64;
+  --md-default-bg-color: #fafafa;
+  --md-default-bg-color--light: #f2f3f3;
+  --md-default-bg-color--lighter: #eaeded;
+  --md-typeset-a-color: #2b5b84;
+  --md-footer-bg-color: #1e415e;
+  --md-footer-bg-color--dark: #163248;
+  --md-footer-fg-color: #ffffff;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #3776ab;
+  --md-primary-fg-color--light: #4b8bbe;
+  --md-primary-fg-color--dark: #2b5b84;
+  --md-primary-bg-color: #1e415e;
+  --md-accent-fg-color: #ffd343;
+  --md-accent-fg-color--transparent: #ffd34333;
+  --md-default-fg-color: #ffffff;
+  --md-default-fg-color--light: #d5dbdb;
+  --md-default-fg-color--lighter: #aab7b8;
+  --md-default-bg-color: #1e415e;
+  --md-default-bg-color--light: #163248;
+  --md-default-bg-color--lighter: #102638;
+  --md-code-bg-color: #163248;
+  --md-typeset-a-color: #7eb6e0;
+  --md-footer-bg-color: #102638;
+  --md-footer-bg-color--dark: #0b1a28;
+  --md-footer-fg-color: #ffffff;
+}
+
+[data-md-color-scheme="default"] .md-header,
+[data-md-color-scheme="default"] .md-tabs {
+  background-color: #1e415e;
+}
+
+[data-md-color-scheme="slate"] .md-header,
+[data-md-color-scheme="slate"] .md-tabs {
+  background-color: #102638;
+}

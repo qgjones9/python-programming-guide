@@ -1,0 +1,10 @@
+# [data race](https://docs.python.org/3.14/glossary.html#term-data-race)
+
+A situation where multiple threads access the same memory location
+concurrently, at least one of the accesses is a write, and the threads
+do not use any synchronization to control their access.  Data races
+lead to [non-deterministic](../non-deterministic/index.md) behavior and can cause data corruption.
+Proper use of [locks](../lock/index.md) and other [synchronization primitives](../synchronization-primitive/index.md) prevents data races.  Note that data races
+can only happen in native code, but that [native code](../native-code/index.md) might be
+exposed in a Python API.  See also [race condition](../race-condition/index.md) and
+[thread-safe](../thread-safe/index.md).

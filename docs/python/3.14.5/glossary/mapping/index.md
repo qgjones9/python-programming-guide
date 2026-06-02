@@ -1,0 +1,8 @@
+# [mapping](https://docs.python.org/3.14/glossary.html#term-mapping)
+
+A container object that supports arbitrary key lookups and implements the
+methods specified in the [collections.abc.Mapping](https://docs.python.org/3.14/library/collections.abc.html#collections.abc.Mapping) or
+[collections.abc.MutableMapping](https://docs.python.org/3.14/library/collections.abc.html#collections.abc.MutableMapping)
+[abstract base classes](https://docs.python.org/3.14/library/collections.abc.html#collections-abstract-base-classes).  Examples
+include [dict](https://docs.python.org/3.14/library/stdtypes.html#dict), [collections.defaultdict](https://docs.python.org/3.14/library/collections.html#collections.defaultdict),
+[collections.OrderedDict](https://docs.python.org/3.14/library/collections.html#collections.OrderedDict) and [collections.Counter](https://docs.python.org/3.14/library/collections.html#collections.Counter).

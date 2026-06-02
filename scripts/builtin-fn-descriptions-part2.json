@@ -1,0 +1,92 @@
+[
+  {
+    "slug": "dir",
+    "title": "dir()",
+    "description": "Returns a sorted list of names in the current local scope, or valid attribute names for a given object."
+  },
+  {
+    "slug": "divmod",
+    "title": "divmod()",
+    "description": "Takes two numbers and returns a tuple of their quotient and remainder from integer division."
+  },
+  {
+    "slug": "enumerate",
+    "title": "enumerate()",
+    "description": "Returns an iterator of `(index, value)` pairs while looping over any iterable, with an optional start index."
+  },
+  {
+    "slug": "eval",
+    "title": "eval()",
+    "description": "Parses and evaluates a Python expression from a string (or code object) using optional global and local namespaces."
+  },
+  {
+    "slug": "exec",
+    "title": "exec()",
+    "description": "Dynamically executes Python statements from a string or compiled code object in optional global and local namespaces."
+  },
+  {
+    "slug": "filter",
+    "title": "filter()",
+    "description": "Builds an iterator of elements from an iterable for which a predicate function returns true; with `None`, keeps truthy values."
+  },
+  {
+    "slug": "float",
+    "title": "float()",
+    "description": "Constructs a floating-point number from another number, a numeric string, or an object implementing `__float__()` or `__index__()`."
+  },
+  {
+    "slug": "format",
+    "title": "format()",
+    "description": "Converts a value to a formatted string according to a format specification, delegating to `type(value).__format__()`."
+  },
+  {
+    "slug": "frozenset",
+    "title": "frozenset()",
+    "description": "Returns an immutable set built from an optional iterable; supports set operations but cannot be modified after creation."
+  },
+  {
+    "slug": "getattr",
+    "title": "getattr()",
+    "description": "Returns the value of a named attribute on an object; with a default, returns that instead of raising `AttributeError`."
+  },
+  {
+    "slug": "globals",
+    "title": "globals()",
+    "description": "Returns the dictionary implementing the current module namespace (global variables visible at the call site)."
+  },
+  {
+    "slug": "hasattr",
+    "title": "hasattr()",
+    "description": "Returns `True` if the object has the named attribute, otherwise `False` (implemented via `getattr` and `AttributeError`)."
+  },
+  {
+    "slug": "hash",
+    "title": "hash()",
+    "description": "Returns the integer hash value of an object, used for fast dict and set lookups; equal objects must have equal hashes."
+  },
+  {
+    "slug": "help",
+    "title": "help()",
+    "description": "Invokes the interactive help system for modules, functions, classes, keywords, or any object with documentation."
+  },
+  {
+    "slug": "hex",
+    "title": "hex()",
+    "description": "Converts an integer to a lowercase hexadecimal string prefixed with `0x`."
+  },
+  {
+    "slug": "id",
+    "title": "id()",
+    "description": "Returns an integer identity for an object, unique among simultaneously live objects (in CPython, typically the memory address)."
+  },
+  {
+    "slug": "input",
+    "title": "input()",
+    "description": "Reads a line from standard input as a string, optionally writing a prompt to stdout first."
+  },
+  {
+    "slug": "int",
+    "title": "int()",
+    "description": "Constructs an integer from a number, a string in a given base, or objects implementing `__int__()` / `__index__()`."
+  }
+]

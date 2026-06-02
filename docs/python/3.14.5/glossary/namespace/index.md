@@ -1,0 +1,12 @@
+# [namespace](https://docs.python.org/3.14/glossary.html#term-namespace)
+
+The place where a variable is stored.  Namespaces are implemented as
+dictionaries.  There are the local, global and built-in namespaces as well
+as nested namespaces in objects (in methods).  Namespaces support
+modularity by preventing naming conflicts.  For instance, the functions
+[builtins.open](https://docs.python.org/3.14/library/functions.html#open) and [os.open()](https://docs.python.org/3.14/library/os.html#os.open) are distinguished by
+their namespaces.  Namespaces also aid readability and maintainability by
+making it clear which module implements a function.  For instance, writing
+[random.seed()](https://docs.python.org/3.14/library/random.html#random.seed) or [itertools.islice()](https://docs.python.org/3.14/library/itertools.html#itertools.islice) makes it clear that those
+functions are implemented by the [random](https://docs.python.org/3.14/library/random.html#module-random) and [itertools](https://docs.python.org/3.14/library/itertools.html#module-itertools)
+modules, respectively.

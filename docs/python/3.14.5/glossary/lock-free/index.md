@@ -1,0 +1,10 @@
+# [lock-free](https://docs.python.org/3.14/glossary.html#term-lock-free)
+
+An operation that does not acquire any [lock](../lock/index.md) and uses atomic CPU
+instructions to ensure correctness. Lock-free operations can execute
+concurrently without blocking each other and cannot be blocked by
+operations that hold locks. In [free-threaded](../free-threading/index.md)
+Python, built-in types like [dict](https://docs.python.org/3.14/library/stdtypes.html#dict) and [list](https://docs.python.org/3.14/library/stdtypes.html#list) provide
+lock-free read operations, which means other threads may observe
+intermediate states during multi-step modifications even when those
+modifications hold the [per-object lock](../per-object-lock/index.md).

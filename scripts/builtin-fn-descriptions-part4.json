@@ -1,0 +1,19 @@
+{
+  "range": "Immutable sequence of evenly spaced integers for memory-efficient loops and indexing.",
+  "repr": "Returns an unambiguous, often evaluable string representation of an object.",
+  "reversed": "Returns a reverse iterator over a sequence or object with `__reversed__`.",
+  "round": "Rounds a number to the nearest integer or to a given decimal precision.",
+  "set": "Creates a mutable unordered collection of unique hashable elements.",
+  "setattr": "Assigns a named attribute on an object, equivalent to `obj.name = value`.",
+  "slice": "Builds a reusable slice object for extended indexing (`start:stop:step`).",
+  "sorted": "Returns a new list containing items from an iterable in ascending order.",
+  "staticmethod": "Converts a function into a static method that does not receive `self` or `cls`.",
+  "str": "Constructs a text string from an object or decodes bytes with an encoding.",
+  "sum": "Adds items of an iterable left to right, with an optional start value.",
+  "super": "Returns a proxy to invoke methods on parent or sibling classes in the MRO.",
+  "tuple": "Creates an immutable sequence, often used for fixed records and unpacking.",
+  "type": "Returns an object's type or dynamically constructs a new class from name, bases, and dict.",
+  "vars": "Returns the `__dict__` namespace of a module, class, or instance.",
+  "zip": "Iterates several iterables in parallel, yielding tuples of aligned items.",
+  "import": "Low-level hook invoked by the `import` statement; prefer `importlib.import_module`."
+}

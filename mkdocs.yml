@@ -1,0 +1,1339 @@
+site_name: Python Programming Guide
+site_description: Notes and reference for Python 3.14.5 and popular libraries
+site_url: https://qgjones9.github.io/python-programming-guide/
+repo_url: https://github.com/qgjones9/python-programming-guide
+repo_name: qgjones9/python-programming-guide
+
+docs_dir: docs
+site_dir: site
+
+watch:
+  - docs
+  - mkdocs.yml
+
+nav:
+  - Home: index.md
+  - Libraries:
+    - Libraries: libraries/index.md
+    - Pydantic:
+      - Pydantic: libraries/pydantic/index.md
+      - API Documentation: libraries/pydantic/api-documentation/index.md
+      - Blog: libraries/pydantic/blog/index.md
+      - Concepts: libraries/pydantic/concepts/index.md
+      - Error Messages: libraries/pydantic/error-messages/index.md
+      - Examples: libraries/pydantic/examples/index.md
+      - Get Started: libraries/pydantic/get-started/index.md
+      - Integrations: libraries/pydantic/integrations/index.md
+      - Internals: libraries/pydantic/internals/index.md
+    - Pygame:
+      - Pygame: libraries/pygame/index.md
+      - Documents:
+        - Documents: libraries/pygame/documents/index.md
+        - Compile Pygame: libraries/pygame/documents/compile-pygame/index.md
+        - File Path Function Arguments: libraries/pygame/documents/file-path-function-arguments/index.md
+        - LGPL License: libraries/pygame/documents/lgpl-license/index.md
+        - Pygame Logos: libraries/pygame/documents/pygame-logos/index.md
+      - Reference:
+        - Reference: libraries/pygame/reference/index.md
+        - pygame.BufferProxy: libraries/pygame/reference/bufferproxy/index.md
+        - pygame.camera: libraries/pygame/reference/camera/index.md
+        - pygame.Color: libraries/pygame/reference/color/index.md
+        - pygame.cursors: libraries/pygame/reference/cursors/index.md
+        - pygame.display: libraries/pygame/reference/display/index.md
+        - pygame.draw: libraries/pygame/reference/draw/index.md
+        - pygame.event: libraries/pygame/reference/event/index.md
+        - pygame.examples: libraries/pygame/reference/examples/index.md
+        - pygame.fastevent: libraries/pygame/reference/fastevent/index.md
+        - pygame.font: libraries/pygame/reference/font/index.md
+        - pygame.freetype: libraries/pygame/reference/freetype/index.md
+        - pygame.gfxdraw: libraries/pygame/reference/gfxdraw/index.md
+        - pygame.image: libraries/pygame/reference/image/index.md
+        - pygame.joystick: libraries/pygame/reference/joystick/index.md
+        - pygame.key: libraries/pygame/reference/key/index.md
+        - pygame.locals: libraries/pygame/reference/locals/index.md
+        - pygame.mask: libraries/pygame/reference/mask/index.md
+        - pygame.math: libraries/pygame/reference/math/index.md
+        - pygame.midi: libraries/pygame/reference/midi/index.md
+        - pygame.mixer: libraries/pygame/reference/mixer/index.md
+        - pygame.mixer.music: libraries/pygame/reference/mixer-music/index.md
+        - pygame.mouse: libraries/pygame/reference/mouse/index.md
+        - pygame.PixelArray: libraries/pygame/reference/pixelarray/index.md
+        - pygame.pixelcopy: libraries/pygame/reference/pixelcopy/index.md
+        - pygame: libraries/pygame/reference/pygame/index.md
+        - pygame.Rect: libraries/pygame/reference/rect/index.md
+        - pygame.scrap: libraries/pygame/reference/scrap/index.md
+        - pygame._sdl2.controller: libraries/pygame/reference/sdl2-controller/index.md
+        - pygame._sdl2.touch: libraries/pygame/reference/sdl2-touch/index.md
+        - pygame.sndarray: libraries/pygame/reference/sndarray/index.md
+        - pygame.sprite: libraries/pygame/reference/sprite/index.md
+        - pygame.Surface: libraries/pygame/reference/surface/index.md
+        - pygame.surfarray: libraries/pygame/reference/surfarray/index.md
+        - pygame.tests: libraries/pygame/reference/tests/index.md
+        - pygame.time: libraries/pygame/reference/time/index.md
+        - pygame.transform: libraries/pygame/reference/transform/index.md
+      - Tutorials:
+        - Tutorials: libraries/pygame/tutorials/index.md
+        - Camera Intro: libraries/pygame/tutorials/camera-intro/index.md
+        - Chimp Tutorial, Line by Line: libraries/pygame/tutorials/chimp-tutorial-line-by-line/index.md
+        - How do I move an Image?: libraries/pygame/tutorials/how-do-i-move-an-image/index.md
+        - Import and Init: libraries/pygame/tutorials/import-and-init/index.md
+        - Making Games Tutorial: libraries/pygame/tutorials/making-games-tutorial/index.md
+        - Pygame Intro: libraries/pygame/tutorials/pygame-intro/index.md
+        - Pygame Newbie Guide: libraries/pygame/tutorials/pygame-newbie-guide/index.md
+        - Setting Display Modes: libraries/pygame/tutorials/setting-display-modes/index.md
+        - Sprite Module Introduction: libraries/pygame/tutorials/sprite-module-introduction/index.md
+        - Surfarray Intro: libraries/pygame/tutorials/surfarray-intro/index.md
+    - SQLAlchemy: libraries/sqlalchemy/index.md
+  - Python:
+    - Python: python/index.md
+    - Python 3.14.5:
+      - Python 3.14.5: python/3.14.5/index.md
+      - Tutorial:
+        - Tutorial: python/3.14.5/tutorial/index.md
+        - An Informal Introduction to Python:
+          - An Informal Introduction to Python: python/3.14.5/tutorial/an-informal-introduction-to-python/index.md
+          - First Steps Towards Programming: python/3.14.5/tutorial/an-informal-introduction-to-python/first-steps-towards-programming/index.md
+          - Using Python as a Calculator:
+            - Using Python as a Calculator: python/3.14.5/tutorial/an-informal-introduction-to-python/using-python-as-a-calculator/index.md
+            - Lists: python/3.14.5/tutorial/an-informal-introduction-to-python/using-python-as-a-calculator/lists/index.md
+            - Numbers: python/3.14.5/tutorial/an-informal-introduction-to-python/using-python-as-a-calculator/numbers/index.md
+            - Text: python/3.14.5/tutorial/an-informal-introduction-to-python/using-python-as-a-calculator/text/index.md
+        - Appendix:
+          - Appendix: python/3.14.5/tutorial/appendix/index.md
+          - Interactive Mode:
+            - Interactive Mode: python/3.14.5/tutorial/appendix/interactive-mode/index.md
+            - Error Handling: python/3.14.5/tutorial/appendix/interactive-mode/error-handling/index.md
+            - Executable Python Scripts: python/3.14.5/tutorial/appendix/interactive-mode/executable-python-scripts/index.md
+            - The Customization Modules: python/3.14.5/tutorial/appendix/interactive-mode/the-customization-modules/index.md
+            - The Interactive Startup File: python/3.14.5/tutorial/appendix/interactive-mode/the-interactive-startup-file/index.md
+        - Brief Tour of the Standard Library:
+          - Brief Tour of the Standard Library: python/3.14.5/tutorial/brief-tour-of-the-standard-library/index.md
+          - Batteries included: python/3.14.5/tutorial/brief-tour-of-the-standard-library/batteries-included/index.md
+          - Command-line arguments: python/3.14.5/tutorial/brief-tour-of-the-standard-library/command-line-arguments/index.md
+          - Data compression: python/3.14.5/tutorial/brief-tour-of-the-standard-library/data-compression/index.md
+          - Dates and times: python/3.14.5/tutorial/brief-tour-of-the-standard-library/dates-and-times/index.md
+          - Error output redirection and program termination: python/3.14.5/tutorial/brief-tour-of-the-standard-library/error-output-redirection-and-program-termination/index.md
+          - File wildcards: python/3.14.5/tutorial/brief-tour-of-the-standard-library/file-wildcards/index.md
+          - Internet access: python/3.14.5/tutorial/brief-tour-of-the-standard-library/internet-access/index.md
+          - Mathematics: python/3.14.5/tutorial/brief-tour-of-the-standard-library/mathematics/index.md
+          - Operating system interface: python/3.14.5/tutorial/brief-tour-of-the-standard-library/operating-system-interface/index.md
+          - Performance measurement: python/3.14.5/tutorial/brief-tour-of-the-standard-library/performance-measurement/index.md
+          - Quality control: python/3.14.5/tutorial/brief-tour-of-the-standard-library/quality-control/index.md
+          - String pattern matching: python/3.14.5/tutorial/brief-tour-of-the-standard-library/string-pattern-matching/index.md
+        - Brief Tour of the Standard Library — Part II:
+          - Brief Tour of the Standard Library — Part II: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/index.md
+          - Decimal floating-point arithmetic: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/decimal-floating-point-arithmetic/index.md
+          - Logging: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/logging/index.md
+          - Multi-threading: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/multi-threading/index.md
+          - Output formatting: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/output-formatting/index.md
+          - Templating: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/templating/index.md
+          - Tools for working with lists: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/tools-for-working-with-lists/index.md
+          - Weak references: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/weak-references/index.md
+          - Working with binary data record layouts: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/working-with-binary-data-record-layouts/index.md
+        - Classes:
+          - Classes: python/3.14.5/tutorial/classes/index.md
+          - A First Look at Classes:
+            - A First Look at Classes: python/3.14.5/tutorial/classes/a-first-look-at-classes/index.md
+            - Class and Instance Variables: python/3.14.5/tutorial/classes/a-first-look-at-classes/class-and-instance-variables/index.md
+            - Class Definition Syntax: python/3.14.5/tutorial/classes/a-first-look-at-classes/class-definition-syntax/index.md
+            - Class Objects: python/3.14.5/tutorial/classes/a-first-look-at-classes/class-objects/index.md
+            - Instance Objects: python/3.14.5/tutorial/classes/a-first-look-at-classes/instance-objects/index.md
+            - Method Objects: python/3.14.5/tutorial/classes/a-first-look-at-classes/method-objects/index.md
+          - A Word About Names and Objects: python/3.14.5/tutorial/classes/a-word-about-names-and-objects/index.md
+          - Generator Expressions: python/3.14.5/tutorial/classes/generator-expressions/index.md
+          - Generators: python/3.14.5/tutorial/classes/generators/index.md
+          - Inheritance:
+            - Inheritance: python/3.14.5/tutorial/classes/inheritance/index.md
+            - Multiple Inheritance: python/3.14.5/tutorial/classes/inheritance/multiple-inheritance/index.md
+          - Iterators: python/3.14.5/tutorial/classes/iterators/index.md
+          - Object Methods: python/3.14.5/tutorial/classes/object-methods/index.md
+          - Odds and Ends: python/3.14.5/tutorial/classes/odds-and-ends/index.md
+          - Private Variables: python/3.14.5/tutorial/classes/private-variables/index.md
+          - Python Scopes and Namespaces:
+            - Python Scopes and Namespaces: python/3.14.5/tutorial/classes/python-scopes-and-namespaces/index.md
+            - Scopes and Namespaces Example: python/3.14.5/tutorial/classes/python-scopes-and-namespaces/scopes-and-namespaces-example/index.md
+          - Random Remarks: python/3.14.5/tutorial/classes/random-remarks/index.md
+        - Data Structures:
+          - Data Structures: python/3.14.5/tutorial/data-structures/index.md
+          - Comparing Sequences and Other Types: python/3.14.5/tutorial/data-structures/comparing-sequences-and-other-types/index.md
+          - Dictionaries: python/3.14.5/tutorial/data-structures/dictionaries/index.md
+          - Looping Techniques: python/3.14.5/tutorial/data-structures/looping-techniques/index.md
+          - More on Conditions: python/3.14.5/tutorial/data-structures/more-on-conditions/index.md
+          - More on Lists:
+            - More on Lists: python/3.14.5/tutorial/data-structures/more-on-lists/index.md
+            - List Comprehensions: python/3.14.5/tutorial/data-structures/more-on-lists/list-comprehensions/index.md
+            - Nested List Comprehensions: python/3.14.5/tutorial/data-structures/more-on-lists/nested-list-comprehensions/index.md
+            - Using Lists as Queues: python/3.14.5/tutorial/data-structures/more-on-lists/using-lists-as-queues/index.md
+            - Using Lists as Stacks: python/3.14.5/tutorial/data-structures/more-on-lists/using-lists-as-stacks/index.md
+          - Sets: python/3.14.5/tutorial/data-structures/sets/index.md
+          - The del statement: python/3.14.5/tutorial/data-structures/the-del-statement/index.md
+          - Tuples and Sequences: python/3.14.5/tutorial/data-structures/tuples-and-sequences/index.md
+        - Errors and Exceptions:
+          - Errors and Exceptions: python/3.14.5/tutorial/errors-and-exceptions/index.md
+          - Defining Clean-up Actions: python/3.14.5/tutorial/errors-and-exceptions/defining-clean-up-actions/index.md
+          - Enriching Exceptions with Notes: python/3.14.5/tutorial/errors-and-exceptions/enriching-exceptions-with-notes/index.md
+          - Exception Chaining: python/3.14.5/tutorial/errors-and-exceptions/exception-chaining/index.md
+          - Exceptions: python/3.14.5/tutorial/errors-and-exceptions/exceptions/index.md
+          - Handling Exceptions: python/3.14.5/tutorial/errors-and-exceptions/handling-exceptions/index.md
+          - Predefined Clean-up Actions: python/3.14.5/tutorial/errors-and-exceptions/predefined-clean-up-actions/index.md
+          - Raising and Handling Multiple Unrelated Exceptions: python/3.14.5/tutorial/errors-and-exceptions/raising-and-handling-multiple-unrelated-exceptions/index.md
+          - Raising Exceptions: python/3.14.5/tutorial/errors-and-exceptions/raising-exceptions/index.md
+          - Syntax Errors: python/3.14.5/tutorial/errors-and-exceptions/syntax-errors/index.md
+          - User-defined Exceptions: python/3.14.5/tutorial/errors-and-exceptions/user-defined-exceptions/index.md
+        - "Floating-Point Arithmetic: Issues and Limitations":
+          - "Floating-Point Arithmetic: Issues and Limitations": python/3.14.5/tutorial/floating-point-arithmetic-issues-and-limitations/index.md
+          - Representation Error: python/3.14.5/tutorial/floating-point-arithmetic-issues-and-limitations/representation-error/index.md
+        - Input and Output:
+          - Input and Output: python/3.14.5/tutorial/input-and-output/index.md
+          - Fancier Output Formatting:
+            - Fancier Output Formatting: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/index.md
+            - Formatted String Literals: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/formatted-string-literals/index.md
+            - Manual String Formatting: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/manual-string-formatting/index.md
+            - Old string formatting: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/old-string-formatting/index.md
+            - The String format() Method: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/the-string-format-method/index.md
+          - Reading and Writing Files:
+            - Reading and Writing Files: python/3.14.5/tutorial/input-and-output/reading-and-writing-files/index.md
+            - Methods of File Objects: python/3.14.5/tutorial/input-and-output/reading-and-writing-files/methods-of-file-objects/index.md
+            - Saving structured data with json: python/3.14.5/tutorial/input-and-output/reading-and-writing-files/saving-structured-data-with-json/index.md
+        - Interactive Input Editing and History Substitution:
+          - Interactive Input Editing and History Substitution: python/3.14.5/tutorial/interactive-input-editing-and-history-substitution/index.md
+          - Alternatives to the Interactive Interpreter: python/3.14.5/tutorial/interactive-input-editing-and-history-substitution/alternatives-to-the-interactive-interpreter/index.md
+          - Tab Completion and History Editing: python/3.14.5/tutorial/interactive-input-editing-and-history-substitution/tab-completion-and-history-editing/index.md
+        - Modules:
+          - Modules: python/3.14.5/tutorial/modules/index.md
+          - More on Modules:
+            - More on Modules: python/3.14.5/tutorial/modules/more-on-modules/index.md
+            - “Compiled” Python files: python/3.14.5/tutorial/modules/more-on-modules/compiled-python-files/index.md
+            - Executing modules as scripts: python/3.14.5/tutorial/modules/more-on-modules/executing-modules-as-scripts/index.md
+            - The Module Search Path: python/3.14.5/tutorial/modules/more-on-modules/the-module-search-path/index.md
+          - Packages:
+            - Packages: python/3.14.5/tutorial/modules/packages/index.md
+            - Importing * From a Package: python/3.14.5/tutorial/modules/packages/importing-from-a-package/index.md
+            - Intra-package References: python/3.14.5/tutorial/modules/packages/intra-package-references/index.md
+            - Packages in Multiple Directories: python/3.14.5/tutorial/modules/packages/packages-in-multiple-directories/index.md
+          - Standard Modules: python/3.14.5/tutorial/modules/standard-modules/index.md
+          - The dir() Function: python/3.14.5/tutorial/modules/the-dir-function/index.md
+        - More Control Flow Tools:
+          - More Control Flow Tools: python/3.14.5/tutorial/more-control-flow-tools/index.md
+          - break and continue Statements: python/3.14.5/tutorial/more-control-flow-tools/break-and-continue-statements/index.md
+          - Defining Functions: python/3.14.5/tutorial/more-control-flow-tools/defining-functions/index.md
+          - else Clauses on Loops: python/3.14.5/tutorial/more-control-flow-tools/else-clauses-on-loops/index.md
+          - for Statements: python/3.14.5/tutorial/more-control-flow-tools/for-statements/index.md
+          - if Statements: python/3.14.5/tutorial/more-control-flow-tools/if-statements/index.md
+          - "Intermezzo: Coding Style": python/3.14.5/tutorial/more-control-flow-tools/intermezzo-coding-style/index.md
+          - match Statements: python/3.14.5/tutorial/more-control-flow-tools/match-statements/index.md
+          - More on Defining Functions:
+            - More on Defining Functions: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/index.md
+            - Arbitrary Argument Lists: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/arbitrary-argument-lists/index.md
+            - Default Argument Values: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/default-argument-values/index.md
+            - Documentation Strings: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/documentation-strings/index.md
+            - Function Annotations: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/function-annotations/index.md
+            - Keyword Arguments: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/keyword-arguments/index.md
+            - Lambda Expressions: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/lambda-expressions/index.md
+            - Special parameters:
+              - Special parameters: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/special-parameters/index.md
+              - Function Examples: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/special-parameters/function-examples/index.md
+              - Keyword-Only Arguments: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/special-parameters/keyword-only-arguments/index.md
+              - Positional-Only Parameters: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/special-parameters/positional-only-parameters/index.md
+              - Positional-or-Keyword Arguments: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/special-parameters/positional-or-keyword-arguments/index.md
+              - Recap: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/special-parameters/recap/index.md
+            - Unpacking Argument Lists: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/unpacking-argument-lists/index.md
+          - pass Statements: python/3.14.5/tutorial/more-control-flow-tools/pass-statements/index.md
+          - The range() Function: python/3.14.5/tutorial/more-control-flow-tools/the-range-function/index.md
+        - Virtual Environments and Packages:
+          - Virtual Environments and Packages: python/3.14.5/tutorial/virtual-environments-and-packages/index.md
+          - Creating Virtual Environments: python/3.14.5/tutorial/virtual-environments-and-packages/creating-virtual-environments/index.md
+          - Introduction: python/3.14.5/tutorial/virtual-environments-and-packages/introduction/index.md
+          - Managing Packages with pip: python/3.14.5/tutorial/virtual-environments-and-packages/managing-packages-with-pip/index.md
+        - What Now?: python/3.14.5/tutorial/what-now/index.md
+      - The Python Standard Library:
+        - The Python Standard Library: python/3.14.5/standard-library/index.md
+        - Binary Data Services:
+          - Binary Data Services: python/3.14.5/standard-library/binary-data-services/index.md
+          - codecs — Codec registry and base classes:
+            - codecs — Codec registry and base classes: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/index.md
+            - Codec Base Classes:
+              - Codec Base Classes: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/index.md
+              - Error Handlers: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/error-handlers/index.md
+              - Incremental Encoding and Decoding:
+                - Incremental Encoding and Decoding: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/incremental-encoding-and-decoding/index.md
+                - IncrementalDecoder Objects: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/incremental-encoding-and-decoding/incrementaldecoder-objects/index.md
+                - IncrementalEncoder Objects: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/incremental-encoding-and-decoding/incrementalencoder-objects/index.md
+              - Stateless Encoding and Decoding: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stateless-encoding-and-decoding/index.md
+              - Stream Encoding and Decoding:
+                - Stream Encoding and Decoding: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/index.md
+                - StreamReader Objects: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/streamreader-objects/index.md
+                - StreamReaderWriter Objects: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/streamreaderwriter-objects/index.md
+                - StreamRecoder Objects: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/streamrecoder-objects/index.md
+                - StreamWriter Objects: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/streamwriter-objects/index.md
+            - Encodings and Unicode: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-and-unicode/index.md
+            - encodings — Encodings package: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-encodings-package/index.md
+            - encodings.idna — Internationalized Domain Names in Applications: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-idna/index.md
+            - encodings.mbcs — Windows ANSI codepage: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-mbcs/index.md
+            - encodings.utf_8_sig — UTF-8 codec with BOM signature: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-utf-8-sig/index.md
+            - Python Specific Encodings:
+              - Python Specific Encodings: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/index.md
+              - Binary Transforms: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/binary-transforms/index.md
+              - Standalone Codec Functions: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/standalone-codec-functions/index.md
+              - Text Encodings: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/text-encodings/index.md
+              - Text Transforms: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/text-transforms/index.md
+            - Standard Encodings: python/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/standard-encodings/index.md
+          - struct — Interpret bytes as packed binary data: python/3.14.5/standard-library/binary-data-services/struct-interpret-bytes-as-packed-binary-data/index.md
+        - Built-in Constants:
+          - Built-in Constants: python/3.14.5/standard-library/built-in-constants/index.md
+          - Constants added by the site module: python/3.14.5/standard-library/built-in-constants/constants-added-by-the-site-module/index.md
+        - Built-in Exceptions:
+          - Built-in Exceptions: python/3.14.5/standard-library/built-in-exceptions/index.md
+          - Base classes:
+            - Base classes: python/3.14.5/standard-library/built-in-exceptions/base-classes/index.md
+            - ArithmeticError: python/3.14.5/standard-library/built-in-exceptions/base-classes/arithmeticerror/index.md
+            - BaseException: python/3.14.5/standard-library/built-in-exceptions/base-classes/baseexception/index.md
+            - BufferError: python/3.14.5/standard-library/built-in-exceptions/base-classes/buffererror/index.md
+            - Exception: python/3.14.5/standard-library/built-in-exceptions/base-classes/exception/index.md
+            - LookupError: python/3.14.5/standard-library/built-in-exceptions/base-classes/lookuperror/index.md
+          - Concrete exceptions:
+            - Concrete exceptions: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/index.md
+            - AssertionError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/assertionerror/index.md
+            - AttributeError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/attributeerror/index.md
+            - EnvironmentError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/environmenterror/index.md
+            - EOFError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/eoferror/index.md
+            - FloatingPointError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/floatingpointerror/index.md
+            - GeneratorExit: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/generatorexit/index.md
+            - ImportError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/importerror/index.md
+            - IndentationError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/indentationerror/index.md
+            - IndexError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/indexerror/index.md
+            - IOError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/ioerror/index.md
+            - KeyboardInterrupt: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/keyboardinterrupt/index.md
+            - KeyError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/keyerror/index.md
+            - MemoryError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/memoryerror/index.md
+            - ModuleNotFoundError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/modulenotfounderror/index.md
+            - NameError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/nameerror/index.md
+            - NotImplementedError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/notimplementederror/index.md
+            - OSError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/oserror/index.md
+            - OverflowError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/overflowerror/index.md
+            - PythonFinalizationError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/pythonfinalizationerror/index.md
+            - RecursionError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/recursionerror/index.md
+            - ReferenceError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/referenceerror/index.md
+            - RuntimeError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/runtimeerror/index.md
+            - StopAsyncIteration: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/stopasynciteration/index.md
+            - StopIteration: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/stopiteration/index.md
+            - SyntaxError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/syntaxerror/index.md
+            - SystemError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/systemerror/index.md
+            - SystemExit: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/systemexit/index.md
+            - TabError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/taberror/index.md
+            - TypeError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/typeerror/index.md
+            - UnboundLocalError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/unboundlocalerror/index.md
+            - UnicodeDecodeError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/unicodedecodeerror/index.md
+            - UnicodeEncodeError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/unicodeencodeerror/index.md
+            - UnicodeError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/unicodeerror/index.md
+            - UnicodeTranslateError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/unicodetranslateerror/index.md
+            - ValueError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/valueerror/index.md
+            - WindowsError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/windowserror/index.md
+            - ZeroDivisionError: python/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/zerodivisionerror/index.md
+          - Exception context: python/3.14.5/standard-library/built-in-exceptions/exception-context/index.md
+          - Exception groups:
+            - Exception groups: python/3.14.5/standard-library/built-in-exceptions/exception-groups/index.md
+            - BaseExceptionGroup: python/3.14.5/standard-library/built-in-exceptions/exception-groups/baseexceptiongroup/index.md
+            - ExceptionGroup: python/3.14.5/standard-library/built-in-exceptions/exception-groups/exceptiongroup/index.md
+          - Exception hierarchy: python/3.14.5/standard-library/built-in-exceptions/exception-hierarchy/index.md
+          - Inheriting from built-in exceptions: python/3.14.5/standard-library/built-in-exceptions/inheriting-from-built-in-exceptions/index.md
+          - OS exceptions:
+            - OS exceptions: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/index.md
+            - BlockingIOError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/blockingioerror/index.md
+            - BrokenPipeError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/brokenpipeerror/index.md
+            - ChildProcessError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/childprocesserror/index.md
+            - ConnectionAbortedError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/connectionabortederror/index.md
+            - ConnectionError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/connectionerror/index.md
+            - ConnectionRefusedError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/connectionrefusederror/index.md
+            - ConnectionResetError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/connectionreseterror/index.md
+            - FileExistsError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/fileexistserror/index.md
+            - FileNotFoundError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/filenotfounderror/index.md
+            - InterruptedError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/interruptederror/index.md
+            - IsADirectoryError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/isadirectoryerror/index.md
+            - NotADirectoryError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/notadirectoryerror/index.md
+            - PermissionError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/permissionerror/index.md
+            - ProcessLookupError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/processlookuperror/index.md
+            - TimeoutError: python/3.14.5/standard-library/built-in-exceptions/os-exceptions/timeouterror/index.md
+          - Warnings:
+            - Warnings: python/3.14.5/standard-library/built-in-exceptions/warnings/index.md
+            - BytesWarning: python/3.14.5/standard-library/built-in-exceptions/warnings/byteswarning/index.md
+            - DeprecationWarning: python/3.14.5/standard-library/built-in-exceptions/warnings/deprecationwarning/index.md
+            - EncodingWarning: python/3.14.5/standard-library/built-in-exceptions/warnings/encodingwarning/index.md
+            - FutureWarning: python/3.14.5/standard-library/built-in-exceptions/warnings/futurewarning/index.md
+            - ImportWarning: python/3.14.5/standard-library/built-in-exceptions/warnings/importwarning/index.md
+            - PendingDeprecationWarning: python/3.14.5/standard-library/built-in-exceptions/warnings/pendingdeprecationwarning/index.md
+            - ResourceWarning: python/3.14.5/standard-library/built-in-exceptions/warnings/resourcewarning/index.md
+            - RuntimeWarning: python/3.14.5/standard-library/built-in-exceptions/warnings/runtimewarning/index.md
+            - SyntaxWarning: python/3.14.5/standard-library/built-in-exceptions/warnings/syntaxwarning/index.md
+            - UnicodeWarning: python/3.14.5/standard-library/built-in-exceptions/warnings/unicodewarning/index.md
+            - UserWarning: python/3.14.5/standard-library/built-in-exceptions/warnings/userwarning/index.md
+            - Warning: python/3.14.5/standard-library/built-in-exceptions/warnings/warning/index.md
+        - Built-in Functions:
+          - Built-in Functions: python/3.14.5/standard-library/built-in-functions/index.md
+          - abs(): python/3.14.5/standard-library/built-in-functions/abs/index.md
+          - aiter(): python/3.14.5/standard-library/built-in-functions/aiter/index.md
+          - all(): python/3.14.5/standard-library/built-in-functions/all/index.md
+          - anext(): python/3.14.5/standard-library/built-in-functions/anext/index.md
+          - any(): python/3.14.5/standard-library/built-in-functions/any/index.md
+          - ascii(): python/3.14.5/standard-library/built-in-functions/ascii/index.md
+          - bin(): python/3.14.5/standard-library/built-in-functions/bin/index.md
+          - bool(): python/3.14.5/standard-library/built-in-functions/bool/index.md
+          - breakpoint(): python/3.14.5/standard-library/built-in-functions/breakpoint/index.md
+          - bytearray(): python/3.14.5/standard-library/built-in-functions/bytearray/index.md
+          - bytes(): python/3.14.5/standard-library/built-in-functions/bytes/index.md
+          - callable(): python/3.14.5/standard-library/built-in-functions/callable/index.md
+          - chr(): python/3.14.5/standard-library/built-in-functions/chr/index.md
+          - classmethod(): python/3.14.5/standard-library/built-in-functions/classmethod/index.md
+          - compile(): python/3.14.5/standard-library/built-in-functions/compile/index.md
+          - complex(): python/3.14.5/standard-library/built-in-functions/complex/index.md
+          - delattr(): python/3.14.5/standard-library/built-in-functions/delattr/index.md
+          - dict(): python/3.14.5/standard-library/built-in-functions/dict/index.md
+          - dir(): python/3.14.5/standard-library/built-in-functions/dir/index.md
+          - divmod(): python/3.14.5/standard-library/built-in-functions/divmod/index.md
+          - enumerate(): python/3.14.5/standard-library/built-in-functions/enumerate/index.md
+          - eval(): python/3.14.5/standard-library/built-in-functions/eval/index.md
+          - exec(): python/3.14.5/standard-library/built-in-functions/exec/index.md
+          - filter(): python/3.14.5/standard-library/built-in-functions/filter/index.md
+          - float(): python/3.14.5/standard-library/built-in-functions/float/index.md
+          - format(): python/3.14.5/standard-library/built-in-functions/format/index.md
+          - frozenset(): python/3.14.5/standard-library/built-in-functions/frozenset/index.md
+          - getattr(): python/3.14.5/standard-library/built-in-functions/getattr/index.md
+          - globals(): python/3.14.5/standard-library/built-in-functions/globals/index.md
+          - hasattr(): python/3.14.5/standard-library/built-in-functions/hasattr/index.md
+          - hash(): python/3.14.5/standard-library/built-in-functions/hash/index.md
+          - help(): python/3.14.5/standard-library/built-in-functions/help/index.md
+          - hex(): python/3.14.5/standard-library/built-in-functions/hex/index.md
+          - id(): python/3.14.5/standard-library/built-in-functions/id/index.md
+          - __import__(): python/3.14.5/standard-library/built-in-functions/import/index.md
+          - input(): python/3.14.5/standard-library/built-in-functions/input/index.md
+          - int(): python/3.14.5/standard-library/built-in-functions/int/index.md
+          - isinstance(): python/3.14.5/standard-library/built-in-functions/isinstance/index.md
+          - issubclass(): python/3.14.5/standard-library/built-in-functions/issubclass/index.md
+          - iter(): python/3.14.5/standard-library/built-in-functions/iter/index.md
+          - len(): python/3.14.5/standard-library/built-in-functions/len/index.md
+          - list(): python/3.14.5/standard-library/built-in-functions/list/index.md
+          - locals(): python/3.14.5/standard-library/built-in-functions/locals/index.md
+          - map(): python/3.14.5/standard-library/built-in-functions/map/index.md
+          - max(): python/3.14.5/standard-library/built-in-functions/max/index.md
+          - memoryview(): python/3.14.5/standard-library/built-in-functions/memoryview/index.md
+          - min(): python/3.14.5/standard-library/built-in-functions/min/index.md
+          - next(): python/3.14.5/standard-library/built-in-functions/next/index.md
+          - object(): python/3.14.5/standard-library/built-in-functions/object/index.md
+          - oct(): python/3.14.5/standard-library/built-in-functions/oct/index.md
+          - open(): python/3.14.5/standard-library/built-in-functions/open/index.md
+          - ord(): python/3.14.5/standard-library/built-in-functions/ord/index.md
+          - pow(): python/3.14.5/standard-library/built-in-functions/pow/index.md
+          - print(): python/3.14.5/standard-library/built-in-functions/print/index.md
+          - property(): python/3.14.5/standard-library/built-in-functions/property/index.md
+          - range(): python/3.14.5/standard-library/built-in-functions/range/index.md
+          - repr(): python/3.14.5/standard-library/built-in-functions/repr/index.md
+          - reversed(): python/3.14.5/standard-library/built-in-functions/reversed/index.md
+          - round(): python/3.14.5/standard-library/built-in-functions/round/index.md
+          - set(): python/3.14.5/standard-library/built-in-functions/set/index.md
+          - setattr(): python/3.14.5/standard-library/built-in-functions/setattr/index.md
+          - slice(): python/3.14.5/standard-library/built-in-functions/slice/index.md
+          - sorted(): python/3.14.5/standard-library/built-in-functions/sorted/index.md
+          - staticmethod(): python/3.14.5/standard-library/built-in-functions/staticmethod/index.md
+          - str(): python/3.14.5/standard-library/built-in-functions/str/index.md
+          - sum(): python/3.14.5/standard-library/built-in-functions/sum/index.md
+          - super(): python/3.14.5/standard-library/built-in-functions/super/index.md
+          - tuple(): python/3.14.5/standard-library/built-in-functions/tuple/index.md
+          - type(): python/3.14.5/standard-library/built-in-functions/type/index.md
+          - vars(): python/3.14.5/standard-library/built-in-functions/vars/index.md
+          - zip(): python/3.14.5/standard-library/built-in-functions/zip/index.md
+        - Built-in Types:
+          - Built-in Types: python/3.14.5/standard-library/built-in-types/index.md
+          - Binary Sequence Types — bytes, bytearray, memoryview: python/3.14.5/standard-library/built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md
+          - Boolean Operations — and, or, not: python/3.14.5/standard-library/built-in-types/boolean-operations-and-or-not/index.md
+          - Boolean Type - bool: python/3.14.5/standard-library/built-in-types/boolean-type-bool/index.md
+          - Comparisons: python/3.14.5/standard-library/built-in-types/comparisons/index.md
+          - Context Manager Types: python/3.14.5/standard-library/built-in-types/context-manager-types/index.md
+          - Integer string conversion length limitation: python/3.14.5/standard-library/built-in-types/integer-string-conversion-length-limitation/index.md
+          - Iterator Types: python/3.14.5/standard-library/built-in-types/iterator-types/index.md
+          - Mapping Types — dict: python/3.14.5/standard-library/built-in-types/mapping-types-dict/index.md
+          - Numeric Types — int, float, complex:
+            - Numeric Types — int, float, complex: python/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/index.md
+            - Additional Methods on Complex: python/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-complex/index.md
+            - Additional Methods on Float: python/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-float/index.md
+            - Additional Methods on Integer Types: python/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-integer-types/index.md
+            - Bitwise Operations on Integer Types: python/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/bitwise-operations-on-integer-types/index.md
+            - Hashing of numeric types: python/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/hashing-of-numeric-types/index.md
+          - Other Built-in Types: python/3.14.5/standard-library/built-in-types/other-built-in-types/index.md
+          - Sequence Types — list, tuple, range: python/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/index.md
+          - Set Types — set, frozenset: python/3.14.5/standard-library/built-in-types/set-types-set-frozenset/index.md
+          - Special Attributes: python/3.14.5/standard-library/built-in-types/special-attributes/index.md
+          - Text and Binary Sequence Type Methods Summary: python/3.14.5/standard-library/built-in-types/text-and-binary-sequence-type-methods-summary/index.md
+          - Text Sequence Type — str: python/3.14.5/standard-library/built-in-types/text-sequence-type-str/index.md
+          - Truth Value Testing: python/3.14.5/standard-library/built-in-types/truth-value-testing/index.md
+          - Type Annotation Types — Generic Alias, Union: python/3.14.5/standard-library/built-in-types/type-annotation-types-generic-alias-union/index.md
+        - Command-line interface libraries:
+          - Command-line interface libraries: python/3.14.5/standard-library/command-line-interface-libraries/index.md
+          - argparse — Parser for command-line options, arguments and subcommands: python/3.14.5/standard-library/command-line-interface-libraries/argparse-parser-for-command-line-options-arguments-and-subcommands/index.md
+          - cmd — Support for line-oriented command interpreters: python/3.14.5/standard-library/command-line-interface-libraries/cmd-support-for-line-oriented-command-interpreters/index.md
+          - curses — Terminal handling for character-cell displays: python/3.14.5/standard-library/command-line-interface-libraries/curses-terminal-handling-for-character-cell-displays/index.md
+          - curses.ascii — Utilities for ASCII characters: python/3.14.5/standard-library/command-line-interface-libraries/cursesascii-utilities-for-ascii-characters/index.md
+          - curses.panel — A panel stack extension for curses: python/3.14.5/standard-library/command-line-interface-libraries/cursespanel-a-panel-stack-extension-for-curses/index.md
+          - curses.textpad — Text input widget for curses programs: python/3.14.5/standard-library/command-line-interface-libraries/cursestextpad-text-input-widget-for-curses-programs/index.md
+          - fileinput — Iterate over lines from multiple input streams: python/3.14.5/standard-library/command-line-interface-libraries/fileinput-iterate-over-lines-from-multiple-input-streams/index.md
+          - getpass — Portable password input: python/3.14.5/standard-library/command-line-interface-libraries/getpass-portable-password-input/index.md
+          - optparse — Parser for command line options: python/3.14.5/standard-library/command-line-interface-libraries/optparse-parser-for-command-line-options/index.md
+        - Concurrent Execution:
+          - Concurrent Execution: python/3.14.5/standard-library/concurrent-execution/index.md
+          - _thread — Low-level threading API: python/3.14.5/standard-library/concurrent-execution/_thread-low-level-threading-api/index.md
+          - concurrent.futures — Launching parallel tasks: python/3.14.5/standard-library/concurrent-execution/concurrentfutures-launching-parallel-tasks/index.md
+          - concurrent.interpreters — Multiple interpreters in the same process: python/3.14.5/standard-library/concurrent-execution/concurrentinterpreters-multiple-interpreters-in-the-same-process/index.md
+          - contextvars — Context Variables: python/3.14.5/standard-library/concurrent-execution/contextvars-context-variables/index.md
+          - multiprocessing — Process-based parallelism: python/3.14.5/standard-library/concurrent-execution/multiprocessing-process-based-parallelism/index.md
+          - multiprocessing.shared_memory — Shared memory for direct access across processes: python/3.14.5/standard-library/concurrent-execution/multiprocessingshared_memory-shared-memory-for-direct-access-across-processes/index.md
+          - queue — A synchronized queue class: python/3.14.5/standard-library/concurrent-execution/queue-a-synchronized-queue-class/index.md
+          - sched — Event scheduler: python/3.14.5/standard-library/concurrent-execution/sched-event-scheduler/index.md
+          - subprocess — Subprocess management: python/3.14.5/standard-library/concurrent-execution/subprocess-subprocess-management/index.md
+          - The concurrent package: python/3.14.5/standard-library/concurrent-execution/the-concurrent-package/index.md
+          - threading — Thread-based parallelism: python/3.14.5/standard-library/concurrent-execution/threading-thread-based-parallelism/index.md
+        - Cryptographic Services:
+          - Cryptographic Services: python/3.14.5/standard-library/cryptographic-services/index.md
+          - hashlib — Secure hashes and message digests: python/3.14.5/standard-library/cryptographic-services/hashlib-secure-hashes-and-message-digests/index.md
+          - hmac — Keyed-Hashing for Message Authentication: python/3.14.5/standard-library/cryptographic-services/hmac-keyed-hashing-for-message-authentication/index.md
+          - secrets — Generate secure random numbers for managing secrets: python/3.14.5/standard-library/cryptographic-services/secrets-generate-secure-random-numbers-for-managing-secrets/index.md
+        - Custom Python Interpreters:
+          - Custom Python Interpreters: python/3.14.5/standard-library/custom-python-interpreters/index.md
+          - code — Interpreter base classes: python/3.14.5/standard-library/custom-python-interpreters/code-interpreter-base-classes/index.md
+          - codeop — Compile Python code: python/3.14.5/standard-library/custom-python-interpreters/codeop-compile-python-code/index.md
+        - Data Compression and Archiving:
+          - Data Compression and Archiving: python/3.14.5/standard-library/data-compression-and-archiving/index.md
+          - bz2 — Support for **bzip2** compression: python/3.14.5/standard-library/data-compression-and-archiving/bz2-support-for-bzip2-compression/index.md
+          - compression.zstd — Compression compatible with the Zstandard format: python/3.14.5/standard-library/data-compression-and-archiving/compressionzstd-compression-compatible-with-the-zstandard-format/index.md
+          - gzip — Support for **gzip** files: python/3.14.5/standard-library/data-compression-and-archiving/gzip-support-for-gzip-files/index.md
+          - lzma — Compression using the LZMA algorithm: python/3.14.5/standard-library/data-compression-and-archiving/lzma-compression-using-the-lzma-algorithm/index.md
+          - tarfile — Read and write tar archive files: python/3.14.5/standard-library/data-compression-and-archiving/tarfile-read-and-write-tar-archive-files/index.md
+          - The compression package: python/3.14.5/standard-library/data-compression-and-archiving/the-compression-package/index.md
+          - zipfile — Work with ZIP archives: python/3.14.5/standard-library/data-compression-and-archiving/zipfile-work-with-zip-archives/index.md
+          - zlib — Compression compatible with **gzip**: python/3.14.5/standard-library/data-compression-and-archiving/zlib-compression-compatible-with-gzip/index.md
+        - Data Persistence:
+          - Data Persistence: python/3.14.5/standard-library/data-persistence/index.md
+          - copyreg — Register pickle support functions: python/3.14.5/standard-library/data-persistence/copyreg-register-pickle-support-functions/index.md
+          - dbm — Interfaces to Unix “databases”: python/3.14.5/standard-library/data-persistence/dbm-interfaces-to-unix-databases/index.md
+          - marshal — Internal Python object serialization: python/3.14.5/standard-library/data-persistence/marshal-internal-python-object-serialization/index.md
+          - pickle — Python object serialization: python/3.14.5/standard-library/data-persistence/pickle-python-object-serialization/index.md
+          - shelve — Python object persistence: python/3.14.5/standard-library/data-persistence/shelve-python-object-persistence/index.md
+          - sqlite3 — DB-API 2.0 interface for SQLite databases: python/3.14.5/standard-library/data-persistence/sqlite3-db-api-20-interface-for-sqlite-databases/index.md
+        - Data Types:
+          - Data Types: python/3.14.5/standard-library/data-types/index.md
+          - array — Efficient arrays of numeric values: python/3.14.5/standard-library/data-types/array-efficient-arrays-of-numeric-values/index.md
+          - bisect — Array bisection algorithm: python/3.14.5/standard-library/data-types/bisect-array-bisection-algorithm/index.md
+          - calendar — General calendar-related functions: python/3.14.5/standard-library/data-types/calendar-general-calendar-related-functions/index.md
+          - collections — Container datatypes: python/3.14.5/standard-library/data-types/collections-container-datatypes/index.md
+          - collections.abc — Abstract Base Classes for Containers: python/3.14.5/standard-library/data-types/collectionsabc-abstract-base-classes-for-containers/index.md
+          - copy — Shallow and deep copy operations: python/3.14.5/standard-library/data-types/copy-shallow-and-deep-copy-operations/index.md
+          - datetime — Basic date and time types: python/3.14.5/standard-library/data-types/datetime-basic-date-and-time-types/index.md
+          - enum — Support for enumerations: python/3.14.5/standard-library/data-types/enum-support-for-enumerations/index.md
+          - graphlib — Functionality to operate with graph-like structures: python/3.14.5/standard-library/data-types/graphlib-functionality-to-operate-with-graph-like-structures/index.md
+          - heapq — Heap queue algorithm: python/3.14.5/standard-library/data-types/heapq-heap-queue-algorithm/index.md
+          - pprint — Data pretty printer: python/3.14.5/standard-library/data-types/pprint-data-pretty-printer/index.md
+          - reprlib — Alternate repr() implementation: python/3.14.5/standard-library/data-types/reprlib-alternate-repr-implementation/index.md
+          - types — Dynamic type creation and names for built-in types: python/3.14.5/standard-library/data-types/types-dynamic-type-creation-and-names-for-built-in-types/index.md
+          - weakref — Weak references: python/3.14.5/standard-library/data-types/weakref-weak-references/index.md
+          - zoneinfo — IANA time zone support: python/3.14.5/standard-library/data-types/zoneinfo-iana-time-zone-support/index.md
+        - Debugging and Profiling:
+          - Debugging and Profiling: python/3.14.5/standard-library/debugging-and-profiling/index.md
+          - Audit events table: python/3.14.5/standard-library/debugging-and-profiling/audit-events-table/index.md
+          - bdb — Debugger framework: python/3.14.5/standard-library/debugging-and-profiling/bdb-debugger-framework/index.md
+          - faulthandler — Dump the Python traceback: python/3.14.5/standard-library/debugging-and-profiling/faulthandler-dump-the-python-traceback/index.md
+          - pdb — The Python Debugger: python/3.14.5/standard-library/debugging-and-profiling/pdb-the-python-debugger/index.md
+          - The Python Profilers: python/3.14.5/standard-library/debugging-and-profiling/the-python-profilers/index.md
+          - timeit — Measure execution time of small code snippets: python/3.14.5/standard-library/debugging-and-profiling/timeit-measure-execution-time-of-small-code-snippets/index.md
+          - trace — Trace or track Python statement execution: python/3.14.5/standard-library/debugging-and-profiling/trace-trace-or-track-python-statement-execution/index.md
+          - tracemalloc — Trace memory allocations: python/3.14.5/standard-library/debugging-and-profiling/tracemalloc-trace-memory-allocations/index.md
+        - Development Tools:
+          - Development Tools: python/3.14.5/standard-library/development-tools/index.md
+          - doctest — Test interactive Python examples: python/3.14.5/standard-library/development-tools/doctest-test-interactive-python-examples/index.md
+          - pydoc — Documentation generator and online help system: python/3.14.5/standard-library/development-tools/pydoc-documentation-generator-and-online-help-system/index.md
+          - Python Development Mode: python/3.14.5/standard-library/development-tools/python-development-mode/index.md
+          - test — Regression tests package for Python: python/3.14.5/standard-library/development-tools/test-regression-tests-package-for-python/index.md
+          - test.support — Utilities for the Python test suite: python/3.14.5/standard-library/development-tools/testsupport-utilities-for-the-python-test-suite/index.md
+          - test.support.bytecode_helper — Support tools for testing correct bytecode generation: python/3.14.5/standard-library/development-tools/testsupportbytecode_helper-support-tools-for-testing-correct-bytecode-generation/index.md
+          - test.support.import_helper — Utilities for import tests: python/3.14.5/standard-library/development-tools/testsupportimport_helper-utilities-for-import-tests/index.md
+          - test.support.os_helper — Utilities for os tests: python/3.14.5/standard-library/development-tools/testsupportos_helper-utilities-for-os-tests/index.md
+          - test.support.script_helper — Utilities for the Python execution tests: python/3.14.5/standard-library/development-tools/testsupportscript_helper-utilities-for-the-python-execution-tests/index.md
+          - test.support.socket_helper — Utilities for socket tests: python/3.14.5/standard-library/development-tools/testsupportsocket_helper-utilities-for-socket-tests/index.md
+          - test.support.threading_helper — Utilities for threading tests: python/3.14.5/standard-library/development-tools/testsupportthreading_helper-utilities-for-threading-tests/index.md
+          - test.support.warnings_helper — Utilities for warnings tests: python/3.14.5/standard-library/development-tools/testsupportwarnings_helper-utilities-for-warnings-tests/index.md
+          - typing — Support for type hints: python/3.14.5/standard-library/development-tools/typing-support-for-type-hints/index.md
+          - unittest — Unit testing framework: python/3.14.5/standard-library/development-tools/unittest-unit-testing-framework/index.md
+          - unittest.mock — getting started: python/3.14.5/standard-library/development-tools/unittestmock-getting-started/index.md
+          - unittest.mock — mock object library: python/3.14.5/standard-library/development-tools/unittestmock-mock-object-library/index.md
+        - File and Directory Access:
+          - File and Directory Access: python/3.14.5/standard-library/file-and-directory-access/index.md
+          - filecmp — File and Directory Comparisons: python/3.14.5/standard-library/file-and-directory-access/filecmp-file-and-directory-comparisons/index.md
+          - fnmatch — Unix filename pattern matching: python/3.14.5/standard-library/file-and-directory-access/fnmatch-unix-filename-pattern-matching/index.md
+          - glob — Unix style pathname pattern expansion: python/3.14.5/standard-library/file-and-directory-access/glob-unix-style-pathname-pattern-expansion/index.md
+          - linecache — Random access to text lines: python/3.14.5/standard-library/file-and-directory-access/linecache-random-access-to-text-lines/index.md
+          - os.path — Common pathname manipulations: python/3.14.5/standard-library/file-and-directory-access/ospath-common-pathname-manipulations/index.md
+          - pathlib — Object-oriented filesystem paths: python/3.14.5/standard-library/file-and-directory-access/pathlib-object-oriented-filesystem-paths/index.md
+          - shutil — High-level file operations: python/3.14.5/standard-library/file-and-directory-access/shutil-high-level-file-operations/index.md
+          - stat — Interpreting stat() results: python/3.14.5/standard-library/file-and-directory-access/stat-interpreting-stat-results/index.md
+          - tempfile — Generate temporary files and directories: python/3.14.5/standard-library/file-and-directory-access/tempfile-generate-temporary-files-and-directories/index.md
+        - File Formats:
+          - File Formats: python/3.14.5/standard-library/file-formats/index.md
+          - configparser — Configuration file parser: python/3.14.5/standard-library/file-formats/configparser-configuration-file-parser/index.md
+          - csv — CSV File Reading and Writing: python/3.14.5/standard-library/file-formats/csv-csv-file-reading-and-writing/index.md
+          - netrc — netrc file processing: python/3.14.5/standard-library/file-formats/netrc-netrc-file-processing/index.md
+          - plistlib — Generate and parse Apple .plist files: python/3.14.5/standard-library/file-formats/plistlib-generate-and-parse-apple-plist-files/index.md
+          - tomllib — Parse TOML files: python/3.14.5/standard-library/file-formats/tomllib-parse-toml-files/index.md
+        - Functional Programming Modules:
+          - Functional Programming Modules: python/3.14.5/standard-library/functional-programming-modules/index.md
+          - functools — Higher-order functions and operations on callable objects: python/3.14.5/standard-library/functional-programming-modules/functools-higher-order-functions-and-operations-on-callable-objects/index.md
+          - itertools — Functions creating iterators for efficient looping: python/3.14.5/standard-library/functional-programming-modules/itertools-functions-creating-iterators-for-efficient-looping/index.md
+          - operator — Standard operators as functions: python/3.14.5/standard-library/functional-programming-modules/operator-standard-operators-as-functions/index.md
+        - Generic Operating System Services:
+          - Generic Operating System Services: python/3.14.5/standard-library/generic-operating-system-services/index.md
+          - ctypes — A foreign function library for Python: python/3.14.5/standard-library/generic-operating-system-services/ctypes-a-foreign-function-library-for-python/index.md
+          - errno — Standard errno system symbols: python/3.14.5/standard-library/generic-operating-system-services/errno-standard-errno-system-symbols/index.md
+          - io — Core tools for working with streams: python/3.14.5/standard-library/generic-operating-system-services/io-core-tools-for-working-with-streams/index.md
+          - logging — Logging facility for Python: python/3.14.5/standard-library/generic-operating-system-services/logging-logging-facility-for-python/index.md
+          - logging.config — Logging configuration: python/3.14.5/standard-library/generic-operating-system-services/loggingconfig-logging-configuration/index.md
+          - logging.handlers — Logging handlers: python/3.14.5/standard-library/generic-operating-system-services/logginghandlers-logging-handlers/index.md
+          - os — Miscellaneous operating system interfaces: python/3.14.5/standard-library/generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md
+          - platform — Access to underlying platform’s identifying data: python/3.14.5/standard-library/generic-operating-system-services/platform-access-to-underlying-platforms-identifying-data/index.md
+          - time — Time access and conversions: python/3.14.5/standard-library/generic-operating-system-services/time-time-access-and-conversions/index.md
+        - Graphical user interfaces with Tk:
+          - Graphical user interfaces with Tk: python/3.14.5/standard-library/graphical-user-interfaces-with-tk/index.md
+          - IDLE — Python editor and shell: python/3.14.5/standard-library/graphical-user-interfaces-with-tk/idle-python-editor-and-shell/index.md
+          - Tkinter Dialogs: python/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinter-dialogs/index.md
+          - tkinter — Python interface to Tcl/Tk: python/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinter-python-interface-to-tcltk/index.md
+          - tkinter.colorchooser — Color choosing dialog: python/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkintercolorchooser-color-choosing-dialog/index.md
+          - tkinter.dnd — Drag and drop support: python/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinterdnd-drag-and-drop-support/index.md
+          - tkinter.font — Tkinter font wrapper: python/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinterfont-tkinter-font-wrapper/index.md
+          - tkinter.messagebox — Tkinter message prompts: python/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkintermessagebox-tkinter-message-prompts/index.md
+          - tkinter.scrolledtext — Scrolled Text Widget: python/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinterscrolledtext-scrolled-text-widget/index.md
+          - tkinter.ttk — Tk themed widgets: python/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinterttk-tk-themed-widgets/index.md
+          - turtle — Turtle graphics: python/3.14.5/standard-library/graphical-user-interfaces-with-tk/turtle-turtle-graphics/index.md
+        - Importing Modules:
+          - Importing Modules: python/3.14.5/standard-library/importing-modules/index.md
+          - importlib — The implementation of import: python/3.14.5/standard-library/importing-modules/importlib-the-implementation-of-import/index.md
+          - importlib.metadata – Accessing package metadata: python/3.14.5/standard-library/importing-modules/importlibmetadata-accessing-package-metadata/index.md
+          - importlib.resources – Package resource reading, opening and access: python/3.14.5/standard-library/importing-modules/importlibresources-package-resource-reading-opening-and-access/index.md
+          - importlib.resources.abc – Abstract base classes for resources: python/3.14.5/standard-library/importing-modules/importlibresourcesabc-abstract-base-classes-for-resources/index.md
+          - modulefinder — Find modules used by a script: python/3.14.5/standard-library/importing-modules/modulefinder-find-modules-used-by-a-script/index.md
+          - pkgutil — Package extension utility: python/3.14.5/standard-library/importing-modules/pkgutil-package-extension-utility/index.md
+          - runpy — Locating and executing Python modules: python/3.14.5/standard-library/importing-modules/runpy-locating-and-executing-python-modules/index.md
+          - The initialization of the sys.path module search path: python/3.14.5/standard-library/importing-modules/the-initialization-of-the-syspath-module-search-path/index.md
+          - zipimport — Import modules from Zip archives: python/3.14.5/standard-library/importing-modules/zipimport-import-modules-from-zip-archives/index.md
+        - Internationalization:
+          - Internationalization: python/3.14.5/standard-library/internationalization/index.md
+          - gettext — Multilingual internationalization services: python/3.14.5/standard-library/internationalization/gettext-multilingual-internationalization-services/index.md
+          - locale — Internationalization services: python/3.14.5/standard-library/internationalization/locale-internationalization-services/index.md
+        - Internet Data Handling:
+          - Internet Data Handling: python/3.14.5/standard-library/internet-data-handling/index.md
+          - base64 — Base16, Base32, Base64, Base85 Data Encodings: python/3.14.5/standard-library/internet-data-handling/base64-base16-base32-base64-base85-data-encodings/index.md
+          - binascii — Convert between binary and ASCII: python/3.14.5/standard-library/internet-data-handling/binascii-convert-between-binary-and-ascii/index.md
+          - email — An email and MIME handling package: python/3.14.5/standard-library/internet-data-handling/email-an-email-and-mime-handling-package/index.md
+          - json — JSON encoder and decoder: python/3.14.5/standard-library/internet-data-handling/json-json-encoder-and-decoder/index.md
+          - mailbox — Manipulate mailboxes in various formats: python/3.14.5/standard-library/internet-data-handling/mailbox-manipulate-mailboxes-in-various-formats/index.md
+          - mimetypes — Map filenames to MIME types: python/3.14.5/standard-library/internet-data-handling/mimetypes-map-filenames-to-mime-types/index.md
+          - quopri — Encode and decode MIME quoted-printable data: python/3.14.5/standard-library/internet-data-handling/quopri-encode-and-decode-mime-quoted-printable-data/index.md
+        - Internet Protocols and Support:
+          - Internet Protocols and Support: python/3.14.5/standard-library/internet-protocols-and-support/index.md
+          - ftplib — FTP protocol client: python/3.14.5/standard-library/internet-protocols-and-support/ftplib-ftp-protocol-client/index.md
+          - http — HTTP modules: python/3.14.5/standard-library/internet-protocols-and-support/http-http-modules/index.md
+          - http.client — HTTP protocol client: python/3.14.5/standard-library/internet-protocols-and-support/httpclient-http-protocol-client/index.md
+          - http.cookiejar — Cookie handling for HTTP clients: python/3.14.5/standard-library/internet-protocols-and-support/httpcookiejar-cookie-handling-for-http-clients/index.md
+          - http.cookies — HTTP state management: python/3.14.5/standard-library/internet-protocols-and-support/httpcookies-http-state-management/index.md
+          - http.server — HTTP servers: python/3.14.5/standard-library/internet-protocols-and-support/httpserver-http-servers/index.md
+          - imaplib — IMAP4 protocol client: python/3.14.5/standard-library/internet-protocols-and-support/imaplib-imap4-protocol-client/index.md
+          - ipaddress — IPv4/IPv6 manipulation library: python/3.14.5/standard-library/internet-protocols-and-support/ipaddress-ipv4ipv6-manipulation-library/index.md
+          - poplib — POP3 protocol client: python/3.14.5/standard-library/internet-protocols-and-support/poplib-pop3-protocol-client/index.md
+          - smtplib — SMTP protocol client: python/3.14.5/standard-library/internet-protocols-and-support/smtplib-smtp-protocol-client/index.md
+          - socketserver — A framework for network servers: python/3.14.5/standard-library/internet-protocols-and-support/socketserver-a-framework-for-network-servers/index.md
+          - urllib — URL handling modules: python/3.14.5/standard-library/internet-protocols-and-support/urllib-url-handling-modules/index.md
+          - urllib.error — Exception classes raised by urllib.request: python/3.14.5/standard-library/internet-protocols-and-support/urlliberror-exception-classes-raised-by-urllibrequest/index.md
+          - urllib.parse — Parse URLs into components: python/3.14.5/standard-library/internet-protocols-and-support/urllibparse-parse-urls-into-components/index.md
+          - urllib.request — Extensible library for opening URLs: python/3.14.5/standard-library/internet-protocols-and-support/urllibrequest-extensible-library-for-opening-urls/index.md
+          - urllib.response — Response classes used by urllib: python/3.14.5/standard-library/internet-protocols-and-support/urllibresponse-response-classes-used-by-urllib/index.md
+          - urllib.robotparser — Parser for robots.txt: python/3.14.5/standard-library/internet-protocols-and-support/urllibrobotparser-parser-for-robotstxt/index.md
+          - uuid — UUID objects according to **RFC 9562**: python/3.14.5/standard-library/internet-protocols-and-support/uuid-uuid-objects-according-to-rfc-9562/index.md
+          - webbrowser — Convenient web-browser controller: python/3.14.5/standard-library/internet-protocols-and-support/webbrowser-convenient-web-browser-controller/index.md
+          - wsgiref — WSGI Utilities and Reference Implementation: python/3.14.5/standard-library/internet-protocols-and-support/wsgiref-wsgi-utilities-and-reference-implementation/index.md
+          - xmlrpc — XMLRPC server and client modules: python/3.14.5/standard-library/internet-protocols-and-support/xmlrpc-xmlrpc-server-and-client-modules/index.md
+          - xmlrpc.client — XML-RPC client access: python/3.14.5/standard-library/internet-protocols-and-support/xmlrpcclient-xml-rpc-client-access/index.md
+          - xmlrpc.server — Basic XML-RPC servers: python/3.14.5/standard-library/internet-protocols-and-support/xmlrpcserver-basic-xml-rpc-servers/index.md
+        - Introduction:
+          - Introduction: python/3.14.5/standard-library/introduction/index.md
+          - Notes on availability: python/3.14.5/standard-library/introduction/notes-on-availability/index.md
+        - Modules command-line interface (CLI): python/3.14.5/standard-library/modules-command-line-interface-cli/index.md
+        - MS Windows Specific Services:
+          - MS Windows Specific Services: python/3.14.5/standard-library/ms-windows-specific-services/index.md
+          - msvcrt — Useful routines from the MS VC++ runtime: python/3.14.5/standard-library/ms-windows-specific-services/msvcrt-useful-routines-from-the-ms-vc-runtime/index.md
+          - winreg — Windows registry access: python/3.14.5/standard-library/ms-windows-specific-services/winreg-windows-registry-access/index.md
+          - winsound — Sound-playing interface for Windows: python/3.14.5/standard-library/ms-windows-specific-services/winsound-sound-playing-interface-for-windows/index.md
+        - Multimedia Services:
+          - Multimedia Services: python/3.14.5/standard-library/multimedia-services/index.md
+          - colorsys — Conversions between color systems: python/3.14.5/standard-library/multimedia-services/colorsys-conversions-between-color-systems/index.md
+          - wave — Read and write WAV files: python/3.14.5/standard-library/multimedia-services/wave-read-and-write-wav-files/index.md
+        - Networking and Interprocess Communication:
+          - Networking and Interprocess Communication: python/3.14.5/standard-library/networking-and-interprocess-communication/index.md
+          - asyncio — Asynchronous I/O: python/3.14.5/standard-library/networking-and-interprocess-communication/asyncio-asynchronous-io/index.md
+          - mmap — Memory-mapped file support: python/3.14.5/standard-library/networking-and-interprocess-communication/mmap-memory-mapped-file-support/index.md
+          - select — Waiting for I/O completion: python/3.14.5/standard-library/networking-and-interprocess-communication/select-waiting-for-io-completion/index.md
+          - selectors — High-level I/O multiplexing: python/3.14.5/standard-library/networking-and-interprocess-communication/selectors-high-level-io-multiplexing/index.md
+          - signal — Set handlers for asynchronous events: python/3.14.5/standard-library/networking-and-interprocess-communication/signal-set-handlers-for-asynchronous-events/index.md
+          - socket — Low-level networking interface: python/3.14.5/standard-library/networking-and-interprocess-communication/socket-low-level-networking-interface/index.md
+          - ssl — TLS/SSL wrapper for socket objects: python/3.14.5/standard-library/networking-and-interprocess-communication/ssl-tlsssl-wrapper-for-socket-objects/index.md
+        - Numeric and Mathematical Modules:
+          - Numeric and Mathematical Modules: python/3.14.5/standard-library/numeric-and-mathematical-modules/index.md
+          - cmath — Mathematical functions for complex numbers: python/3.14.5/standard-library/numeric-and-mathematical-modules/cmath-mathematical-functions-for-complex-numbers/index.md
+          - decimal — Decimal fixed-point and floating-point arithmetic: python/3.14.5/standard-library/numeric-and-mathematical-modules/decimal-decimal-fixed-point-and-floating-point-arithmetic/index.md
+          - fractions — Rational numbers: python/3.14.5/standard-library/numeric-and-mathematical-modules/fractions-rational-numbers/index.md
+          - math — Mathematical functions: python/3.14.5/standard-library/numeric-and-mathematical-modules/math-mathematical-functions/index.md
+          - numbers — Numeric abstract base classes: python/3.14.5/standard-library/numeric-and-mathematical-modules/numbers-numeric-abstract-base-classes/index.md
+          - random — Generate pseudo-random numbers: python/3.14.5/standard-library/numeric-and-mathematical-modules/random-generate-pseudo-random-numbers/index.md
+          - statistics — Mathematical statistics functions: python/3.14.5/standard-library/numeric-and-mathematical-modules/statistics-mathematical-statistics-functions/index.md
+        - Python Language Services:
+          - Python Language Services: python/3.14.5/standard-library/python-language-services/index.md
+          - ast — Abstract syntax trees: python/3.14.5/standard-library/python-language-services/ast-abstract-syntax-trees/index.md
+          - compileall — Byte-compile Python libraries: python/3.14.5/standard-library/python-language-services/compileall-byte-compile-python-libraries/index.md
+          - dis — Disassembler for Python bytecode: python/3.14.5/standard-library/python-language-services/dis-disassembler-for-python-bytecode/index.md
+          - keyword — Testing for Python keywords: python/3.14.5/standard-library/python-language-services/keyword-testing-for-python-keywords/index.md
+          - pickletools — Tools for pickle developers: python/3.14.5/standard-library/python-language-services/pickletools-tools-for-pickle-developers/index.md
+          - py_compile — Compile Python source files: python/3.14.5/standard-library/python-language-services/py_compile-compile-python-source-files/index.md
+          - pyclbr — Python module browser support: python/3.14.5/standard-library/python-language-services/pyclbr-python-module-browser-support/index.md
+          - symtable — Access to the compiler’s symbol tables: python/3.14.5/standard-library/python-language-services/symtable-access-to-the-compilers-symbol-tables/index.md
+          - tabnanny — Detection of ambiguous indentation: python/3.14.5/standard-library/python-language-services/tabnanny-detection-of-ambiguous-indentation/index.md
+          - token — Constants used with Python parse trees: python/3.14.5/standard-library/python-language-services/token-constants-used-with-python-parse-trees/index.md
+          - tokenize — Tokenizer for Python source: python/3.14.5/standard-library/python-language-services/tokenize-tokenizer-for-python-source/index.md
+        - Python Runtime Services:
+          - Python Runtime Services: python/3.14.5/standard-library/python-runtime-services/index.md
+          - \_\_future\_\_ — Future statement definitions: python/3.14.5/standard-library/python-runtime-services/__future__-future-statement-definitions/index.md
+          - \_\_main\_\_ — Top-level code environment: python/3.14.5/standard-library/python-runtime-services/__main__-top-level-code-environment/index.md
+          - abc — Abstract Base Classes: python/3.14.5/standard-library/python-runtime-services/abc-abstract-base-classes/index.md
+          - annotationlib — Functionality for introspecting annotations: python/3.14.5/standard-library/python-runtime-services/annotationlib-functionality-for-introspecting-annotations/index.md
+          - atexit — Exit handlers: python/3.14.5/standard-library/python-runtime-services/atexit-exit-handlers/index.md
+          - builtins — Built-in objects: python/3.14.5/standard-library/python-runtime-services/builtins-built-in-objects/index.md
+          - contextlib — Utilities for with-statement contexts: python/3.14.5/standard-library/python-runtime-services/contextlib-utilities-for-with-statement-contexts/index.md
+          - dataclasses — Data Classes: python/3.14.5/standard-library/python-runtime-services/dataclasses-data-classes/index.md
+          - gc — Garbage Collector interface: python/3.14.5/standard-library/python-runtime-services/gc-garbage-collector-interface/index.md
+          - inspect — Inspect live objects: python/3.14.5/standard-library/python-runtime-services/inspect-inspect-live-objects/index.md
+          - site — Site-specific configuration hook: python/3.14.5/standard-library/python-runtime-services/site-site-specific-configuration-hook/index.md
+          - sys — System-specific parameters and functions: python/3.14.5/standard-library/python-runtime-services/sys-system-specific-parameters-and-functions/index.md
+          - sysconfig — Provide access to Python’s configuration information: python/3.14.5/standard-library/python-runtime-services/sysconfig-provide-access-to-pythons-configuration-information/index.md
+          - sys.monitoring — Execution event monitoring: python/3.14.5/standard-library/python-runtime-services/sysmonitoring-execution-event-monitoring/index.md
+          - traceback — Print or retrieve a stack traceback: python/3.14.5/standard-library/python-runtime-services/traceback-print-or-retrieve-a-stack-traceback/index.md
+          - warnings — Warning control: python/3.14.5/standard-library/python-runtime-services/warnings-warning-control/index.md
+        - Removed Modules: python/3.14.5/standard-library/removed-modules/index.md
+        - Security Considerations: python/3.14.5/standard-library/security-considerations/index.md
+        - Software Packaging and Distribution:
+          - Software Packaging and Distribution: python/3.14.5/standard-library/software-packaging-and-distribution/index.md
+          - ensurepip — Bootstrapping the pip installer: python/3.14.5/standard-library/software-packaging-and-distribution/ensurepip-bootstrapping-the-pip-installer/index.md
+          - venv — Creation of virtual environments: python/3.14.5/standard-library/software-packaging-and-distribution/venv-creation-of-virtual-environments/index.md
+          - zipapp — Manage executable Python zip archives: python/3.14.5/standard-library/software-packaging-and-distribution/zipapp-manage-executable-python-zip-archives/index.md
+        - Structured Markup Processing Tools:
+          - Structured Markup Processing Tools: python/3.14.5/standard-library/structured-markup-processing-tools/index.md
+          - html — HyperText Markup Language support: python/3.14.5/standard-library/structured-markup-processing-tools/html-hypertext-markup-language-support/index.md
+          - html.entities — Definitions of HTML general entities: python/3.14.5/standard-library/structured-markup-processing-tools/htmlentities-definitions-of-html-general-entities/index.md
+          - html.parser — Simple HTML and XHTML parser: python/3.14.5/standard-library/structured-markup-processing-tools/htmlparser-simple-html-and-xhtml-parser/index.md
+          - XML Processing Modules: python/3.14.5/standard-library/structured-markup-processing-tools/xml-processing-modules/index.md
+          - xml.dom — The Document Object Model API: python/3.14.5/standard-library/structured-markup-processing-tools/xmldom-the-document-object-model-api/index.md
+          - xml.dom.minidom — Minimal DOM implementation: python/3.14.5/standard-library/structured-markup-processing-tools/xmldomminidom-minimal-dom-implementation/index.md
+          - xml.dom.pulldom — Support for building partial DOM trees: python/3.14.5/standard-library/structured-markup-processing-tools/xmldompulldom-support-for-building-partial-dom-trees/index.md
+          - xml.etree.ElementTree — The ElementTree XML API: python/3.14.5/standard-library/structured-markup-processing-tools/xmletreeelementtree-the-elementtree-xml-api/index.md
+          - xml.parsers.expat — Fast XML parsing using Expat: python/3.14.5/standard-library/structured-markup-processing-tools/xmlparsersexpat-fast-xml-parsing-using-expat/index.md
+          - xml.sax — Support for SAX2 parsers: python/3.14.5/standard-library/structured-markup-processing-tools/xmlsax-support-for-sax2-parsers/index.md
+          - xml.sax.handler — Base classes for SAX handlers: python/3.14.5/standard-library/structured-markup-processing-tools/xmlsaxhandler-base-classes-for-sax-handlers/index.md
+          - xml.sax.saxutils — SAX Utilities: python/3.14.5/standard-library/structured-markup-processing-tools/xmlsaxsaxutils-sax-utilities/index.md
+          - xml.sax.xmlreader — Interface for XML parsers: python/3.14.5/standard-library/structured-markup-processing-tools/xmlsaxxmlreader-interface-for-xml-parsers/index.md
+        - Superseded Modules:
+          - Superseded Modules: python/3.14.5/standard-library/superseded-modules/index.md
+          - getopt — C-style parser for command line options: python/3.14.5/standard-library/superseded-modules/getopt-c-style-parser-for-command-line-options/index.md
+        - Text Processing Services:
+          - Text Processing Services: python/3.14.5/standard-library/text-processing-services/index.md
+          - difflib — Helpers for computing deltas: python/3.14.5/standard-library/text-processing-services/difflib-helpers-for-computing-deltas/index.md
+          - re — Regular expression operations: python/3.14.5/standard-library/text-processing-services/re-regular-expression-operations/index.md
+          - readline — GNU readline interface: python/3.14.5/standard-library/text-processing-services/readline-gnu-readline-interface/index.md
+          - rlcompleter — Completion function for GNU readline: python/3.14.5/standard-library/text-processing-services/rlcompleter-completion-function-for-gnu-readline/index.md
+          - string — Common string operations: python/3.14.5/standard-library/text-processing-services/string-common-string-operations/index.md
+          - stringprep — Internet String Preparation: python/3.14.5/standard-library/text-processing-services/stringprep-internet-string-preparation/index.md
+          - string.templatelib — Support for template string literals: python/3.14.5/standard-library/text-processing-services/stringtemplatelib-support-for-template-string-literals/index.md
+          - textwrap — Text wrapping and filling: python/3.14.5/standard-library/text-processing-services/textwrap-text-wrapping-and-filling/index.md
+          - unicodedata — Unicode Database: python/3.14.5/standard-library/text-processing-services/unicodedata-unicode-database/index.md
+        - Thread Safety Guarantees:
+          - Thread Safety Guarantees: python/3.14.5/standard-library/thread-safety-guarantees/index.md
+          - Thread safety for bytearray objects: python/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-bytearray-objects/index.md
+          - Thread safety for dict objects: python/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-dict-objects/index.md
+          - Thread safety for list objects: python/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-list-objects/index.md
+          - Thread safety for memoryview objects: python/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-memoryview-objects/index.md
+          - Thread safety for set objects: python/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-set-objects/index.md
+          - Thread safety levels: python/3.14.5/standard-library/thread-safety-guarantees/thread-safety-levels/index.md
+        - Unix-specific services:
+          - Unix-specific services: python/3.14.5/standard-library/unix-specific-services/index.md
+          - fcntl — The fcntl and ioctl system calls: python/3.14.5/standard-library/unix-specific-services/fcntl-the-fcntl-and-ioctl-system-calls/index.md
+          - grp — The group database: python/3.14.5/standard-library/unix-specific-services/grp-the-group-database/index.md
+          - posix — The most common POSIX system calls: python/3.14.5/standard-library/unix-specific-services/posix-the-most-common-posix-system-calls/index.md
+          - pty — Pseudo-terminal utilities: python/3.14.5/standard-library/unix-specific-services/pty-pseudo-terminal-utilities/index.md
+          - pwd — The password database: python/3.14.5/standard-library/unix-specific-services/pwd-the-password-database/index.md
+          - resource — Resource usage information: python/3.14.5/standard-library/unix-specific-services/resource-resource-usage-information/index.md
+          - shlex — Simple lexical analysis: python/3.14.5/standard-library/unix-specific-services/shlex-simple-lexical-analysis/index.md
+          - syslog — Unix syslog library routines: python/3.14.5/standard-library/unix-specific-services/syslog-unix-syslog-library-routines/index.md
+          - termios — POSIX style tty control: python/3.14.5/standard-library/unix-specific-services/termios-posix-style-tty-control/index.md
+          - tty — Terminal control functions: python/3.14.5/standard-library/unix-specific-services/tty-terminal-control-functions/index.md
+      - The Python Language Reference:
+        - The Python Language Reference: python/3.14.5/language-reference/index.md
+        - 8. Compound statements:
+          - 8. Compound statements: python/3.14.5/language-reference/compound-statements/index.md
+          - 8.11. Annotations: python/3.14.5/language-reference/compound-statements/annotations/index.md
+          - 8.8. Class definitions: python/3.14.5/language-reference/compound-statements/class-definitions/index.md
+          - 8.9. Coroutines: python/3.14.5/language-reference/compound-statements/coroutines/index.md
+          - 8.7. Function definitions: python/3.14.5/language-reference/compound-statements/function-definitions/index.md
+          - 8.3. The for statement: python/3.14.5/language-reference/compound-statements/the-for-statement/index.md
+          - The if statement: python/3.14.5/language-reference/compound-statements/the-if-statement/index.md
+          - 8.6. The match statement: python/3.14.5/language-reference/compound-statements/the-match-statement/index.md
+          - 8.4. The try statement: python/3.14.5/language-reference/compound-statements/the-try-statement/index.md
+          - 8.2. The while statement: python/3.14.5/language-reference/compound-statements/the-while-statement/index.md
+          - 8.5. The with statement: python/3.14.5/language-reference/compound-statements/the-with-statement/index.md
+          - 8.10. Type parameter lists: python/3.14.5/language-reference/compound-statements/type-parameter-lists/index.md
+        - 3. Data model:
+          - 3. Data model: python/3.14.5/language-reference/data-model/index.md
+          - 3.4. Coroutines: python/3.14.5/language-reference/data-model/coroutines/index.md
+          - 3.1. Objects, values and types: python/3.14.5/language-reference/data-model/objects-values-and-types/index.md
+          - 3.3. Special method names: python/3.14.5/language-reference/data-model/special-method-names/index.md
+          - 3.2. The standard type hierarchy: python/3.14.5/language-reference/data-model/the-standard-type-hierarchy/index.md
+        - 4. Execution model:
+          - 4. Execution model: python/3.14.5/language-reference/execution-model/index.md
+          - 4.3. Exceptions: python/3.14.5/language-reference/execution-model/exceptions/index.md
+          - 4.2. Naming and binding: python/3.14.5/language-reference/execution-model/naming-and-binding/index.md
+          - 4.4. Runtime Components: python/3.14.5/language-reference/execution-model/runtime-components/index.md
+          - 4.1. Structure of a program: python/3.14.5/language-reference/execution-model/structure-of-a-program/index.md
+        - 6. Expressions:
+          - 6. Expressions: python/3.14.5/language-reference/expressions/index.md
+          - 6.1. Arithmetic conversions: python/3.14.5/language-reference/expressions/arithmetic-conversions/index.md
+          - 6.12. Assignment expressions: python/3.14.5/language-reference/expressions/assignment-expressions/index.md
+          - 6.2. Atoms: python/3.14.5/language-reference/expressions/atoms/index.md
+          - 6.4. Await expression: python/3.14.5/language-reference/expressions/await-expression/index.md
+          - 6.7. Binary arithmetic operations: python/3.14.5/language-reference/expressions/binary-arithmetic-operations/index.md
+          - 6.9. Binary bitwise operations: python/3.14.5/language-reference/expressions/binary-bitwise-operations/index.md
+          - 6.11. Boolean operations: python/3.14.5/language-reference/expressions/boolean-operations/index.md
+          - 6.10. Comparisons: python/3.14.5/language-reference/expressions/comparisons/index.md
+          - 6.13. Conditional expressions: python/3.14.5/language-reference/expressions/conditional-expressions/index.md
+          - 6.16. Evaluation order: python/3.14.5/language-reference/expressions/evaluation-order/index.md
+          - 6.15. Expression lists: python/3.14.5/language-reference/expressions/expression-lists/index.md
+          - 6.14. Lambdas: python/3.14.5/language-reference/expressions/lambda/index.md
+          - 6.17. Operator precedence: python/3.14.5/language-reference/expressions/operator-precedence/index.md
+          - 6.3. Primaries: python/3.14.5/language-reference/expressions/primaries/index.md
+          - 6.8. Shifting operations: python/3.14.5/language-reference/expressions/shifting-operations/index.md
+          - 6.5. The power operator: python/3.14.5/language-reference/expressions/the-power-operator/index.md
+          - 6.6. Unary arithmetic and bitwise operations: python/3.14.5/language-reference/expressions/unary-arithmetic-and-bitwise-operations/index.md
+        - 10. Full Grammar specification: python/3.14.5/language-reference/full-grammar-specification/index.md
+        - Introduction:
+          - Introduction: python/3.14.5/language-reference/introduction/index.md
+          - Alternate Implementations: python/3.14.5/language-reference/introduction/alternate-implementations/index.md
+          - Notation:
+            - Notation: python/3.14.5/language-reference/introduction/notation/index.md
+            - EBNF: python/3.14.5/language-reference/introduction/notation/ebnf/index.md
+            - PEG: python/3.14.5/language-reference/introduction/notation/peg/index.md
+        - 2. Lexical analysis:
+          - 2. Lexical analysis: python/3.14.5/language-reference/lexical-analysis/index.md
+          - 2.1. Line structure:
+            - 2.1. Line structure: python/3.14.5/language-reference/lexical-analysis/line-structure/index.md
+            - Blank lines: python/3.14.5/language-reference/lexical-analysis/line-structure/blank-lines/index.md
+            - Comments: python/3.14.5/language-reference/lexical-analysis/line-structure/comments/index.md
+            - Encoding declarations: python/3.14.5/language-reference/lexical-analysis/line-structure/encoding-declarations/index.md
+            - End marker: python/3.14.5/language-reference/lexical-analysis/line-structure/end-marker/index.md
+            - Explicit line joining: python/3.14.5/language-reference/lexical-analysis/line-structure/explicit-line-joining/index.md
+            - Implicit line joining: python/3.14.5/language-reference/lexical-analysis/line-structure/implicit-line-joining/index.md
+            - Indentation: python/3.14.5/language-reference/lexical-analysis/line-structure/indentation/index.md
+            - Logical lines: python/3.14.5/language-reference/lexical-analysis/line-structure/logical-lines/index.md
+            - Physical lines: python/3.14.5/language-reference/lexical-analysis/line-structure/physical-lines/index.md
+            - Whitespace between tokens: python/3.14.5/language-reference/lexical-analysis/line-structure/whitespace-between-tokens/index.md
+          - 2.4. Literals: python/3.14.5/language-reference/lexical-analysis/literals/index.md
+          - 2.3. Names (identifiers and keywords):
+            - 2.3. Names (identifiers and keywords): python/3.14.5/language-reference/lexical-analysis/names-identifiers-and-keywords/index.md
+            - Keywords: python/3.14.5/language-reference/lexical-analysis/names-identifiers-and-keywords/keywords/index.md
+            - Non-ASCII characters in names: python/3.14.5/language-reference/lexical-analysis/names-identifiers-and-keywords/non-ascii-characters-in-names/index.md
+            - Reserved classes of identifiers: python/3.14.5/language-reference/lexical-analysis/names-identifiers-and-keywords/reserved-classes-of-identifiers/index.md
+            - Soft Keywords: python/3.14.5/language-reference/lexical-analysis/names-identifiers-and-keywords/soft-keywords/index.md
+          - 2.6. Numeric literals: python/3.14.5/language-reference/lexical-analysis/numeric-literals/index.md
+          - 2.7. Operators and delimiters: python/3.14.5/language-reference/lexical-analysis/operators-and-delimiters/index.md
+          - 2.2. Other tokens: python/3.14.5/language-reference/lexical-analysis/other-tokens/index.md
+          - 2.5. String and Bytes literals:
+            - 2.5. String and Bytes literals: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/index.md
+            - Bytes literals: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/bytes-literals/index.md
+            - Escape sequences:
+              - Escape sequences: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/escape-sequences/index.md
+              - Escaped characters: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/escape-sequences/escaped-characters/index.md
+              - Hexadecimal character: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/escape-sequences/hexadecimal-character/index.md
+              - Hexadecimal Unicode characters: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/escape-sequences/hexadecimal-unicode-characters/index.md
+              - Ignored end of line: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/escape-sequences/ignored-end-of-line/index.md
+              - Named Unicode character: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/escape-sequences/named-unicode-character/index.md
+              - Octal character: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/escape-sequences/octal-character/index.md
+              - Unrecognized escape sequences: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/escape-sequences/unrecognized-escape-sequences/index.md
+            - f-strings: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/f-strings/index.md
+            - Formal grammar: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/formal-grammar/index.md
+            - Formal grammar for f-strings: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/formal-grammar-for-f-strings/index.md
+            - Raw string literals: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/raw-string-literals/index.md
+            - String prefixes: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/string-prefixes/index.md
+            - t-strings: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/t-strings/index.md
+            - Triple-quoted strings: python/3.14.5/language-reference/lexical-analysis/string-and-bytes-literals/triple-quoted-strings/index.md
+        - 7. Simple statements:
+          - 7. Simple statements: python/3.14.5/language-reference/simple-statements/index.md
+          - 7.2. Assignment statements: python/3.14.5/language-reference/simple-statements/assignment-statements/index.md
+          - 7.1. Expression statements: python/3.14.5/language-reference/simple-statements/expression-statements/index.md
+          - 7.3. The assert statement: python/3.14.5/language-reference/simple-statements/the-assert-statement/index.md
+          - 7.9. The break statement: python/3.14.5/language-reference/simple-statements/the-break-statement/index.md
+          - 7.10. The continue statement: python/3.14.5/language-reference/simple-statements/the-continue-statement/index.md
+          - 7.5. The del statement: python/3.14.5/language-reference/simple-statements/the-del-statement/index.md
+          - 7.12. The global statement: python/3.14.5/language-reference/simple-statements/the-global-statement/index.md
+          - 7.11. The import statement: python/3.14.5/language-reference/simple-statements/the-import-statement/index.md
+          - 7.13. The nonlocal statement: python/3.14.5/language-reference/simple-statements/the-nonlocal-statement/index.md
+          - 7.4. The pass statement: python/3.14.5/language-reference/simple-statements/the-pass-statement/index.md
+          - 7.8. The raise statement: python/3.14.5/language-reference/simple-statements/the-raise-statement/index.md
+          - 7.6. The return statement: python/3.14.5/language-reference/simple-statements/the-return-statement/index.md
+          - 7.14. The type statement: python/3.14.5/language-reference/simple-statements/the-type-statement/index.md
+          - 7.7. The yield statement: python/3.14.5/language-reference/simple-statements/the-yield-statement/index.md
+        - 5. The import system:
+          - 5. The import system: python/3.14.5/language-reference/the-import-system/index.md
+          - 5.1. importlib: python/3.14.5/language-reference/the-import-system/importlib/index.md
+          - 5.4. Loading: python/3.14.5/language-reference/the-import-system/loading/index.md
+          - 5.7. Package Relative Imports: python/3.14.5/language-reference/the-import-system/package-relative-imports/index.md
+          - 5.2. Packages: python/3.14.5/language-reference/the-import-system/packages/index.md
+          - 5.9. References: python/3.14.5/language-reference/the-import-system/references/index.md
+          - 5.6. Replacing the standard import system: python/3.14.5/language-reference/the-import-system/replacing-the-standard-import-system/index.md
+          - 5.3. Searching: python/3.14.5/language-reference/the-import-system/searching/index.md
+          - 5.8. Special considerations for __main__: python/3.14.5/language-reference/the-import-system/special-considerations-for-main/index.md
+          - 5.5. The Path Based Finder: python/3.14.5/language-reference/the-import-system/the-path-based-finder/index.md
+        - 9. Top-level components:
+          - 9. Top-level components: python/3.14.5/language-reference/top-level-components/index.md
+          - 9.1. Complete Python programs: python/3.14.5/language-reference/top-level-components/complete-python-programs/index.md
+          - 9.4. Expression input: python/3.14.5/language-reference/top-level-components/expression-input/index.md
+          - 9.2. File input: python/3.14.5/language-reference/top-level-components/file-input/index.md
+          - 9.3. Interactive input: python/3.14.5/language-reference/top-level-components/interactive-input/index.md
+      - Extending and Embedding the Python Interpreter:
+        - Extending and Embedding the Python Interpreter: python/3.14.5/extending-and-embedding-python-interpreter/index.md
+        - 4. Building C and C++ Extensions:
+          - 4. Building C and C++ Extensions: python/3.14.5/extending-and-embedding-python-interpreter/building-c-and-c-extensions/index.md
+          - 4.1. Building C and C++ Extensions with setuptools: python/3.14.5/extending-and-embedding-python-interpreter/building-c-and-c-extensions/building-c-and-c-extensions-with-setuptools/index.md
+        - 5. Building C and C++ Extensions on Windows:
+          - 5. Building C and C++ Extensions on Windows: python/3.14.5/extending-and-embedding-python-interpreter/building-c-and-c-extensions-on-windows/index.md
+          - 5.1. A Cookbook Approach: python/3.14.5/extending-and-embedding-python-interpreter/building-c-and-c-extensions-on-windows/a-cookbook-approach/index.md
+          - 5.2. Differences Between Unix and Windows: python/3.14.5/extending-and-embedding-python-interpreter/building-c-and-c-extensions-on-windows/differences-between-unix-and-windows/index.md
+          - 5.3. Using DLLs in Practice: python/3.14.5/extending-and-embedding-python-interpreter/building-c-and-c-extensions-on-windows/using-dlls-in-practice/index.md
+        - Creating extensions without third party tools: python/3.14.5/extending-and-embedding-python-interpreter/creating-extensions-without-third-party-tools/index.md
+        - "3. Defining Extension Types: Assorted Topics":
+          - "3. Defining Extension Types: Assorted Topics": python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-assorted-topics/index.md
+          - 3.5. Abstract Protocol Support: python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-assorted-topics/abstract-protocol-support/index.md
+          - 3.3. Attribute Management: python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-assorted-topics/attribute-management/index.md
+          - 3.1. Finalization and De-allocation: python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-assorted-topics/finalization-and-de-allocation/index.md
+          - 3.7. More Suggestions: python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-assorted-topics/more-suggestions/index.md
+          - 3.4. Object Comparison: python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-assorted-topics/object-comparison/index.md
+          - 3.2. Object Presentation: python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-assorted-topics/object-presentation/index.md
+          - 3.6. Weak Reference Support: python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-assorted-topics/weak-reference-support/index.md
+        - "2. Defining Extension Types: Tutorial":
+          - "2. Defining Extension Types: Tutorial": python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-tutorial/index.md
+          - 2.2. Adding data and methods to the Basic example: python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-tutorial/adding-data-and-methods-to-the-basic-example/index.md
+          - 2.3. Providing finer control over data attributes: python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-tutorial/providing-finer-control-over-data-attributes/index.md
+          - 2.5. Subclassing other types: python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-tutorial/subclassing-other-types/index.md
+          - 2.4. Supporting cyclic garbage collection: python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-tutorial/supporting-cyclic-garbage-collection/index.md
+          - 2.1. The Basics: python/3.14.5/extending-and-embedding-python-interpreter/defining-extension-types-tutorial/the-basics/index.md
+        - 1. Embedding Python in Another Application:
+          - 1. Embedding Python in Another Application: python/3.14.5/extending-and-embedding-python-interpreter/embedding-python-in-another-application/index.md
+          - "1.2. Beyond Very High Level Embedding: An overview": python/3.14.5/extending-and-embedding-python-interpreter/embedding-python-in-another-application/beyond-very-high-level-embedding-an-overview/index.md
+          - 1.6. Compiling and Linking under Unix-like systems: python/3.14.5/extending-and-embedding-python-interpreter/embedding-python-in-another-application/compiling-and-linking-under-unix-like-systems/index.md
+          - 1.5. Embedding Python in C++: python/3.14.5/extending-and-embedding-python-interpreter/embedding-python-in-another-application/embedding-python-in-c/index.md
+          - 1.4. Extending Embedded Python: python/3.14.5/extending-and-embedding-python-interpreter/embedding-python-in-another-application/extending-embedded-python/index.md
+          - 1.3. Pure Embedding: python/3.14.5/extending-and-embedding-python-interpreter/embedding-python-in-another-application/pure-embedding/index.md
+          - 1.1. Very High Level Embedding: python/3.14.5/extending-and-embedding-python-interpreter/embedding-python-in-another-application/very-high-level-embedding/index.md
+        - Embedding the CPython runtime in a larger application: python/3.14.5/extending-and-embedding-python-interpreter/embedding-the-cpython-runtime-in-a-larger-application/index.md
+        - 1. Extending Python with C or C++:
+          - 1. Extending Python with C or C++: python/3.14.5/extending-and-embedding-python-interpreter/extending-python-with-c-or-c/index.md
+          - 1.1. A Simple Example: python/3.14.5/extending-and-embedding-python-interpreter/extending-python-with-c-or-c/a-simple-example/index.md
+          - 1.3. Back to the Example: python/3.14.5/extending-and-embedding-python-interpreter/extending-python-with-c-or-c/back-to-the-example/index.md
+          - 1.9. Building Arbitrary Values: python/3.14.5/extending-and-embedding-python-interpreter/extending-python-with-c-or-c/building-arbitrary-values/index.md
+          - 1.6. Calling Python Functions from C: python/3.14.5/extending-and-embedding-python-interpreter/extending-python-with-c-or-c/calling-python-functions-from-c/index.md
+          - 1.5. Compilation and Linkage: python/3.14.5/extending-and-embedding-python-interpreter/extending-python-with-c-or-c/compilation-and-linkage/index.md
+          - 1.7. Extracting Parameters in Extension Functions: python/3.14.5/extending-and-embedding-python-interpreter/extending-python-with-c-or-c/extracting-parameters-in-extension-functions/index.md
+          - "1.2. Intermezzo: Errors and Exceptions": python/3.14.5/extending-and-embedding-python-interpreter/extending-python-with-c-or-c/intermezzo-errors-and-exceptions/index.md
+          - 1.8. Keyword Parameters for Extension Functions: python/3.14.5/extending-and-embedding-python-interpreter/extending-python-with-c-or-c/keyword-parameters-for-extension-functions/index.md
+          - 1.12. Providing a C API for an Extension Module: python/3.14.5/extending-and-embedding-python-interpreter/extending-python-with-c-or-c/providing-a-c-api-for-an-extension-module/index.md
+          - 1.10. Reference Counts: python/3.14.5/extending-and-embedding-python-interpreter/extending-python-with-c-or-c/reference-counts/index.md
+          - 1.4. The Module’s Method Table and Initialization Function: python/3.14.5/extending-and-embedding-python-interpreter/extending-python-with-c-or-c/the-module-s-method-table-and-initialization-function/index.md
+          - 1.11. Writing Extensions in C++: python/3.14.5/extending-and-embedding-python-interpreter/extending-python-with-c-or-c/writing-extensions-in-c/index.md
+        - Recommended third party tools: python/3.14.5/extending-and-embedding-python-interpreter/recommended-third-party-tools/index.md
+      - Python C API Reference Manual:
+        - Python C API Reference Manual: python/3.14.5/python-c-api-reference-manual/index.md
+        - Abstract Objects Layer:
+          - Abstract Objects Layer: python/3.14.5/python-c-api-reference-manual/abstract-objects-layer/index.md
+          - Buffer Protocol: python/3.14.5/python-c-api-reference-manual/abstract-objects-layer/buffer-protocol/index.md
+          - Call Protocol: python/3.14.5/python-c-api-reference-manual/abstract-objects-layer/call-protocol/index.md
+          - Iterator Protocol: python/3.14.5/python-c-api-reference-manual/abstract-objects-layer/iterator-protocol/index.md
+          - Mapping Protocol: python/3.14.5/python-c-api-reference-manual/abstract-objects-layer/mapping-protocol/index.md
+          - Number Protocol: python/3.14.5/python-c-api-reference-manual/abstract-objects-layer/number-protocol/index.md
+          - Object Protocol: python/3.14.5/python-c-api-reference-manual/abstract-objects-layer/object-protocol/index.md
+          - Sequence Protocol: python/3.14.5/python-c-api-reference-manual/abstract-objects-layer/sequence-protocol/index.md
+        - API and ABI Versioning:
+          - API and ABI Versioning: python/3.14.5/python-c-api-reference-manual/api-and-abi-versioning/index.md
+          - Bit-packing macros: python/3.14.5/python-c-api-reference-manual/api-and-abi-versioning/bit-packing-macros/index.md
+          - Build-time version constants: python/3.14.5/python-c-api-reference-manual/api-and-abi-versioning/build-time-version-constants/index.md
+          - Run-time version: python/3.14.5/python-c-api-reference-manual/api-and-abi-versioning/run-time-version/index.md
+        - Asynchronous notifications: python/3.14.5/python-c-api-reference-manual/asynchronous-notifications/index.md
+        - C API Stability:
+          - C API Stability: python/3.14.5/python-c-api-reference-manual/c-api-stability/index.md
+          - Contents of Limited API: python/3.14.5/python-c-api-reference-manual/c-api-stability/contents-of-limited-api/index.md
+          - Platform Considerations: python/3.14.5/python-c-api-reference-manual/c-api-stability/platform-considerations/index.md
+          - Stable Application Binary Interface: python/3.14.5/python-c-api-reference-manual/c-api-stability/stable-application-binary-interface/index.md
+          - Unstable C API: python/3.14.5/python-c-api-reference-manual/c-api-stability/unstable-c-api/index.md
+        - Concrete Objects Layer:
+          - Concrete Objects Layer: python/3.14.5/python-c-api-reference-manual/concrete-objects-layer/index.md
+          - C API for extension modules: python/3.14.5/python-c-api-reference-manual/concrete-objects-layer/c-api-for-extension-modules/index.md
+          - Container Objects: python/3.14.5/python-c-api-reference-manual/concrete-objects-layer/container-objects/index.md
+          - Function Objects: python/3.14.5/python-c-api-reference-manual/concrete-objects-layer/function-objects/index.md
+          - Fundamental Objects: python/3.14.5/python-c-api-reference-manual/concrete-objects-layer/fundamental-objects/index.md
+          - Numeric Objects: python/3.14.5/python-c-api-reference-manual/concrete-objects-layer/numeric-objects/index.md
+          - Other Objects: python/3.14.5/python-c-api-reference-manual/concrete-objects-layer/other-objects/index.md
+          - Sequence Objects: python/3.14.5/python-c-api-reference-manual/concrete-objects-layer/sequence-objects/index.md
+        - Defining extension modules:
+          - Defining extension modules: python/3.14.5/python-c-api-reference-manual/defining-extension-modules/index.md
+          - Initialization function: python/3.14.5/python-c-api-reference-manual/defining-extension-modules/initialization-function/index.md
+          - Legacy single-phase initialization: python/3.14.5/python-c-api-reference-manual/defining-extension-modules/legacy-single-phase-initialization/index.md
+          - Multi-phase initialization: python/3.14.5/python-c-api-reference-manual/defining-extension-modules/multi-phase-initialization/index.md
+          - Multiple module instances: python/3.14.5/python-c-api-reference-manual/defining-extension-modules/multiple-module-instances/index.md
+        - Exception Handling:
+          - Exception Handling: python/3.14.5/python-c-api-reference-manual/exception-handling/index.md
+          - Exception and warning types: python/3.14.5/python-c-api-reference-manual/exception-handling/exception-and-warning-types/index.md
+          - Exception Classes: python/3.14.5/python-c-api-reference-manual/exception-handling/exception-classes/index.md
+          - Exception Objects: python/3.14.5/python-c-api-reference-manual/exception-handling/exception-objects/index.md
+          - Issuing warnings: python/3.14.5/python-c-api-reference-manual/exception-handling/issuing-warnings/index.md
+          - Printing and clearing: python/3.14.5/python-c-api-reference-manual/exception-handling/printing-and-clearing/index.md
+          - Querying the error indicator: python/3.14.5/python-c-api-reference-manual/exception-handling/querying-the-error-indicator/index.md
+          - Raising exceptions: python/3.14.5/python-c-api-reference-manual/exception-handling/raising-exceptions/index.md
+          - Recursion Control: python/3.14.5/python-c-api-reference-manual/exception-handling/recursion-control/index.md
+          - Signal Handling: python/3.14.5/python-c-api-reference-manual/exception-handling/signal-handling/index.md
+          - Tracebacks: python/3.14.5/python-c-api-reference-manual/exception-handling/tracebacks/index.md
+          - Unicode Exception Objects: python/3.14.5/python-c-api-reference-manual/exception-handling/unicode-exception-objects/index.md
+        - Generating Execution Events:
+          - Generating Execution Events: python/3.14.5/python-c-api-reference-manual/generating-execution-events/index.md
+          - Managing the Monitoring State: python/3.14.5/python-c-api-reference-manual/generating-execution-events/managing-the-monitoring-state/index.md
+        - Interpreter initialization and finalization:
+          - Interpreter initialization and finalization: python/3.14.5/python-c-api-reference-manual/interpreter-initialization-and-finalization/index.md
+          - Before Python initialization: python/3.14.5/python-c-api-reference-manual/interpreter-initialization-and-finalization/before-python-initialization/index.md
+          - Cautions regarding runtime finalization: python/3.14.5/python-c-api-reference-manual/interpreter-initialization-and-finalization/cautions-regarding-runtime-finalization/index.md
+          - Global configuration variables: python/3.14.5/python-c-api-reference-manual/interpreter-initialization-and-finalization/global-configuration-variables/index.md
+          - Initializing and finalizing the interpreter: python/3.14.5/python-c-api-reference-manual/interpreter-initialization-and-finalization/initializing-and-finalizing-the-interpreter/index.md
+          - Process-wide parameters: python/3.14.5/python-c-api-reference-manual/interpreter-initialization-and-finalization/process-wide-parameters/index.md
+        - Introduction:
+          - Introduction: python/3.14.5/python-c-api-reference-manual/introduction/index.md
+          - Coding standards: python/3.14.5/python-c-api-reference-manual/introduction/coding-standards/index.md
+          - Debugging Builds: python/3.14.5/python-c-api-reference-manual/introduction/debugging-builds/index.md
+          - Embedding Python: python/3.14.5/python-c-api-reference-manual/introduction/embedding-python/index.md
+          - Exceptions: python/3.14.5/python-c-api-reference-manual/introduction/exceptions/index.md
+          - Include Files: python/3.14.5/python-c-api-reference-manual/introduction/include-files/index.md
+          - Language version compatibility: python/3.14.5/python-c-api-reference-manual/introduction/language-version-compatibility/index.md
+          - Objects, Types and Reference Counts: python/3.14.5/python-c-api-reference-manual/introduction/objects-types-and-reference-counts/index.md
+          - Recommended third party tools: python/3.14.5/python-c-api-reference-manual/introduction/recommended-third-party-tools/index.md
+          - Useful macros: python/3.14.5/python-c-api-reference-manual/introduction/useful-macros/index.md
+        - Memory Management:
+          - Memory Management: python/3.14.5/python-c-api-reference-manual/memory-management/index.md
+          - Allocator Domains: python/3.14.5/python-c-api-reference-manual/memory-management/allocator-domains/index.md
+          - Customize Memory Allocators: python/3.14.5/python-c-api-reference-manual/memory-management/customize-memory-allocators/index.md
+          - Debug hooks on the Python memory allocators: python/3.14.5/python-c-api-reference-manual/memory-management/debug-hooks-on-the-python-memory-allocators/index.md
+          - Default Memory Allocators: python/3.14.5/python-c-api-reference-manual/memory-management/default-memory-allocators/index.md
+          - Examples: python/3.14.5/python-c-api-reference-manual/memory-management/examples/index.md
+          - Memory Interface: python/3.14.5/python-c-api-reference-manual/memory-management/memory-interface/index.md
+          - Object allocators: python/3.14.5/python-c-api-reference-manual/memory-management/object-allocators/index.md
+          - Overview: python/3.14.5/python-c-api-reference-manual/memory-management/overview/index.md
+          - Raw Memory Interface: python/3.14.5/python-c-api-reference-manual/memory-management/raw-memory-interface/index.md
+          - The mimalloc allocator: python/3.14.5/python-c-api-reference-manual/memory-management/the-mimalloc-allocator/index.md
+          - The pymalloc allocator: python/3.14.5/python-c-api-reference-manual/memory-management/the-pymalloc-allocator/index.md
+          - tracemalloc C API: python/3.14.5/python-c-api-reference-manual/memory-management/tracemalloc-c-api/index.md
+        - Monitoring C API: python/3.14.5/python-c-api-reference-manual/monitoring-c-api/index.md
+        - Multiple interpreters in a Python process:
+          - Multiple interpreters in a Python process: python/3.14.5/python-c-api-reference-manual/multiple-interpreters-in-a-python-process/index.md
+          - A per-interpreter GIL: python/3.14.5/python-c-api-reference-manual/multiple-interpreters-in-a-python-process/a-per-interpreter-gil/index.md
+          - Advanced debugger support: python/3.14.5/python-c-api-reference-manual/multiple-interpreters-in-a-python-process/advanced-debugger-support/index.md
+          - Bugs and caveats: python/3.14.5/python-c-api-reference-manual/multiple-interpreters-in-a-python-process/bugs-and-caveats/index.md
+          - High-level APIs: python/3.14.5/python-c-api-reference-manual/multiple-interpreters-in-a-python-process/high-level-apis/index.md
+          - Low-level APIs: python/3.14.5/python-c-api-reference-manual/multiple-interpreters-in-a-python-process/low-level-apis/index.md
+        - Object Implementation Support:
+          - Object Implementation Support: python/3.14.5/python-c-api-reference-manual/object-implementation-support/index.md
+          - Allocating objects on the heap: python/3.14.5/python-c-api-reference-manual/object-implementation-support/allocating-objects-on-the-heap/index.md
+          - Common Object Structures: python/3.14.5/python-c-api-reference-manual/object-implementation-support/common-object-structures/index.md
+          - Object Life Cycle: python/3.14.5/python-c-api-reference-manual/object-implementation-support/object-life-cycle/index.md
+          - Supporting Cyclic Garbage Collection: python/3.14.5/python-c-api-reference-manual/object-implementation-support/supporting-cyclic-garbage-collection/index.md
+          - Type Object Structures: python/3.14.5/python-c-api-reference-manual/object-implementation-support/type-object-structures/index.md
+        - Operating system thread APIs: python/3.14.5/python-c-api-reference-manual/operating-system-thread-apis/index.md
+        - Profiling and tracing: python/3.14.5/python-c-api-reference-manual/profiling-and-tracing/index.md
+        - Python Initialization Configuration:
+          - Python Initialization Configuration: python/3.14.5/python-c-api-reference-manual/python-initialization-configuration/index.md
+          - Configuration Options: python/3.14.5/python-c-api-reference-manual/python-initialization-configuration/configuration-options/index.md
+          - Delaying main module execution: python/3.14.5/python-c-api-reference-manual/python-initialization-configuration/delaying-main-module-execution/index.md
+          - Py_GetArgcArgv(): python/3.14.5/python-c-api-reference-manual/python-initialization-configuration/py-getargcargv/index.md
+          - PyConfig C API: python/3.14.5/python-c-api-reference-manual/python-initialization-configuration/pyconfig-c-api/index.md
+          - PyInitConfig C API: python/3.14.5/python-c-api-reference-manual/python-initialization-configuration/pyinitconfig-c-api/index.md
+          - Runtime Python configuration API: python/3.14.5/python-c-api-reference-manual/python-initialization-configuration/runtime-python-configuration-api/index.md
+        - Reference Counting: python/3.14.5/python-c-api-reference-manual/reference-counting/index.md
+        - Reference tracing: python/3.14.5/python-c-api-reference-manual/reference-tracing/index.md
+        - Synchronization primitives:
+          - Synchronization primitives: python/3.14.5/python-c-api-reference-manual/synchronization-primitives/index.md
+          - Legacy locking APIs: python/3.14.5/python-c-api-reference-manual/synchronization-primitives/legacy-locking-apis/index.md
+          - Python critical section API: python/3.14.5/python-c-api-reference-manual/synchronization-primitives/python-critical-section-api/index.md
+        - The Very High Level Layer:
+          - The Very High Level Layer: python/3.14.5/python-c-api-reference-manual/the-very-high-level-layer/index.md
+          - Available start symbols: python/3.14.5/python-c-api-reference-manual/the-very-high-level-layer/available-start-symbols/index.md
+          - Stack Effects: python/3.14.5/python-c-api-reference-manual/the-very-high-level-layer/stack-effects/index.md
+        - Thread-local storage support:
+          - Thread-local storage support: python/3.14.5/python-c-api-reference-manual/thread-local-storage-support/index.md
+          - Dynamic allocation: python/3.14.5/python-c-api-reference-manual/thread-local-storage-support/dynamic-allocation/index.md
+          - Legacy APIs: python/3.14.5/python-c-api-reference-manual/thread-local-storage-support/legacy-apis/index.md
+          - Methods: python/3.14.5/python-c-api-reference-manual/thread-local-storage-support/methods/index.md
+          - Thread-specific storage API: python/3.14.5/python-c-api-reference-manual/thread-local-storage-support/thread-specific-storage-api/index.md
+        - Thread states and the global interpreter lock:
+          - Thread states and the global interpreter lock: python/3.14.5/python-c-api-reference-manual/thread-states-and-the-global-interpreter-lock/index.md
+          - Cautions about fork(): python/3.14.5/python-c-api-reference-manual/thread-states-and-the-global-interpreter-lock/cautions-about-fork/index.md
+          - Detaching the thread state from extension code: python/3.14.5/python-c-api-reference-manual/thread-states-and-the-global-interpreter-lock/detaching-the-thread-state-from-extension-code/index.md
+          - GIL-state APIs: python/3.14.5/python-c-api-reference-manual/thread-states-and-the-global-interpreter-lock/gil-state-apis/index.md
+          - High-level APIs: python/3.14.5/python-c-api-reference-manual/thread-states-and-the-global-interpreter-lock/high-level-apis/index.md
+          - Legacy API: python/3.14.5/python-c-api-reference-manual/thread-states-and-the-global-interpreter-lock/legacy-api/index.md
+          - Low-level APIs: python/3.14.5/python-c-api-reference-manual/thread-states-and-the-global-interpreter-lock/low-level-apis/index.md
+          - Non-Python created threads: python/3.14.5/python-c-api-reference-manual/thread-states-and-the-global-interpreter-lock/non-python-created-threads/index.md
+        - Utilities:
+          - Utilities: python/3.14.5/python-c-api-reference-manual/utilities/index.md
+          - Character classification and conversion: python/3.14.5/python-c-api-reference-manual/utilities/character-classification-and-conversion/index.md
+          - Codec registry and support functions: python/3.14.5/python-c-api-reference-manual/utilities/codec-registry-and-support-functions/index.md
+          - Data marshalling support: python/3.14.5/python-c-api-reference-manual/utilities/data-marshalling-support/index.md
+          - Importing Modules: python/3.14.5/python-c-api-reference-manual/utilities/importing-modules/index.md
+          - Operating System Utilities: python/3.14.5/python-c-api-reference-manual/utilities/operating-system-utilities/index.md
+          - Parsing arguments and building values: python/3.14.5/python-c-api-reference-manual/utilities/parsing-arguments-and-building-values/index.md
+          - Process Control: python/3.14.5/python-c-api-reference-manual/utilities/process-control/index.md
+          - PyHash API: python/3.14.5/python-c-api-reference-manual/utilities/pyhash-api/index.md
+          - PyTime C API: python/3.14.5/python-c-api-reference-manual/utilities/pytime-c-api/index.md
+          - Reflection: python/3.14.5/python-c-api-reference-manual/utilities/reflection/index.md
+          - String conversion and formatting: python/3.14.5/python-c-api-reference-manual/utilities/string-conversion-and-formatting/index.md
+          - Support for Perf Maps: python/3.14.5/python-c-api-reference-manual/utilities/support-for-perf-maps/index.md
+          - System Functions: python/3.14.5/python-c-api-reference-manual/utilities/system-functions/index.md
+      - Glossary:
+        - Glossary: python/3.14.5/glossary/index.md
+        - ">>>": python/3.14.5/glossary/0/index.md
+        - BDFL: python/3.14.5/glossary/BDFL/index.md
+        - CPython: python/3.14.5/glossary/CPython/index.md
+        - EAFP: python/3.14.5/glossary/EAFP/index.md
+        - GIL: python/3.14.5/glossary/GIL/index.md
+        - IDLE: python/3.14.5/glossary/IDLE/index.md
+        - LBYL: python/3.14.5/glossary/LBYL/index.md
+        - MRO: python/3.14.5/glossary/MRO/index.md
+        - PEP: python/3.14.5/glossary/PEP/index.md
+        - Python 3000: python/3.14.5/glossary/Python-3000/index.md
+        - Pythonic: python/3.14.5/glossary/Pythonic/index.md
+        - REPL: python/3.14.5/glossary/REPL/index.md
+        - Zen of Python: python/3.14.5/glossary/Zen-of-Python/index.md
+        - __future__: python/3.14.5/glossary/__future__/index.md
+        - __slots__: python/3.14.5/glossary/__slots__/index.md
+        - abstract base class: python/3.14.5/glossary/abstract-base-class/index.md
+        - annotate function: python/3.14.5/glossary/annotate-function/index.md
+        - annotation: python/3.14.5/glossary/annotation/index.md
+        - argument: python/3.14.5/glossary/argument/index.md
+        - asynchronous context manager: python/3.14.5/glossary/asynchronous-context-manager/index.md
+        - asynchronous generator: python/3.14.5/glossary/asynchronous-generator/index.md
+        - asynchronous generator iterator: python/3.14.5/glossary/asynchronous-generator-iterator/index.md
+        - asynchronous iterable: python/3.14.5/glossary/asynchronous-iterable/index.md
+        - asynchronous iterator: python/3.14.5/glossary/asynchronous-iterator/index.md
+        - atomic operation: python/3.14.5/glossary/atomic-operation/index.md
+        - attached thread state: python/3.14.5/glossary/attached-thread-state/index.md
+        - attribute: python/3.14.5/glossary/attribute/index.md
+        - awaitable: python/3.14.5/glossary/awaitable/index.md
+        - binary file: python/3.14.5/glossary/binary-file/index.md
+        - borrowed reference: python/3.14.5/glossary/borrowed-reference/index.md
+        - bytecode: python/3.14.5/glossary/bytecode/index.md
+        - bytes-like object: python/3.14.5/glossary/bytes-like-object/index.md
+        - callable: python/3.14.5/glossary/callable/index.md
+        - callback: python/3.14.5/glossary/callback/index.md
+        - class: python/3.14.5/glossary/class/index.md
+        - class variable: python/3.14.5/glossary/class-variable/index.md
+        - closure variable: python/3.14.5/glossary/closure-variable/index.md
+        - complex number: python/3.14.5/glossary/complex-number/index.md
+        - concurrency: python/3.14.5/glossary/concurrency/index.md
+        - concurrent modification: python/3.14.5/glossary/concurrent-modification/index.md
+        - context: python/3.14.5/glossary/context/index.md
+        - context management protocol: python/3.14.5/glossary/context-management-protocol/index.md
+        - context manager: python/3.14.5/glossary/context-manager/index.md
+        - context variable: python/3.14.5/glossary/context-variable/index.md
+        - contiguous: python/3.14.5/glossary/contiguous/index.md
+        - coroutine: python/3.14.5/glossary/coroutine/index.md
+        - coroutine function: python/3.14.5/glossary/coroutine-function/index.md
+        - current context: python/3.14.5/glossary/current-context/index.md
+        - cyclic isolate: python/3.14.5/glossary/cyclic-isolate/index.md
+        - data race: python/3.14.5/glossary/data-race/index.md
+        - deadlock: python/3.14.5/glossary/deadlock/index.md
+        - decorator: python/3.14.5/glossary/decorator/index.md
+        - descriptor: python/3.14.5/glossary/descriptor/index.md
+        - dictionary: python/3.14.5/glossary/dictionary/index.md
+        - dictionary comprehension: python/3.14.5/glossary/dictionary-comprehension/index.md
+        - dictionary view: python/3.14.5/glossary/dictionary-view/index.md
+        - docstring: python/3.14.5/glossary/docstring/index.md
+        - duck-typing: python/3.14.5/glossary/duck-typing/index.md
+        - dunder: python/3.14.5/glossary/dunder/index.md
+        - evaluate function: python/3.14.5/glossary/evaluate-function/index.md
+        - expression: python/3.14.5/glossary/expression/index.md
+        - extension module: python/3.14.5/glossary/extension-module/index.md
+        - f-string: python/3.14.5/glossary/f-string/index.md
+        - f-strings: python/3.14.5/glossary/f-strings/index.md
+        - file-like object: python/3.14.5/glossary/file-like-object/index.md
+        - file object: python/3.14.5/glossary/file-object/index.md
+        - filesystem encoding and error handler: python/3.14.5/glossary/filesystem-encoding-and-error-handler/index.md
+        - finder: python/3.14.5/glossary/finder/index.md
+        - floor division: python/3.14.5/glossary/floor-division/index.md
+        - free-threaded build: python/3.14.5/glossary/free-threaded-build/index.md
+        - free threading: python/3.14.5/glossary/free-threading/index.md
+        - free variable: python/3.14.5/glossary/free-variable/index.md
+        - function: python/3.14.5/glossary/function/index.md
+        - function annotation: python/3.14.5/glossary/function-annotation/index.md
+        - garbage collection: python/3.14.5/glossary/garbage-collection/index.md
+        - generator: python/3.14.5/glossary/generator/index.md
+        - generator expression: python/3.14.5/glossary/generator-expression/index.md
+        - generator iterator: python/3.14.5/glossary/generator-iterator/index.md
+        - generic function: python/3.14.5/glossary/generic-function/index.md
+        - generic type: python/3.14.5/glossary/generic-type/index.md
+        - global interpreter lock: python/3.14.5/glossary/global-interpreter-lock/index.md
+        - global state: python/3.14.5/glossary/global-state/index.md
+        - hash-based pyc: python/3.14.5/glossary/hash-based-pyc/index.md
+        - hashable: python/3.14.5/glossary/hashable/index.md
+        - immortal: python/3.14.5/glossary/immortal/index.md
+        - immutable: python/3.14.5/glossary/immutable/index.md
+        - import path: python/3.14.5/glossary/import-path/index.md
+        - importer: python/3.14.5/glossary/importer/index.md
+        - importing: python/3.14.5/glossary/importing/index.md
+        - index: python/3.14.5/glossary/index/index.md
+        - interactive: python/3.14.5/glossary/interactive/index.md
+        - interpreted: python/3.14.5/glossary/interpreted/index.md
+        - interpreter shutdown: python/3.14.5/glossary/interpreter-shutdown/index.md
+        - iterable: python/3.14.5/glossary/iterable/index.md
+        - iterator: python/3.14.5/glossary/iterator/index.md
+        - key: python/3.14.5/glossary/key/index.md
+        - key function: python/3.14.5/glossary/key-function/index.md
+        - keyword argument: python/3.14.5/glossary/keyword-argument/index.md
+        - lambda: python/3.14.5/glossary/lambda/index.md
+        - lexical analyzer: python/3.14.5/glossary/lexical-analyzer/index.md
+        - list: python/3.14.5/glossary/list/index.md
+        - list comprehension: python/3.14.5/glossary/list-comprehension/index.md
+        - loader: python/3.14.5/glossary/loader/index.md
+        - locale encoding: python/3.14.5/glossary/locale-encoding/index.md
+        - lock: python/3.14.5/glossary/lock/index.md
+        - lock-free: python/3.14.5/glossary/lock-free/index.md
+        - magic method: python/3.14.5/glossary/magic-method/index.md
+        - mapping: python/3.14.5/glossary/mapping/index.md
+        - meta path finder: python/3.14.5/glossary/meta-path-finder/index.md
+        - metaclass: python/3.14.5/glossary/metaclass/index.md
+        - method: python/3.14.5/glossary/method/index.md
+        - method resolution order: python/3.14.5/glossary/method-resolution-order/index.md
+        - module: python/3.14.5/glossary/module/index.md
+        - module spec: python/3.14.5/glossary/module-spec/index.md
+        - mutable: python/3.14.5/glossary/mutable/index.md
+        - named tuple: python/3.14.5/glossary/named-tuple/index.md
+        - namespace: python/3.14.5/glossary/namespace/index.md
+        - namespace package: python/3.14.5/glossary/namespace-package/index.md
+        - native code: python/3.14.5/glossary/native-code/index.md
+        - nested scope: python/3.14.5/glossary/nested-scope/index.md
+        - new-style class: python/3.14.5/glossary/new-style-class/index.md
+        - non-deterministic: python/3.14.5/glossary/non-deterministic/index.md
+        - object: python/3.14.5/glossary/object/index.md
+        - optimized scope: python/3.14.5/glossary/optimized-scope/index.md
+        - optional module: python/3.14.5/glossary/optional-module/index.md
+        - package: python/3.14.5/glossary/package/index.md
+        - parallelism: python/3.14.5/glossary/parallelism/index.md
+        - parameter: python/3.14.5/glossary/parameter/index.md
+        - path based finder: python/3.14.5/glossary/path-based-finder/index.md
+        - path entry: python/3.14.5/glossary/path-entry/index.md
+        - path entry finder: python/3.14.5/glossary/path-entry-finder/index.md
+        - path entry hook: python/3.14.5/glossary/path-entry-hook/index.md
+        - path-like object: python/3.14.5/glossary/path-like-object/index.md
+        - per-object lock: python/3.14.5/glossary/per-object-lock/index.md
+        - portion: python/3.14.5/glossary/portion/index.md
+        - positional argument: python/3.14.5/glossary/positional-argument/index.md
+        - provisional API: python/3.14.5/glossary/provisional-API/index.md
+        - provisional package: python/3.14.5/glossary/provisional-package/index.md
+        - qualified name: python/3.14.5/glossary/qualified-name/index.md
+        - race condition: python/3.14.5/glossary/race-condition/index.md
+        - reentrant: python/3.14.5/glossary/reentrant/index.md
+        - reference count: python/3.14.5/glossary/reference-count/index.md
+        - regular package: python/3.14.5/glossary/regular-package/index.md
+        - sequence: python/3.14.5/glossary/sequence/index.md
+        - set comprehension: python/3.14.5/glossary/set-comprehension/index.md
+        - single dispatch: python/3.14.5/glossary/single-dispatch/index.md
+        - slice: python/3.14.5/glossary/slice/index.md
+        - soft deprecated: python/3.14.5/glossary/soft-deprecated/index.md
+        - special method: python/3.14.5/glossary/special-method/index.md
+        - standard library: python/3.14.5/glossary/standard-library/index.md
+        - statement: python/3.14.5/glossary/statement/index.md
+        - static type checker: python/3.14.5/glossary/static-type-checker/index.md
+        - stdlib: python/3.14.5/glossary/stdlib/index.md
+        - strong reference: python/3.14.5/glossary/strong-reference/index.md
+        - subscript: python/3.14.5/glossary/subscript/index.md
+        - synchronization primitive: python/3.14.5/glossary/synchronization-primitive/index.md
+        - t-string: python/3.14.5/glossary/t-string/index.md
+        - t-strings: python/3.14.5/glossary/t-strings/index.md
+        - text encoding: python/3.14.5/glossary/text-encoding/index.md
+        - text file: python/3.14.5/glossary/text-file/index.md
+        - thread-safe: python/3.14.5/glossary/thread-safe/index.md
+        - thread state: python/3.14.5/glossary/thread-state/index.md
+        - token: python/3.14.5/glossary/token/index.md
+        - triple-quoted string: python/3.14.5/glossary/triple-quoted-string/index.md
+        - type: python/3.14.5/glossary/type/index.md
+        - type alias: python/3.14.5/glossary/type-alias/index.md
+        - type hint: python/3.14.5/glossary/type-hint/index.md
+        - universal newlines: python/3.14.5/glossary/universal-newlines/index.md
+        - variable annotation: python/3.14.5/glossary/variable-annotation/index.md
+        - virtual environment: python/3.14.5/glossary/virtual-environment/index.md
+        - virtual machine: python/3.14.5/glossary/virtual-machine/index.md
+        - walrus operator: python/3.14.5/glossary/walrus-operator/index.md
+  - Python Package Index (PyPI): python-package-index/index.md
+extra_css:
+  - stylesheets/extra.css
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.indexes
+    - navigation.tabs
+    - navigation.path
+    - navigation.footer
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - toc:
+      permalink: true

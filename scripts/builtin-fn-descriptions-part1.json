@@ -1,0 +1,20 @@
+[
+  {"slug": "abs", "title": "abs()", "description": "Returns the absolute value of a number, or the magnitude when the argument is complex."},
+  {"slug": "aiter", "title": "aiter()", "description": "Returns an asynchronous iterator from an async iterable, equivalent to calling __aiter__()."},
+  {"slug": "all", "title": "all()", "description": "Returns True when every element of the iterable is truthy, including vacuously for an empty iterable."},
+  {"slug": "anext", "title": "anext()", "description": "Awaits and returns the next item from an async iterator, with an optional default when exhausted."},
+  {"slug": "any", "title": "any()", "description": "Returns True when at least one element of the iterable is truthy, otherwise False for an empty iterable."},
+  {"slug": "ascii", "title": "ascii()", "description": "Returns a repr-style ASCII-safe string with non-ASCII characters escaped via \\x, \\u, or \\U sequences."},
+  {"slug": "bin", "title": "bin()", "description": "Converts an integer to a binary string literal prefixed with 0b that can be evaluated as Python code."},
+  {"slug": "bool", "title": "bool()", "description": "Converts a value to True or False using Python's standard truth-testing procedure."},
+  {"slug": "breakpoint", "title": "breakpoint()", "description": "Enters the debugger at the call site by invoking sys.breakpointhook(), defaulting to pdb.set_trace()."},
+  {"slug": "bytearray", "title": "bytearray()", "description": "Creates a mutable array of byte values in the range 0–255 from an optional source."},
+  {"slug": "bytes", "title": "bytes()", "description": "Creates an immutable sequence of byte values from an integer size, iterable, buffer, or encoded string."},
+  {"slug": "callable", "title": "callable()", "description": "Reports whether an object appears callable, including functions, classes, and instances with __call__()."},
+  {"slug": "chr", "title": "chr()", "description": "Returns the one-character string for a Unicode code point from 0 through 0x10FFFF."},
+  {"slug": "classmethod", "title": "classmethod()", "description": "Decorator that binds a method to the class, passing the class object as the first argument instead of self."},
+  {"slug": "compile", "title": "compile()", "description": "Compiles source code into a code object suitable for exec() or eval() with a chosen execution mode."},
+  {"slug": "complex", "title": "complex()", "description": "Constructs a complex number from numeric or string input, or from separate real and imaginary parts."},
+  {"slug": "delattr", "title": "delattr()", "description": "Deletes a named attribute from an object when deletion is permitted, equivalent to del object.name."},
+  {"slug": "dict", "title": "dict()", "description": "Creates a dictionary from keyword arguments, an existing mapping, or an iterable of key-value pairs."}
+]

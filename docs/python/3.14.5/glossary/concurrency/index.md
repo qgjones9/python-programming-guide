@@ -1,0 +1,10 @@
+# [concurrency](https://docs.python.org/3.14/glossary.html#term-concurrency)
+
+The ability of a computer program to perform multiple tasks at the same
+time.  Python provides libraries for writing programs that make use of
+different forms of concurrency.  [asyncio](https://docs.python.org/3.14/library/asyncio.html#module-asyncio) is a library for dealing
+with asynchronous tasks and coroutines.  [threading](https://docs.python.org/3.14/library/threading.html#module-threading) provides
+access to operating system threads and [multiprocessing](https://docs.python.org/3.14/library/multiprocessing.html#module-multiprocessing) to
+operating system processes. Multi-core processors can execute threads and
+processes on different CPU cores at the same time (see
+[parallelism](../parallelism/index.md)).
