@@ -9,6 +9,7 @@ This hub lists every algorithm page in this section. Each page opens with a shor
 | Shell sort | Generalization of insertion sort using a gap sequence, then gap 1. | [Shell sort](shell-sort/index.md) |
 | Quicksort | Partitions around a pivot, recurses; fast average case, in place. | [Quicksort](quicksort/index.md) |
 | Merge sort | Split in half, sort halves, merge—stable, predictable O(n log n) time. | [Merge sort](merge-sort/index.md) |
+| Heap sort | Build a heap, extract max repeatedly—in-place O(n log n) worst case. | [Heap sort](heap-sort/index.md) |
 | Radix sort | Sorts by processing digits/characters place by place; not comparison-only. | [Radix sort](radix-sort/index.md) |
 | Bubble sort | Swaps adjacent out-of-order pairs until no swaps—simple, usually slow. | [Bubble sort](bubble-sort/index.md) |
 | Quickselect | Finds the k-th element using quicksort-style partitioning. | [Quickselect](quickselect/index.md) |

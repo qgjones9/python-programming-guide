@@ -1,12 +1,214 @@
 # Radix sort
 
-Sorts by **processing digits (or character positions) from least to most** significant, using a stable pass each time.
+A **non-comparison** sort that orders keys **digit by digit** (or by fixed-width **characters**), from least significant digit (LSD) or most significant (MSD). When keys have **d** digits and you use a stable digit sort, total time is **Θ(d · (n + k))** where *k* is the digit radix (often 10 or 256).
 
 | | |
 | --- | --- |
-| **What it is** | Not a pure comparison sort: uses counting/bucket on each digit place. |
-| **Time** | O(d · (n + k)) for n keys, d digits, alphabet size k per digit. |
-| **When to use** | Fixed-width integers, strings of equal length, or when digits are small. |
-| **Requirement** | Stable sub-sorts; keys must be splittable into digits/buckets meaningfully. |
+| **What it is** | Bucket/count per digit place; stable pass per digit preserves prior order. |
+| **Time** | **Best, average, worst** Θ(d · n) for LSD with counting sort per digit (fixed *d*). |
+| **Space** | O(n + k) per digit pass for counting sort auxiliary. |
+| **Stability** | **Stable** when each digit pass is stable (counting sort). |
+| **In-place** | **No** (typical counting-sort radix). |
+| **When to use** | Fixed-width integers: **jersey numbers**, **draft pick** (bounded range), millisecond **play timestamps** encoded as ints—not arbitrary floats without scaling. |
 
-[Parent: Algorithms](../index.md)
+**NFL lens:** radix sort shines when you sort **32-bit play_id** or **jersey 00–99** in linear passes over digits—think “sort every player on the roster by jersey without comparing full strings.” For **floating PPR**, you normally scale to integers or use comparison sort / `sort_values`.
+
+[Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
+
+---
+
+## Summary properties
+
+| Property | Value |
+| --- | --- |
+| **Best / average / worst** | Θ(d · n) with stable counting per digit |
+| **Space** | O(n + radix) per pass |
+| **Stable** | Yes (LSD + stable digit sort) |
+| **In-place** | No (standard) |
+| **Comparison-based** | No |
+
+---
+
+## How LSD radix sort works
+
+1. Pad keys to fixed width if needed (e.g. jersey always two digits conceptually).
+2. For digit position `d` from **least** to **most** significant:
+   - **Counting sort** on digit `d` (stable).
+3. After last digit, array is sorted.
+
+```mermaid
+flowchart TD
+  Start([digits d0..d_{w-1} LSD first]) --> Pos{more positions?}
+  Pos -->|no| Done([Sorted])
+  Pos -->|yes| Count[stable counting sort on current digit]
+  Count --> Next[next position] --> Pos
+```
+
+---
+
+## Pseudocode (LSD, base 10)
+
+```text
+RADIX_SORT_LSD(A, w):
+    for digit = 0 to w - 1:
+        COUNTING_SORT_BY_DIGIT(A, digit)
+```
+
+```text
+COUNTING_SORT_BY_DIGIT(A, digit):
+    count[0..9] = 0
+    for x in A:
+        count[digit_value(x, digit)] += 1
+    prefix sum count
+    build output stable by scanning A backward
+    copy output to A
+```
+
+---
+
+## Python implementation
+
+```python
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+def counting_sort_by_digit(nums: list[int], exp: int) -> None:
+    """Stable sort by digit at 10^exp place."""
+    n = len(nums)
+    output = [0] * n
+    count = [0] * 10
+    for x in nums:
+        count[(x // exp) % 10] += 1
+    for i in range(1, 10):
+        count[i] += count[i - 1]
+    for i in range(n - 1, -1, -1):
+        d = (nums[i] // exp) % 10
+        count[d] -= 1
+        output[count[d]] = nums[i]
+    nums[:] = output
+
+
+def radix_sort_lsd(nums: list[int]) -> None:
+    if not nums:
+        return
+    max_val = max(nums)
+    exp = 1
+    while max_val // exp > 0:
+        counting_sort_by_digit(nums, exp)
+        exp *= 10
+
+
+@dataclass(frozen=True, slots=True)
+class Player:
+    name: str
+    jersey: int  # 0-99
+
+
+def radix_sort_jersey(players: list[Player]) -> None:
+    """LSD radix on two-digit jersey (0-99)."""
+    for exp in (1, 10):
+        n = len(players)
+        out: list[Player | None] = [None] * n
+        count = [0] * 10
+        for p in players:
+            count[(p.jersey // exp) % 10] += 1
+        for i in range(1, 10):
+            count[i] += count[i - 1]
+        for i in range(n - 1, -1, -1):
+            d = (players[i].jersey // exp) % 10
+            count[d] -= 1
+            out[count[d]] = players[i]
+        players[:] = [p for p in out if p is not None]
+```
+
+| | |
+| --- | --- |
+| **Time** | Θ(d · n) for *d* digits |
+| **Space** | O(n) per pass |
+
+---
+
+## Trace: jersey numbers LSD
+
+Sort `[89, 12, 12, 45]` by jersey (two decimal digits).
+
+**exp = 1** (ones): buckets → stable order by ones digit  
+**exp = 10** (tens): complete sort → `[12, 12, 45, 89]`
+
+Equal jerseys **12** stay in input order → **stable**.
+
+---
+
+## Versus `list.sort()` / `sorted()` / `heapq`
+
+| | Radix | `sort` |
+| --- | --- | --- |
+| Float PPR | Needs fixed-point scaling | Native |
+| Bounded ints | Linear in digits | O(n log n) |
+| Strings (names) | MSD radix on chars | `sort` |
+
+```python
+# Jerseys as ints — production often still:
+df.sort_values("jersey_number")
+# Custom radix only if you implement fixed-width pipeline
+```
+
+---
+
+## When to use / avoid
+
+| Use | Avoid |
+| --- | --- |
+| Fixed-width `play_id` ints | Arbitrary EPA floats without quantization |
+| Millions of keys, small digit count | Small *n* (overhead) |
+| Stable digit passes needed | Negative floats without offset handling |
+
+```python
+# Scale EPA to micro-units if you must radix:
+epa_micro = (df["epa"] * 1_000_000).astype("int64")
+```
+
+---
+
+## Master complexity table
+
+| | Best | Average | Worst | Space |
+| --- | --- | --- | --- | --- |
+| LSD radix | Θ(d·n) | Θ(d·n) | Θ(d·n) | O(n + σ) per pass |
+
+σ = radix size (10 for decimal digit).
+
+---
+
+## Pitfalls
+
+| Pitfall | Fix |
+| --- | --- |
+| Unstable digit pass | Breaks LSD correctness |
+| Negative numbers | Offset or MSD with sign |
+| Variable-length strings | Pad or MSD |
+| Treating floats as exact | Use integers or comparison sort |
+
+---
+
+## Related pages
+
+| Page | Note |
+| --- | --- |
+| [Bucket sort](../bucket-sort/index.md) | Range bins vs digit passes |
+| [Merge sort](../merge-sort/index.md) | Comparison stable |
+| [Complexity](../../complexity/index.md) | |
+
+---
+
+## Quick reference
+
+```python
+radix_sort_lsd(jersey_ints)
+radix_sort_jersey(roster)
+df.sort_values("jersey_number")  # production
+```
+
+**Radix sort:** stable, non-comparison, **Θ(d·n)** for fixed digits—ideal for **bounded NFL integers**, not raw **float leaderboards** without scaling.

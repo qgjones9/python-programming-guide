@@ -1323,6 +1323,7 @@ nav:
       - Shell sort: dsa/algorithms/shell-sort/index.md
       - Merge sort: dsa/algorithms/merge-sort/index.md
       - Quicksort: dsa/algorithms/quicksort/index.md
+      - Heap sort: dsa/algorithms/heap-sort/index.md
       - Radix sort: dsa/algorithms/radix-sort/index.md
       - Bucket sort: dsa/algorithms/bucket-sort/index.md
       - Quickselect: dsa/algorithms/quickselect/index.md

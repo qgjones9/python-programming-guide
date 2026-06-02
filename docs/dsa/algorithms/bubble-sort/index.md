@@ -1,12 +1,283 @@
 # Bubble sort
 
-Pass through the array, **swapping adjacent** out-of-order pairs; repeat until a pass does nothing.
+A **comparison sort** that repeatedly scans the array, **swapping adjacent** elements that are out of order. After each full pass, the largest unsorted value has “bubbled” to the end of the unsorted region.
 
 | | |
 | --- | --- |
-| **What it is** | After each pass, the largest element “bubbles” to its end. |
-| **Time & space** | Θ(n²) comparisons; O(1) space; with a flag, can finish early on already sorted. |
-| **When to use** | Teaching and tiny n; almost never the right choice in production. |
-| **Stability** | Stable if you only swap on strict `<`. |
+| **What it is** | Adjacent pairwise compare-and-swap until a pass makes zero swaps (or you finish a fixed number of passes). |
+| **Time** | **Best** O(n) with early-exit flag on already-sorted data; **average** Θ(n²); **worst** Θ(n²). |
+| **Space** | O(1) auxiliary—in-place on a mutable sequence. |
+| **Stability** | **Stable** if you only swap when `left > right` (never on equal keys). |
+| **In-place** | **Yes** (only O(1) extra variables). |
+| **When to use** | Teaching, tiny *n*, or detecting “already sorted” with one cheap pass—not production leaderboards. |
+
+In **NFL data analysis**, bubble sort is the wrong tool for sorting 1,700+ skill players or 50,000 play rows—but it is an excellent way to **see** why Θ(n²) hurts: imagine ranking four QBs on a single-game PPR column by swapping neighbors until Mahomes “bubbles” to the top. You will reach for **`DataFrame.sort_values`** or **`list.sort`** at scale; you study bubble sort to internalize **inversions**, **stability**, and **early exit**.
+
+For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Algorithms](../index.md)
+
+---
+
+## How bubble sort fits NFL-shaped problems
+
+| NFL task | Bubble-sort view | Reality check |
+| --- | --- | --- |
+| Rank 4 QBs in one game by PPR | Few passes, traceable swaps | Fine for learning |
+| Sort weekly receiving yards for all WRs | Θ(n²) comparisons | Use `sort_values` |
+| Detect if snap timestamps already sorted | One pass, O(n) early exit | OK as a probe, not a full sort library |
+| Stable reorder of equal PPR ties | Stable swaps preserve jersey order among ties | Better algorithms do this faster |
+
+**Use bubble sort** only when *n* is tiny or you are implementing it for pedagogy. **Use pandas / `sorted` / `list.sort`** for season tables, merge keys, and pipeline stages.
+
+---
+
+## Summary properties
+
+| Property | Value |
+| --- | --- |
+| **Best time** | O(n) — one pass, no swaps (already sorted) |
+| **Average time** | Θ(n²) comparisons and swaps |
+| **Worst time** | Θ(n²) — reverse-sorted PPR list |
+| **Space** | O(1) auxiliary |
+| **Stable** | Yes (swap only on strict inequality) |
+| **In-place** | Yes |
+| **Adaptive** | Yes (with `swapped` flag) |
+| **Comparison-based** | Yes |
+
+---
+
+## How the algorithm works
+
+1. Treat indices `0 .. n-2` as the “unsorted” frontier; index `n-1` is the end of the array.
+2. **Pass:** walk `j` from `0` to `end-1`. If `A[j] > A[j+1]`, swap them (for ascending PPR).
+3. After one pass, the maximum key in `0..end` sits at `end`.
+4. Shrink `end` by 1 and repeat until `end == 0` or a pass performs **no swaps**.
+5. Optional optimization: track `last_swap` index to shorten the next pass (Cocktail variant alternates direction—still Θ(n²) worst case).
+
+**Inversions:** each swap fixes one inversion. A reverse-sorted list has Θ(n²) inversions—hence worst case.
+
+```mermaid
+flowchart TD
+  Start([Start: end = n-1]) --> Pass{end > 0?}
+  Pass -->|no| Done([Sorted])
+  Pass -->|yes| J[ j = 0, swapped = false ]
+  J --> Cmp{ j < end and A[j] > A[j+1]? }
+  Cmp -->|yes| Swap[ swap A[j], A[j+1]; swapped = true ]
+  Swap --> IncJ[j += 1]
+  Cmp -->|no| IncJ
+  IncJ --> MoreJ{ j < end? }
+  MoreJ -->|yes| Cmp
+  MoreJ -->|no| Early{ swapped? }
+  Early -->|no| Done
+  Early -->|yes| Shrink[end -= 1] --> Pass
+```
+
+---
+
+## Pseudocode
+
+```text
+BUBBLE_SORT(A):
+    n = length(A)
+    end = n - 1
+    while end > 0:
+        swapped = false
+        for j = 0 to end - 1:
+            if A[j] > A[j+1]:
+                swap A[j], A[j+1]
+                swapped = true
+        if not swapped:
+            break
+        end = end - 1
+```
+
+---
+
+## Python implementation
+
+### Plain list of numbers (game PPR totals)
+
+```python
+from __future__ import annotations
+
+
+def bubble_sort(nums: list[float]) -> None:
+    """Sort nums ascending in place. Stable for equal floats."""
+    n = len(nums)
+    end = n - 1
+    while end > 0:
+        swapped = False
+        for j in range(end):
+            if nums[j] > nums[j + 1]:
+                nums[j], nums[j + 1] = nums[j + 1], nums[j]
+                swapped = True
+        if not swapped:
+            return
+        end -= 1
+
+
+def bubble_sort_return(nums: list[float]) -> list[float]:
+    """Non-mutating copy for tests."""
+    out = nums.copy()
+    bubble_sort(out)
+    return out
+```
+
+| | |
+| --- | --- |
+| **Time** | Best O(n), worst/average Θ(n²) |
+| **Space** | O(1) in-place; O(n) if copying first |
+
+### `Player` records (PPR leaderboard)
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True, slots=True)
+class Player:
+    name: str
+    position: str
+    ppr: float
+    jersey: int
+
+
+def bubble_sort_players(players: list[Player], *, key=lambda p: p.ppr) -> None:
+    """Stable ascending sort by key (default PPR)."""
+    n = len(players)
+    end = n - 1
+    while end > 0:
+        swapped = False
+        for j in range(end):
+            if key(players[j]) > key(players[j + 1]):
+                players[j], players[j + 1] = players[j + 1], players[j]
+                swapped = True
+        if not swapped:
+            return
+        end -= 1
+```
+
+---
+
+## Step-by-step trace (small NFL dataset)
+
+Sort four QBs by **single-game PPR** ascending (we will show how the largest bubbles right).
+
+| Player | PPR |
+| --- | ---: |
+| Mahomes | 28.4 |
+| Allen | 22.1 |
+| Burrow | 31.0 |
+| Hurts | 25.6 |
+
+Initial: `[28.4, 22.1, 31.0, 25.6]`
+
+**Pass 1** (`end = 3`):
+
+| j | Compare | Action | Array after |
+| ---: | --- | --- | --- |
+| 0 | 28.4 > 22.1 | swap | `[22.1, 28.4, 31.0, 25.6]` |
+| 1 | 28.4 > 31.0 | no | `[22.1, 28.4, 31.0, 25.6]` |
+| 2 | 31.0 > 25.6 | swap | `[22.1, 28.4, 25.6, 31.0]` |
+
+31.0 is at index 3 (sorted spot for max).
+
+**Pass 2** (`end = 2`): swaps at j=1 → `[22.1, 25.6, 28.4, 31.0]`; no swap at j=0.
+
+**Pass 3** (`end = 1`): no swaps → **early exit** (already sorted).
+
+Final order by PPR: Allen, Hurts, Mahomes, Burrow.
+
+```mermaid
+sequenceDiagram
+  participant A as array
+  Note over A: Pass 1: 31.0 bubbles to index 3
+  A->>A: swap 28.4, 22.1
+  A->>A: swap 31.0, 25.6
+  Note over A: Pass 2: 28.4 settles at index 2
+```
+
+---
+
+## Versus `list.sort()`, `sorted()`, and `heapq`
+
+| Tool | When it wins | vs bubble sort |
+| --- | --- | --- |
+| `players.sort(key=lambda p: p.ppr)` | Any real *n* | Timsort: O(n log n), highly optimized C |
+| `sorted(players, key=...)` | New list without mutating | Same asymptotics, allocates |
+| `heapq.nsmallest(k, ...)` | Top *k* fantasy scorers only | O(n log k); bubble sort still scans everything |
+
+```python
+# Production pattern
+weekly = sorted(roster, key=lambda p: p.ppr, reverse=True)
+top10 = heapq.nlargest(10, roster, key=lambda p: p.ppr)
+```
+
+Bubble sort teaches **adjacent swaps**; CPython’s **Timsort** (used by `list.sort`) exploits runs and merges—never Θ(n²) on typical NFL tables.
+
+---
+
+## When to use / avoid in NFL pipelines
+
+| Scenario | Recommendation |
+| --- | --- |
+| Season-long fantasy points table | `df.sort_values("ppr", ascending=False)` |
+| Interactive chart of 32 teams | `sort_values` once, cache |
+| Homework / interview “implement sort” | Bubble sort only if specified |
+| “Is this week’s snap list sorted by `play_id`?” | Single O(n) scan; bubble sort is overkill |
+
+```python
+import pandas as pd
+
+plays = pd.read_csv("plays.csv")
+plays.sort_values(["game_id", "play_id"], inplace=True)  # wins at scale
+```
+
+---
+
+## Master complexity table
+
+| Phase | Best | Average | Worst | Space |
+| --- | --- | --- | --- | --- |
+| Full sort | O(n) | Θ(n²) | Θ(n²) | O(1) |
+| One pass (probe) | O(n) | O(n) | O(n) | O(1) |
+| Comparisons | O(n) | Θ(n²) | Θ(n²) | — |
+| Swaps | 0 | Θ(n²) | Θ(n²) | — |
+
+---
+
+## Common pitfalls
+
+| Pitfall | Effect | Fix |
+| --- | --- | --- |
+| Swapping on `>=` | **Unstable**—equal PPR reorders | Swap only when `>` |
+| Forgetting early exit | Slower on nearly sorted | Use `swapped` flag |
+| Sorting huge DataFrames with Python loops | Hours of runtime | `sort_values` / Polars |
+| Assuming “one pass = sorted” | Only guarantees max at end | Need zero swaps on a full pass |
+| Copying inside inner loop | O(n³) behavior | Swap in place |
+
+---
+
+## Related algorithms
+
+| Page | Relationship |
+| --- | --- |
+| [Insertion sort](../insertion-sort/index.md) | Also Θ(n²) but better on small / nearly sorted |
+| [Selection sort](../selection-sort/index.md) | Θ(n²) always; fewer swaps |
+| [Shell sort](../shell-sort/index.md) | Gap-based; breaks Θ(n²) wall |
+| [Merge sort](../merge-sort/index.md) | Θ(n log n) stable |
+| [Complexity analysis](../../complexity/index.md) | Big-O reference |
+
+---
+
+## Quick reference
+
+```python
+bubble_sort(ppr_list)           # in-place ascending
+bubble_sort_players(roster)     # stable by PPR
+# Production:
+roster.sort(key=lambda p: p.ppr, reverse=True)
+```
+
+**Bubble sort:** stable, in-place, adaptive—but **Θ(n²)** average/worst. Learn it for intuition; **never** ship it on full NFL tables.
