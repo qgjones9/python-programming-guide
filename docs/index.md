@@ -14,6 +14,11 @@ Structured notes and reference for Python 3.14.5 and popular third-party librari
 | :material-memory: [Python/C API](python/3.14.5/python-c-api-reference-manual/index.md) | C API reference | Objects, reference counting, concrete types, utilities |
 | :material-library: [Libraries](libraries/pydantic/index.md) | Third-party docs | Pydantic validation and serialization |
 
+
+## :material-language-python: data structures and algorithms
+
+see: [Data structures and algorithms](dsa/index.md) for more details.
+
 ## Official sources
 
 Content mirrors and enriches the official Python documentation at [docs.python.org](https://docs.python.org/3/) with teaching notes, runnable examples, and cross-links.

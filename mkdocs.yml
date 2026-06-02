@@ -1282,6 +1282,51 @@ nav:
         - virtual machine: python/3.14.5/glossary/virtual-machine/index.md
         - walrus operator: python/3.14.5/glossary/walrus-operator/index.md
   - Python Package Index (PyPI): python-package-index/index.md
+  - Data Structures and Algorithms:
+    - dsa/index.md
+    - Foundations:
+      - Complexity Analysis: dsa/complexity/index.md
+      - Recursion: dsa/recursion/index.md
+      - Python Basics: dsa/python-basics/index.md
+    - Data Structures:
+      - Data Structures: dsa/data-structures/index.md
+      - Phase 1 — Linear structures:
+        - Array-based lists: dsa/data-structures/array-based-lists/index.md
+        - Linked list: dsa/data-structures/linked-list/index.md
+        - Doubly linked list: dsa/data-structures/doubly-linked-list/index.md
+        - Circularly linked list: dsa/data-structures/circularly-linked-list/index.md
+        - Stacks: dsa/data-structures/stacks/index.md
+        - Queue: dsa/data-structures/queue/index.md
+        - Dequeue (deque): dsa/data-structures/dequeue-deque/index.md
+      - Phase 2 — Hashing:
+        - Hash table: dsa/data-structures/hash-table/index.md
+        - Sets: dsa/data-structures/sets/index.md
+      - Phase 3 — Trees:
+        - Binary search tree: dsa/data-structures/binary-search-tree/index.md
+        - AVL tree: dsa/data-structures/avl-tree/index.md
+        - Red–black tree: dsa/data-structures/red-black-tree/index.md
+        - 2-3-4 tree: dsa/data-structures/2-3-4-tree/index.md
+      - Heaps and priority:
+        - Max heap: dsa/data-structures/max-heap/index.md
+        - Priority queue: dsa/data-structures/priority-queue/index.md
+        - Heap sort: dsa/data-structures/heap-sort/index.md
+        - Tries: dsa/data-structures/tries/index.md
+        - Treaps: dsa/data-structures/treaps/index.md
+      - Phase 4 — Graphs:
+        - Graphs: dsa/data-structures/graphs/index.md
+      - Honorable mention ADT: dsa/data-structures/honorable-mention-adt/index.md
+    - Algorithms:
+      - Algorithms: dsa/algorithms/index.md
+      - Bubble sort: dsa/algorithms/bubble-sort/index.md
+      - Selection sort: dsa/algorithms/selection-sort/index.md
+      - Insertion sort: dsa/algorithms/insertion-sort/index.md
+      - Shell sort: dsa/algorithms/shell-sort/index.md
+      - Merge sort: dsa/algorithms/merge-sort/index.md
+      - Quicksort: dsa/algorithms/quicksort/index.md
+      - Radix sort: dsa/algorithms/radix-sort/index.md
+      - Bucket sort: dsa/algorithms/bucket-sort/index.md
+      - Quickselect: dsa/algorithms/quickselect/index.md
+
 extra_css:
   - stylesheets/extra.css
 
