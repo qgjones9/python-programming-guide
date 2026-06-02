@@ -9,7 +9,7 @@ A **tree keyed by characters (or tokens)** where each path from the root spells 
 | **When to use** | Autocomplete, prefix filters, dictionaries of player names, team abbrev suggestions. |
 | **Trade-off** | Space grows with alphabet × depth; hash map wins for exact key lookup only. |
 
-In **NFL data analysis**, tries shine when users **type ahead** on **player names** (`"Mah"` → Mahomes, Mahaffey), **team abbreviations** (`"K"` → KC, …), or **route concepts** with shared prefixes. Exact `play_id` lookup stays in a [Hash table](hash-table/index.md); tries complement hashes for **prefix** and **completion** UX.
+In **NFL data analysis**, tries shine when users **type ahead** on **player names** (`"Mah"` → Mahomes, Mahaffey), **team abbreviations** (`"K"` → KC, …), or **route concepts** with shared prefixes. Exact `play_id` lookup stays in a [Hash table](../hash-table/index.md); tries complement hashes for **prefix** and **completion** UX.
 
 This page is your **ready reference**: Python implementations (`dict`-of-children and `Trie` class), every operation with NFL examples, complexity tables, pitfalls, and when `dict` beats trie. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
@@ -809,7 +809,7 @@ Document your search product: trie is **prefix-only**.
 
 | Structure | Link |
 | --- | --- |
-| [Hash table](hash-table/index.md) | Exact key O(1) |
+| [Hash table](../hash-table/index.md) | Exact key O(1) |
 | [Binary search tree](../binary-search-tree/index.md) | Ordered keys |
 | [Graphs](../graphs/index.md) | Different edge semantics |
 

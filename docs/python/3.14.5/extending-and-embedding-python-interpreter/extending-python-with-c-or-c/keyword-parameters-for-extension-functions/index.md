@@ -3,7 +3,7 @@
 Local notes on **1.8. Keyword Parameters for Extension Functions** within [*1. Extending Python with C or C++*](https://docs.python.org/3/extending/extending.html).
 
 - Detailed rules: **[1.8. Keyword Parameters for Extension Functions](https://docs.python.org/3/extending/extending.html#keyword-parameters-for-extension-functions)**.
-- Companion reference: *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
+- Companion reference: *[Python/C API Reference](../../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
 
 ```c
 #include <Python.h>

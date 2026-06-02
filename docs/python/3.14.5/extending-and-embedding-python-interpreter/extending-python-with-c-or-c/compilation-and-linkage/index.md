@@ -3,7 +3,7 @@
 Local notes on **1.5. Compilation and Linkage** within [*1. Extending Python with C or C++*](https://docs.python.org/3/extending/extending.html).
 
 - Detailed rules: **[1.5. Compilation and Linkage](https://docs.python.org/3/extending/extending.html#compilation-and-linkage)**.
-- Companion reference: *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
+- Companion reference: *[Python/C API Reference](../../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
 
 ```c
 #include <Python.h>

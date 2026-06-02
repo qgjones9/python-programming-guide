@@ -1287,7 +1287,7 @@ nav:
     - Foundations:
       - Complexity Analysis: dsa/complexity/index.md
       - Recursion: dsa/recursion/index.md
-      - Python Basics: dsa/python-basics/index.md
+      - Python tutorial: python/3.14.5/tutorial/index.md
     - Data Structures:
       - Data Structures: dsa/data-structures/index.md
       - Phase 1 — Linear structures:

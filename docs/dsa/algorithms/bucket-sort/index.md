@@ -750,7 +750,7 @@ flowchart TD
 | --- | --- |
 | [Radix sort](../radix-sort/index.md) | Digit buckets |
 | [Quicksort](../quicksort/index.md) | Hybrid fallback |
-| [Counting sort](../counting-sort/index.md) | Integer range O(n+k) |
+| [Radix sort](../radix-sort/index.md) | Counting sort per digit (O(n+k) pass) |
 | [Heap sort](../heap-sort/index.md) | Comparison O(n log n) worst |
 | [Complexity analysis](../../complexity/index.md) | Big-O reference |
 

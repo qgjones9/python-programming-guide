@@ -3,7 +3,7 @@
 Local notes on **2.1. The Basics** within [*2. Defining Extension Types: Tutorial*](https://docs.python.org/3/extending/newtypes_tutorial.html).
 
 - Detailed rules: **[2.1. The Basics](https://docs.python.org/3/extending/newtypes_tutorial.html#the-basics)**.
-- Companion reference: *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
+- Companion reference: *[Python/C API Reference](../../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
 
 ```c
 #include <Python.h>

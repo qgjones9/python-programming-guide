@@ -3,7 +3,7 @@
 Local notes on **3.2. Object Presentation** within [*3. Defining Extension Types: Assorted Topics*](https://docs.python.org/3/extending/newtypes.html).
 
 - Detailed rules: **[3.2. Object Presentation](https://docs.python.org/3/extending/newtypes.html#object-presentation)**.
-- Companion reference: *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
+- Companion reference: *[Python/C API Reference](../../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
 
 ```c
 #include <Python.h>

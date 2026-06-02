@@ -401,8 +401,8 @@ flowchart TD
 | --- | --- |
 | [Red–black tree](../red-black-tree/index.md) | Isomorphic encoding |
 | [Binary search tree](../binary-search-tree/index.md) | Degenerate 1-key-per-node case |
-| [Treaps](treaps/index.md) | RAM randomized alternative |
-| [Hash table](hash-table/index.md) | O(1) average RAM index |
+| [Treaps](../treaps/index.md) | RAM randomized alternative |
+| [Hash table](../hash-table/index.md) | O(1) average RAM index |
 | [Complexity analysis](../../complexity/index.md) | Big-O reference |
 
 ---

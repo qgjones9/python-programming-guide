@@ -11,7 +11,7 @@ if_stmt ::= "if" assignment_expression ":" suite
 Here's how it works:
 
 - Each condition (the `if` or any `elif`) is evaluated in order.
-- The first condition that evaluates to true (see [Boolean operations](../../../expressions/boolean-operations/index.md)) causes its corresponding suite (block) to be executed.
+- The first condition that evaluates to true (see [Boolean operations](../../expressions/boolean-operations/index.md)) causes its corresponding suite (block) to be executed.
 - No other part of the if-statement is executed after a true condition.
 - If none of the conditions are true, and there is an `else` clause, the `else` suite is executed.
 

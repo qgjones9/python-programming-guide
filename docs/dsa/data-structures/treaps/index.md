@@ -661,7 +661,7 @@ flowchart TD
 | [Binary search tree](../binary-search-tree/index.md) | Treap adds heap priorities |
 | [Red–black tree](../red-black-tree/index.md) | Deterministic balance |
 | [Priority queue](../priority-queue/index.md) | Heap without BST ordering |
-| [Sets](sets/index.md) | Unordered uniqueness |
+| [Sets](../sets/index.md) | Unordered uniqueness |
 | [Complexity analysis](../../complexity/index.md) | Big-O reference |
 
 ---

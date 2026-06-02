@@ -5,7 +5,7 @@ Scratch notes backing [**3. Defining Extension Types: Assorted Topics**](https:/
 ### [3.1. Finalization and De-allocation](https://docs.python.org/3/extending/newtypes.html#finalization-and-de-allocation)
 
 - Full write-up: [3.1. Finalization and De-allocation](https://docs.python.org/3/extending/newtypes.html#finalization-and-de-allocation).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
@@ -29,7 +29,7 @@ PyInit_demo(void)
 ### [3.2. Object Presentation](https://docs.python.org/3/extending/newtypes.html#object-presentation)
 
 - Full write-up: [3.2. Object Presentation](https://docs.python.org/3/extending/newtypes.html#object-presentation).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
@@ -45,7 +45,7 @@ Py_DECREF(tmp);
 ### [3.3. Attribute Management](https://docs.python.org/3/extending/newtypes.html#attribute-management)
 
 - Full write-up: [3.3. Attribute Management](https://docs.python.org/3/extending/newtypes.html#attribute-management).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
@@ -69,7 +69,7 @@ PyInit_demo(void)
 ### [3.4. Object Comparison](https://docs.python.org/3/extending/newtypes.html#object-comparison)
 
 - Full write-up: [3.4. Object Comparison](https://docs.python.org/3/extending/newtypes.html#object-comparison).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
@@ -85,7 +85,7 @@ Py_DECREF(tmp);
 ### [3.5. Abstract Protocol Support](https://docs.python.org/3/extending/newtypes.html#abstract-protocol-support)
 
 - Full write-up: [3.5. Abstract Protocol Support](https://docs.python.org/3/extending/newtypes.html#abstract-protocol-support).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
@@ -109,7 +109,7 @@ PyInit_demo(void)
 ### [3.6. Weak Reference Support](https://docs.python.org/3/extending/newtypes.html#weak-reference-support)
 
 - Full write-up: [3.6. Weak Reference Support](https://docs.python.org/3/extending/newtypes.html#weak-reference-support).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
@@ -125,7 +125,7 @@ Py_DECREF(tmp);
 ### [3.7. More Suggestions](https://docs.python.org/3/extending/newtypes.html#more-suggestions)
 
 - Full write-up: [3.7. More Suggestions](https://docs.python.org/3/extending/newtypes.html#more-suggestions).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>

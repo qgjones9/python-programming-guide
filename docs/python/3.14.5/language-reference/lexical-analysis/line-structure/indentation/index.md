@@ -4,7 +4,7 @@ In Python, indentation—the number of spaces or tabs at the start of a line—t
 
 **How indentation works:**
 
-- You may use spaces or tabs for indentation, but **do not mix spaces and tabs** within the same block—if Python detects ambiguous or inconsistent mixing, it raises a [TabError](../../../../../standard-library/built-in-exceptions/concrete-exceptions/index.md#taberror).
+- You may use spaces or tabs for indentation, but **do not mix spaces and tabs** within the same block—if Python detects ambiguous or inconsistent mixing, it raises a [TabError](../../../../standard-library/built-in-exceptions/concrete-exceptions/index.md#taberror).
 - Tabs count as enough spaces so the total before your first code character is a multiple of eight, which matches what Unix editors do. But, for simplicity and best practice, just use spaces consistently.
 - You cannot break the indentation part of a line across more than one physical line by using a backslash.
 - Most editors will work fine if you stick to spaces, but using a mix of tabs and spaces can cause trouble, especially if you move your code between different computers or editors.

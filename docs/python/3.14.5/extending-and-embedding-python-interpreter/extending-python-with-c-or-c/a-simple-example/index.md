@@ -3,7 +3,7 @@
 Local notes on **1.1. A Simple Example** within [*1. Extending Python with C or C++*](https://docs.python.org/3/extending/extending.html).
 
 - Detailed rules: **[1.1. A Simple Example](https://docs.python.org/3/extending/extending.html#a-simple-example)**.
-- Companion reference: *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
+- Companion reference: *[Python/C API Reference](../../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
 
 ```c
 #include <Python.h>

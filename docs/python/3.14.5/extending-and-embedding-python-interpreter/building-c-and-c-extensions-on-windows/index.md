@@ -5,7 +5,7 @@ Scratch notes backing [**5. Building C and C++ Extensions on Windows**](https://
 ### [5.1. A Cookbook Approach](https://docs.python.org/3/extending/windows.html#a-cookbook-approach)
 
 - Full write-up: [5.1. A Cookbook Approach](https://docs.python.org/3/extending/windows.html#a-cookbook-approach).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
@@ -21,7 +21,7 @@ Py_DECREF(tmp);
 ### [5.2. Differences Between Unix and Windows](https://docs.python.org/3/extending/windows.html#differences-between-unix-and-windows)
 
 - Full write-up: [5.2. Differences Between Unix and Windows](https://docs.python.org/3/extending/windows.html#differences-between-unix-and-windows).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
@@ -45,7 +45,7 @@ PyInit_demo(void)
 ### [5.3. Using DLLs in Practice](https://docs.python.org/3/extending/windows.html#using-dlls-in-practice)
 
 - Full write-up: [5.3. Using DLLs in Practice](https://docs.python.org/3/extending/windows.html#using-dlls-in-practice).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>

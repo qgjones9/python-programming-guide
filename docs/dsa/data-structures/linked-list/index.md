@@ -584,7 +584,7 @@ drive.append(Snap(2, 1.1, "TD pass"))
 | **Time** | O(1) with `tail`; O(n) if only `head` |
 | **Space** | O(1) auxiliary per append |
 
-**NFL note:** Appending each snap as a drive is parsed matches live ingest: O(1) amortized per snap **if** you keep `tail`, same idea as [array-based list](../../array-based-lists/index.md) `append` on a growing table.
+**NFL note:** Appending each snap as a drive is parsed matches live ingest: O(1) amortized per snap **if** you keep `tail`, same idea as [array-based list](../array-based-lists/index.md) `append` on a growing table.
 
 ```mermaid
 flowchart LR

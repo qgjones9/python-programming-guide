@@ -20,7 +20,7 @@ For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 | --- | --- |
 | Deque | [Dequeue (deque)](../dequeue-deque/index.md) |
 | Stack / queue | [Stacks](../stacks/index.md), [Queue](../queue/index.md) |
-| Multiset (bag) | `collections.Counter` — see [Sets](sets/index.md) |
+| Multiset (bag) | `collections.Counter` — see [Sets](../sets/index.md) |
 | Segment / Fenwick tree | Standard algorithms texts; not expanded here |
 
 ---
@@ -105,7 +105,7 @@ flowchart TB
 
 ### Stdlib note
 
-No `UnionFind` in stdlib; use this ~20-line class or **networkx** connected components on a built graph ([graphs](graphs/index.md)).
+No `UnionFind` in stdlib; use this ~20-line class or **networkx** connected components on a built graph ([graphs](../graphs/index.md)).
 
 ---
 
@@ -250,7 +250,7 @@ class SkipList:
         return None
 ```
 
-**Full insert/delete** follows the same tower logic as CLRS; for a complete ordered-map implementation see [Treaps](treaps/index.md) or [Red–black tree](../red-black-tree/index.md) in this guide.
+**Full insert/delete** follows the same tower logic as CLRS; for a complete ordered-map implementation see [Treaps](../treaps/index.md) or [Red–black tree](../red-black-tree/index.md) in this guide.
 
 ### Pitfalls (skip list)
 
@@ -282,7 +282,7 @@ assert snaps_by_personnel["11"] >= 1
 
 ## Bitset — brief
 
-Fixed-universe **set** as bits—see [Sets](sets/index.md) bitset note for 32-team masks.
+Fixed-universe **set** as bits—see [Sets](../sets/index.md) bitset note for 32-team masks.
 
 ---
 
@@ -346,10 +346,10 @@ flowchart TD
 
 | Page | Relationship |
 | --- | --- |
-| [Graphs](graphs/index.md) | DFS components vs Union-Find |
-| [Sets](sets/index.md) | Exact membership |
-| [Treaps](treaps/index.md) | Ordered alternative to skip list |
-| [Hash table](hash-table/index.md) | Bloom uses hashing |
+| [Graphs](../graphs/index.md) | DFS components vs Union-Find |
+| [Sets](../sets/index.md) | Exact membership |
+| [Treaps](../treaps/index.md) | Ordered alternative to skip list |
+| [Hash table](../hash-table/index.md) | Bloom uses hashing |
 | [Complexity analysis](../../complexity/index.md) | α(n), O(log n) |
 
 ---

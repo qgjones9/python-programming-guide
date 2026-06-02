@@ -14,10 +14,10 @@ for_stmt ::= "for" target_list "in" starred_expression_list ":" suite
 Let's break down what this syntax means and how it works:
 
 1. **Evaluation of the Iterable:**  
-   The `starred_expression_list` (the part after in) is evaluated once at the start of the loop. It should yield an iterable object (for example, a [list](../../../data-types/list/index.md), [tuple](../../../data-types/tuple/index.md), [string](../../../data-types/string/index.md), or any object that implements the iterator protocol).
+   The `starred_expression_list` (the part after in) is evaluated once at the start of the loop. It should yield an iterable object (for example, a [list](../../../standard-library/built-in-functions/list/index.md), [tuple](../../../standard-library/built-in-functions/tuple/index.md), [string](../../../standard-library/built-in-types/text-sequence-type-str/index.md), or any object that implements the iterator protocol).
 
 2. **Iteration and Assignment:**  
-   Python creates an iterator from this iterable. Each time through the loop, it fetches the next item from the iterator and assigns it to the variables listed in `target_list`, using standard assignment rules. (See the [Assignment statements](../assignment/index.md) section for details.)
+   Python creates an iterator from this iterable. Each time through the loop, it fetches the next item from the iterator and assigns it to the variables listed in `target_list`, using standard assignment rules. (See the [Assignment statements](../../simple-statements/assignment-statements/index.md) section for details.)
 
 3. **Loop Body Execution:**  
    The code block following the colon (called the "suite") is executed once for each item in the iterable.

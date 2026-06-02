@@ -764,7 +764,7 @@ for pid, play in plays_by_id.items():
 | --- | --- |
 | O(n) | O(1) get list + O(k) scan k plays |
 
-Pair with [Tries](tries/index.md) when the UI searches **names**; use **dict** when the key is already `player_id`.
+Pair with [Tries](../tries/index.md) when the UI searches **names**; use **dict** when the key is already `player_id`.
 
 ---
 
@@ -785,7 +785,7 @@ plays_by_id = {int(r["play_id"]): r for r in rows}  # one resize pattern
 | Structure | Link |
 | --- | --- |
 | [Sets](../sets/index.md) | Set ADT focus |
-| [Tries](tries/index.md) | Prefix keys, not hash |
+| [Tries](../tries/index.md) | Prefix keys, not hash |
 | [Binary search tree](../binary-search-tree/index.md) | Ordered map O(log n) |
 | [Array-based lists](../array-based-lists/index.md) | Sequential storage |
 

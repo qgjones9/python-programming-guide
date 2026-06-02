@@ -385,7 +385,7 @@ G = nx.Graph()
 G.add_edge("KC", "BUF")  # relationship graph, not a set ADT
 ```
 
-**networkx** models **graphs** ([graphs](graphs/index.md)), not replacement for `set`—listed when you cross team **networks** with set **nodes**.
+**networkx** models **graphs** ([graphs](../graphs/index.md)), not replacement for `set`—listed when you cross team **networks** with set **nodes**.
 
 ---
 
@@ -441,10 +441,10 @@ flowchart TD
 
 | Page | Relationship |
 | --- | --- |
-| [Hash table](hash-table/index.md) | Implementation behind `set` |
-| [Red–black tree](red-black-tree/index.md) | Ordered set backend |
-| [Treaps](treaps/index.md) | Alternative ordered set |
-| [Graphs](graphs/index.md) | Edges, not just vertices |
+| [Hash table](../hash-table/index.md) | Implementation behind `set` |
+| [Red–black tree](../red-black-tree/index.md) | Ordered set backend |
+| [Treaps](../treaps/index.md) | Alternative ordered set |
+| [Graphs](../graphs/index.md) | Edges, not just vertices |
 | [Complexity analysis](../../complexity/index.md) | Big-O reference |
 
 ---

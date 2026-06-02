@@ -5,7 +5,7 @@ Section from **[Extending & Embedding — Embedding the CPython runtime in a lar
 - Canonical: [Embedding the CPython runtime in a larger application](https://docs.python.org/3/extending/index.html#embedding-the-cpython-runtime-in-a-larger-application)
 - Embedding calls `Py_Initialize` / teardown sequences; pitfalls differ from extension modules shipped as `.so`/`.pyd`.
 
-- Follow **[1. Embedding Python in Another Application](embedding-python-in-another-application/index.md)** for the runnable walkthrough.
+- Follow **[1. Embedding Python in Another Application](../embedding-python-in-another-application/index.md)** for the runnable walkthrough.
 
 ```c
 #include <Python.h>

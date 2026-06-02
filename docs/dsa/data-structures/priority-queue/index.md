@@ -754,7 +754,7 @@ flowchart TD
 | --- | --- |
 | [Max heap](../max-heap/index.md) | Typical implementation |
 | [Queue](../queue/index.md) | FIFO, not priority |
-| [Heap sort](heap-sort/index.md) | Repeated extract |
+| [Heap sort](../heap-sort/index.md) | Repeated extract |
 | [Graphs](../graphs/index.md) | Dijkstra uses min-PQ |
 | [Complexity analysis](../../complexity/index.md) | Big-O reference |
 

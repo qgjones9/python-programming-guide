@@ -5,7 +5,7 @@ Scratch notes backing [**1. Embedding Python in Another Application**](https://d
 ### [1.1. Very High Level Embedding](https://docs.python.org/3/extending/embedding.html#very-high-level-embedding)
 
 - Full write-up: [1.1. Very High Level Embedding](https://docs.python.org/3/extending/embedding.html#very-high-level-embedding).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
@@ -19,7 +19,7 @@ PyGILState_Release(_gstate);
 ### [1.2. Beyond Very High Level Embedding: An overview](https://docs.python.org/3/extending/embedding.html#beyond-very-high-level-embedding-an-overview)
 
 - Full write-up: [1.2. Beyond Very High Level Embedding: An overview](https://docs.python.org/3/extending/embedding.html#beyond-very-high-level-embedding-an-overview).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
@@ -35,7 +35,7 @@ Py_DECREF(tmp);
 ### [1.3. Pure Embedding](https://docs.python.org/3/extending/embedding.html#pure-embedding)
 
 - Full write-up: [1.3. Pure Embedding](https://docs.python.org/3/extending/embedding.html#pure-embedding).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
@@ -51,7 +51,7 @@ Py_DECREF(tmp);
 ### [1.4. Extending Embedded Python](https://docs.python.org/3/extending/embedding.html#extending-embedded-python)
 
 - Full write-up: [1.4. Extending Embedded Python](https://docs.python.org/3/extending/embedding.html#extending-embedded-python).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
@@ -65,7 +65,7 @@ PyGILState_Release(_gstate);
 ### [1.5. Embedding Python in C++](https://docs.python.org/3/extending/embedding.html#embedding-python-in-c)
 
 - Full write-up: [1.5. Embedding Python in C++](https://docs.python.org/3/extending/embedding.html#embedding-python-in-c).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
@@ -89,7 +89,7 @@ PyInit_demo(void)
 ### [1.6. Compiling and Linking under Unix-like systems](https://docs.python.org/3/extending/embedding.html#compiling-and-linking-under-unix-like-systems)
 
 - Full write-up: [1.6. Compiling and Linking under Unix-like systems](https://docs.python.org/3/extending/embedding.html#compiling-and-linking-under-unix-like-systems).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>

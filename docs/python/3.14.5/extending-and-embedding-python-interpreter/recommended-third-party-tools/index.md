@@ -8,7 +8,7 @@ Section from **[Extending & Embedding — Recommended third party tools](https:/
 
 ## See also
 
-- [Creating extensions without third party tools](creating-extensions-without-third-party-tools/index.md)
+- [Creating extensions without third party tools](../creating-extensions-without-third-party-tools/index.md)
 
 ```c
 #include <Python.h>

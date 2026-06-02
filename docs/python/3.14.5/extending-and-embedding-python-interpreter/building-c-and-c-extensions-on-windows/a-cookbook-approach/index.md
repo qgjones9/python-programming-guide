@@ -3,7 +3,7 @@
 Local notes on **5.1. A Cookbook Approach** within [*5. Building C and C++ Extensions on Windows*](https://docs.python.org/3/extending/windows.html).
 
 - Detailed rules: **[5.1. A Cookbook Approach](https://docs.python.org/3/extending/windows.html#a-cookbook-approach)**.
-- Companion reference: *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
+- Companion reference: *[Python/C API Reference](../../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
 
 ```c
 #include <Python.h>

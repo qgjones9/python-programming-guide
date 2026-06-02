@@ -31,7 +31,7 @@ assert math.gcd(84, 30) == 6  # greatest common divisor — useful for rational 
 - [Error Output Redirection and Program Termination](error-output-redirection-and-program-termination/index.md)
 - [String Pattern Matching](string-pattern-matching/index.md)
 - [Mathematics](mathematics/index.md)
-- [Random](random/index.md)
+- [Random](../../standard-library/numeric-and-mathematical-modules/random-generate-pseudo-random-numbers/index.md)
 - [Internet Access](internet-access/index.md)
 - [Dates and Times](dates-and-times/index.md)
 - [Data Compression](data-compression/index.md)

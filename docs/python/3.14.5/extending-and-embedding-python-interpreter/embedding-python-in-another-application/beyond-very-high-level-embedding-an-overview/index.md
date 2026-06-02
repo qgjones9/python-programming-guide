@@ -3,7 +3,7 @@
 Local notes on **1.2. Beyond Very High Level Embedding: An overview** within [*1. Embedding Python in Another Application*](https://docs.python.org/3/extending/embedding.html).
 
 - Detailed rules: **[1.2. Beyond Very High Level Embedding: An overview](https://docs.python.org/3/extending/embedding.html#beyond-very-high-level-embedding-an-overview)**.
-- Companion reference: *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
+- Companion reference: *[Python/C API Reference](../../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
 
 ```c
 #include <Python.h>

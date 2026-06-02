@@ -9,11 +9,11 @@ Section from **[Extending & Embedding — Creating extensions without third part
 
 ## Chapters under this banner
 
-- [1. Extending Python with C or C++](extending-python-with-c-or-c/index.md)
-- [2. Defining Extension Types: Tutorial](defining-extension-types-tutorial/index.md)
-- [3. Defining Extension Types: Assorted Topics](defining-extension-types-assorted-topics/index.md)
-- [4. Building C and C++ Extensions](building-c-and-c-extensions/index.md)
-- [5. Building C and C++ Extensions on Windows](building-c-and-c-extensions-on-windows/index.md)
+- [1. Extending Python with C or C++](../extending-python-with-c-or-c/index.md)
+- [2. Defining Extension Types: Tutorial](../defining-extension-types-tutorial/index.md)
+- [3. Defining Extension Types: Assorted Topics](../defining-extension-types-assorted-topics/index.md)
+- [4. Building C and C++ Extensions](../building-c-and-c-extensions/index.md)
+- [5. Building C and C++ Extensions on Windows](../building-c-and-c-extensions-on-windows/index.md)
 
 ```c
 #include <Python.h>

@@ -3,7 +3,7 @@
 Local notes on **3.6. Weak Reference Support** within [*3. Defining Extension Types: Assorted Topics*](https://docs.python.org/3/extending/newtypes.html).
 
 - Detailed rules: **[3.6. Weak Reference Support](https://docs.python.org/3/extending/newtypes.html#weak-reference-support)**.
-- Companion reference: *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
+- Companion reference: *[Python/C API Reference](../../../python-c-api-reference-manual/index.md)* for every `Py*` symbol you call.
 
 ```c
 #include <Python.h>

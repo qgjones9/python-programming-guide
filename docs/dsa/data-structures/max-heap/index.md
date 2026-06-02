@@ -6,7 +6,7 @@ A **complete binary tree** stored in an array where each **parent’s key is ≥
 | --- | --- |
 | **What it is** | A binary tree with no gaps in the last level, usually represented as a Python `list` with index formulas instead of child pointers. |
 | **Core operations** | `insert`, `extract_max`, `peek_max`, `heapify`—each touches at most tree height O(log n). |
-| **When to use** | Top-k EPA plays, scheduling by priority, building blocks for [heap sort](heap-sort/index.md) and [priority queues](../priority-queue/index.md). |
+| **When to use** | Top-k EPA plays, scheduling by priority, building blocks for [heap sort](../heap-sort/index.md) and [priority queues](../priority-queue/index.md). |
 | **Trade-off** | No sorted order across the whole array—only the root is guaranteed maximal; `heapq` in Python is a **min-heap** by default. |
 
 In **NFL data analysis**, a max heap is the right mental model for **“always pull the highest-priority item next”**: the **best red-zone EPA snap** in a batch review queue, the **highest projected fantasy score** among remaining waiver targets, or the **largest remaining cap hit** when trimming a roster simulation. You will still rank full season tables with **pandas** `sort_values` or **`heapq.nlargest`** in production scripts—implement **`MaxHeap`** here to learn the structure and to pass interviews.
@@ -25,7 +25,7 @@ This page is your **ready reference**: array indexing, a complete Python `MaxHea
 | **Injury report urgency** | Priority = severity × snap count | Always process worst case first |
 | **Cap-cut simulation** | Key = dead money saved | Repeatedly extract max savings |
 | **Live “best play so far”** | Single-element peek while streaming | Compare new play vs root in O(1) |
-| **Heap sort warm-up** | Same array + `sift_down` | [Heap sort](heap-sort/index.md) drains max to sorted suffix |
+| **Heap sort warm-up** | Same array + `sift_down` | [Heap sort](../heap-sort/index.md) drains max to sorted suffix |
 
 **Use `heapq.nlargest` or pandas** when you need top-k from a million-row play table once. **Use a max heap** when you **interleave inserts and extracts** on a **moderate** in-memory set (simulation, game chunk, teaching).
 
@@ -772,7 +772,7 @@ flowchart TD
 | Season EPA leaderboard CSV | pandas sort |
 | Top 10 plays one game | `nlargest(10, ...)` |
 | Interactive priority queue | [Priority queue](../priority-queue/index.md) |
-| Guaranteed in-place O(n log n) sort | [Heap sort](heap-sort/index.md) |
+| Guaranteed in-place O(n log n) sort | [Heap sort](../heap-sort/index.md) |
 | Learn heap property | `MaxHeap` on this page |
 
 ---
@@ -796,7 +796,7 @@ flowchart TD
 | Page | Relationship |
 | --- | --- |
 | [Priority queue](../priority-queue/index.md) | ADT backed by heap |
-| [Heap sort (data structures)](heap-sort/index.md) | Sort via heap |
+| [Heap sort (data structures)](../heap-sort/index.md) | Sort via heap |
 | [Heap sort (algorithms)](../../algorithms/heap-sort/index.md) | Algorithm-focused page |
 | [Treaps](../treaps/index.md) | BST + heap priority |
 | [Binary search tree](../binary-search-tree/index.md) | Full ordering |

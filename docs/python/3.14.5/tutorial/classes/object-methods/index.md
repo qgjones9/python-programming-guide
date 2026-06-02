@@ -1,6 +1,6 @@
 # [Object Methods](https://docs.python.org/3/tutorial/classes.html#object-methods)
 
-In this repo, **§9.4 — Object Methods** is grouped under [A First Look at Classes](a-first-look-at-classes/index.md); see [Method Objects](a-first-look-at-classes/method-objects/index.md) for the matching stub.
+In this repo, **§9.4 — Object Methods** is grouped under [A First Look at Classes](../a-first-look-at-classes/index.md); see [Method Objects](../a-first-look-at-classes/method-objects/index.md) for the matching stub.
 
 ```python
 # Bound vs unbound: functions on the class become bound methods when accessed on an instance.

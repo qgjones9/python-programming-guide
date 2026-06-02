@@ -535,8 +535,8 @@ flowchart TD
 
 | Page | Relationship |
 | --- | --- |
-| [Sets](sets/index.md) | Vertices only, no edges |
-| [Honorable mention ADT](honorable-mention-adt/index.md) | Union-Find for connectivity |
+| [Sets](../sets/index.md) | Vertices only, no edges |
+| [Honorable mention ADT](../honorable-mention-adt/index.md) | Union-Find for connectivity |
 | [Queue](../queue/index.md) | BFS queue |
 | [Priority queue](../priority-queue/index.md) | Dijkstra heap |
 | [Complexity analysis](../../complexity/index.md) | O(V + E) notation |

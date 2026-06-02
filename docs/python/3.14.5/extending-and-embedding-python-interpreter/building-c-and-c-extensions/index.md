@@ -5,7 +5,7 @@ Scratch notes backing [**4. Building C and C++ Extensions**](https://docs.python
 ### [4.1. Building C and C++ Extensions with setuptools](https://docs.python.org/3/extending/building.html#building-c-and-c-extensions-with-setuptools)
 
 - Full write-up: [4.1. Building C and C++ Extensions with setuptools](https://docs.python.org/3/extending/building.html#building-c-and-c-extensions-with-setuptools).
-- Cross-check refcount / error conventions with the *[Python/C API Reference](../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
+- Cross-check refcount / error conventions with the *[Python/C API Reference](../../python-c-api-reference-manual/index.md)* mirror when coding against `Python.h`.
 
 ```c
 #include <Python.h>
