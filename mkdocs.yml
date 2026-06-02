@@ -1,5 +1,5 @@
 site_name: Python Programming Guide
-site_description: Notes and reference for Python 3.14.5 and popular libraries
+site_description: Notes and reference for Python 3.14.5
 site_url: https://qgjones9.github.io/python-programming-guide/
 repo_url: https://github.com/qgjones9/python-programming-guide
 repo_name: qgjones9/python-programming-guide
@@ -13,77 +13,6 @@ watch:
 
 nav:
   - Home: index.md
-  - Libraries:
-    - Libraries: libraries/index.md
-    - Pydantic:
-      - Pydantic: libraries/pydantic/index.md
-      - API Documentation: libraries/pydantic/api-documentation/index.md
-      - Blog: libraries/pydantic/blog/index.md
-      - Concepts: libraries/pydantic/concepts/index.md
-      - Error Messages: libraries/pydantic/error-messages/index.md
-      - Examples: libraries/pydantic/examples/index.md
-      - Get Started: libraries/pydantic/get-started/index.md
-      - Integrations: libraries/pydantic/integrations/index.md
-      - Internals: libraries/pydantic/internals/index.md
-    - Pygame:
-      - Pygame: libraries/pygame/index.md
-      - Documents:
-        - Documents: libraries/pygame/documents/index.md
-        - Compile Pygame: libraries/pygame/documents/compile-pygame/index.md
-        - File Path Function Arguments: libraries/pygame/documents/file-path-function-arguments/index.md
-        - LGPL License: libraries/pygame/documents/lgpl-license/index.md
-        - Pygame Logos: libraries/pygame/documents/pygame-logos/index.md
-      - Reference:
-        - Reference: libraries/pygame/reference/index.md
-        - pygame.BufferProxy: libraries/pygame/reference/bufferproxy/index.md
-        - pygame.camera: libraries/pygame/reference/camera/index.md
-        - pygame.Color: libraries/pygame/reference/color/index.md
-        - pygame.cursors: libraries/pygame/reference/cursors/index.md
-        - pygame.display: libraries/pygame/reference/display/index.md
-        - pygame.draw: libraries/pygame/reference/draw/index.md
-        - pygame.event: libraries/pygame/reference/event/index.md
-        - pygame.examples: libraries/pygame/reference/examples/index.md
-        - pygame.fastevent: libraries/pygame/reference/fastevent/index.md
-        - pygame.font: libraries/pygame/reference/font/index.md
-        - pygame.freetype: libraries/pygame/reference/freetype/index.md
-        - pygame.gfxdraw: libraries/pygame/reference/gfxdraw/index.md
-        - pygame.image: libraries/pygame/reference/image/index.md
-        - pygame.joystick: libraries/pygame/reference/joystick/index.md
-        - pygame.key: libraries/pygame/reference/key/index.md
-        - pygame.locals: libraries/pygame/reference/locals/index.md
-        - pygame.mask: libraries/pygame/reference/mask/index.md
-        - pygame.math: libraries/pygame/reference/math/index.md
-        - pygame.midi: libraries/pygame/reference/midi/index.md
-        - pygame.mixer: libraries/pygame/reference/mixer/index.md
-        - pygame.mixer.music: libraries/pygame/reference/mixer-music/index.md
-        - pygame.mouse: libraries/pygame/reference/mouse/index.md
-        - pygame.PixelArray: libraries/pygame/reference/pixelarray/index.md
-        - pygame.pixelcopy: libraries/pygame/reference/pixelcopy/index.md
-        - pygame: libraries/pygame/reference/pygame/index.md
-        - pygame.Rect: libraries/pygame/reference/rect/index.md
-        - pygame.scrap: libraries/pygame/reference/scrap/index.md
-        - pygame._sdl2.controller: libraries/pygame/reference/sdl2-controller/index.md
-        - pygame._sdl2.touch: libraries/pygame/reference/sdl2-touch/index.md
-        - pygame.sndarray: libraries/pygame/reference/sndarray/index.md
-        - pygame.sprite: libraries/pygame/reference/sprite/index.md
-        - pygame.Surface: libraries/pygame/reference/surface/index.md
-        - pygame.surfarray: libraries/pygame/reference/surfarray/index.md
-        - pygame.tests: libraries/pygame/reference/tests/index.md
-        - pygame.time: libraries/pygame/reference/time/index.md
-        - pygame.transform: libraries/pygame/reference/transform/index.md
-      - Tutorials:
-        - Tutorials: libraries/pygame/tutorials/index.md
-        - Camera Intro: libraries/pygame/tutorials/camera-intro/index.md
-        - Chimp Tutorial, Line by Line: libraries/pygame/tutorials/chimp-tutorial-line-by-line/index.md
-        - How do I move an Image?: libraries/pygame/tutorials/how-do-i-move-an-image/index.md
-        - Import and Init: libraries/pygame/tutorials/import-and-init/index.md
-        - Making Games Tutorial: libraries/pygame/tutorials/making-games-tutorial/index.md
-        - Pygame Intro: libraries/pygame/tutorials/pygame-intro/index.md
-        - Pygame Newbie Guide: libraries/pygame/tutorials/pygame-newbie-guide/index.md
-        - Setting Display Modes: libraries/pygame/tutorials/setting-display-modes/index.md
-        - Sprite Module Introduction: libraries/pygame/tutorials/sprite-module-introduction/index.md
-        - Surfarray Intro: libraries/pygame/tutorials/surfarray-intro/index.md
-    - SQLAlchemy: libraries/sqlalchemy/index.md
   - Python:
     - Python: python/index.md
     - Python 3.14.5:
@@ -1281,7 +1210,6 @@ nav:
         - virtual environment: python/3.14.5/glossary/virtual-environment/index.md
         - virtual machine: python/3.14.5/glossary/virtual-machine/index.md
         - walrus operator: python/3.14.5/glossary/walrus-operator/index.md
-  - Python Package Index (PyPI): python-package-index/index.md
   - Data Structures and Algorithms:
     - dsa/index.md
     - Foundations:

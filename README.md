@@ -1,6 +1,6 @@
 # Python Programming Guide
 
-Notes and reference for Python 3.14.5 and popular libraries, built with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/).
+Notes and reference for Python 3.14.5, built with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/).
 
 **Live site:** https://qgjones9.github.io/python-programming-guide/
 
