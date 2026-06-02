@@ -16,6 +16,8 @@ How cost grows as input size grows—so you can compare structures and algorithm
 
 ## Asymptotic notation
 
+**Asymptotic** means behavior in the limit—as input size *n* gets large. Notation here describes how **time** or **space** cost scales as *n* grows, without fixing exact constants or low-order terms. You care about the **growth class** (constant, logarithmic, linear, quadratic): whether work is on the order of *n*, *n* log *n*, *n*², and so on. That is why statements like “3*n* + 5 steps” are summarized as O(*n*) in [Simplifying expressions](#simplifying-expressions).
+
 | Symbol | Meaning (informal) | Typical use |
 | --- | --- | --- |
 | O(g) | Grows **at most** like *g* (upper bound) | Worst-case guarantee: “search is O(n).” |
