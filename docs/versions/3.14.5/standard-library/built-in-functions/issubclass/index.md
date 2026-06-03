@@ -53,6 +53,51 @@ assert issubclass(B, A)
 
 ## Best practices
 
-- Use `issubclass` on classes, `isinstance` on instances—do not mix them up.
-- Remember every class is a subclass of `object` unless you are using old-style patterns.
+- Use `issubclass` on classes and `isinstance` on instances—do not mix them up.
+
+  ```python
+  class Animal:
+      pass
+
+  class Dog(Animal):
+      pass
+
+  pet = Dog()
+  assert isinstance(pet, Animal)
+  assert issubclass(Dog, Animal)
+
+  try:
+      issubclass(pet, Animal)
+  except TypeError:
+      pass
+  else:
+      raise AssertionError("expected TypeError")
+  ```
+
+- Remember every new-style class is a subclass of `object`.
+
+  ```python
+  class Widget:
+      pass
+
+  assert issubclass(Widget, object)
+  assert issubclass(Widget, Widget)
+  ```
+
 - For structural typing, consider `typing.Protocol` instead of inheritance checks alone.
+
+  ```python
+  from typing import Protocol
+
+  class Closeable(Protocol):
+      def close(self) -> None: ...
+
+  class FileLike:
+      def close(self):
+          pass
+
+  def shutdown(resource: Closeable) -> None:
+      resource.close()
+
+  shutdown(FileLike())  # structural match, no shared base class required
+  ```

@@ -29,8 +29,71 @@ items = [1, sentinel, 3]
 assert items[1] is sentinel
 ```
 
+### Option 3: `is` agrees with `id` for live objects
+
+```python
+x = object()
+y = x
+assert id(x) == id(y)
+assert x is y
+```
+
+### Option 4: Interned small strings may share identity (CPython)
+
+```python
+a = "hello"
+b = "hello"
+# CPython may reuse the same str object for equal literals
+assert a == b
+# identity is an implementation detail; do not rely on id() for strings
+assert id(a) == id(b) or a == b
+```
+
 ## Best practices
 
 - Use `is` / `is not` for `None`, sentinels, and singleton checks—not `id()` comparisons in normal code.
+
+  ```python
+  value = None
+  assert value is None
+
+  sentinel = object()
+  items = [1, sentinel, 3]
+  assert items[1] is sentinel
+  ```
+
+  ```python
+  a = [1, 2]
+  b = [1, 2]
+  # Wrong style for equality checks:
+  # if id(a) == id(b): ...
+  assert a == b
+  assert a is not b
+  ```
+
 - Never rely on `id()` values persisting after an object is garbage-collected.
-- `id(a) == id(b)` implies `a is b` for live objects, but the converse reasoning about equality is wrong.
+
+  ```python
+  class Holder:
+      pass
+
+  obj = Holder()
+  old_id = id(obj)
+  del obj
+  # Do not store old_id for later identity checks after the object is gone.
+  assert isinstance(old_id, int)
+  ```
+
+- `id(a) == id(b)` implies `a is b` for live objects, but equal objects are not necessarily identical.
+
+  ```python
+  x = object()
+  y = x
+  assert id(x) == id(y)
+  assert x is y
+
+  a = [1, 2, 3]
+  c = list(a)
+  assert a == c
+  assert id(a) != id(c)
+  ```

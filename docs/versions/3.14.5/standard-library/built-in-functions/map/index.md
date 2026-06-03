@@ -33,8 +33,47 @@ a = list(map(lambda x, y: x + y, [1, 2, 3], [10, 20]))
 assert a == [11, 22]
 ```
 
+### Option 4: Map a type method without a lambda
+
+```python
+words = ["  a ", "b", "  c  "]
+trimmed = list(map(str.strip, words))
+assert trimmed == ["a", "b", "c"]
+```
+
 ## Best practices
 
-- A list comprehension is often clearer for simple transforms; `map` shines with an existing function like `int`.
-- `map` returns an iterator—consume once or wrap with `list()`.
-- In Python 3.14+, `strict=True` raises when parallel iterables differ in length.
+- A list comprehension is often clearer for simple transforms; `map()` shines with an existing function like `int` or `str.strip`.
+
+  ```python
+  nums = ["1", "2", "3"]
+  assert [int(n) for n in nums] == [1, 2, 3]
+  assert list(map(int, nums)) == [1, 2, 3]
+  ```
+
+  ```python
+  words = ["  a ", "b", "  c  "]
+  assert list(map(str.strip, words)) == ["a", "b", "c"]
+  ```
+
+- `map()` returns an iterator—consume once or wrap with `list()`.
+
+  ```python
+  it = map(lambda x: x * 2, range(3))
+  assert next(it) == 0
+  assert list(it) == [2, 4]
+  ```
+
+- With parallel iterables of unequal length, iteration stops at the shortest; use `zip(..., strict=True)` when lengths must match.
+
+  ```python
+  pairs = list(map(lambda x, y: x + y, [1, 2, 3], [10, 20]))
+  assert pairs == [11, 22]
+
+  try:
+      list(zip([1, 2, 3], [10, 20], strict=True))
+  except ValueError:
+      pass
+  else:
+      raise AssertionError("expected ValueError")
+  ```

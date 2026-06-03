@@ -35,8 +35,41 @@ lo, hi = min_max([3, 1, 4, 1, 5])
 assert (lo, hi) == (1, 5)
 ```
 
+### Single-element and empty tuples
+
+```python
+single = (42,)
+assert single == (42,)
+assert tuple() == ()
+assert (42) == 42  # parentheses group an int, not a one-tuple
+```
+
 ## Best practices
 
-- Use tuples for heterogeneous records; lists when you need mutability.
+- Use tuples for heterogeneous records; use lists when you need mutability.
+
+  ```python
+  point = (10, 20)  # record: fixed fields, no accidental append
+  assert point[0] == 10
+
+  scores = [88, 91]  # growing collection: use a list
+  scores.append(79)
+  assert scores[-1] == 79
+  ```
+
 - A one-element tuple requires a trailing comma: `(42,)` not `(42)`.
+
+  ```python
+  one_tuple = (42,)
+  assert one_tuple == (42,)
+  assert (42) == 42  # parentheses group an int, not a one-tuple
+  ```
+
 - Prefer `tuple` over `list` for hashable composite keys when all elements are hashable.
+
+  ```python
+  cache = {}
+  key = ("user", 42)
+  cache[key] = "Ada"
+  assert cache[("user", 42)] == "Ada"
+  ```

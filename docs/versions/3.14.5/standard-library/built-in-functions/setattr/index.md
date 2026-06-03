@@ -50,5 +50,60 @@ assert getattr(record, "field-with-dashes") == 99
 ## Best practices
 
 - Prefer normal dot syntax when the attribute name is a valid identifier known at compile time.
+
+  ```python
+  class Config:
+      pass
+
+  cfg = Config()
+  cfg.timeout = 30
+  assert cfg.timeout == 30
+  ```
+
+  ```python
+  class Config:
+      pass
+
+  cfg = Config()
+  # Dynamic name—setattr is appropriate:
+  setattr(cfg, "retry-count", 3)
+  assert getattr(cfg, "retry-count") == 3
+  ```
+
 - For private names (`__x`), name mangling happens at class definition time—mangle manually if using `setattr` on instances.
+
+  ```python
+  class Secret:
+      def __init__(self):
+          self.__token = "hidden"
+
+  s = Secret()
+  setattr(s, "_Secret__token", "new")
+  assert s._Secret__token == "new"
+  ```
+
+  ```python
+  # Incorrect—does not touch the mangled attribute:
+  # setattr(s, "__token", "new")
+  ```
+
 - Validate `name` and `value` in application code; `setattr` will raise if the object rejects the assignment.
+
+  ```python
+  class SlotBox:
+      __slots__ = ("x",)
+
+  box = SlotBox()
+  setattr(box, "x", 1)
+  try:
+      setattr(box, "y", 2)
+      raised = False
+  except AttributeError:
+      raised = True
+  assert raised
+  ```
+
+  ```python
+  # setattr does not validate business rules—you must check first:
+  # setattr(user, "age", -5)  # succeeds unless you add a setter or __setattr__
+  ```

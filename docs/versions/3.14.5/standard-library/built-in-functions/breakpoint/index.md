@@ -33,8 +33,57 @@ breakpoint("paused", reason="demo")  # prints instead of entering pdb
 sys.breakpointhook = sys.__breakpointhook__  # restore default
 ```
 
+### Disable breakpoints via environment
+
+```python
+import os
+
+# In production or CI, set PYTHONBREAKPOINT=0 so breakpoint() is a no-op.
+# os.environ["PYTHONBREAKPOINT"] = "0"
+# breakpoint()  # does nothing when PYTHONBREAKPOINT=0
+
+def compute():
+    return sum(range(5))
+
+assert compute() == 10
+```
+
 ## Best practices
 
 - Remove or guard breakpoints before shipping; set `PYTHONBREAKPOINT=0` in production to disable them.
+
+  ```python
+  import os
+
+  os.environ["PYTHONBREAKPOINT"] = "0"
+
+  def compute():
+      # breakpoint()  # no-op when PYTHONBREAKPOINT=0
+      return sum(range(5))
+
+  assert compute() == 10
+  ```
+
 - Replace `import pdb; pdb.set_trace()` with `breakpoint()` for consistency and hook compatibility.
+
+  ```python
+  # idiomatic (Python 3.7+):
+  # breakpoint()
+
+  # legacy — harder to override globally:
+  # import pdb; pdb.set_trace()
+  assert callable(breakpoint)
+  ```
+
 - Do not rely on `breakpoint()` in automated tests—it blocks on stdin unless the hook is overridden.
+
+  ```python
+  import sys
+
+  def noop(*args, **kwargs):
+      pass
+
+  sys.breakpointhook = noop
+  breakpoint()  # safe in tests with a custom hook
+  assert True
+  ```

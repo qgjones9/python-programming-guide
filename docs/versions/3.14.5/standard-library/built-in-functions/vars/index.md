@@ -45,8 +45,69 @@ box.item = "key"
 assert "item" in vars(box)
 ```
 
+### Objects without `__dict__` (`__slots__`)
+
+```python
+class Point:
+    __slots__ = ("x", "y")
+
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+
+try:
+    vars(Point(1, 2))
+except TypeError as exc:
+    assert "no __dict__" in str(exc).lower() or "__dict__" in str(exc)
+```
+
 ## Best practices
 
 - Objects with `__slots__` and no `__dict__` raise `TypeError`—use `getattr`/`dir` or slot-aware logic.
+
+  ```python
+  class Point:
+      __slots__ = ("x", "y")
+
+      def __init__(self, x, y):
+          self.x, self.y = x, y
+
+  p = Point(1, 2)
+  assert getattr(p, "x") == 1
+  assert "x" in dir(p)
+  try:
+      vars(p)
+  except TypeError:
+      pass
+  else:
+      raise AssertionError("vars() requires __dict__")
+  ```
+
 - Treat `vars()` without arguments like `locals()`—snapshot semantics differ; do not rely on it for persistence.
+
+  ```python
+  def demo():
+      local_name = "snapshot"
+      snap = vars()
+      assert snap["local_name"] == "snapshot"
+      return snap
+
+  result = demo()
+  assert result["local_name"] == "snapshot"
+  ```
+
 - Prefer explicit attributes in application code; use `vars()` mainly for introspection and generic utilities.
+
+  ```python
+  class Profile:
+      def __init__(self, name):
+          self.name = name
+
+  def copy_public_attrs(src, dest, names):
+      for key in names:
+          setattr(dest, key, getattr(src, key))
+
+  src = Profile("Ada")
+  dest = Profile("")
+  copy_public_attrs(src, dest, ("name",))
+  assert dest.name == "Ada"
+  ```

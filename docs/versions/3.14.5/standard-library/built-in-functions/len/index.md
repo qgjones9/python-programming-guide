@@ -44,6 +44,32 @@ assert len(pending) == 1
 
 ## Best practices
 
-- For emptiness tests, `if not seq:` is idiomatic; use `len` when you need the actual count.
+- For emptiness tests, `if not seq:` is idiomatic; use `len()` when you need the actual count.
+
+  ```python
+  pending = []
+  if not pending:
+      pending.append("task")
+  assert pending == ["task"]
+  assert len(pending) == 1
+  ```
+
 - `len()` is O(1) for list, tuple, str, dict, and set in CPython.
+
+  ```python
+  data = {"a": 1, "b": 2, "c": 3}
+  assert len(data) == 3
+  assert len("hello") == 5
+  ```
+
 - Very large theoretical ranges may raise `OverflowError`—rare in everyday code.
+
+  ```python
+  huge = range(10**100)
+  try:
+      len(huge)
+  except OverflowError:
+      pass
+  else:
+      raise AssertionError("expected OverflowError")
+  ```

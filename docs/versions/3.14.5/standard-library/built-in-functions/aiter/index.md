@@ -53,5 +53,46 @@ assert asyncio.run(collect(gen())) == ["a", "b"]
 ## Best practices
 
 - Unlike `iter()`, `aiter()` has no two-argument form—there is no async sentinel default.
-- Prefer `async for` in application code; use `aiter()` when you need low-level control or library-style APIs.
+
+  ```python
+  # This will error! There is no sentinel variant:
+  # it = aiter(async_iterable, sentinel)
+  ```
+
+- Prefer `async for` in application code; use `aiter()` when you need low-level control or to build your own async iteration tools.
+
+  ```python
+  async def use_async_for(async_iterable):
+      # idiomatic way, handles StopAsyncIteration for you
+      async for item in async_iterable:
+          print(item)
+  ```
+
+  ```python
+  async def manual_iteration(async_iterable):
+      # explicit iterator, rare in application code:
+      it = aiter(async_iterable)
+      while True:
+          try:
+              item = await anext(it)
+              print(item)
+          except StopAsyncIteration:
+              break
+  ```
+
 - Always `await` results from `anext()`; plain `next()` does not work on async iterators.
+
+  ```python
+  import asyncio
+
+  async def gen():
+      yield 1
+
+  async def main():
+      it = aiter(gen())
+      item = await anext(it)  # correct
+      assert item == 1
+      # Incorrect: next(it)  # TypeError
+
+  asyncio.run(main())
+  ```

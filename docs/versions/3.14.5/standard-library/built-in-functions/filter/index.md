@@ -26,8 +26,56 @@ truthy = list(filter(None, values))
 assert truthy == ["ok", 42]
 ```
 
+### Option 3: Keep only non-empty strings
+
+```python
+lines = ["  hi  ", "", "world", "   "]
+non_empty = list(filter(lambda s: s.strip(), lines))
+assert non_empty == ["  hi  ", "world"]
+```
+
+### Option 4: Lazy iterator (consume once)
+
+```python
+it = filter(lambda x: x % 2 == 0, range(6))
+assert next(it) == 0
+assert list(it) == [2, 4]
+```
+
 ## Best practices
 
-- A list comprehension `[x for x in items if pred(x)]` is often clearer than `filter()` for simple cases.
-- Remember `filter` returns an iterator in Python 3; wrap with `list()` if you need multiple passes.
-- Use `itertools.filterfalse()` when you want elements where the predicate is false.
+- A list comprehension is often clearer than `filter()` for simple predicates; reserve `filter()` when you already have a named function (e.g. `str.isdigit`).
+
+  ```python
+  scores = [55, 72, 88, 41, 90]
+  passing = [s for s in scores if s >= 60]
+  assert passing == [72, 88, 90]
+  ```
+
+  ```python
+  import operator
+
+  lines = ["123", "abc", "456"]
+  digits = list(filter(str.isdigit, lines))
+  assert digits == ["123", "456"]
+  ```
+
+- Remember `filter()` returns an iterator in Python 3; consume it once or wrap with `list()` if you need multiple passes.
+
+  ```python
+  it = filter(lambda x: x % 2 == 0, range(6))
+  assert next(it) == 0
+  # Second pass requires materializing:
+  evens = list(filter(lambda x: x % 2 == 0, range(6)))
+  assert evens == [0, 2, 4]
+  ```
+
+- Use `itertools.filterfalse()` when you want elements where the predicate is **false**—the inverse of `filter()`.
+
+  ```python
+  import itertools
+
+  values = [0, 1, 2, 3, 4]
+  odds = list(itertools.filterfalse(lambda x: x % 2 == 0, values))
+  assert odds == [1, 3]
+  ```

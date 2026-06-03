@@ -31,8 +31,38 @@ write_line(buf, "log message")
 assert buf.getvalue() == b"log message\n"
 ```
 
+### Joining byte fragments
+
+```python
+parts = [b"Hello", b", ", b"world"]
+message = bytes().join(parts)
+assert message == b"Hello, world"
+```
+
 ## Best practices
 
 - Use `b"..."` literals when the content is ASCII; call `bytes(..., encoding=...)` for dynamic Unicode.
+
+  ```python
+  assert bytes("hi", "ascii") == b"hi"
+  label = "café"
+  encoded = label.encode("utf-8")
+  assert isinstance(encoded, bytes)
+  # bytes(label)  # TypeError — str needs an encoding
+  ```
+
 - Immutable bytes are hashable and safe as dict keys; bytearray is not.
+
+  ```python
+  key = b"token"
+  cache = {key: 42}
+  assert cache[b"token"] == 42
+  ```
+
 - Decode at boundaries (UI, JSON) and keep binary layers in `bytes` end-to-end.
+
+  ```python
+  wire = b"\xc3\xa9"  # UTF-8 for "é"
+  assert wire.decode("utf-8") == "é"
+  assert isinstance(wire, bytes)
+  ```

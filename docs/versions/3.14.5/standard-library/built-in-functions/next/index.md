@@ -43,5 +43,48 @@ assert items == ["a", "b"]
 ## Best practices
 
 - Prefer `for` loops for full iteration; use `next()` for streaming or parser-style logic.
+
+  ```python
+  items = ["a", "b", "c"]
+  collected = []
+  for item in items:
+      collected.append(item)
+  assert collected == ["a", "b", "c"]
+  ```
+
+  ```python
+  # Manual next() is for parser-style pull-one-at-a-time logic:
+  it = iter("abc")
+  assert next(it) == "a"
+  ```
+
 - Always provide `default` when exhaustion is normal, not exceptional.
+
+  ```python
+  it = iter([])
+  assert next(it, None) is None  # exhaustion is expected
+  ```
+
+  ```python
+  it = iter([])
+  # This will raise StopIteration when empty:
+  # next(it)
+  ```
+
 - Do not catch `StopIteration` outside generator protocol code—it has special meaning inside generators.
+
+  ```python
+  def read_one(it):
+      return next(it, None)  # prefer default over bare except
+
+  assert read_one(iter([1])) == 1
+  assert read_one(iter([])) is None
+  ```
+
+  ```python
+  # Incorrect in application code—use default= instead:
+  # try:
+  #     next(it)
+  # except StopIteration:
+  #     ...
+  ```

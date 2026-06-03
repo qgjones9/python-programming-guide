@@ -41,8 +41,57 @@ assert isinstance(user, AdminUser)
 assert isinstance(user, object)
 ```
 
+### Option 4: Union types and `typing` tuples
+
+```python
+def accepts_number(value):
+    return isinstance(value, int | float)
+
+assert accepts_number(3) is True
+assert accepts_number(3.14) is True
+assert accepts_number("3") is False
+```
+
 ## Best practices
 
 - Prefer `isinstance()` over `type(x) is T` when subclasses should be accepted.
-- Avoid excessive isinstance chains—consider duck typing or a single protocol check.
+
+  ```python
+  class AdminUser:
+      pass
+
+  user = AdminUser()
+  assert isinstance(user, AdminUser)
+  assert isinstance(user, object)
+  assert type(user) is AdminUser  # rejects subclasses of AdminUser
+  ```
+
+- Avoid long `isinstance` chains—consider duck typing or a single protocol check.
+
+  ```python
+  import collections.abc
+
+  def write_lines(stream, lines):
+      if not isinstance(stream, collections.abc.TextIOBase):
+          raise TypeError("expected text stream")
+      for line in lines:
+          stream.write(line + "\n")
+  ```
+
+  ```python
+  # Hard to extend and read:
+  # if isinstance(x, (A, B, C, D, E)): ...
+  ```
+
 - Use union types or tuples for “one of several types” rather than nested if/else.
+
+  ```python
+  def stringify(value):
+      if not isinstance(value, (str, int, float)):
+          raise TypeError("expected str, int, or float")
+      return str(value)
+
+  assert stringify(99) == "99"
+  assert stringify(3.5) == "3.5"
+  assert isinstance(3.14, int | float)
+  ```

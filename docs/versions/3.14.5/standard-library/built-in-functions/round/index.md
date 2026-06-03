@@ -42,5 +42,41 @@ assert round(HalfStep(2.3)) == 2.5
 ## Best practices
 
 - Binary floats cannot represent all decimals exactly—`round(2.675, 2)` may surprise you; use `decimal.Decimal` for money.
+
+  ```python
+  from decimal import Decimal, ROUND_HALF_UP
+
+  price = Decimal("2.675")
+  assert price.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP) == Decimal("2.68")
+  ```
+
+  ```python
+  # Float surprise—not always the decimal you expect:
+  assert round(2.675, 2) == 2.67  # not 2.68
+  ```
+
 - Omit `ndigits` when you need an integer; pass `ndigits` when you need a float at that precision.
+
+  ```python
+  assert round(3.7) == 4
+  assert isinstance(round(3.7), int)
+  assert round(3.14159, 2) == 3.14
+  assert isinstance(round(3.14159, 2), float)
+  ```
+
+  ```python
+  # Incorrect when you need an int result but pass ndigits=0 expecting int:
+  assert isinstance(round(3.7, 0), float)  # 4.0, not int 4
+  ```
+
 - For statistically unbiased rounding over many values, banker's rounding reduces bias compared to always rounding .5 up.
+
+  ```python
+  assert round(2.5) == 2
+  assert round(3.5) == 4  # ties go to even
+  ```
+
+  ```python
+  # Other languages often round 0.5 away from zero—do not assume that here:
+  # assert round(2.5) == 3  # fails in Python
+  ```

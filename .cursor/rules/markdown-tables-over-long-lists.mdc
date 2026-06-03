@@ -1,0 +1,56 @@
+---
+description: Prefer Markdown tables over bullet or numbered lists when there are more than two items.
+globs: "**/*.md"
+alwaysApply: false
+---
+
+# Markdown tables over long lists
+
+**Scope.** When writing or editing Markdown in this repo (especially docs under `docs/`), prefer **tables** over **lists** when presenting **three or more** related items.
+
+## Default
+
+| Item count | Prefer |
+|------------|--------|
+| 1–2 items | Bullet or numbered list |
+| 3+ items | Markdown table |
+
+Use a table when entries share a structure (name + description, term + definition, option + behavior, link + summary, etc.).
+
+## Keep lists
+
+Do **not** force a table when a list is the better fit:
+
+- Sequential steps or procedures (ordered list)
+- Single-level navigation where hierarchy matters (nested TOC)
+- Prose-heavy bullets where columns would be artificial
+- The user explicitly asks for a list
+
+## Examples
+
+**Prefer table (3+ structured items):**
+
+```markdown
+| Module | Purpose |
+|--------|---------|
+| `json` | JSON encoder and decoder |
+| `csv` | CSV file reading and writing |
+| `tomllib` | Parse TOML files |
+```
+
+**List is fine (≤2 items):**
+
+```markdown
+- `True` — boolean true value
+- `False` — boolean false value
+```
+
+**Avoid (3+ items as a flat list when tabular):**
+
+```markdown
+- `json` — JSON encoder and decoder
+- `csv` — CSV file reading and writing
+- `tomllib` — Parse TOML files
+```
+
+When converting an existing long list to a table, preserve links, code formatting, and meaning; add a header row that names each column clearly.

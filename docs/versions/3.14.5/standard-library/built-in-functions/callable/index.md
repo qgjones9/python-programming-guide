@@ -39,8 +39,59 @@ assert invoke(lambda x: x * 2, 4) == 8
 assert invoke(None, 4) is None
 ```
 
+### Classes are callable constructors
+
+```python
+class Box:
+    def __init__(self, value):
+        self.value = value
+
+assert callable(Box)
+instance = Box(7)
+assert instance.value == 7
+```
+
 ## Best practices
 
 - Classes are callable (constructors); instances are callable only with `__call__`.
-- For duck typing, prefer calling within try/except or use `typing.Protocol` for static checks.
-- `callable()` was restored in Python 3.2 after removal in 3.0—prefer it over older `hasattr(x, "__call__")` patterns.
+
+  ```python
+  class Box:
+      def __init__(self, value):
+          self.value = value
+
+  box = Box(3)
+  assert callable(Box)
+  assert not callable(box)
+
+  class CallableBox:
+      def __call__(self):
+          return 1
+
+  assert callable(CallableBox())
+  ```
+
+- For duck typing at runtime, prefer calling within try/except over `callable()` when failure is expected.
+
+  ```python
+  def invoke(maybe_fn, arg):
+      if callable(maybe_fn):
+          return maybe_fn(arg)
+      return maybe_fn  # already a value
+
+  assert invoke(len, "hi") == 2
+  assert invoke(42, None) == 42
+  ```
+
+- `callable()` is clearer than `hasattr(x, "__call__")` for deciding whether to invoke an object.
+
+  ```python
+  class Greeter:
+      def greet(self):
+          return "hi"
+
+  obj = Greeter()
+  assert not callable(obj)
+  assert callable(obj.greet)
+  assert callable(len)
+  ```

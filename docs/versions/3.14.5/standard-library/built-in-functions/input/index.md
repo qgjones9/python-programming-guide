@@ -10,22 +10,42 @@ Command-line tools and interactive scripts need to collect user text without pul
 
 ## Implementation options
 
-### Option 1: Prompt and parse numeric input (pattern)
+### Option 1: Read a line with `input()` using redirected stdin
 
 ```python
-# Interactive REPL usage:
-# age = int(input("Enter your age: "))
+import io
+import sys
 
-def parse_positive_int(text: str) -> int:
-    value = int(text.strip())
-    if value <= 0:
-        raise ValueError("must be positive")
-    return value
+def read_line_with_prompt(prompt: str, typed: str) -> str:
+    original = sys.stdin
+    sys.stdin = io.StringIO(typed + "\n")
+    try:
+        return input(prompt)
+    finally:
+        sys.stdin = original
 
-assert parse_positive_int("  42\n") == 42
+answer = read_line_with_prompt("Name: ", "Ada")
+assert answer == "Ada"
 ```
 
-### Option 2: Validate yes/no responses
+### Option 2: Parse numeric input after `input()`
+
+```python
+import io
+import sys
+
+def read_age(prompt: str, typed: str) -> int:
+    original = sys.stdin
+    sys.stdin = io.StringIO(typed + "\n")
+    try:
+        return int(input(prompt).strip())
+    finally:
+        sys.stdin = original
+
+assert read_age("Enter your age: ", "  42  ") == 42
+```
+
+### Option 3: Validate yes/no responses
 
 ```python
 def normalize_yes_no(text: str) -> bool:
@@ -37,10 +57,73 @@ def normalize_yes_no(text: str) -> bool:
     raise ValueError("expected yes or no")
 
 assert normalize_yes_no("  YES  ") is True
+assert normalize_yes_no("no") is False
+```
+
+### Option 4: Split comma-separated input
+
+```python
+import io
+import sys
+
+def read_tags(prompt: str, typed: str) -> list[str]:
+    original = sys.stdin
+    sys.stdin = io.StringIO(typed + "\n")
+    try:
+        line = input(prompt)
+    finally:
+        sys.stdin = original
+    return [part.strip() for part in line.split(",") if part.strip()]
+
+assert read_tags("Tags: ", " python, asyncio , ") == ["python", "asyncio"]
 ```
 
 ## Best practices
 
 - Always validate and convert `input()` results; it always returns a string.
+
+  ```python
+  import io
+  import sys
+
+  def read_age(prompt: str, typed: str) -> int:
+      original = sys.stdin
+      sys.stdin = io.StringIO(typed + "\n")
+      try:
+          return int(input(prompt).strip())
+      finally:
+          sys.stdin = original
+
+  assert read_age("Age: ", "  42  ") == 42
+  ```
+
 - Wrap conversion in `try/except ValueError` for robust CLI tools.
-- When the readline module is available, users get line editing and history in the terminal.
+
+  ```python
+  def parse_int(text: str) -> int | None:
+      try:
+          return int(text.strip())
+      except ValueError:
+          return None
+
+  assert parse_int("42") == 42
+  assert parse_int("nope") is None
+  ```
+
+- Treat empty lines and whitespace explicitly; `input()` does not strip for you.
+
+  ```python
+  import io
+  import sys
+
+  def read_name(prompt: str, typed: str) -> str:
+      original = sys.stdin
+      sys.stdin = io.StringIO(typed + "\n")
+      try:
+          return input(prompt).strip()
+      finally:
+          sys.stdin = original
+
+  assert read_name("Name: ", "  Ada  ") == "Ada"
+  assert read_name("Name: ", "") == ""
+  ```

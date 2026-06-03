@@ -36,8 +36,53 @@ assert list(nums) == [1, 2, 3]
 assert list(letters) == ["x", "y", "z"]
 ```
 
+### Shortest iterable wins (default)
+
+```python
+names = ["a", "b", "c"]
+nums = [1, 2]
+assert list(zip(names, nums)) == [("a", 1), ("b", 2)]
+
+try:
+    list(zip(names, nums, strict=True))
+except ValueError:
+    pass
+else:
+    raise AssertionError("strict=True should reject unequal lengths")
+```
+
 ## Best practices
 
 - Use `strict=True` when unequal lengths indicate a bug, not intentional truncation.
+
+  ```python
+  keys = ["a", "b"]
+  vals = [1, 2]
+  assert list(zip(keys, vals, strict=True)) == [("a", 1), ("b", 2)]
+  try:
+      list(zip(["a", "b", "c"], [1, 2], strict=True))
+  except ValueError:
+      pass
+  else:
+      raise AssertionError("strict=True should reject unequal lengths")
+  ```
+
 - Default `zip` silently drops trailing items from longer iterables—verify lengths when that matters.
+
+  ```python
+  names = ["a", "b", "c"]
+  nums = [1, 2]
+  assert list(zip(names, nums)) == [("a", 1), ("b", 2)]
+  assert len(names) != len(list(zip(names, nums)))
+  ```
+
 - For padding shorter iterables, use `itertools.zip_longest()` instead of manual loops.
+
+  ```python
+  from itertools import zip_longest
+
+  names = ["a", "b", "c"]
+  nums = [1, 2]
+  padded = list(zip_longest(names, nums, fillvalue=0))
+  assert padded == [("a", 1), ("b", 2), ("c", 0)]
+  ```

@@ -37,8 +37,57 @@ assert obj.answer == 42
 assert obj.greet() == "hi"
 ```
 
+### `type()` vs `isinstance()` with subclasses
+
+```python
+class Dog:
+    pass
+
+class Puppy(Dog):
+    pass
+
+pet = Puppy()
+assert isinstance(pet, Dog)
+assert type(pet) is Puppy
+assert type(pet) is not Dog  # exact type, not ancestry
+```
+
 ## Best practices
 
 - Use `isinstance()` and `issubclass()` for type tests that should respect inheritance.
+
+  ```python
+  class Dog:
+      pass
+
+  class Puppy(Dog):
+      pass
+
+  pet = Puppy()
+  assert isinstance(pet, Dog)
+  assert type(pet) is not Dog
+  ```
+
 - Reserve three-argument `type()` for frameworks; normal code should use `class` syntax for readability.
+
+  ```python
+  Plugin = type("Plugin", (), {"run": lambda self: "ok"})
+  assert Plugin().run() == "ok"
+
+  class Greeter:
+      def greet(self):
+          return "hi"
+
+  assert Greeter().greet() == "hi"
+  ```
+
 - Remember `type(x) is T` fails for subclasses—`isinstance(x, T)` is usually what you want.
+
+  ```python
+  class AdminUser:
+      pass
+
+  user = AdminUser()
+  assert isinstance(user, AdminUser)
+  assert type(user) is AdminUser
+  ```

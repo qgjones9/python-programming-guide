@@ -34,5 +34,38 @@ assert pow(3, 4) == 3 ** 4 == 81
 ## Best practices
 
 - Use three-argument `pow(base, exp, mod)` for crypto and large modular math—not `(base ** exp) % mod`.
+
+  ```python
+  assert pow(2, 100, 1000) == 376
+  assert pow(2, 100, 1000) == (2**100) % 1000  # same result, but ** builds huge int first
+  ```
+
+  ```python
+  # Avoid for large exponents—materializes enormous intermediate value:
+  # (2 ** 10_000) % 97
+  ```
+
 - Negative exponents with mod require base and mod to be relatively prime (see docs).
+
+  ```python
+  assert pow(38, -1, 97) == 23
+  assert (23 * 38) % 97 == 1
+  ```
+
+  ```python
+  # This will raise ValueError when no modular inverse exists:
+  # pow(2, -1, 4)
+  ```
+
 - Watch float/complex rules: negative non-integer exponents on negatives yield complex results.
+
+  ```python
+  assert pow(4, 0.5) == 2.0
+  result = pow(-1, 0.5)
+  assert abs(result.imag - 1.0) < 1e-10 and abs(result.real) < 1e-10
+  ```
+
+  ```python
+  # Surprising if you expect a real root:
+  # assert pow(-1, 0.5) == -1  # actually returns a complex number
+  ```

@@ -27,13 +27,71 @@ class Temperature:
         self.celsius = celsius
 
     def __abs__(self):
+        # Allow abs() to be called on Temperature, so users can get a
+        # Temperature instance representing the magnitude regardless of sign.
+        # This enables idioms like abs(temp1 - temp2) if subtraction is defined,
+        # or just abs(temp) to express the unsigned distance from 0 °C.
         return Temperature(abs(self.celsius))
 
+# Example usage: abs(Temperature(-10)) returns a new Temperature(10)
+# This pattern is helpful when you want your custom class to "just work"
+# with built-in numeric tools and maximize interoperability.
 assert abs(Temperature(-10)).celsius == 10
 ```
 
 ## Best practices
 
-- Prefer `abs()` over manual `x if x >= 0 else -x` for clarity and protocol support.
-- Remember complex numbers return a float magnitude, not a complex result.
-- For financial or decimal work, use `Decimal` and its own absolute-value handling rather than mixing with float `abs()` surprises.
+**Good vs Bad Use Cases for `abs()`**
+
+**Good: Using `abs()` directly for readability and extensibility**
+```python
+x = -3
+result = abs(x)  # 👍 Clear, idiomatic, and works for custom types with __abs__()
+```
+
+**Bad: Re-implementing absolute value manually**
+```python
+x = -3
+# 👎 Manual branching, not extensible to custom types, easy to get wrong:
+result = x if x >= 0 else -x
+```
+*Why bad?*  
+This only works for types supporting `>=` and unary `-`, skips `__abs__`, and gets tricky with complex numbers or custom types.
+
+---
+
+**Good: Complex numbers with `abs()`**
+```python
+z = complex(3, 4)
+magnitude = abs(z)  # 👍 Returns 5.0, the magnitude (not a complex)
+```
+
+**Bad: Expecting abs() on complex to return a 'component-wise' abs**
+```python
+z = complex(-3, 4)
+wrong = complex(abs(z.real), abs(z.imag))  # 👎 Not the same as abs(z); this loses direction
+```
+*Why bad?*  
+`abs(z)` returns the magnitude, not a new complex. The "component-wise" operation is not a true absolute value for complex numbers.
+
+---
+
+**Good: Use Decimal’s methods for financial calculations**
+```python
+from decimal import Decimal
+amount = Decimal('-1.25')
+# 👍 Use Decimal's absolute value handling:
+clean = abs(amount) # returns a new Decimal object representing the magnitude
+print(clean) # prints 1.25
+```
+
+**Bad: Mixing Decimal with float before calling abs()**
+```python
+from decimal import Decimal
+amount = Decimal('-1.25')
+# 👎 Mixing with float can lose precision:
+bad = abs(float(amount)) # returns 1.0, loses precision
+print(bad) # prints 1.0
+```
+*Why bad?*  
+Mixing Decimal with float discards precision and can introduce rounding errors. Always use Decimal operations for financial work.

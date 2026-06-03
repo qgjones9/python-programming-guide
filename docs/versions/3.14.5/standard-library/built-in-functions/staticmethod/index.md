@@ -48,5 +48,63 @@ assert Demo.tags() == ("a", "b")
 ## Best practices
 
 - Use `@classmethod` when the method needs the class object (alternate constructors).
+
+  ```python
+  class User:
+      def __init__(self, name):
+          self.name = name
+
+      @classmethod
+      def from_email(cls, email):
+          name = email.split("@", 1)[0]
+          return cls(name)
+
+  assert User.from_email("ada@example.com").name == "ada"
+  ```
+
+  ```python
+  class Math:
+      @staticmethod
+      def clamp(value, low, high):
+          return max(low, min(value, high))
+
+  # staticmethod does not receive cls—wrong tool for alternate constructors:
+  assert Math.clamp(5, 0, 10) == 5
+  ```
+
 - Static methods do not participate in overriding the same way instance methods do—design APIs accordingly.
+
+  ```python
+  class Base:
+      @staticmethod
+      def tag():
+          return "base"
+
+  class Sub(Base):
+      @staticmethod
+      def tag():
+          return "sub"
+
+  assert Sub.tag() == "sub"  # hides Base.tag, not virtual dispatch
+  ```
+
+  ```python
+  # Instance methods use the MRO; staticmethods are resolved on the class you call:
+  # Sub().tag() still calls Sub.tag, not a cooperative parent chain
+  ```
+
 - Keep static methods as pure utilities; reach for module-level functions if the class adds no clarity.
+
+  ```python
+  class Text:
+      @staticmethod
+      def normalize(s):
+          return s.strip().lower()
+
+  assert Text.normalize("  Hi  ") == "hi"
+  ```
+
+  ```python
+  # If the class name adds no namespace value, a module function is simpler:
+  # def normalize(s): ...
+  ```

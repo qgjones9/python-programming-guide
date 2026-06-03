@@ -30,8 +30,40 @@ assert abs(z) == 5.0
 assert z.real == 3 and z.imag == 4
 ```
 
+### Arithmetic with literals
+
+```python
+z = (1 + 2j) * (3 - 1j)
+assert complex(z.real, z.imag) == z
+assert (1 + 2j).conjugate() == (1 - 2j)
+```
+
 ## Best practices
 
 - String forms must not contain spaces around `+`/`-` and `j` (`complex("1 + 2j")` raises `ValueError`).
-- As of Python 3.14, passing a complex number as separate real/imag arguments is deprecated—use a single value.
+
+  ```python
+  assert complex("1+2j") == 1 + 2j
+  try:
+      complex("1 + 2j")
+      raise AssertionError("expected ValueError")
+  except ValueError:
+      pass
+  ```
+
 - Prefer `1j` literals in code; use `complex()` for parsing external data.
+
+  ```python
+  z = 3 + 4j  # idiomatic in source code
+  assert z.real == 3 and z.imag == 4
+
+  parsed = complex("3+4j")  # from config or wire format
+  assert parsed == z
+  ```
+
+- Use separate real and imag arguments only when both are known numerics—not for string parsing.
+
+  ```python
+  assert complex(3, 4) == 3 + 4j
+  # complex("3", "4")  # TypeError — strings are not valid as separate parts
+  ```

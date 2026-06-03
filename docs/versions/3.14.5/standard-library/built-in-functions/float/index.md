@@ -33,8 +33,69 @@ assert float(t) == 36.6
 assert float(42) == 42.0
 ```
 
+### Option 3: Special values and scientific notation
+
+```python
+import math
+
+assert float("inf") == math.inf
+assert float("-inf") == -math.inf
+assert math.isnan(float("nan"))
+assert float("1.5e2") == 150.0
+```
+
+### Option 4: Boolean and integer coercion
+
+```python
+assert float(True) == 1.0
+assert float(False) == 0.0
+assert float(10**20) == 10**20  # exact at this magnitude in IEEE double
+```
+
 ## Best practices
 
-- Be aware of binary floating-point rounding; use `decimal.Decimal` for money and exact decimal math.
+- Binary floating-point cannot represent every decimal exactly; use `decimal.Decimal` for money and other exact decimal math.
+
+  ```python
+  from decimal import Decimal
+
+  price = Decimal("0.1") + Decimal("0.2")
+  assert price == Decimal("0.3")
+
+  # Float rounding surprise:
+  assert 0.1 + 0.2 != 0.3
+  ```
+
 - Validate string input before conversion; invalid strings raise `ValueError`.
-- Use `math.isfinite()` to detect `inf` and `nan` when parsing external data.
+
+  ```python
+  def parse_float(text: str) -> float:
+      text = text.strip()
+      if not text:
+          raise ValueError("empty input")
+      return float(text)
+
+  assert parse_float("  3.14  ") == 3.14
+
+  try:
+      float("not-a-number")
+  except ValueError:
+      pass
+  else:
+      raise AssertionError("expected ValueError")
+  ```
+
+- Use `math.isfinite()` to reject `inf` and `nan` when parsing external data.
+
+  ```python
+  import math
+
+  def safe_float(text: str) -> float:
+      value = float(text)
+      if not math.isfinite(value):
+          raise ValueError("non-finite float")
+      return value
+
+  assert safe_float("42.0") == 42.0
+  assert not math.isfinite(float("inf"))
+  ```

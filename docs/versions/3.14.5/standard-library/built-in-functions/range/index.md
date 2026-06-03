@@ -38,6 +38,51 @@ assert pairs == [(0, "alpha"), (1, "beta"), (2, "gamma")]
 ## Best practices
 
 - Prefer `range(n)` over `list(range(n))` when you only need iteration or indexing.
+
+  ```python
+  total = 0
+  for i in range(5):
+      total += i
+  assert total == 10
+  ```
+
+  ```python
+  # Wastes memory when you only loop:
+  # for i in list(range(1_000_000)):
+  #     ...
+  ```
+
 - Remember the stop value is exclusive: `range(3)` yields `0`, `1`, `2`.
+
+  ```python
+  assert list(range(3)) == [0, 1, 2]
+  assert 3 not in range(3)
+  ```
+
+  ```python
+  # Incorrect—expecting stop to be included:
+  # assert list(range(1, 4)) == [1, 2, 3, 4]  # actually [1, 2, 3]
+  ```
+
 - Use a negative `step` to count down; `start` must be greater than `stop` in that case.
+
+  ```python
+  assert list(range(5, 0, -1)) == [5, 4, 3, 2, 1]
+  ```
+
+  ```python
+  # This yields nothing—start must exceed stop when step is negative:
+  assert list(range(0, 5, -1)) == []
+  ```
+
 - For very large ranges, rely on lazy iteration—do not materialize the whole sequence unless required.
+
+  ```python
+  big = range(10**9)
+  assert big[0] == 0 and len(big) == 10**9  # O(1) memory
+  ```
+
+  ```python
+  # Incorrect—can exhaust memory:
+  # huge = list(range(10**9))
+  ```

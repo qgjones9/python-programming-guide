@@ -2,15 +2,15 @@
 
 ## Description
 
-Takes two numbers and returns a tuple of their quotient and remainder from integer division.
+`divmod(a, b)` returns `(a // b, a % b)`—the quotient and remainder from integer division in one tuple. It works with integers and floats (float results may differ slightly from separate `//` and `%`).
 
 ## What problem it solves
 
-Many algorithms need both the quotient and remainder in one step—time conversions, pagination, or splitting items into groups—without calling `//` and `%` separately.
+Time conversions, pagination, grid layout, and cyclic indexing often need both how many whole groups fit and what is left over. `divmod()` expresses that pairing without two separate operations.
 
 ## Implementation options
 
-### Option 1: Split seconds into minutes and seconds
+### Split seconds into minutes and seconds
 
 ```python
 total_seconds = 754
@@ -19,19 +19,51 @@ assert minutes == 12
 assert seconds == 34
 ```
 
-### Option 2: Paginate a list of items
+### Negative dividend (floor division semantics)
+
+```python
+q, r = divmod(-10, 3)
+assert q == -4 and r == 2  # -10 == (-4) * 3 + 2
+assert q * 3 + r == -10
+```
+
+### Page count for a fixed page size
 
 ```python
 items = list(range(23))
 page_size = 5
-for page_num in range(divmod(len(items) + page_size - 1, page_size)[0]):
-    start = page_num * page_size
-    chunk = items[start : start + page_size]
-    assert len(chunk) <= page_size
+page_count, remainder = divmod(len(items), page_size)
+if remainder:
+    page_count += 1
+assert page_count == 5
 ```
 
 ## Best practices
 
 - For integers, `divmod(a, b)` equals `(a // b, a % b)` but reads more clearly when both values are needed.
+
+  ```python
+  total, size = 17, 5
+  pages, remainder = divmod(total, size)
+  assert (pages, remainder) == (3, 2)
+  assert pages * size + remainder == total
+  ```
+
 - With floats, the quotient may differ slightly from `a // b`; trust `divmod` for the paired result.
+
+  ```python
+  a, b = 7.0, 2.0
+  q, r = divmod(a, b)
+  assert q == 3.0 and r == 1.0
+  assert q * b + r == a
+  ```
+
 - Ensure the divisor is non-zero to avoid `ZeroDivisionError`.
+
+  ```python
+  try:
+      divmod(10, 0)
+      raise AssertionError("expected ZeroDivisionError")
+  except ZeroDivisionError:
+      pass
+  ```

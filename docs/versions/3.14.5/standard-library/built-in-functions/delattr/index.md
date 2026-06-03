@@ -40,8 +40,57 @@ delattr(cache, key)
 assert not hasattr(cache, "item_42")
 ```
 
+### Equivalent to `del` on an instance attribute
+
+```python
+class Holder:
+    pass
+
+h = Holder()
+h.note = "draft"
+delattr(h, "note")  # same as: del h.note
+assert not hasattr(h, "note")
+```
+
 ## Best practices
 
 - Prefer plain `del obj.attr` when the attribute name is known statically—it is clearer.
-- Deletion may fail with `AttributeError` (missing) or `TypeError` (non-deletable slots/properties).
+
+  ```python
+  class Holder:
+      pass
+
+  h = Holder()
+  h.note = "draft"
+  del h.note  # idiomatic when the name is literal
+  assert not hasattr(h, "note")
+  ```
+
+- Use `delattr()` when the attribute name is computed at runtime.
+
+  ```python
+  class Cache:
+      pass
+
+  cache = Cache()
+  key = "item_42"
+  setattr(cache, key, "value")
+  delattr(cache, key)
+  assert not hasattr(cache, key)
+  ```
+
 - For user-controlled names, validate against an allowlist to avoid deleting critical internals.
+
+  ```python
+  class UserObject:
+      def __init__(self):
+          self.public = 1
+          self._secret = 2
+
+  obj = UserObject()
+  name = "_secret"
+  allowed = {"public"}
+  if name in allowed:
+      delattr(obj, name)
+  assert hasattr(obj, "_secret")  # blocked
+  ```

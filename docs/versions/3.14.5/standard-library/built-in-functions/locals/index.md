@@ -48,5 +48,33 @@ assert demo() == ["a", "b"]
 ## Best practices
 
 - Do not rely on mutating `locals()` to change function variables in optimized scopes (PEP 667).
+
+  ```python
+  def demo():
+      x = 1
+      snap = locals()
+      snap["x"] = 99
+      return x
+
+  assert demo() == 1  # local x unchanged
+  ```
+
 - Prefer explicit parameters and return values over magic locals inspection in production code.
+
+  ```python
+  def greet(name: str) -> str:
+      return f"Hello, {name}!"
+
+  assert greet("Ada") == "Hello, Ada!"
+  ```
+
 - Use `locals()` mainly for debuggers, REPL tooling, and framework introspection.
+
+  ```python
+  def debug_snapshot():
+      x = 10
+      y = "ok"
+      return {k: v for k, v in locals().items() if not k.startswith("_")}
+
+  assert debug_snapshot() == {"x": 10, "y": "ok"}
+  ```

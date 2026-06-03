@@ -33,8 +33,45 @@ assert enabled("0") is True  # non-empty string is truthy
 assert enabled([]) is False
 ```
 
+### Normalizing a list of mixed inputs
+
+```python
+raw = [1, 0, "", "yes", None]
+flags = [bool(v) for v in raw]
+assert flags == [True, False, False, True, False]
+```
+
 ## Best practices
 
-- Remember `bool("0")` is `True`—for string configs, parse explicitly (`raw.lower() in {"1", "true", "yes"}`).
+- Remember `bool("0")` is `True`—for string configs, parse explicitly.
+
+  ```python
+  raw = "0"
+  assert bool(raw)  # non-empty string is truthy
+
+  enabled = raw.lower() in {"1", "true", "yes", "on"}
+  assert not enabled
+  ```
+
 - Prefer `if x:` over `if bool(x):` when you only need branching; use `bool()` when storing or serializing a boolean.
+
+  ```python
+  items = [1, 2, 3]
+
+  if items:
+      first = items[0]
+  assert first == 1
+
+  payload = {"active": bool(items)}
+  assert payload == {"active": True}
+  ```
+
 - `True` and `False` subclass `int` (`True == 1`), but use them for logic, not arithmetic.
+
+  ```python
+  assert True == 1  # surprising but true
+  count = sum([True, False, True])  # works, but obscures intent
+  assert count == 2
+  votes = sum(1 for v in [True, False, True] if v)  # clearer
+  assert votes == 2
+  ```

@@ -42,5 +42,44 @@ assert str(Version(3, 14)) == "3.14"
 ## Best practices
 
 - Use `str()` for human-readable output; use `repr()` when debugging or logging needs ambiguity resolved.
+
+  ```python
+  from datetime import date
+
+  d = date(2026, 5, 29)
+  assert str(d) == "2026-05-29"
+  assert repr(d) == "datetime.date(2026, 5, 29)"
+  ```
+
+  ```python
+  # Incorrect for logs—loses type information:
+  # log.debug(str(d))  # prefer repr(d) in tracebacks
+  ```
+
 - Always specify encoding when decoding bytes if the source encoding is not guaranteed UTF-8.
+
+  ```python
+  raw = "café".encode("utf-8")
+  assert str(raw, encoding="utf-8") == "café"
+  ```
+
+  ```python
+  # Incorrect on Windows or legacy data—default may not be UTF-8:
+  # str(raw)  # encoding=None uses default codec
+  ```
+
 - Prefer f-strings for formatting when structure is known; use `str()` for generic object coercions.
+
+  ```python
+  major, minor = 3, 14
+  assert f"{major}.{minor}" == "3.14"
+  ```
+
+  ```python
+  class Version:
+      def __str__(self):
+          return "3.14"
+
+  # str() dispatches __str__ for unknown object types:
+  assert str(Version()) == "3.14"
+  ```

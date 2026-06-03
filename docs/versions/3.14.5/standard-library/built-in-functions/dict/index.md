@@ -38,8 +38,49 @@ assert original == {"x": 10, "y": 20}
 assert copy == {"x": 10, "y": 20, "z": 30}
 ```
 
+### View objects and `dict.fromkeys`
+
+```python
+keys = ["a", "b", "c"]
+defaults = dict.fromkeys(keys, 0)
+defaults["a"] += 1
+assert defaults == {"a": 1, "b": 0, "c": 0}
+
+view = dict(a=1, b=2).keys()
+assert list(view) == ["a", "b"]
+```
+
 ## Best practices
 
 - Prefer `{**base, **extra}` or `base | extra` (3.9+) for merges; use `dict(mapping, **kw)` when converting unknown mappings.
+
+  ```python
+  base = {"a": 1, "b": 2}
+  extra = {"b": 99, "c": 3}
+  merged = base | extra
+  assert merged == {"a": 1, "b": 99, "c": 3}
+  ```
+
 - Dict comprehensions `{k: v for ...}` are often clearer than `dict()` with a generator of pairs.
-- Keys must be hashable; values can be anything—watch mutable defaults in class attributes.
+
+  ```python
+  pairs = [("a", 1), ("b", 2)]
+  assert {k: v for k, v in pairs} == {"a": 1, "b": 2}
+  assert dict(pairs) == {"a": 1, "b": 2}  # fine for simple pairs
+  ```
+
+- Keys must be hashable; watch mutable defaults in class attributes.
+
+  ```python
+  class Config:
+      settings = {}  # shared across instances — bug
+
+  class BetterConfig:
+      def __init__(self):
+          self.settings = {}
+
+  a = BetterConfig()
+  b = BetterConfig()
+  a.settings["x"] = 1
+  assert "x" not in b.settings
+  ```

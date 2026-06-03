@@ -31,8 +31,49 @@ values = [0, 0, 0]
 assert not any(v > 0 for v in values)
 ```
 
+### Short-circuiting (stops at first truthy result)
+
+```python
+seen = []
+
+def positive(x):
+    seen.append(x)
+    return x > 0
+
+assert any(positive(v) for v in [0, 0, 3, 99])
+assert seen == [0, 0, 3]  # never evaluates positive(99)
+```
+
 ## Best practices
 
 - Pair `any()` with generator expressions for lazy, short-circuit evaluation.
-- `any()` and `all()` are often clearer than `or`/`and` chains over many dynamic conditions.
-- Distinguish “none true” (`not any(...)`) from “all false”—for empty iterables, `any([])` is `False`.
+
+  ```python
+  seen = []
+
+  def is_admin(user):
+      seen.append(user["name"])
+      return user["role"] == "admin"
+
+  users = [{"name": "a", "role": "guest"}, {"name": "b", "role": "admin"}, {"name": "c", "role": "admin"}]
+  assert any(is_admin(u) for u in users)
+  assert seen == ["a", "b"]  # never checks user "c"
+  ```
+
+- `any()` is often clearer than a long `or` chain when conditions come from a collection.
+
+  ```python
+  errors = ["", "disk full", ""]
+  assert any(errors)
+
+  # awkward when the iterable is dynamic:
+  # assert errors[0] or errors[1] or errors[2]
+  ```
+
+- Distinguish “none true” from “all false”—for empty iterables, `any([])` is `False`.
+
+  ```python
+  flags = []
+  assert not any(flags)
+  assert all(not f for f in flags)  # vacuously True — different meaning
+  ```

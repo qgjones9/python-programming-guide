@@ -34,8 +34,51 @@ mod = importlib.import_module("collections.abc")
 assert hasattr(mod, "Mapping")
 ```
 
+### Load a module from a file path (plugin pattern)
+
+```python
+import importlib.util
+import os
+import tempfile
+
+with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as f:
+    f.write("PLUGIN_VALUE = 42\n")
+    path = f.name
+
+try:
+    spec = importlib.util.spec_from_file_location("plugin", path)
+    plugin = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(plugin)
+    assert plugin.PLUGIN_VALUE == 42
+finally:
+    os.unlink(path)
+```
+
 ## Best practices
 
-- Prefer `importlib.import_module()` over direct `__import__()`—it returns the module you expect without `fromlist` subtleties.
-- Do not replace `builtins.__import__` unless you fully understand import hooks and debugging cost.
-- For `pkgutil`, plugins, or custom loaders, use `importlib` machinery (PEP 302 hooks) instead of patching `__import__`.
+- **Prefer `importlib.import_module()` over direct `__import__()`**—it returns the module you expect without `fromlist` subtleties.
+
+```python
+import importlib
+
+mod = importlib.import_module("json")
+assert mod.dumps({"a": 1}) == '{"a": 1}'
+```
+
+- **Do not replace `builtins.__import__` unless you fully understand import hooks and debugging cost.** The snippet below restores the original hook immediately.
+
+```python
+import builtins
+
+old_import = builtins.__import__
+
+def custom_import(name, globals=None, locals=None, fromlist=(), level=0):
+    return old_import(name, globals, locals, fromlist, level)
+
+builtins.__import__ = custom_import
+import math as demo_math
+builtins.__import__ = old_import
+assert hasattr(demo_math, "pi")
+```
+
+- **For plugins or custom loaders, use `importlib` machinery instead of patching `__import__`.** See the file-path example above with `importlib.util.spec_from_file_location`.

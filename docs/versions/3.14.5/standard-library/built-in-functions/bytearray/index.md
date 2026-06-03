@@ -34,8 +34,48 @@ text = bytearray("café", encoding="utf-8")
 assert "é".encode("utf-8") in text
 ```
 
+### Decode slice without copying the whole buffer
+
+```python
+buf = bytearray(b"prefix:payload")
+start = buf.index(b":") + 1
+chunk = bytes(buf[start:])
+assert chunk.decode("ascii") == "payload"
+```
+
 ## Best practices
 
 - Convert to `bytes()` when passing to APIs that require immutability (dict keys, some crypto functions).
+
+  ```python
+  buf = bytearray(b"key:value")
+  key = bytes(buf[:3])
+  mapping = {key: "payload"}
+  assert mapping[b"key"] == "payload"
+  # bytearray is not hashable: {buf: 1}  # TypeError
+  ```
+
 - Prefer `bytearray` over repeated `bytes` concatenation in loops—extend or slice-assign instead.
-- When reading files, `bytearray` plus `readinto` can reduce allocations for large binary data.
+
+  ```python
+  parts = [b"a", b"b", b"c"]
+
+  # idiomatic
+  buf = bytearray()
+  for part in parts:
+      buf.extend(part)
+  assert bytes(buf) == b"abc"
+
+  # slow: re-allocates each iteration
+  # out = b""
+  # for part in parts:
+  #     out += part
+  ```
+
+- Use slice assignment for in-place edits without creating new objects.
+
+  ```python
+  buf = bytearray(b"hello")
+  buf[0:5] = b"HELLO"
+  assert buf == bytearray(b"HELLO")
+  ```

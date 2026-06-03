@@ -42,5 +42,44 @@ assert seq[regions["tail"]] == [7, 8, 9]
 ## Best practices
 
 - Slice objects are hashable (since 3.12) when `start`, `stop`, and `step` are hashable—useful as dict keys.
+
+  ```python
+  head = slice(0, 3)
+  tail = slice(-3, None)
+  regions = {head: "head", tail: "tail"}
+  seq = list(range(10))
+  assert seq[head] == [0, 1, 2]
+  assert seq[tail] == [7, 8, 9]
+  assert regions[head] == "head"
+  ```
+
+  ```python
+  # Before 3.12, slice objects were not hashable—check your target Python version.
+  ```
+
 - Negative indices in slice objects behave like syntactic slicing when applied to sequences.
+
+  ```python
+  last_two = slice(-2, None)
+  assert [10, 20, 30, 40][last_two] == [30, 40]
+  ```
+
+  ```python
+  # Incorrect—negative stop is not "two from the end" like negative start:
+  assert list(range(5))[slice(0, -2)] == [0, 1, 2]  # stops before index -2
+  ```
+
 - For lazy iteration over slices, consider `itertools.islice()` instead of materializing indices.
+
+  ```python
+  from itertools import islice
+
+  data = range(10**6)
+  first_five = list(islice(data, 5))
+  assert first_five == [0, 1, 2, 3, 4]
+  ```
+
+  ```python
+  # Materializes a huge sub-list when you only need a few items:
+  # chunk = list(range(10**6))[100:200]
+  ```

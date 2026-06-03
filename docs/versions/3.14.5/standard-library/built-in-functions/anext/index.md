@@ -48,8 +48,75 @@ async def main():
 asyncio.run(main())
 ```
 
+### Manual async loop mirroring `async for`
+
+```python
+import asyncio
+
+async def stream():
+    for ch in "ab":
+        yield ch
+
+async def collect():
+    it = aiter(stream())
+    out = []
+    while True:
+        item = await anext(it, None)
+        if item is None:
+            break
+        out.append(item)
+    return out
+
+assert asyncio.run(collect()) == ["a", "b"]
+```
+
 ## Best practices
 
 - Pass a default to avoid catching `StopAsyncIteration` when exhaustion is expected.
-- Always obtain the iterator with `aiter()` (or `__aiter__()`) before calling `anext()`.
+
+  ```python
+  import asyncio
+
+  async def once():
+      yield "only"
+
+  async def main():
+      it = aiter(once())
+      assert await anext(it) == "only"
+      assert await anext(it, None) is None  # clean sentinel
+
+  asyncio.run(main())
+  ```
+
+- Always obtain the iterator with `aiter()` before calling `anext()`; calling `anext()` on the async iterable itself is wrong.
+
+  ```python
+  import asyncio
+
+  async def gen():
+      yield 1
+
+  async def main():
+      it = aiter(gen())  # correct: iterator object
+      assert await anext(it) == 1
+
+  asyncio.run(main())
+  # Incorrect: await anext(gen())  # TypeError
+  ```
+
 - Do not mix sync `next()` with async iterators—it will not await underlying coroutines.
+
+  ```python
+  import asyncio
+
+  async def gen():
+      yield 1
+
+  async def main():
+      it = aiter(gen())
+      # Correct:
+      assert await anext(it) == 1
+      # Incorrect: next(it)  # TypeError
+
+  asyncio.run(main())
+  ```
