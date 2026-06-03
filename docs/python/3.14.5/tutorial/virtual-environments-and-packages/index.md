@@ -39,4 +39,4 @@ assert spec is None or spec.name == "pip"
 - [Creating Virtual Environments](creating-virtual-environments/index.md)
 - [Managing Packages with pip](managing-packages-with-pip/index.md)
 
-Next: [What Now?](../what-now/index.md)
+Next: [Interactive Input Editing and History Substitution](../interactive-input-editing-and-history-substitution/index.md)

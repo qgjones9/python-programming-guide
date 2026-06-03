@@ -19,130 +19,20 @@ nav:
       - Python 3.14.5: python/3.14.5/index.md
       - Tutorial:
         - Tutorial: python/3.14.5/tutorial/index.md
+
+        # An Informal Introduction to Python
         - An Informal Introduction to Python:
           - An Informal Introduction to Python: python/3.14.5/tutorial/an-informal-introduction-to-python/index.md
-          - First Steps Towards Programming: python/3.14.5/tutorial/an-informal-introduction-to-python/first-steps-towards-programming/index.md
           - Using Python as a Calculator:
             - Using Python as a Calculator: python/3.14.5/tutorial/an-informal-introduction-to-python/using-python-as-a-calculator/index.md
             - Lists: python/3.14.5/tutorial/an-informal-introduction-to-python/using-python-as-a-calculator/lists/index.md
             - Numbers: python/3.14.5/tutorial/an-informal-introduction-to-python/using-python-as-a-calculator/numbers/index.md
             - Text: python/3.14.5/tutorial/an-informal-introduction-to-python/using-python-as-a-calculator/text/index.md
-        - Appendix:
-          - Appendix: python/3.14.5/tutorial/appendix/index.md
-          - Interactive Mode:
-            - Interactive Mode: python/3.14.5/tutorial/appendix/interactive-mode/index.md
-            - Error Handling: python/3.14.5/tutorial/appendix/interactive-mode/error-handling/index.md
-            - Executable Python Scripts: python/3.14.5/tutorial/appendix/interactive-mode/executable-python-scripts/index.md
-            - The Customization Modules: python/3.14.5/tutorial/appendix/interactive-mode/the-customization-modules/index.md
-            - The Interactive Startup File: python/3.14.5/tutorial/appendix/interactive-mode/the-interactive-startup-file/index.md
-        - Brief Tour of the Standard Library:
-          - Brief Tour of the Standard Library: python/3.14.5/tutorial/brief-tour-of-the-standard-library/index.md
-          - Batteries included: python/3.14.5/tutorial/brief-tour-of-the-standard-library/batteries-included/index.md
-          - Command-line arguments: python/3.14.5/tutorial/brief-tour-of-the-standard-library/command-line-arguments/index.md
-          - Data compression: python/3.14.5/tutorial/brief-tour-of-the-standard-library/data-compression/index.md
-          - Dates and times: python/3.14.5/tutorial/brief-tour-of-the-standard-library/dates-and-times/index.md
-          - Error output redirection and program termination: python/3.14.5/tutorial/brief-tour-of-the-standard-library/error-output-redirection-and-program-termination/index.md
-          - File wildcards: python/3.14.5/tutorial/brief-tour-of-the-standard-library/file-wildcards/index.md
-          - Internet access: python/3.14.5/tutorial/brief-tour-of-the-standard-library/internet-access/index.md
-          - Mathematics: python/3.14.5/tutorial/brief-tour-of-the-standard-library/mathematics/index.md
-          - Operating system interface: python/3.14.5/tutorial/brief-tour-of-the-standard-library/operating-system-interface/index.md
-          - Performance measurement: python/3.14.5/tutorial/brief-tour-of-the-standard-library/performance-measurement/index.md
-          - Quality control: python/3.14.5/tutorial/brief-tour-of-the-standard-library/quality-control/index.md
-          - String pattern matching: python/3.14.5/tutorial/brief-tour-of-the-standard-library/string-pattern-matching/index.md
-        - Brief Tour of the Standard Library — Part II:
-          - Brief Tour of the Standard Library — Part II: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/index.md
-          - Decimal floating-point arithmetic: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/decimal-floating-point-arithmetic/index.md
-          - Logging: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/logging/index.md
-          - Multi-threading: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/multi-threading/index.md
-          - Output formatting: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/output-formatting/index.md
-          - Templating: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/templating/index.md
-          - Tools for working with lists: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/tools-for-working-with-lists/index.md
-          - Weak references: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/weak-references/index.md
-          - Working with binary data record layouts: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/working-with-binary-data-record-layouts/index.md
-        - Classes:
-          - Classes: python/3.14.5/tutorial/classes/index.md
-          - A First Look at Classes:
-            - A First Look at Classes: python/3.14.5/tutorial/classes/a-first-look-at-classes/index.md
-            - Class and Instance Variables: python/3.14.5/tutorial/classes/a-first-look-at-classes/class-and-instance-variables/index.md
-            - Class Definition Syntax: python/3.14.5/tutorial/classes/a-first-look-at-classes/class-definition-syntax/index.md
-            - Class Objects: python/3.14.5/tutorial/classes/a-first-look-at-classes/class-objects/index.md
-            - Instance Objects: python/3.14.5/tutorial/classes/a-first-look-at-classes/instance-objects/index.md
-            - Method Objects: python/3.14.5/tutorial/classes/a-first-look-at-classes/method-objects/index.md
-          - A Word About Names and Objects: python/3.14.5/tutorial/classes/a-word-about-names-and-objects/index.md
-          - Generator Expressions: python/3.14.5/tutorial/classes/generator-expressions/index.md
-          - Generators: python/3.14.5/tutorial/classes/generators/index.md
-          - Inheritance:
-            - Inheritance: python/3.14.5/tutorial/classes/inheritance/index.md
-            - Multiple Inheritance: python/3.14.5/tutorial/classes/inheritance/multiple-inheritance/index.md
-          - Iterators: python/3.14.5/tutorial/classes/iterators/index.md
-          - Object Methods: python/3.14.5/tutorial/classes/object-methods/index.md
-          - Odds and Ends: python/3.14.5/tutorial/classes/odds-and-ends/index.md
-          - Private Variables: python/3.14.5/tutorial/classes/private-variables/index.md
-          - Python Scopes and Namespaces:
-            - Python Scopes and Namespaces: python/3.14.5/tutorial/classes/python-scopes-and-namespaces/index.md
-            - Scopes and Namespaces Example: python/3.14.5/tutorial/classes/python-scopes-and-namespaces/scopes-and-namespaces-example/index.md
-          - Random Remarks: python/3.14.5/tutorial/classes/random-remarks/index.md
-        - Data Structures:
-          - Data Structures: python/3.14.5/tutorial/data-structures/index.md
-          - Comparing Sequences and Other Types: python/3.14.5/tutorial/data-structures/comparing-sequences-and-other-types/index.md
-          - Dictionaries: python/3.14.5/tutorial/data-structures/dictionaries/index.md
-          - Looping Techniques: python/3.14.5/tutorial/data-structures/looping-techniques/index.md
-          - More on Conditions: python/3.14.5/tutorial/data-structures/more-on-conditions/index.md
-          - More on Lists:
-            - More on Lists: python/3.14.5/tutorial/data-structures/more-on-lists/index.md
-            - List Comprehensions: python/3.14.5/tutorial/data-structures/more-on-lists/list-comprehensions/index.md
-            - Nested List Comprehensions: python/3.14.5/tutorial/data-structures/more-on-lists/nested-list-comprehensions/index.md
-            - Using Lists as Queues: python/3.14.5/tutorial/data-structures/more-on-lists/using-lists-as-queues/index.md
-            - Using Lists as Stacks: python/3.14.5/tutorial/data-structures/more-on-lists/using-lists-as-stacks/index.md
-          - Sets: python/3.14.5/tutorial/data-structures/sets/index.md
-          - The del statement: python/3.14.5/tutorial/data-structures/the-del-statement/index.md
-          - Tuples and Sequences: python/3.14.5/tutorial/data-structures/tuples-and-sequences/index.md
-        - Errors and Exceptions:
-          - Errors and Exceptions: python/3.14.5/tutorial/errors-and-exceptions/index.md
-          - Defining Clean-up Actions: python/3.14.5/tutorial/errors-and-exceptions/defining-clean-up-actions/index.md
-          - Enriching Exceptions with Notes: python/3.14.5/tutorial/errors-and-exceptions/enriching-exceptions-with-notes/index.md
-          - Exception Chaining: python/3.14.5/tutorial/errors-and-exceptions/exception-chaining/index.md
-          - Exceptions: python/3.14.5/tutorial/errors-and-exceptions/exceptions/index.md
-          - Handling Exceptions: python/3.14.5/tutorial/errors-and-exceptions/handling-exceptions/index.md
-          - Predefined Clean-up Actions: python/3.14.5/tutorial/errors-and-exceptions/predefined-clean-up-actions/index.md
-          - Raising and Handling Multiple Unrelated Exceptions: python/3.14.5/tutorial/errors-and-exceptions/raising-and-handling-multiple-unrelated-exceptions/index.md
-          - Raising Exceptions: python/3.14.5/tutorial/errors-and-exceptions/raising-exceptions/index.md
-          - Syntax Errors: python/3.14.5/tutorial/errors-and-exceptions/syntax-errors/index.md
-          - User-defined Exceptions: python/3.14.5/tutorial/errors-and-exceptions/user-defined-exceptions/index.md
-        - "Floating-Point Arithmetic: Issues and Limitations":
-          - "Floating-Point Arithmetic: Issues and Limitations": python/3.14.5/tutorial/floating-point-arithmetic-issues-and-limitations/index.md
-          - Representation Error: python/3.14.5/tutorial/floating-point-arithmetic-issues-and-limitations/representation-error/index.md
-        - Input and Output:
-          - Input and Output: python/3.14.5/tutorial/input-and-output/index.md
-          - Fancier Output Formatting:
-            - Fancier Output Formatting: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/index.md
-            - Formatted String Literals: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/formatted-string-literals/index.md
-            - Manual String Formatting: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/manual-string-formatting/index.md
-            - Old string formatting: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/old-string-formatting/index.md
-            - The String format() Method: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/the-string-format-method/index.md
-          - Reading and Writing Files:
-            - Reading and Writing Files: python/3.14.5/tutorial/input-and-output/reading-and-writing-files/index.md
-            - Methods of File Objects: python/3.14.5/tutorial/input-and-output/reading-and-writing-files/methods-of-file-objects/index.md
-            - Saving structured data with json: python/3.14.5/tutorial/input-and-output/reading-and-writing-files/saving-structured-data-with-json/index.md
-        - Interactive Input Editing and History Substitution:
-          - Interactive Input Editing and History Substitution: python/3.14.5/tutorial/interactive-input-editing-and-history-substitution/index.md
-          - Alternatives to the Interactive Interpreter: python/3.14.5/tutorial/interactive-input-editing-and-history-substitution/alternatives-to-the-interactive-interpreter/index.md
-          - Tab Completion and History Editing: python/3.14.5/tutorial/interactive-input-editing-and-history-substitution/tab-completion-and-history-editing/index.md
-        - Modules:
-          - Modules: python/3.14.5/tutorial/modules/index.md
-          - More on Modules:
-            - More on Modules: python/3.14.5/tutorial/modules/more-on-modules/index.md
-            - “Compiled” Python files: python/3.14.5/tutorial/modules/more-on-modules/compiled-python-files/index.md
-            - Executing modules as scripts: python/3.14.5/tutorial/modules/more-on-modules/executing-modules-as-scripts/index.md
-            - The Module Search Path: python/3.14.5/tutorial/modules/more-on-modules/the-module-search-path/index.md
-          - Packages:
-            - Packages: python/3.14.5/tutorial/modules/packages/index.md
-            - Importing * From a Package: python/3.14.5/tutorial/modules/packages/importing-from-a-package/index.md
-            - Intra-package References: python/3.14.5/tutorial/modules/packages/intra-package-references/index.md
-            - Packages in Multiple Directories: python/3.14.5/tutorial/modules/packages/packages-in-multiple-directories/index.md
-          - Standard Modules: python/3.14.5/tutorial/modules/standard-modules/index.md
-          - The dir() Function: python/3.14.5/tutorial/modules/the-dir-function/index.md
+          - First Steps Towards Programming: python/3.14.5/tutorial/an-informal-introduction-to-python/first-steps-towards-programming/index.md
+        
+        # More Control Flow Tools
         - More Control Flow Tools:
+          - The dir() Function: python/3.14.5/tutorial/modules/the-dir-function/index.md
           - More Control Flow Tools: python/3.14.5/tutorial/more-control-flow-tools/index.md
           - break and continue Statements: python/3.14.5/tutorial/more-control-flow-tools/break-and-continue-statements/index.md
           - Defining Functions: python/3.14.5/tutorial/more-control-flow-tools/defining-functions/index.md
@@ -169,12 +59,133 @@ nav:
             - Unpacking Argument Lists: python/3.14.5/tutorial/more-control-flow-tools/more-on-defining-functions/unpacking-argument-lists/index.md
           - pass Statements: python/3.14.5/tutorial/more-control-flow-tools/pass-statements/index.md
           - The range() Function: python/3.14.5/tutorial/more-control-flow-tools/the-range-function/index.md
+        
+        # Data Structures
+        - Data Structures:
+          - Data Structures: python/3.14.5/tutorial/data-structures/index.md
+          - Comparing Sequences and Other Types: python/3.14.5/tutorial/data-structures/comparing-sequences-and-other-types/index.md
+          - Dictionaries: python/3.14.5/tutorial/data-structures/dictionaries/index.md
+          - Looping Techniques: python/3.14.5/tutorial/data-structures/looping-techniques/index.md
+          - More on Conditions: python/3.14.5/tutorial/data-structures/more-on-conditions/index.md
+          - More on Lists: python/3.14.5/tutorial/data-structures/more-on-lists/index.md
+          - List Comprehensions: python/3.14.5/tutorial/data-structures/more-on-lists/list-comprehensions/index.md
+          - Nested List Comprehensions: python/3.14.5/tutorial/data-structures/more-on-lists/nested-list-comprehensions/index.md
+          - Using Lists as Queues: python/3.14.5/tutorial/data-structures/more-on-lists/using-lists-as-queues/index.md
+          - Using Lists as Stacks: python/3.14.5/tutorial/data-structures/more-on-lists/using-lists-as-stacks/index.md
+          - Sets: python/3.14.5/tutorial/data-structures/sets/index.md
+          - The del statement: python/3.14.5/tutorial/data-structures/the-del-statement/index.md
+          - Tuples and Sequences: python/3.14.5/tutorial/data-structures/tuples-and-sequences/index.md  
+
+        # Modules
+        - Modules:
+          - Modules: python/3.14.5/tutorial/modules/index.md
+          - More on Modules: python/3.14.5/tutorial/modules/more-on-modules/index.md
+          - “Compiled” Python files: python/3.14.5/tutorial/modules/more-on-modules/compiled-python-files/index.md
+          - Executing modules as scripts: python/3.14.5/tutorial/modules/more-on-modules/executing-modules-as-scripts/index.md
+          - The Module Search Path: python/3.14.5/tutorial/modules/more-on-modules/the-module-search-path/index.md
+          - Packages: python/3.14.5/tutorial/modules/packages/index.md
+          - Importing * From a Package: python/3.14.5/tutorial/modules/packages/importing-from-a-package/index.md
+          - Intra-package References: python/3.14.5/tutorial/modules/packages/intra-package-references/index.md
+          - Packages in Multiple Directories: python/3.14.5/tutorial/modules/packages/packages-in-multiple-directories/index.md
+          - Standard Modules: python/3.14.5/tutorial/modules/standard-modules/index.md  
+
+        # Input and Output
+        - Input and Output:
+          - Input and Output: python/3.14.5/tutorial/input-and-output/index.md
+          - Fancier Output Formatting: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/index.md
+          - Formatted String Literals: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/formatted-string-literals/index.md
+          - Manual String Formatting: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/manual-string-formatting/index.md
+          - Old string formatting: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/old-string-formatting/index.md
+          - The String format() Method: python/3.14.5/tutorial/input-and-output/fancier-output-formatting/the-string-format-method/index.md
+          - Reading and Writing Files: python/3.14.5/tutorial/input-and-output/reading-and-writing-files/index.md
+          - Methods of File Objects: python/3.14.5/tutorial/input-and-output/reading-and-writing-files/methods-of-file-objects/index.md
+          - Saving structured data with json: python/3.14.5/tutorial/input-and-output/reading-and-writing-files/saving-structured-data-with-json/index.md
+          - Interactive Input Editing and History Substitution: python/3.14.5/tutorial/interactive-input-editing-and-history-substitution/index.md
+          - Alternatives to the Interactive Interpreter: python/3.14.5/tutorial/interactive-input-editing-and-history-substitution/alternatives-to-the-interactive-interpreter/index.md
+          - Tab Completion and History Editing: python/3.14.5/tutorial/interactive-input-editing-and-history-substitution/tab-completion-and-history-editing/index.md
+
+        # Errors and Exceptions
+        - Errors and Exceptions:
+          - Errors and Exceptions: python/3.14.5/tutorial/errors-and-exceptions/index.md
+          - Defining Clean-up Actions: python/3.14.5/tutorial/errors-and-exceptions/defining-clean-up-actions/index.md
+          - Enriching Exceptions with Notes: python/3.14.5/tutorial/errors-and-exceptions/enriching-exceptions-with-notes/index.md
+          - Exception Chaining: python/3.14.5/tutorial/errors-and-exceptions/exception-chaining/index.md
+          - Exceptions: python/3.14.5/tutorial/errors-and-exceptions/exceptions/index.md
+          - Handling Exceptions: python/3.14.5/tutorial/errors-and-exceptions/handling-exceptions/index.md
+          - Predefined Clean-up Actions: python/3.14.5/tutorial/errors-and-exceptions/predefined-clean-up-actions/index.md
+          - Raising and Handling Multiple Unrelated Exceptions: python/3.14.5/tutorial/errors-and-exceptions/raising-and-handling-multiple-unrelated-exceptions/index.md
+          - Raising Exceptions: python/3.14.5/tutorial/errors-and-exceptions/raising-exceptions/index.md
+          - Syntax Errors: python/3.14.5/tutorial/errors-and-exceptions/syntax-errors/index.md
+          - User-defined Exceptions: python/3.14.5/tutorial/errors-and-exceptions/user-defined-exceptions/index.md  
+
+        # Classes
+        - Classes:
+          - Classes: python/3.14.5/tutorial/classes/index.md
+          - A First Look at Classes: python/3.14.5/tutorial/classes/a-first-look-at-classes/index.md
+          - Class and Instance Variables: python/3.14.5/tutorial/classes/a-first-look-at-classes/class-and-instance-variables/index.md
+          - Class Definition Syntax: python/3.14.5/tutorial/classes/a-first-look-at-classes/class-definition-syntax/index.md
+          - Class Objects: python/3.14.5/tutorial/classes/a-first-look-at-classes/class-objects/index.md
+          - Instance Objects: python/3.14.5/tutorial/classes/a-first-look-at-classes/instance-objects/index.md
+          - Method Objects: python/3.14.5/tutorial/classes/a-first-look-at-classes/method-objects/index.md
+          - A Word About Names and Objects: python/3.14.5/tutorial/classes/a-word-about-names-and-objects/index.md
+          - Generator Expressions: python/3.14.5/tutorial/classes/generator-expressions/index.md
+          - Generators: python/3.14.5/tutorial/classes/generators/index.md
+          - Inheritance: python/3.14.5/tutorial/classes/inheritance/index.md
+          - Multiple Inheritance: python/3.14.5/tutorial/classes/inheritance/multiple-inheritance/index.md
+          - Iterators: python/3.14.5/tutorial/classes/iterators/index.md
+          - Object Methods: python/3.14.5/tutorial/classes/object-methods/index.md
+          - Odds and Ends: python/3.14.5/tutorial/classes/odds-and-ends/index.md
+          - Private Variables: python/3.14.5/tutorial/classes/private-variables/index.md
+          - Python Scopes and Namespaces: python/3.14.5/tutorial/classes/python-scopes-and-namespaces/index.md
+          - Scopes and Namespaces Example: python/3.14.5/tutorial/classes/python-scopes-and-namespaces/scopes-and-namespaces-example/index.md
+          - Random Remarks: python/3.14.5/tutorial/classes/random-remarks/index.md  
+
+        # Brief Tour of the Standard Library
+        - Brief Tour of the Standard Library:
+          - Brief Tour of the Standard Library: python/3.14.5/tutorial/brief-tour-of-the-standard-library/index.md
+          - Batteries included: python/3.14.5/tutorial/brief-tour-of-the-standard-library/batteries-included/index.md
+          - Command-line arguments: python/3.14.5/tutorial/brief-tour-of-the-standard-library/command-line-arguments/index.md
+          - Data compression: python/3.14.5/tutorial/brief-tour-of-the-standard-library/data-compression/index.md
+          - Dates and times: python/3.14.5/tutorial/brief-tour-of-the-standard-library/dates-and-times/index.md
+          - Error output redirection and program termination: python/3.14.5/tutorial/brief-tour-of-the-standard-library/error-output-redirection-and-program-termination/index.md
+          - File wildcards: python/3.14.5/tutorial/brief-tour-of-the-standard-library/file-wildcards/index.md
+          - Internet access: python/3.14.5/tutorial/brief-tour-of-the-standard-library/internet-access/index.md
+          - Mathematics: python/3.14.5/tutorial/brief-tour-of-the-standard-library/mathematics/index.md
+          - Operating system interface: python/3.14.5/tutorial/brief-tour-of-the-standard-library/operating-system-interface/index.md
+          - Performance measurement: python/3.14.5/tutorial/brief-tour-of-the-standard-library/performance-measurement/index.md
+          - Quality control: python/3.14.5/tutorial/brief-tour-of-the-standard-library/quality-control/index.md
+          - String pattern matching: python/3.14.5/tutorial/brief-tour-of-the-standard-library/string-pattern-matching/index.md
+        
+        # Brief Tour of the Standard Library — Part II
+        - Brief Tour of the Standard Library — Part II:
+          - Brief Tour of the Standard Library — Part II: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/index.md
+          - Decimal floating-point arithmetic: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/decimal-floating-point-arithmetic/index.md
+          - Logging: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/logging/index.md
+          - Multi-threading: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/multi-threading/index.md
+          - Output formatting: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/output-formatting/index.md
+          - Templating: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/templating/index.md
+          - Tools for working with lists: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/tools-for-working-with-lists/index.md
+          - Weak references: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/weak-references/index.md
+          - Working with binary data record layouts: python/3.14.5/tutorial/brief-tour-of-the-standard-library-part-ii/working-with-binary-data-record-layouts/index.md
+
+        # Floating-Point Arithmetic: Issues and Limitations
+        - Floating-Point Arithmetic: Issues and Limitations:
+          - Floating-Point Arithmetic: Issues and Limitations: python/3.14.5/tutorial/floating-point-arithmetic-issues-and-limitations/index.md
+          - Representation Error: python/3.14.5/tutorial/floating-point-arithmetic-issues-and-limitations/representation-error/index.md
+
+        # Interactive Input Editing and History Substitution
+        - Interactive Input Editing and History Substitution:
+          - Interactive Input Editing and History Substitution: python/3.14.5/tutorial/interactive-input-editing-and-history-substitution/index.md
+          - Alternatives to the Interactive Interpreter: python/3.14.5/tutorial/interactive-input-editing-and-history-substitution/alternatives-to-the-interactive-interpreter/index.md
+          - Tab Completion and History Editing: python/3.14.5/tutorial/interactive-input-editing-and-history-substitution/tab-completion-and-history-editing/index.md
+
+        # Virtual Environments and Packages
         - Virtual Environments and Packages:
           - Virtual Environments and Packages: python/3.14.5/tutorial/virtual-environments-and-packages/index.md
           - Creating Virtual Environments: python/3.14.5/tutorial/virtual-environments-and-packages/creating-virtual-environments/index.md
           - Introduction: python/3.14.5/tutorial/virtual-environments-and-packages/introduction/index.md
           - Managing Packages with pip: python/3.14.5/tutorial/virtual-environments-and-packages/managing-packages-with-pip/index.md
-        - What Now?: python/3.14.5/tutorial/what-now/index.md
+
       - The Python Standard Library:
         - The Python Standard Library: python/3.14.5/standard-library/index.md
         - Binary Data Services:
@@ -1039,6 +1050,7 @@ nav:
       - Glossary:
         - Glossary: python/3.14.5/glossary/index.md
         - ">>>": python/3.14.5/glossary/0/index.md
+        - "...": python/3.14.5/glossary/ellipsis/index.md
         - BDFL: python/3.14.5/glossary/BDFL/index.md
         - CPython: python/3.14.5/glossary/CPython/index.md
         - EAFP: python/3.14.5/glossary/EAFP/index.md
@@ -1215,7 +1227,6 @@ nav:
     - Foundations:
       - Complexity Analysis: dsa/complexity/index.md
       - Recursion: dsa/recursion/index.md
-      - Python tutorial: python/3.14.5/tutorial/index.md
     - Data Structures:
       - Data Structures: dsa/data-structures/index.md
       - Phase 1 — Linear structures:

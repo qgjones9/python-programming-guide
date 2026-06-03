@@ -3,7 +3,7 @@
 Definitions of terms used throughout the Python documentation.
 
 - [>>>](./0/index.md)
-- [...](./.../index.md)
+- [...](./ellipsis/index.md)
 - [abstract base class](./abstract-base-class/index.md)
 - [annotate function](./annotate-function/index.md)
 - [annotation](./annotation/index.md)

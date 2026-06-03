@@ -6,4 +6,4 @@ execute them and see their results.  Just launch `python` with no
 arguments (possibly by selecting it from your computer’s main
 menu). It is a very powerful way to test out new ideas or inspect
 modules and packages (remember `help(x)`). For more on interactive
-mode, see [Interactive Mode](https://docs.python.org/3.14/tutorial/appendix.html#tut-interac).
+mode, see [Interactive Input Editing and History Substitution](../../tutorial/interactive-input-editing-and-history-substitution/index.md).
