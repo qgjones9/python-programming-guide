@@ -461,7 +461,6 @@ nav:
             - Standard Encodings: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/standard-encodings/index.md
           - struct — Interpret bytes as packed binary data: versions/3.14.5/standard-library/binary-data-services/struct-interpret-bytes-as-packed-binary-data/index.md
 
-
         - Data Types:
           - Data Types: versions/3.14.5/standard-library/data-types/index.md
           - datetime — Basic date and time types: versions/3.14.5/standard-library/data-types/datetime-basic-date-and-time-types/index.md
@@ -482,18 +481,20 @@ nav:
 
         - Numeric and Mathematical Modules:
           - Numeric and Mathematical Modules: versions/3.14.5/standard-library/numeric-and-mathematical-modules/index.md
+          - numbers — Numeric abstract base classes: versions/3.14.5/standard-library/numeric-and-mathematical-modules/numbers-numeric-abstract-base-classes/index.md
+          - math — Mathematical functions: versions/3.14.5/standard-library/numeric-and-mathematical-modules/math-mathematical-functions/index.md
           - cmath — Mathematical functions for complex numbers: versions/3.14.5/standard-library/numeric-and-mathematical-modules/cmath-mathematical-functions-for-complex-numbers/index.md
           - decimal — Decimal fixed-point and floating-point arithmetic: versions/3.14.5/standard-library/numeric-and-mathematical-modules/decimal-decimal-fixed-point-and-floating-point-arithmetic/index.md
           - fractions — Rational numbers: versions/3.14.5/standard-library/numeric-and-mathematical-modules/fractions-rational-numbers/index.md
-          - math — Mathematical functions: versions/3.14.5/standard-library/numeric-and-mathematical-modules/math-mathematical-functions/index.md
-          - numbers — Numeric abstract base classes: versions/3.14.5/standard-library/numeric-and-mathematical-modules/numbers-numeric-abstract-base-classes/index.md
           - random — Generate pseudo-random numbers: versions/3.14.5/standard-library/numeric-and-mathematical-modules/random-generate-pseudo-random-numbers/index.md
           - statistics — Mathematical statistics functions: versions/3.14.5/standard-library/numeric-and-mathematical-modules/statistics-mathematical-statistics-functions/index.md
+
         - Functional Programming Modules:
           - Functional Programming Modules: versions/3.14.5/standard-library/functional-programming-modules/index.md
           - functools — Higher-order functions and operations on callable objects: versions/3.14.5/standard-library/functional-programming-modules/functools-higher-order-functions-and-operations-on-callable-objects/index.md
           - itertools — Functions creating iterators for efficient looping: versions/3.14.5/standard-library/functional-programming-modules/itertools-functions-creating-iterators-for-efficient-looping/index.md
           - operator — Standard operators as functions: versions/3.14.5/standard-library/functional-programming-modules/operator-standard-operators-as-functions/index.md
+
         - File and Directory Access:
           - File and Directory Access: versions/3.14.5/standard-library/file-and-directory-access/index.md
           - filecmp — File and Directory Comparisons: versions/3.14.5/standard-library/file-and-directory-access/filecmp-file-and-directory-comparisons/index.md
