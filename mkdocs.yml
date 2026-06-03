@@ -491,29 +491,31 @@ nav:
 
         - Functional Programming Modules:
           - Functional Programming Modules: versions/3.14.5/standard-library/functional-programming-modules/index.md
-          - functools — Higher-order functions and operations on callable objects: versions/3.14.5/standard-library/functional-programming-modules/functools-higher-order-functions-and-operations-on-callable-objects/index.md
           - itertools — Functions creating iterators for efficient looping: versions/3.14.5/standard-library/functional-programming-modules/itertools-functions-creating-iterators-for-efficient-looping/index.md
+          - functools — Higher-order functions and operations on callable objects: versions/3.14.5/standard-library/functional-programming-modules/functools-higher-order-functions-and-operations-on-callable-objects/index.md
           - operator — Standard operators as functions: versions/3.14.5/standard-library/functional-programming-modules/operator-standard-operators-as-functions/index.md
 
         - File and Directory Access:
           - File and Directory Access: versions/3.14.5/standard-library/file-and-directory-access/index.md
-          - filecmp — File and Directory Comparisons: versions/3.14.5/standard-library/file-and-directory-access/filecmp-file-and-directory-comparisons/index.md
-          - fnmatch — Unix filename pattern matching: versions/3.14.5/standard-library/file-and-directory-access/fnmatch-unix-filename-pattern-matching/index.md
-          - glob — Unix style pathname pattern expansion: versions/3.14.5/standard-library/file-and-directory-access/glob-unix-style-pathname-pattern-expansion/index.md
-          - linecache — Random access to text lines: versions/3.14.5/standard-library/file-and-directory-access/linecache-random-access-to-text-lines/index.md
-          - os.path — Common pathname manipulations: versions/3.14.5/standard-library/file-and-directory-access/ospath-common-pathname-manipulations/index.md
           - pathlib — Object-oriented filesystem paths: versions/3.14.5/standard-library/file-and-directory-access/pathlib-object-oriented-filesystem-paths/index.md
-          - shutil — High-level file operations: versions/3.14.5/standard-library/file-and-directory-access/shutil-high-level-file-operations/index.md
+          - os.path — Common pathname manipulations: versions/3.14.5/standard-library/file-and-directory-access/ospath-common-pathname-manipulations/index.md
           - stat — Interpreting stat() results: versions/3.14.5/standard-library/file-and-directory-access/stat-interpreting-stat-results/index.md
+          - filecmp — File and Directory Comparisons: versions/3.14.5/standard-library/file-and-directory-access/filecmp-file-and-directory-comparisons/index.md
           - tempfile — Generate temporary files and directories: versions/3.14.5/standard-library/file-and-directory-access/tempfile-generate-temporary-files-and-directories/index.md
+          - glob — Unix style pathname pattern expansion: versions/3.14.5/standard-library/file-and-directory-access/glob-unix-style-pathname-pattern-expansion/index.md
+          - fnmatch — Unix filename pattern matching: versions/3.14.5/standard-library/file-and-directory-access/fnmatch-unix-filename-pattern-matching/index.md
+          - linecache — Random access to text lines: versions/3.14.5/standard-library/file-and-directory-access/linecache-random-access-to-text-lines/index.md
+          - shutil — High-level file operations: versions/3.14.5/standard-library/file-and-directory-access/shutil-high-level-file-operations/index.md
+
         - Data Persistence:
           - Data Persistence: versions/3.14.5/standard-library/data-persistence/index.md
-          - copyreg — Register pickle support functions: versions/3.14.5/standard-library/data-persistence/copyreg-register-pickle-support-functions/index.md
-          - dbm — Interfaces to Unix “databases”: versions/3.14.5/standard-library/data-persistence/dbm-interfaces-to-unix-databases/index.md
-          - marshal — Internal Python object serialization: versions/3.14.5/standard-library/data-persistence/marshal-internal-python-object-serialization/index.md
           - pickle — Python object serialization: versions/3.14.5/standard-library/data-persistence/pickle-python-object-serialization/index.md
+          - copyreg — Register pickle support functions: versions/3.14.5/standard-library/data-persistence/copyreg-register-pickle-support-functions/index.md
           - shelve — Python object persistence: versions/3.14.5/standard-library/data-persistence/shelve-python-object-persistence/index.md
+          - marshal — Internal Python object serialization: versions/3.14.5/standard-library/data-persistence/marshal-internal-python-object-serialization/index.md
+          - dbm — Interfaces to Unix “databases”: versions/3.14.5/standard-library/data-persistence/dbm-interfaces-to-unix-databases/index.md
           - sqlite3 — DB-API 2.0 interface for SQLite databases: versions/3.14.5/standard-library/data-persistence/sqlite3-db-api-20-interface-for-sqlite-databases/index.md
+
         - Data Compression and Archiving:
           - Data Compression and Archiving: versions/3.14.5/standard-library/data-compression-and-archiving/index.md
           - bz2 — Support for **bzip2** compression: versions/3.14.5/standard-library/data-compression-and-archiving/bz2-support-for-bzip2-compression/index.md
