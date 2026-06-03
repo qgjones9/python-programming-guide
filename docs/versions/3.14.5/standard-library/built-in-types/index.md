@@ -20,7 +20,6 @@ Many operations work across several object types. Almost every object can be com
 | [Boolean Type - bool](boolean-type-bool/index.md) | The `bool` type as a subclass of `int`, with constants `True` and `False`. |
 | [Iterator Types](iterator-types/index.md) | Iterator objects from `iter()` and generator expressions, and the iterator protocol. |
 | [Sequence Types — list, tuple, range](sequence-types-list-tuple-range/index.md) | Mutable lists, immutable tuples, and the `range` type for arithmetic progressions. |
-| [Text and Binary Sequence Type Methods Summary](text-and-binary-sequence-type-methods-summary/index.md) | Methods shared by `str`, `bytes`, and `bytearray` as sequence types. |
 | [Text Sequence Type — str](text-sequence-type-str/index.md) | Unicode text strings, formatting, encoding, and string methods. |
 | [Binary Sequence Types — bytes, bytearray, memoryview](binary-sequence-types-bytes-bytearray-memoryview/index.md) | Immutable and mutable byte buffers and zero-copy `memoryview` slices. |
 | [Set Types — set, frozenset](set-types-set-frozenset/index.md) | Unordered collections of unique hashable elements, mutable and immutable. |

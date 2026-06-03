@@ -13,7 +13,6 @@
 |  | [Boolean Type - bool](built-in-types/boolean-type-bool/index.md) | |
 |  | [Iterator Types](built-in-types/iterator-types/index.md) | |
 |  | [Sequence Types — list, tuple, range](built-in-types/sequence-types-list-tuple-range/index.md) | |
-|  | [Text and Binary Sequence Type Methods Summary](built-in-types/text-and-binary-sequence-type-methods-summary/index.md) | |
 |  | [Text Sequence Type — str](built-in-types/text-sequence-type-str/index.md) | |
 |  | [Binary Sequence Types — bytes, bytearray, memoryview](built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md) | |
 |  | [Set Types — set, frozenset](built-in-types/set-types-set-frozenset/index.md) | |

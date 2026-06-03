@@ -303,8 +303,14 @@ nav:
             - Hashing of numeric types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/hashing-of-numeric-types/index.md
           - Boolean Type - bool: versions/3.14.5/standard-library/built-in-types/boolean-type-bool/index.md
           - Iterator Types: versions/3.14.5/standard-library/built-in-types/iterator-types/index.md
-          - Sequence Types — list, tuple, range: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/index.md
-          - Text and Binary Sequence Type Methods Summary: versions/3.14.5/standard-library/built-in-types/text-and-binary-sequence-type-methods-summary/index.md
+          - Sequence Types — list, tuple, range:
+            - Lists: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/lists/index.md
+            - Tuples: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/tuples/index.md
+            - Ranges: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/ranges/index.md
+            - Sequence Types — list, tuple, range: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/index.md
+            - Common Sequence Operations: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/common-sequence-operations/index.md
+            - Immutable Sequence Types: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/immutable-sequence-types/index.md
+            - Mutable Sequence Types: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/mutable-sequence-types/index.md
           - Set Types — set, frozenset: versions/3.14.5/standard-library/built-in-types/set-types-set-frozenset/index.md
           - Mapping Types — dict: versions/3.14.5/standard-library/built-in-types/mapping-types-dict/index.md
           - Text Sequence Type — str: versions/3.14.5/standard-library/built-in-types/text-sequence-type-str/index.md
