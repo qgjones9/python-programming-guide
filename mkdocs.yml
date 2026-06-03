@@ -204,42 +204,117 @@ nav:
           - Creating Virtual Environments: versions/3.14.5/tutorial/virtual-environments-and-packages/creating-virtual-environments/index.md
           - Introduction: versions/3.14.5/tutorial/virtual-environments-and-packages/introduction/index.md
           - Managing Packages with pip: versions/3.14.5/tutorial/virtual-environments-and-packages/managing-packages-with-pip/index.md
+
+      # Python Standard Library
       - The Python Standard Library:
         - The Python Standard Library: versions/3.14.5/standard-library/index.md
-        - Binary Data Services:
-          - Binary Data Services: versions/3.14.5/standard-library/binary-data-services/index.md
-          - codecs — Codec registry and base classes:
-            - codecs — Codec registry and base classes: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/index.md
-            - Codec Base Classes:
-              - Codec Base Classes: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/index.md
-              - Error Handlers: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/error-handlers/index.md
-              - Incremental Encoding and Decoding:
-                - Incremental Encoding and Decoding: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/incremental-encoding-and-decoding/index.md
-                - IncrementalDecoder Objects: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/incremental-encoding-and-decoding/incrementaldecoder-objects/index.md
-                - IncrementalEncoder Objects: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/incremental-encoding-and-decoding/incrementalencoder-objects/index.md
-              - Stateless Encoding and Decoding: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stateless-encoding-and-decoding/index.md
-              - Stream Encoding and Decoding:
-                - Stream Encoding and Decoding: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/index.md
-                - StreamReader Objects: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/streamreader-objects/index.md
-                - StreamReaderWriter Objects: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/streamreaderwriter-objects/index.md
-                - StreamRecoder Objects: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/streamrecoder-objects/index.md
-                - StreamWriter Objects: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/streamwriter-objects/index.md
-            - Encodings and Unicode: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-and-unicode/index.md
-            - encodings — Encodings package: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-encodings-package/index.md
-            - encodings.idna — Internationalized Domain Names in Applications: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-idna/index.md
-            - encodings.mbcs — Windows ANSI codepage: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-mbcs/index.md
-            - encodings.utf_8_sig — UTF-8 codec with BOM signature: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-utf-8-sig/index.md
-            - Python Specific Encodings:
-              - Python Specific Encodings: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/index.md
-              - Binary Transforms: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/binary-transforms/index.md
-              - Standalone Codec Functions: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/standalone-codec-functions/index.md
-              - Text Encodings: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/text-encodings/index.md
-              - Text Transforms: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/text-transforms/index.md
-            - Standard Encodings: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/standard-encodings/index.md
-          - struct — Interpret bytes as packed binary data: versions/3.14.5/standard-library/binary-data-services/struct-interpret-bytes-as-packed-binary-data/index.md
+        - Introduction:
+          - Introduction: versions/3.14.5/standard-library/introduction/index.md
+          - Notes on availability: versions/3.14.5/standard-library/introduction/notes-on-availability/index.md
+        - Built-in Functions:
+          - Built-in Functions: versions/3.14.5/standard-library/built-in-functions/index.md
+          - abs(): versions/3.14.5/standard-library/built-in-functions/abs/index.md
+          - aiter(): versions/3.14.5/standard-library/built-in-functions/aiter/index.md
+          - all(): versions/3.14.5/standard-library/built-in-functions/all/index.md
+          - anext(): versions/3.14.5/standard-library/built-in-functions/anext/index.md
+          - any(): versions/3.14.5/standard-library/built-in-functions/any/index.md
+          - ascii(): versions/3.14.5/standard-library/built-in-functions/ascii/index.md
+          - bin(): versions/3.14.5/standard-library/built-in-functions/bin/index.md
+          - bool(): versions/3.14.5/standard-library/built-in-functions/bool/index.md
+          - breakpoint(): versions/3.14.5/standard-library/built-in-functions/breakpoint/index.md
+          - bytearray(): versions/3.14.5/standard-library/built-in-functions/bytearray/index.md
+          - bytes(): versions/3.14.5/standard-library/built-in-functions/bytes/index.md
+          - callable(): versions/3.14.5/standard-library/built-in-functions/callable/index.md
+          - chr(): versions/3.14.5/standard-library/built-in-functions/chr/index.md
+          - classmethod(): versions/3.14.5/standard-library/built-in-functions/classmethod/index.md
+          - compile(): versions/3.14.5/standard-library/built-in-functions/compile/index.md
+          - complex(): versions/3.14.5/standard-library/built-in-functions/complex/index.md
+          - delattr(): versions/3.14.5/standard-library/built-in-functions/delattr/index.md
+          - dict(): versions/3.14.5/standard-library/built-in-functions/dict/index.md
+          - dir(): versions/3.14.5/standard-library/built-in-functions/dir/index.md
+          - divmod(): versions/3.14.5/standard-library/built-in-functions/divmod/index.md
+          - enumerate(): versions/3.14.5/standard-library/built-in-functions/enumerate/index.md
+          - eval(): versions/3.14.5/standard-library/built-in-functions/eval/index.md
+          - exec(): versions/3.14.5/standard-library/built-in-functions/exec/index.md
+          - filter(): versions/3.14.5/standard-library/built-in-functions/filter/index.md
+          - float(): versions/3.14.5/standard-library/built-in-functions/float/index.md
+          - format(): versions/3.14.5/standard-library/built-in-functions/format/index.md
+          - frozenset(): versions/3.14.5/standard-library/built-in-functions/frozenset/index.md
+          - getattr(): versions/3.14.5/standard-library/built-in-functions/getattr/index.md
+          - globals(): versions/3.14.5/standard-library/built-in-functions/globals/index.md
+          - hasattr(): versions/3.14.5/standard-library/built-in-functions/hasattr/index.md
+          - hash(): versions/3.14.5/standard-library/built-in-functions/hash/index.md
+          - help(): versions/3.14.5/standard-library/built-in-functions/help/index.md
+          - hex(): versions/3.14.5/standard-library/built-in-functions/hex/index.md
+          - id(): versions/3.14.5/standard-library/built-in-functions/id/index.md
+          - __import__(): versions/3.14.5/standard-library/built-in-functions/import/index.md
+          - input(): versions/3.14.5/standard-library/built-in-functions/input/index.md
+          - int(): versions/3.14.5/standard-library/built-in-functions/int/index.md
+          - isinstance(): versions/3.14.5/standard-library/built-in-functions/isinstance/index.md
+          - issubclass(): versions/3.14.5/standard-library/built-in-functions/issubclass/index.md
+          - iter(): versions/3.14.5/standard-library/built-in-functions/iter/index.md
+          - len(): versions/3.14.5/standard-library/built-in-functions/len/index.md
+          - list(): versions/3.14.5/standard-library/built-in-functions/list/index.md
+          - locals(): versions/3.14.5/standard-library/built-in-functions/locals/index.md
+          - map(): versions/3.14.5/standard-library/built-in-functions/map/index.md
+          - max(): versions/3.14.5/standard-library/built-in-functions/max/index.md
+          - memoryview(): versions/3.14.5/standard-library/built-in-functions/memoryview/index.md
+          - min(): versions/3.14.5/standard-library/built-in-functions/min/index.md
+          - next(): versions/3.14.5/standard-library/built-in-functions/next/index.md
+          - object(): versions/3.14.5/standard-library/built-in-functions/object/index.md
+          - oct(): versions/3.14.5/standard-library/built-in-functions/oct/index.md
+          - open(): versions/3.14.5/standard-library/built-in-functions/open/index.md
+          - ord(): versions/3.14.5/standard-library/built-in-functions/ord/index.md
+          - pow(): versions/3.14.5/standard-library/built-in-functions/pow/index.md
+          - print(): versions/3.14.5/standard-library/built-in-functions/print/index.md
+          - property(): versions/3.14.5/standard-library/built-in-functions/property/index.md
+          - range(): versions/3.14.5/standard-library/built-in-functions/range/index.md
+          - repr(): versions/3.14.5/standard-library/built-in-functions/repr/index.md
+          - reversed(): versions/3.14.5/standard-library/built-in-functions/reversed/index.md
+          - round(): versions/3.14.5/standard-library/built-in-functions/round/index.md
+          - set(): versions/3.14.5/standard-library/built-in-functions/set/index.md
+          - setattr(): versions/3.14.5/standard-library/built-in-functions/setattr/index.md
+          - slice(): versions/3.14.5/standard-library/built-in-functions/slice/index.md
+          - sorted(): versions/3.14.5/standard-library/built-in-functions/sorted/index.md
+          - staticmethod(): versions/3.14.5/standard-library/built-in-functions/staticmethod/index.md
+          - str(): versions/3.14.5/standard-library/built-in-functions/str/index.md
+          - sum(): versions/3.14.5/standard-library/built-in-functions/sum/index.md
+          - super(): versions/3.14.5/standard-library/built-in-functions/super/index.md
+          - tuple(): versions/3.14.5/standard-library/built-in-functions/tuple/index.md
+          - type(): versions/3.14.5/standard-library/built-in-functions/type/index.md
+          - vars(): versions/3.14.5/standard-library/built-in-functions/vars/index.md
+          - zip(): versions/3.14.5/standard-library/built-in-functions/zip/index.md
+
         - Built-in Constants:
           - Built-in Constants: versions/3.14.5/standard-library/built-in-constants/index.md
           - Constants added by the site module: versions/3.14.5/standard-library/built-in-constants/constants-added-by-the-site-module/index.md
+
+        - Built-in Types:
+          - Built-in Types: versions/3.14.5/standard-library/built-in-types/index.md
+          - Binary Sequence Types — bytes, bytearray, memoryview: versions/3.14.5/standard-library/built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md
+          - Boolean Operations — and, or, not: versions/3.14.5/standard-library/built-in-types/boolean-operations-and-or-not/index.md
+          - Boolean Type - bool: versions/3.14.5/standard-library/built-in-types/boolean-type-bool/index.md
+          - Comparisons: versions/3.14.5/standard-library/built-in-types/comparisons/index.md
+          - Context Manager Types: versions/3.14.5/standard-library/built-in-types/context-manager-types/index.md
+          - Integer string conversion length limitation: versions/3.14.5/standard-library/built-in-types/integer-string-conversion-length-limitation/index.md
+          - Iterator Types: versions/3.14.5/standard-library/built-in-types/iterator-types/index.md
+          - Mapping Types — dict: versions/3.14.5/standard-library/built-in-types/mapping-types-dict/index.md
+          - Numeric Types — int, float, complex:
+            - Numeric Types — int, float, complex: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/index.md
+            - Additional Methods on Complex: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-complex/index.md
+            - Additional Methods on Float: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-float/index.md
+            - Additional Methods on Integer Types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-integer-types/index.md
+            - Bitwise Operations on Integer Types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/bitwise-operations-on-integer-types/index.md
+            - Hashing of numeric types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/hashing-of-numeric-types/index.md
+          - Other Built-in Types: versions/3.14.5/standard-library/built-in-types/other-built-in-types/index.md
+          - Sequence Types — list, tuple, range: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/index.md
+          - Set Types — set, frozenset: versions/3.14.5/standard-library/built-in-types/set-types-set-frozenset/index.md
+          - Special Attributes: versions/3.14.5/standard-library/built-in-types/special-attributes/index.md
+          - Text and Binary Sequence Type Methods Summary: versions/3.14.5/standard-library/built-in-types/text-and-binary-sequence-type-methods-summary/index.md
+          - Text Sequence Type — str: versions/3.14.5/standard-library/built-in-types/text-sequence-type-str/index.md
+          - Truth Value Testing: versions/3.14.5/standard-library/built-in-types/truth-value-testing/index.md
+          - Type Annotation Types — Generic Alias, Union: versions/3.14.5/standard-library/built-in-types/type-annotation-types-generic-alias-union/index.md
+
         - Built-in Exceptions:
           - Built-in Exceptions: versions/3.14.5/standard-library/built-in-exceptions/index.md
           - Base classes:
@@ -326,104 +401,141 @@ nav:
             - UnicodeWarning: versions/3.14.5/standard-library/built-in-exceptions/warnings/unicodewarning/index.md
             - UserWarning: versions/3.14.5/standard-library/built-in-exceptions/warnings/userwarning/index.md
             - Warning: versions/3.14.5/standard-library/built-in-exceptions/warnings/warning/index.md
-        - Built-in Functions:
-          - Built-in Functions: versions/3.14.5/standard-library/built-in-functions/index.md
-          - abs(): versions/3.14.5/standard-library/built-in-functions/abs/index.md
-          - aiter(): versions/3.14.5/standard-library/built-in-functions/aiter/index.md
-          - all(): versions/3.14.5/standard-library/built-in-functions/all/index.md
-          - anext(): versions/3.14.5/standard-library/built-in-functions/anext/index.md
-          - any(): versions/3.14.5/standard-library/built-in-functions/any/index.md
-          - ascii(): versions/3.14.5/standard-library/built-in-functions/ascii/index.md
-          - bin(): versions/3.14.5/standard-library/built-in-functions/bin/index.md
-          - bool(): versions/3.14.5/standard-library/built-in-functions/bool/index.md
-          - breakpoint(): versions/3.14.5/standard-library/built-in-functions/breakpoint/index.md
-          - bytearray(): versions/3.14.5/standard-library/built-in-functions/bytearray/index.md
-          - bytes(): versions/3.14.5/standard-library/built-in-functions/bytes/index.md
-          - callable(): versions/3.14.5/standard-library/built-in-functions/callable/index.md
-          - chr(): versions/3.14.5/standard-library/built-in-functions/chr/index.md
-          - classmethod(): versions/3.14.5/standard-library/built-in-functions/classmethod/index.md
-          - compile(): versions/3.14.5/standard-library/built-in-functions/compile/index.md
-          - complex(): versions/3.14.5/standard-library/built-in-functions/complex/index.md
-          - delattr(): versions/3.14.5/standard-library/built-in-functions/delattr/index.md
-          - dict(): versions/3.14.5/standard-library/built-in-functions/dict/index.md
-          - dir(): versions/3.14.5/standard-library/built-in-functions/dir/index.md
-          - divmod(): versions/3.14.5/standard-library/built-in-functions/divmod/index.md
-          - enumerate(): versions/3.14.5/standard-library/built-in-functions/enumerate/index.md
-          - eval(): versions/3.14.5/standard-library/built-in-functions/eval/index.md
-          - exec(): versions/3.14.5/standard-library/built-in-functions/exec/index.md
-          - filter(): versions/3.14.5/standard-library/built-in-functions/filter/index.md
-          - float(): versions/3.14.5/standard-library/built-in-functions/float/index.md
-          - format(): versions/3.14.5/standard-library/built-in-functions/format/index.md
-          - frozenset(): versions/3.14.5/standard-library/built-in-functions/frozenset/index.md
-          - getattr(): versions/3.14.5/standard-library/built-in-functions/getattr/index.md
-          - globals(): versions/3.14.5/standard-library/built-in-functions/globals/index.md
-          - hasattr(): versions/3.14.5/standard-library/built-in-functions/hasattr/index.md
-          - hash(): versions/3.14.5/standard-library/built-in-functions/hash/index.md
-          - help(): versions/3.14.5/standard-library/built-in-functions/help/index.md
-          - hex(): versions/3.14.5/standard-library/built-in-functions/hex/index.md
-          - id(): versions/3.14.5/standard-library/built-in-functions/id/index.md
-          - __import__(): versions/3.14.5/standard-library/built-in-functions/import/index.md
-          - input(): versions/3.14.5/standard-library/built-in-functions/input/index.md
-          - int(): versions/3.14.5/standard-library/built-in-functions/int/index.md
-          - isinstance(): versions/3.14.5/standard-library/built-in-functions/isinstance/index.md
-          - issubclass(): versions/3.14.5/standard-library/built-in-functions/issubclass/index.md
-          - iter(): versions/3.14.5/standard-library/built-in-functions/iter/index.md
-          - len(): versions/3.14.5/standard-library/built-in-functions/len/index.md
-          - list(): versions/3.14.5/standard-library/built-in-functions/list/index.md
-          - locals(): versions/3.14.5/standard-library/built-in-functions/locals/index.md
-          - map(): versions/3.14.5/standard-library/built-in-functions/map/index.md
-          - max(): versions/3.14.5/standard-library/built-in-functions/max/index.md
-          - memoryview(): versions/3.14.5/standard-library/built-in-functions/memoryview/index.md
-          - min(): versions/3.14.5/standard-library/built-in-functions/min/index.md
-          - next(): versions/3.14.5/standard-library/built-in-functions/next/index.md
-          - object(): versions/3.14.5/standard-library/built-in-functions/object/index.md
-          - oct(): versions/3.14.5/standard-library/built-in-functions/oct/index.md
-          - open(): versions/3.14.5/standard-library/built-in-functions/open/index.md
-          - ord(): versions/3.14.5/standard-library/built-in-functions/ord/index.md
-          - pow(): versions/3.14.5/standard-library/built-in-functions/pow/index.md
-          - print(): versions/3.14.5/standard-library/built-in-functions/print/index.md
-          - property(): versions/3.14.5/standard-library/built-in-functions/property/index.md
-          - range(): versions/3.14.5/standard-library/built-in-functions/range/index.md
-          - repr(): versions/3.14.5/standard-library/built-in-functions/repr/index.md
-          - reversed(): versions/3.14.5/standard-library/built-in-functions/reversed/index.md
-          - round(): versions/3.14.5/standard-library/built-in-functions/round/index.md
-          - set(): versions/3.14.5/standard-library/built-in-functions/set/index.md
-          - setattr(): versions/3.14.5/standard-library/built-in-functions/setattr/index.md
-          - slice(): versions/3.14.5/standard-library/built-in-functions/slice/index.md
-          - sorted(): versions/3.14.5/standard-library/built-in-functions/sorted/index.md
-          - staticmethod(): versions/3.14.5/standard-library/built-in-functions/staticmethod/index.md
-          - str(): versions/3.14.5/standard-library/built-in-functions/str/index.md
-          - sum(): versions/3.14.5/standard-library/built-in-functions/sum/index.md
-          - super(): versions/3.14.5/standard-library/built-in-functions/super/index.md
-          - tuple(): versions/3.14.5/standard-library/built-in-functions/tuple/index.md
-          - type(): versions/3.14.5/standard-library/built-in-functions/type/index.md
-          - vars(): versions/3.14.5/standard-library/built-in-functions/vars/index.md
-          - zip(): versions/3.14.5/standard-library/built-in-functions/zip/index.md
-        - Built-in Types:
-          - Built-in Types: versions/3.14.5/standard-library/built-in-types/index.md
-          - Binary Sequence Types — bytes, bytearray, memoryview: versions/3.14.5/standard-library/built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md
-          - Boolean Operations — and, or, not: versions/3.14.5/standard-library/built-in-types/boolean-operations-and-or-not/index.md
-          - Boolean Type - bool: versions/3.14.5/standard-library/built-in-types/boolean-type-bool/index.md
-          - Comparisons: versions/3.14.5/standard-library/built-in-types/comparisons/index.md
-          - Context Manager Types: versions/3.14.5/standard-library/built-in-types/context-manager-types/index.md
-          - Integer string conversion length limitation: versions/3.14.5/standard-library/built-in-types/integer-string-conversion-length-limitation/index.md
-          - Iterator Types: versions/3.14.5/standard-library/built-in-types/iterator-types/index.md
-          - Mapping Types — dict: versions/3.14.5/standard-library/built-in-types/mapping-types-dict/index.md
-          - Numeric Types — int, float, complex:
-            - Numeric Types — int, float, complex: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/index.md
-            - Additional Methods on Complex: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-complex/index.md
-            - Additional Methods on Float: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-float/index.md
-            - Additional Methods on Integer Types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-integer-types/index.md
-            - Bitwise Operations on Integer Types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/bitwise-operations-on-integer-types/index.md
-            - Hashing of numeric types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/hashing-of-numeric-types/index.md
-          - Other Built-in Types: versions/3.14.5/standard-library/built-in-types/other-built-in-types/index.md
-          - Sequence Types — list, tuple, range: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/index.md
-          - Set Types — set, frozenset: versions/3.14.5/standard-library/built-in-types/set-types-set-frozenset/index.md
-          - Special Attributes: versions/3.14.5/standard-library/built-in-types/special-attributes/index.md
-          - Text and Binary Sequence Type Methods Summary: versions/3.14.5/standard-library/built-in-types/text-and-binary-sequence-type-methods-summary/index.md
-          - Text Sequence Type — str: versions/3.14.5/standard-library/built-in-types/text-sequence-type-str/index.md
-          - Truth Value Testing: versions/3.14.5/standard-library/built-in-types/truth-value-testing/index.md
-          - Type Annotation Types — Generic Alias, Union: versions/3.14.5/standard-library/built-in-types/type-annotation-types-generic-alias-union/index.md
+        - Thread Safety Guarantees:
+          - Thread Safety Guarantees: versions/3.14.5/standard-library/thread-safety-guarantees/index.md
+          - Thread safety for bytearray objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-bytearray-objects/index.md
+          - Thread safety for dict objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-dict-objects/index.md
+          - Thread safety for list objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-list-objects/index.md
+          - Thread safety for memoryview objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-memoryview-objects/index.md
+          - Thread safety for set objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-set-objects/index.md
+          - Thread safety levels: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-levels/index.md
+        - Text Processing Services:
+          - Text Processing Services: versions/3.14.5/standard-library/text-processing-services/index.md
+          - difflib — Helpers for computing deltas: versions/3.14.5/standard-library/text-processing-services/difflib-helpers-for-computing-deltas/index.md
+          - re — Regular expression operations: versions/3.14.5/standard-library/text-processing-services/re-regular-expression-operations/index.md
+          - readline — GNU readline interface: versions/3.14.5/standard-library/text-processing-services/readline-gnu-readline-interface/index.md
+          - rlcompleter — Completion function for GNU readline: versions/3.14.5/standard-library/text-processing-services/rlcompleter-completion-function-for-gnu-readline/index.md
+          - string — Common string operations: versions/3.14.5/standard-library/text-processing-services/string-common-string-operations/index.md
+          - stringprep — Internet String Preparation: versions/3.14.5/standard-library/text-processing-services/stringprep-internet-string-preparation/index.md
+          - string.templatelib — Support for template string literals: versions/3.14.5/standard-library/text-processing-services/stringtemplatelib-support-for-template-string-literals/index.md
+          - textwrap — Text wrapping and filling: versions/3.14.5/standard-library/text-processing-services/textwrap-text-wrapping-and-filling/index.md
+          - unicodedata — Unicode Database: versions/3.14.5/standard-library/text-processing-services/unicodedata-unicode-database/index.md
+        - Binary Data Services:
+          - Binary Data Services: versions/3.14.5/standard-library/binary-data-services/index.md
+          - codecs — Codec registry and base classes:
+            - codecs — Codec registry and base classes: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/index.md
+            - Codec Base Classes:
+              - Codec Base Classes: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/index.md
+              - Error Handlers: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/error-handlers/index.md
+              - Incremental Encoding and Decoding:
+                - Incremental Encoding and Decoding: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/incremental-encoding-and-decoding/index.md
+                - IncrementalDecoder Objects: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/incremental-encoding-and-decoding/incrementaldecoder-objects/index.md
+                - IncrementalEncoder Objects: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/incremental-encoding-and-decoding/incrementalencoder-objects/index.md
+              - Stateless Encoding and Decoding: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stateless-encoding-and-decoding/index.md
+              - Stream Encoding and Decoding:
+                - Stream Encoding and Decoding: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/index.md
+                - StreamReader Objects: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/streamreader-objects/index.md
+                - StreamReaderWriter Objects: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/streamreaderwriter-objects/index.md
+                - StreamRecoder Objects: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/streamrecoder-objects/index.md
+                - StreamWriter Objects: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/codec-base-classes/stream-encoding-and-decoding/streamwriter-objects/index.md
+            - Encodings and Unicode: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-and-unicode/index.md
+            - encodings — Encodings package: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-encodings-package/index.md
+            - encodings.idna — Internationalized Domain Names in Applications: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-idna/index.md
+            - encodings.mbcs — Windows ANSI codepage: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-mbcs/index.md
+            - encodings.utf_8_sig — UTF-8 codec with BOM signature: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/encodings-utf-8-sig/index.md
+            - Python Specific Encodings:
+              - Python Specific Encodings: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/index.md
+              - Binary Transforms: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/binary-transforms/index.md
+              - Standalone Codec Functions: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/standalone-codec-functions/index.md
+              - Text Encodings: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/text-encodings/index.md
+              - Text Transforms: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/text-transforms/index.md
+            - Standard Encodings: versions/3.14.5/standard-library/binary-data-services/codecs-codec-registry-and-base-classes/standard-encodings/index.md
+          - struct — Interpret bytes as packed binary data: versions/3.14.5/standard-library/binary-data-services/struct-interpret-bytes-as-packed-binary-data/index.md
+
+
+        - Data Types:
+          - Data Types: versions/3.14.5/standard-library/data-types/index.md
+          - array — Efficient arrays of numeric values: versions/3.14.5/standard-library/data-types/array-efficient-arrays-of-numeric-values/index.md
+          - bisect — Array bisection algorithm: versions/3.14.5/standard-library/data-types/bisect-array-bisection-algorithm/index.md
+          - calendar — General calendar-related functions: versions/3.14.5/standard-library/data-types/calendar-general-calendar-related-functions/index.md
+          - collections — Container datatypes: versions/3.14.5/standard-library/data-types/collections-container-datatypes/index.md
+          - collections.abc — Abstract Base Classes for Containers: versions/3.14.5/standard-library/data-types/collectionsabc-abstract-base-classes-for-containers/index.md
+          - copy — Shallow and deep copy operations: versions/3.14.5/standard-library/data-types/copy-shallow-and-deep-copy-operations/index.md
+          - datetime — Basic date and time types: versions/3.14.5/standard-library/data-types/datetime-basic-date-and-time-types/index.md
+          - enum — Support for enumerations: versions/3.14.5/standard-library/data-types/enum-support-for-enumerations/index.md
+          - graphlib — Functionality to operate with graph-like structures: versions/3.14.5/standard-library/data-types/graphlib-functionality-to-operate-with-graph-like-structures/index.md
+          - heapq — Heap queue algorithm: versions/3.14.5/standard-library/data-types/heapq-heap-queue-algorithm/index.md
+          - pprint — Data pretty printer: versions/3.14.5/standard-library/data-types/pprint-data-pretty-printer/index.md
+          - reprlib — Alternate repr() implementation: versions/3.14.5/standard-library/data-types/reprlib-alternate-repr-implementation/index.md
+          - types — Dynamic type creation and names for built-in types: versions/3.14.5/standard-library/data-types/types-dynamic-type-creation-and-names-for-built-in-types/index.md
+          - weakref — Weak references: versions/3.14.5/standard-library/data-types/weakref-weak-references/index.md
+          - zoneinfo — IANA time zone support: versions/3.14.5/standard-library/data-types/zoneinfo-iana-time-zone-support/index.md
+        - Numeric and Mathematical Modules:
+          - Numeric and Mathematical Modules: versions/3.14.5/standard-library/numeric-and-mathematical-modules/index.md
+          - cmath — Mathematical functions for complex numbers: versions/3.14.5/standard-library/numeric-and-mathematical-modules/cmath-mathematical-functions-for-complex-numbers/index.md
+          - decimal — Decimal fixed-point and floating-point arithmetic: versions/3.14.5/standard-library/numeric-and-mathematical-modules/decimal-decimal-fixed-point-and-floating-point-arithmetic/index.md
+          - fractions — Rational numbers: versions/3.14.5/standard-library/numeric-and-mathematical-modules/fractions-rational-numbers/index.md
+          - math — Mathematical functions: versions/3.14.5/standard-library/numeric-and-mathematical-modules/math-mathematical-functions/index.md
+          - numbers — Numeric abstract base classes: versions/3.14.5/standard-library/numeric-and-mathematical-modules/numbers-numeric-abstract-base-classes/index.md
+          - random — Generate pseudo-random numbers: versions/3.14.5/standard-library/numeric-and-mathematical-modules/random-generate-pseudo-random-numbers/index.md
+          - statistics — Mathematical statistics functions: versions/3.14.5/standard-library/numeric-and-mathematical-modules/statistics-mathematical-statistics-functions/index.md
+        - Functional Programming Modules:
+          - Functional Programming Modules: versions/3.14.5/standard-library/functional-programming-modules/index.md
+          - functools — Higher-order functions and operations on callable objects: versions/3.14.5/standard-library/functional-programming-modules/functools-higher-order-functions-and-operations-on-callable-objects/index.md
+          - itertools — Functions creating iterators for efficient looping: versions/3.14.5/standard-library/functional-programming-modules/itertools-functions-creating-iterators-for-efficient-looping/index.md
+          - operator — Standard operators as functions: versions/3.14.5/standard-library/functional-programming-modules/operator-standard-operators-as-functions/index.md
+        - File and Directory Access:
+          - File and Directory Access: versions/3.14.5/standard-library/file-and-directory-access/index.md
+          - filecmp — File and Directory Comparisons: versions/3.14.5/standard-library/file-and-directory-access/filecmp-file-and-directory-comparisons/index.md
+          - fnmatch — Unix filename pattern matching: versions/3.14.5/standard-library/file-and-directory-access/fnmatch-unix-filename-pattern-matching/index.md
+          - glob — Unix style pathname pattern expansion: versions/3.14.5/standard-library/file-and-directory-access/glob-unix-style-pathname-pattern-expansion/index.md
+          - linecache — Random access to text lines: versions/3.14.5/standard-library/file-and-directory-access/linecache-random-access-to-text-lines/index.md
+          - os.path — Common pathname manipulations: versions/3.14.5/standard-library/file-and-directory-access/ospath-common-pathname-manipulations/index.md
+          - pathlib — Object-oriented filesystem paths: versions/3.14.5/standard-library/file-and-directory-access/pathlib-object-oriented-filesystem-paths/index.md
+          - shutil — High-level file operations: versions/3.14.5/standard-library/file-and-directory-access/shutil-high-level-file-operations/index.md
+          - stat — Interpreting stat() results: versions/3.14.5/standard-library/file-and-directory-access/stat-interpreting-stat-results/index.md
+          - tempfile — Generate temporary files and directories: versions/3.14.5/standard-library/file-and-directory-access/tempfile-generate-temporary-files-and-directories/index.md
+        - Data Persistence:
+          - Data Persistence: versions/3.14.5/standard-library/data-persistence/index.md
+          - copyreg — Register pickle support functions: versions/3.14.5/standard-library/data-persistence/copyreg-register-pickle-support-functions/index.md
+          - dbm — Interfaces to Unix “databases”: versions/3.14.5/standard-library/data-persistence/dbm-interfaces-to-unix-databases/index.md
+          - marshal — Internal Python object serialization: versions/3.14.5/standard-library/data-persistence/marshal-internal-python-object-serialization/index.md
+          - pickle — Python object serialization: versions/3.14.5/standard-library/data-persistence/pickle-python-object-serialization/index.md
+          - shelve — Python object persistence: versions/3.14.5/standard-library/data-persistence/shelve-python-object-persistence/index.md
+          - sqlite3 — DB-API 2.0 interface for SQLite databases: versions/3.14.5/standard-library/data-persistence/sqlite3-db-api-20-interface-for-sqlite-databases/index.md
+        - Data Compression and Archiving:
+          - Data Compression and Archiving: versions/3.14.5/standard-library/data-compression-and-archiving/index.md
+          - bz2 — Support for **bzip2** compression: versions/3.14.5/standard-library/data-compression-and-archiving/bz2-support-for-bzip2-compression/index.md
+          - compression.zstd — Compression compatible with the Zstandard format: versions/3.14.5/standard-library/data-compression-and-archiving/compressionzstd-compression-compatible-with-the-zstandard-format/index.md
+          - gzip — Support for **gzip** files: versions/3.14.5/standard-library/data-compression-and-archiving/gzip-support-for-gzip-files/index.md
+          - lzma — Compression using the LZMA algorithm: versions/3.14.5/standard-library/data-compression-and-archiving/lzma-compression-using-the-lzma-algorithm/index.md
+          - tarfile — Read and write tar archive files: versions/3.14.5/standard-library/data-compression-and-archiving/tarfile-read-and-write-tar-archive-files/index.md
+          - The compression package: versions/3.14.5/standard-library/data-compression-and-archiving/the-compression-package/index.md
+          - zipfile — Work with ZIP archives: versions/3.14.5/standard-library/data-compression-and-archiving/zipfile-work-with-zip-archives/index.md
+          - zlib — Compression compatible with **gzip**: versions/3.14.5/standard-library/data-compression-and-archiving/zlib-compression-compatible-with-gzip/index.md
+        - File Formats:
+          - File Formats: versions/3.14.5/standard-library/file-formats/index.md
+          - configparser — Configuration file parser: versions/3.14.5/standard-library/file-formats/configparser-configuration-file-parser/index.md
+          - csv — CSV File Reading and Writing: versions/3.14.5/standard-library/file-formats/csv-csv-file-reading-and-writing/index.md
+          - netrc — netrc file processing: versions/3.14.5/standard-library/file-formats/netrc-netrc-file-processing/index.md
+          - plistlib — Generate and parse Apple .plist files: versions/3.14.5/standard-library/file-formats/plistlib-generate-and-parse-apple-plist-files/index.md
+          - tomllib — Parse TOML files: versions/3.14.5/standard-library/file-formats/tomllib-parse-toml-files/index.md
+        - Cryptographic Services:
+          - Cryptographic Services: versions/3.14.5/standard-library/cryptographic-services/index.md
+          - hashlib — Secure hashes and message digests: versions/3.14.5/standard-library/cryptographic-services/hashlib-secure-hashes-and-message-digests/index.md
+          - hmac — Keyed-Hashing for Message Authentication: versions/3.14.5/standard-library/cryptographic-services/hmac-keyed-hashing-for-message-authentication/index.md
+          - secrets — Generate secure random numbers for managing secrets: versions/3.14.5/standard-library/cryptographic-services/secrets-generate-secure-random-numbers-for-managing-secrets/index.md
+        - Generic Operating System Services:
+          - Generic Operating System Services: versions/3.14.5/standard-library/generic-operating-system-services/index.md
+          - ctypes — A foreign function library for Python: versions/3.14.5/standard-library/generic-operating-system-services/ctypes-a-foreign-function-library-for-python/index.md
+          - errno — Standard errno system symbols: versions/3.14.5/standard-library/generic-operating-system-services/errno-standard-errno-system-symbols/index.md
+          - io — Core tools for working with streams: versions/3.14.5/standard-library/generic-operating-system-services/io-core-tools-for-working-with-streams/index.md
+          - logging — Logging facility for Python: versions/3.14.5/standard-library/generic-operating-system-services/logging-logging-facility-for-python/index.md
+          - logging.config — Logging configuration: versions/3.14.5/standard-library/generic-operating-system-services/loggingconfig-logging-configuration/index.md
+          - logging.handlers — Logging handlers: versions/3.14.5/standard-library/generic-operating-system-services/logginghandlers-logging-handlers/index.md
+          - os — Miscellaneous operating system interfaces: versions/3.14.5/standard-library/generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md
+          - platform — Access to underlying platform’s identifying data: versions/3.14.5/standard-library/generic-operating-system-services/platform-access-to-underlying-platforms-identifying-data/index.md
+          - time — Time access and conversions: versions/3.14.5/standard-library/generic-operating-system-services/time-time-access-and-conversions/index.md
         - Command-line interface libraries:
           - Command-line interface libraries: versions/3.14.5/standard-library/command-line-interface-libraries/index.md
           - argparse — Parser for command-line options, arguments and subcommands: versions/3.14.5/standard-library/command-line-interface-libraries/argparse-parser-for-command-line-options-arguments-and-subcommands/index.md
@@ -448,139 +560,15 @@ nav:
           - subprocess — Subprocess management: versions/3.14.5/standard-library/concurrent-execution/subprocess-subprocess-management/index.md
           - The concurrent package: versions/3.14.5/standard-library/concurrent-execution/the-concurrent-package/index.md
           - threading — Thread-based parallelism: versions/3.14.5/standard-library/concurrent-execution/threading-thread-based-parallelism/index.md
-        - Cryptographic Services:
-          - Cryptographic Services: versions/3.14.5/standard-library/cryptographic-services/index.md
-          - hashlib — Secure hashes and message digests: versions/3.14.5/standard-library/cryptographic-services/hashlib-secure-hashes-and-message-digests/index.md
-          - hmac — Keyed-Hashing for Message Authentication: versions/3.14.5/standard-library/cryptographic-services/hmac-keyed-hashing-for-message-authentication/index.md
-          - secrets — Generate secure random numbers for managing secrets: versions/3.14.5/standard-library/cryptographic-services/secrets-generate-secure-random-numbers-for-managing-secrets/index.md
-        - Custom Python Interpreters:
-          - Custom Python Interpreters: versions/3.14.5/standard-library/custom-python-interpreters/index.md
-          - code — Interpreter base classes: versions/3.14.5/standard-library/custom-python-interpreters/code-interpreter-base-classes/index.md
-          - codeop — Compile Python code: versions/3.14.5/standard-library/custom-python-interpreters/codeop-compile-python-code/index.md
-        - Data Compression and Archiving:
-          - Data Compression and Archiving: versions/3.14.5/standard-library/data-compression-and-archiving/index.md
-          - bz2 — Support for **bzip2** compression: versions/3.14.5/standard-library/data-compression-and-archiving/bz2-support-for-bzip2-compression/index.md
-          - compression.zstd — Compression compatible with the Zstandard format: versions/3.14.5/standard-library/data-compression-and-archiving/compressionzstd-compression-compatible-with-the-zstandard-format/index.md
-          - gzip — Support for **gzip** files: versions/3.14.5/standard-library/data-compression-and-archiving/gzip-support-for-gzip-files/index.md
-          - lzma — Compression using the LZMA algorithm: versions/3.14.5/standard-library/data-compression-and-archiving/lzma-compression-using-the-lzma-algorithm/index.md
-          - tarfile — Read and write tar archive files: versions/3.14.5/standard-library/data-compression-and-archiving/tarfile-read-and-write-tar-archive-files/index.md
-          - The compression package: versions/3.14.5/standard-library/data-compression-and-archiving/the-compression-package/index.md
-          - zipfile — Work with ZIP archives: versions/3.14.5/standard-library/data-compression-and-archiving/zipfile-work-with-zip-archives/index.md
-          - zlib — Compression compatible with **gzip**: versions/3.14.5/standard-library/data-compression-and-archiving/zlib-compression-compatible-with-gzip/index.md
-        - Data Persistence:
-          - Data Persistence: versions/3.14.5/standard-library/data-persistence/index.md
-          - copyreg — Register pickle support functions: versions/3.14.5/standard-library/data-persistence/copyreg-register-pickle-support-functions/index.md
-          - dbm — Interfaces to Unix “databases”: versions/3.14.5/standard-library/data-persistence/dbm-interfaces-to-unix-databases/index.md
-          - marshal — Internal Python object serialization: versions/3.14.5/standard-library/data-persistence/marshal-internal-python-object-serialization/index.md
-          - pickle — Python object serialization: versions/3.14.5/standard-library/data-persistence/pickle-python-object-serialization/index.md
-          - shelve — Python object persistence: versions/3.14.5/standard-library/data-persistence/shelve-python-object-persistence/index.md
-          - sqlite3 — DB-API 2.0 interface for SQLite databases: versions/3.14.5/standard-library/data-persistence/sqlite3-db-api-20-interface-for-sqlite-databases/index.md
-        - Data Types:
-          - Data Types: versions/3.14.5/standard-library/data-types/index.md
-          - array — Efficient arrays of numeric values: versions/3.14.5/standard-library/data-types/array-efficient-arrays-of-numeric-values/index.md
-          - bisect — Array bisection algorithm: versions/3.14.5/standard-library/data-types/bisect-array-bisection-algorithm/index.md
-          - calendar — General calendar-related functions: versions/3.14.5/standard-library/data-types/calendar-general-calendar-related-functions/index.md
-          - collections — Container datatypes: versions/3.14.5/standard-library/data-types/collections-container-datatypes/index.md
-          - collections.abc — Abstract Base Classes for Containers: versions/3.14.5/standard-library/data-types/collectionsabc-abstract-base-classes-for-containers/index.md
-          - copy — Shallow and deep copy operations: versions/3.14.5/standard-library/data-types/copy-shallow-and-deep-copy-operations/index.md
-          - datetime — Basic date and time types: versions/3.14.5/standard-library/data-types/datetime-basic-date-and-time-types/index.md
-          - enum — Support for enumerations: versions/3.14.5/standard-library/data-types/enum-support-for-enumerations/index.md
-          - graphlib — Functionality to operate with graph-like structures: versions/3.14.5/standard-library/data-types/graphlib-functionality-to-operate-with-graph-like-structures/index.md
-          - heapq — Heap queue algorithm: versions/3.14.5/standard-library/data-types/heapq-heap-queue-algorithm/index.md
-          - pprint — Data pretty printer: versions/3.14.5/standard-library/data-types/pprint-data-pretty-printer/index.md
-          - reprlib — Alternate repr() implementation: versions/3.14.5/standard-library/data-types/reprlib-alternate-repr-implementation/index.md
-          - types — Dynamic type creation and names for built-in types: versions/3.14.5/standard-library/data-types/types-dynamic-type-creation-and-names-for-built-in-types/index.md
-          - weakref — Weak references: versions/3.14.5/standard-library/data-types/weakref-weak-references/index.md
-          - zoneinfo — IANA time zone support: versions/3.14.5/standard-library/data-types/zoneinfo-iana-time-zone-support/index.md
-        - Debugging and Profiling:
-          - Debugging and Profiling: versions/3.14.5/standard-library/debugging-and-profiling/index.md
-          - Audit events table: versions/3.14.5/standard-library/debugging-and-profiling/audit-events-table/index.md
-          - bdb — Debugger framework: versions/3.14.5/standard-library/debugging-and-profiling/bdb-debugger-framework/index.md
-          - faulthandler — Dump the Python traceback: versions/3.14.5/standard-library/debugging-and-profiling/faulthandler-dump-the-python-traceback/index.md
-          - pdb — The Python Debugger: versions/3.14.5/standard-library/debugging-and-profiling/pdb-the-python-debugger/index.md
-          - The Python Profilers: versions/3.14.5/standard-library/debugging-and-profiling/the-python-profilers/index.md
-          - timeit — Measure execution time of small code snippets: versions/3.14.5/standard-library/debugging-and-profiling/timeit-measure-execution-time-of-small-code-snippets/index.md
-          - trace — Trace or track Python statement execution: versions/3.14.5/standard-library/debugging-and-profiling/trace-trace-or-track-python-statement-execution/index.md
-          - tracemalloc — Trace memory allocations: versions/3.14.5/standard-library/debugging-and-profiling/tracemalloc-trace-memory-allocations/index.md
-        - Development Tools:
-          - Development Tools: versions/3.14.5/standard-library/development-tools/index.md
-          - doctest — Test interactive Python examples: versions/3.14.5/standard-library/development-tools/doctest-test-interactive-python-examples/index.md
-          - pydoc — Documentation generator and online help system: versions/3.14.5/standard-library/development-tools/pydoc-documentation-generator-and-online-help-system/index.md
-          - Python Development Mode: versions/3.14.5/standard-library/development-tools/python-development-mode/index.md
-          - test — Regression tests package for Python: versions/3.14.5/standard-library/development-tools/test-regression-tests-package-for-python/index.md
-          - test.support — Utilities for the Python test suite: versions/3.14.5/standard-library/development-tools/testsupport-utilities-for-the-python-test-suite/index.md
-          - test.support.bytecode_helper — Support tools for testing correct bytecode generation: versions/3.14.5/standard-library/development-tools/testsupportbytecode_helper-support-tools-for-testing-correct-bytecode-generation/index.md
-          - test.support.import_helper — Utilities for import tests: versions/3.14.5/standard-library/development-tools/testsupportimport_helper-utilities-for-import-tests/index.md
-          - test.support.os_helper — Utilities for os tests: versions/3.14.5/standard-library/development-tools/testsupportos_helper-utilities-for-os-tests/index.md
-          - test.support.script_helper — Utilities for the Python execution tests: versions/3.14.5/standard-library/development-tools/testsupportscript_helper-utilities-for-the-python-execution-tests/index.md
-          - test.support.socket_helper — Utilities for socket tests: versions/3.14.5/standard-library/development-tools/testsupportsocket_helper-utilities-for-socket-tests/index.md
-          - test.support.threading_helper — Utilities for threading tests: versions/3.14.5/standard-library/development-tools/testsupportthreading_helper-utilities-for-threading-tests/index.md
-          - test.support.warnings_helper — Utilities for warnings tests: versions/3.14.5/standard-library/development-tools/testsupportwarnings_helper-utilities-for-warnings-tests/index.md
-          - typing — Support for type hints: versions/3.14.5/standard-library/development-tools/typing-support-for-type-hints/index.md
-          - unittest — Unit testing framework: versions/3.14.5/standard-library/development-tools/unittest-unit-testing-framework/index.md
-          - unittest.mock — getting started: versions/3.14.5/standard-library/development-tools/unittestmock-getting-started/index.md
-          - unittest.mock — mock object library: versions/3.14.5/standard-library/development-tools/unittestmock-mock-object-library/index.md
-        - File and Directory Access:
-          - File and Directory Access: versions/3.14.5/standard-library/file-and-directory-access/index.md
-          - filecmp — File and Directory Comparisons: versions/3.14.5/standard-library/file-and-directory-access/filecmp-file-and-directory-comparisons/index.md
-          - fnmatch — Unix filename pattern matching: versions/3.14.5/standard-library/file-and-directory-access/fnmatch-unix-filename-pattern-matching/index.md
-          - glob — Unix style pathname pattern expansion: versions/3.14.5/standard-library/file-and-directory-access/glob-unix-style-pathname-pattern-expansion/index.md
-          - linecache — Random access to text lines: versions/3.14.5/standard-library/file-and-directory-access/linecache-random-access-to-text-lines/index.md
-          - os.path — Common pathname manipulations: versions/3.14.5/standard-library/file-and-directory-access/ospath-common-pathname-manipulations/index.md
-          - pathlib — Object-oriented filesystem paths: versions/3.14.5/standard-library/file-and-directory-access/pathlib-object-oriented-filesystem-paths/index.md
-          - shutil — High-level file operations: versions/3.14.5/standard-library/file-and-directory-access/shutil-high-level-file-operations/index.md
-          - stat — Interpreting stat() results: versions/3.14.5/standard-library/file-and-directory-access/stat-interpreting-stat-results/index.md
-          - tempfile — Generate temporary files and directories: versions/3.14.5/standard-library/file-and-directory-access/tempfile-generate-temporary-files-and-directories/index.md
-        - File Formats:
-          - File Formats: versions/3.14.5/standard-library/file-formats/index.md
-          - configparser — Configuration file parser: versions/3.14.5/standard-library/file-formats/configparser-configuration-file-parser/index.md
-          - csv — CSV File Reading and Writing: versions/3.14.5/standard-library/file-formats/csv-csv-file-reading-and-writing/index.md
-          - netrc — netrc file processing: versions/3.14.5/standard-library/file-formats/netrc-netrc-file-processing/index.md
-          - plistlib — Generate and parse Apple .plist files: versions/3.14.5/standard-library/file-formats/plistlib-generate-and-parse-apple-plist-files/index.md
-          - tomllib — Parse TOML files: versions/3.14.5/standard-library/file-formats/tomllib-parse-toml-files/index.md
-        - Functional Programming Modules:
-          - Functional Programming Modules: versions/3.14.5/standard-library/functional-programming-modules/index.md
-          - functools — Higher-order functions and operations on callable objects: versions/3.14.5/standard-library/functional-programming-modules/functools-higher-order-functions-and-operations-on-callable-objects/index.md
-          - itertools — Functions creating iterators for efficient looping: versions/3.14.5/standard-library/functional-programming-modules/itertools-functions-creating-iterators-for-efficient-looping/index.md
-          - operator — Standard operators as functions: versions/3.14.5/standard-library/functional-programming-modules/operator-standard-operators-as-functions/index.md
-        - Generic Operating System Services:
-          - Generic Operating System Services: versions/3.14.5/standard-library/generic-operating-system-services/index.md
-          - ctypes — A foreign function library for Python: versions/3.14.5/standard-library/generic-operating-system-services/ctypes-a-foreign-function-library-for-python/index.md
-          - errno — Standard errno system symbols: versions/3.14.5/standard-library/generic-operating-system-services/errno-standard-errno-system-symbols/index.md
-          - io — Core tools for working with streams: versions/3.14.5/standard-library/generic-operating-system-services/io-core-tools-for-working-with-streams/index.md
-          - logging — Logging facility for Python: versions/3.14.5/standard-library/generic-operating-system-services/logging-logging-facility-for-python/index.md
-          - logging.config — Logging configuration: versions/3.14.5/standard-library/generic-operating-system-services/loggingconfig-logging-configuration/index.md
-          - logging.handlers — Logging handlers: versions/3.14.5/standard-library/generic-operating-system-services/logginghandlers-logging-handlers/index.md
-          - os — Miscellaneous operating system interfaces: versions/3.14.5/standard-library/generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md
-          - platform — Access to underlying platform’s identifying data: versions/3.14.5/standard-library/generic-operating-system-services/platform-access-to-underlying-platforms-identifying-data/index.md
-          - time — Time access and conversions: versions/3.14.5/standard-library/generic-operating-system-services/time-time-access-and-conversions/index.md
-        - Graphical user interfaces with Tk:
-          - Graphical user interfaces with Tk: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/index.md
-          - IDLE — Python editor and shell: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/idle-python-editor-and-shell/index.md
-          - Tkinter Dialogs: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinter-dialogs/index.md
-          - tkinter — Python interface to Tcl/Tk: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinter-python-interface-to-tcltk/index.md
-          - tkinter.colorchooser — Color choosing dialog: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkintercolorchooser-color-choosing-dialog/index.md
-          - tkinter.dnd — Drag and drop support: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinterdnd-drag-and-drop-support/index.md
-          - tkinter.font — Tkinter font wrapper: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinterfont-tkinter-font-wrapper/index.md
-          - tkinter.messagebox — Tkinter message prompts: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkintermessagebox-tkinter-message-prompts/index.md
-          - tkinter.scrolledtext — Scrolled Text Widget: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinterscrolledtext-scrolled-text-widget/index.md
-          - tkinter.ttk — Tk themed widgets: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinterttk-tk-themed-widgets/index.md
-          - turtle — Turtle graphics: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/turtle-turtle-graphics/index.md
-        - Importing Modules:
-          - Importing Modules: versions/3.14.5/standard-library/importing-modules/index.md
-          - importlib — The implementation of import: versions/3.14.5/standard-library/importing-modules/importlib-the-implementation-of-import/index.md
-          - importlib.metadata – Accessing package metadata: versions/3.14.5/standard-library/importing-modules/importlibmetadata-accessing-package-metadata/index.md
-          - importlib.resources – Package resource reading, opening and access: versions/3.14.5/standard-library/importing-modules/importlibresources-package-resource-reading-opening-and-access/index.md
-          - importlib.resources.abc – Abstract base classes for resources: versions/3.14.5/standard-library/importing-modules/importlibresourcesabc-abstract-base-classes-for-resources/index.md
-          - modulefinder — Find modules used by a script: versions/3.14.5/standard-library/importing-modules/modulefinder-find-modules-used-by-a-script/index.md
-          - pkgutil — Package extension utility: versions/3.14.5/standard-library/importing-modules/pkgutil-package-extension-utility/index.md
-          - runpy — Locating and executing Python modules: versions/3.14.5/standard-library/importing-modules/runpy-locating-and-executing-python-modules/index.md
-          - The initialization of the sys.path module search path: versions/3.14.5/standard-library/importing-modules/the-initialization-of-the-syspath-module-search-path/index.md
-          - zipimport — Import modules from Zip archives: versions/3.14.5/standard-library/importing-modules/zipimport-import-modules-from-zip-archives/index.md
-        - Internationalization:
-          - Internationalization: versions/3.14.5/standard-library/internationalization/index.md
-          - gettext — Multilingual internationalization services: versions/3.14.5/standard-library/internationalization/gettext-multilingual-internationalization-services/index.md
-          - locale — Internationalization services: versions/3.14.5/standard-library/internationalization/locale-internationalization-services/index.md
+        - Networking and Interprocess Communication:
+          - Networking and Interprocess Communication: versions/3.14.5/standard-library/networking-and-interprocess-communication/index.md
+          - asyncio — Asynchronous I/O: versions/3.14.5/standard-library/networking-and-interprocess-communication/asyncio-asynchronous-io/index.md
+          - mmap — Memory-mapped file support: versions/3.14.5/standard-library/networking-and-interprocess-communication/mmap-memory-mapped-file-support/index.md
+          - select — Waiting for I/O completion: versions/3.14.5/standard-library/networking-and-interprocess-communication/select-waiting-for-io-completion/index.md
+          - selectors — High-level I/O multiplexing: versions/3.14.5/standard-library/networking-and-interprocess-communication/selectors-high-level-io-multiplexing/index.md
+          - signal — Set handlers for asynchronous events: versions/3.14.5/standard-library/networking-and-interprocess-communication/signal-set-handlers-for-asynchronous-events/index.md
+          - socket — Low-level networking interface: versions/3.14.5/standard-library/networking-and-interprocess-communication/socket-low-level-networking-interface/index.md
+          - ssl — TLS/SSL wrapper for socket objects: versions/3.14.5/standard-library/networking-and-interprocess-communication/ssl-tlsssl-wrapper-for-socket-objects/index.md
         - Internet Data Handling:
           - Internet Data Handling: versions/3.14.5/standard-library/internet-data-handling/index.md
           - base64 — Base16, Base32, Base64, Base85 Data Encodings: versions/3.14.5/standard-library/internet-data-handling/base64-base16-base32-base64-base85-data-encodings/index.md
@@ -590,6 +578,21 @@ nav:
           - mailbox — Manipulate mailboxes in various formats: versions/3.14.5/standard-library/internet-data-handling/mailbox-manipulate-mailboxes-in-various-formats/index.md
           - mimetypes — Map filenames to MIME types: versions/3.14.5/standard-library/internet-data-handling/mimetypes-map-filenames-to-mime-types/index.md
           - quopri — Encode and decode MIME quoted-printable data: versions/3.14.5/standard-library/internet-data-handling/quopri-encode-and-decode-mime-quoted-printable-data/index.md
+        - Structured Markup Processing Tools:
+          - Structured Markup Processing Tools: versions/3.14.5/standard-library/structured-markup-processing-tools/index.md
+          - html — HyperText Markup Language support: versions/3.14.5/standard-library/structured-markup-processing-tools/html-hypertext-markup-language-support/index.md
+          - html.entities — Definitions of HTML general entities: versions/3.14.5/standard-library/structured-markup-processing-tools/htmlentities-definitions-of-html-general-entities/index.md
+          - html.parser — Simple HTML and XHTML parser: versions/3.14.5/standard-library/structured-markup-processing-tools/htmlparser-simple-html-and-xhtml-parser/index.md
+          - XML Processing Modules: versions/3.14.5/standard-library/structured-markup-processing-tools/xml-processing-modules/index.md
+          - xml.dom — The Document Object Model API: versions/3.14.5/standard-library/structured-markup-processing-tools/xmldom-the-document-object-model-api/index.md
+          - xml.dom.minidom — Minimal DOM implementation: versions/3.14.5/standard-library/structured-markup-processing-tools/xmldomminidom-minimal-dom-implementation/index.md
+          - xml.dom.pulldom — Support for building partial DOM trees: versions/3.14.5/standard-library/structured-markup-processing-tools/xmldompulldom-support-for-building-partial-dom-trees/index.md
+          - xml.etree.ElementTree — The ElementTree XML API: versions/3.14.5/standard-library/structured-markup-processing-tools/xmletreeelementtree-the-elementtree-xml-api/index.md
+          - xml.parsers.expat — Fast XML parsing using Expat: versions/3.14.5/standard-library/structured-markup-processing-tools/xmlparsersexpat-fast-xml-parsing-using-expat/index.md
+          - xml.sax — Support for SAX2 parsers: versions/3.14.5/standard-library/structured-markup-processing-tools/xmlsax-support-for-sax2-parsers/index.md
+          - xml.sax.handler — Base classes for SAX handlers: versions/3.14.5/standard-library/structured-markup-processing-tools/xmlsaxhandler-base-classes-for-sax-handlers/index.md
+          - xml.sax.saxutils — SAX Utilities: versions/3.14.5/standard-library/structured-markup-processing-tools/xmlsaxsaxutils-sax-utilities/index.md
+          - xml.sax.xmlreader — Interface for XML parsers: versions/3.14.5/standard-library/structured-markup-processing-tools/xmlsaxxmlreader-interface-for-xml-parsers/index.md
         - Internet Protocols and Support:
           - Internet Protocols and Support: versions/3.14.5/standard-library/internet-protocols-and-support/index.md
           - ftplib — FTP protocol client: versions/3.14.5/standard-library/internet-protocols-and-support/ftplib-ftp-protocol-client/index.md
@@ -615,50 +618,59 @@ nav:
           - xmlrpc — XMLRPC server and client modules: versions/3.14.5/standard-library/internet-protocols-and-support/xmlrpc-xmlrpc-server-and-client-modules/index.md
           - xmlrpc.client — XML-RPC client access: versions/3.14.5/standard-library/internet-protocols-and-support/xmlrpcclient-xml-rpc-client-access/index.md
           - xmlrpc.server — Basic XML-RPC servers: versions/3.14.5/standard-library/internet-protocols-and-support/xmlrpcserver-basic-xml-rpc-servers/index.md
-        - Introduction:
-          - Introduction: versions/3.14.5/standard-library/introduction/index.md
-          - Notes on availability: versions/3.14.5/standard-library/introduction/notes-on-availability/index.md
-        - Modules command-line interface (CLI): versions/3.14.5/standard-library/modules-command-line-interface-cli/index.md
-        - MS Windows Specific Services:
-          - MS Windows Specific Services: versions/3.14.5/standard-library/ms-windows-specific-services/index.md
-          - msvcrt — Useful routines from the MS VC++ runtime: versions/3.14.5/standard-library/ms-windows-specific-services/msvcrt-useful-routines-from-the-ms-vc-runtime/index.md
-          - winreg — Windows registry access: versions/3.14.5/standard-library/ms-windows-specific-services/winreg-windows-registry-access/index.md
-          - winsound — Sound-playing interface for Windows: versions/3.14.5/standard-library/ms-windows-specific-services/winsound-sound-playing-interface-for-windows/index.md
         - Multimedia Services:
           - Multimedia Services: versions/3.14.5/standard-library/multimedia-services/index.md
           - colorsys — Conversions between color systems: versions/3.14.5/standard-library/multimedia-services/colorsys-conversions-between-color-systems/index.md
           - wave — Read and write WAV files: versions/3.14.5/standard-library/multimedia-services/wave-read-and-write-wav-files/index.md
-        - Networking and Interprocess Communication:
-          - Networking and Interprocess Communication: versions/3.14.5/standard-library/networking-and-interprocess-communication/index.md
-          - asyncio — Asynchronous I/O: versions/3.14.5/standard-library/networking-and-interprocess-communication/asyncio-asynchronous-io/index.md
-          - mmap — Memory-mapped file support: versions/3.14.5/standard-library/networking-and-interprocess-communication/mmap-memory-mapped-file-support/index.md
-          - select — Waiting for I/O completion: versions/3.14.5/standard-library/networking-and-interprocess-communication/select-waiting-for-io-completion/index.md
-          - selectors — High-level I/O multiplexing: versions/3.14.5/standard-library/networking-and-interprocess-communication/selectors-high-level-io-multiplexing/index.md
-          - signal — Set handlers for asynchronous events: versions/3.14.5/standard-library/networking-and-interprocess-communication/signal-set-handlers-for-asynchronous-events/index.md
-          - socket — Low-level networking interface: versions/3.14.5/standard-library/networking-and-interprocess-communication/socket-low-level-networking-interface/index.md
-          - ssl — TLS/SSL wrapper for socket objects: versions/3.14.5/standard-library/networking-and-interprocess-communication/ssl-tlsssl-wrapper-for-socket-objects/index.md
-        - Numeric and Mathematical Modules:
-          - Numeric and Mathematical Modules: versions/3.14.5/standard-library/numeric-and-mathematical-modules/index.md
-          - cmath — Mathematical functions for complex numbers: versions/3.14.5/standard-library/numeric-and-mathematical-modules/cmath-mathematical-functions-for-complex-numbers/index.md
-          - decimal — Decimal fixed-point and floating-point arithmetic: versions/3.14.5/standard-library/numeric-and-mathematical-modules/decimal-decimal-fixed-point-and-floating-point-arithmetic/index.md
-          - fractions — Rational numbers: versions/3.14.5/standard-library/numeric-and-mathematical-modules/fractions-rational-numbers/index.md
-          - math — Mathematical functions: versions/3.14.5/standard-library/numeric-and-mathematical-modules/math-mathematical-functions/index.md
-          - numbers — Numeric abstract base classes: versions/3.14.5/standard-library/numeric-and-mathematical-modules/numbers-numeric-abstract-base-classes/index.md
-          - random — Generate pseudo-random numbers: versions/3.14.5/standard-library/numeric-and-mathematical-modules/random-generate-pseudo-random-numbers/index.md
-          - statistics — Mathematical statistics functions: versions/3.14.5/standard-library/numeric-and-mathematical-modules/statistics-mathematical-statistics-functions/index.md
-        - Python Language Services:
-          - Python Language Services: versions/3.14.5/standard-library/python-language-services/index.md
-          - ast — Abstract syntax trees: versions/3.14.5/standard-library/python-language-services/ast-abstract-syntax-trees/index.md
-          - compileall — Byte-compile Python libraries: versions/3.14.5/standard-library/python-language-services/compileall-byte-compile-python-libraries/index.md
-          - dis — Disassembler for Python bytecode: versions/3.14.5/standard-library/python-language-services/dis-disassembler-for-python-bytecode/index.md
-          - keyword — Testing for Python keywords: versions/3.14.5/standard-library/python-language-services/keyword-testing-for-python-keywords/index.md
-          - pickletools — Tools for pickle developers: versions/3.14.5/standard-library/python-language-services/pickletools-tools-for-pickle-developers/index.md
-          - py_compile — Compile Python source files: versions/3.14.5/standard-library/python-language-services/py_compile-compile-python-source-files/index.md
-          - pyclbr — Python module browser support: versions/3.14.5/standard-library/python-language-services/pyclbr-python-module-browser-support/index.md
-          - symtable — Access to the compiler’s symbol tables: versions/3.14.5/standard-library/python-language-services/symtable-access-to-the-compilers-symbol-tables/index.md
-          - tabnanny — Detection of ambiguous indentation: versions/3.14.5/standard-library/python-language-services/tabnanny-detection-of-ambiguous-indentation/index.md
-          - token — Constants used with Python parse trees: versions/3.14.5/standard-library/python-language-services/token-constants-used-with-python-parse-trees/index.md
-          - tokenize — Tokenizer for Python source: versions/3.14.5/standard-library/python-language-services/tokenize-tokenizer-for-python-source/index.md
+        - Internationalization:
+          - Internationalization: versions/3.14.5/standard-library/internationalization/index.md
+          - gettext — Multilingual internationalization services: versions/3.14.5/standard-library/internationalization/gettext-multilingual-internationalization-services/index.md
+          - locale — Internationalization services: versions/3.14.5/standard-library/internationalization/locale-internationalization-services/index.md
+        - Graphical user interfaces with Tk:
+          - Graphical user interfaces with Tk: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/index.md
+          - IDLE — Python editor and shell: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/idle-python-editor-and-shell/index.md
+          - Tkinter Dialogs: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinter-dialogs/index.md
+          - tkinter — Python interface to Tcl/Tk: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinter-python-interface-to-tcltk/index.md
+          - tkinter.colorchooser — Color choosing dialog: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkintercolorchooser-color-choosing-dialog/index.md
+          - tkinter.dnd — Drag and drop support: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinterdnd-drag-and-drop-support/index.md
+          - tkinter.font — Tkinter font wrapper: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinterfont-tkinter-font-wrapper/index.md
+          - tkinter.messagebox — Tkinter message prompts: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkintermessagebox-tkinter-message-prompts/index.md
+          - tkinter.scrolledtext — Scrolled Text Widget: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinterscrolledtext-scrolled-text-widget/index.md
+          - tkinter.ttk — Tk themed widgets: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/tkinterttk-tk-themed-widgets/index.md
+          - turtle — Turtle graphics: versions/3.14.5/standard-library/graphical-user-interfaces-with-tk/turtle-turtle-graphics/index.md
+        - Development Tools:
+          - Development Tools: versions/3.14.5/standard-library/development-tools/index.md
+          - doctest — Test interactive Python examples: versions/3.14.5/standard-library/development-tools/doctest-test-interactive-python-examples/index.md
+          - pydoc — Documentation generator and online help system: versions/3.14.5/standard-library/development-tools/pydoc-documentation-generator-and-online-help-system/index.md
+          - Python Development Mode: versions/3.14.5/standard-library/development-tools/python-development-mode/index.md
+          - test — Regression tests package for Python: versions/3.14.5/standard-library/development-tools/test-regression-tests-package-for-python/index.md
+          - test.support — Utilities for the Python test suite: versions/3.14.5/standard-library/development-tools/testsupport-utilities-for-the-python-test-suite/index.md
+          - test.support.bytecode_helper — Support tools for testing correct bytecode generation: versions/3.14.5/standard-library/development-tools/testsupportbytecode_helper-support-tools-for-testing-correct-bytecode-generation/index.md
+          - test.support.import_helper — Utilities for import tests: versions/3.14.5/standard-library/development-tools/testsupportimport_helper-utilities-for-import-tests/index.md
+          - test.support.os_helper — Utilities for os tests: versions/3.14.5/standard-library/development-tools/testsupportos_helper-utilities-for-os-tests/index.md
+          - test.support.script_helper — Utilities for the Python execution tests: versions/3.14.5/standard-library/development-tools/testsupportscript_helper-utilities-for-the-python-execution-tests/index.md
+          - test.support.socket_helper — Utilities for socket tests: versions/3.14.5/standard-library/development-tools/testsupportsocket_helper-utilities-for-socket-tests/index.md
+          - test.support.threading_helper — Utilities for threading tests: versions/3.14.5/standard-library/development-tools/testsupportthreading_helper-utilities-for-threading-tests/index.md
+          - test.support.warnings_helper — Utilities for warnings tests: versions/3.14.5/standard-library/development-tools/testsupportwarnings_helper-utilities-for-warnings-tests/index.md
+          - typing — Support for type hints: versions/3.14.5/standard-library/development-tools/typing-support-for-type-hints/index.md
+          - unittest — Unit testing framework: versions/3.14.5/standard-library/development-tools/unittest-unit-testing-framework/index.md
+          - unittest.mock — getting started: versions/3.14.5/standard-library/development-tools/unittestmock-getting-started/index.md
+          - unittest.mock — mock object library: versions/3.14.5/standard-library/development-tools/unittestmock-mock-object-library/index.md
+        - Debugging and Profiling:
+          - Debugging and Profiling: versions/3.14.5/standard-library/debugging-and-profiling/index.md
+          - Audit events table: versions/3.14.5/standard-library/debugging-and-profiling/audit-events-table/index.md
+          - bdb — Debugger framework: versions/3.14.5/standard-library/debugging-and-profiling/bdb-debugger-framework/index.md
+          - faulthandler — Dump the Python traceback: versions/3.14.5/standard-library/debugging-and-profiling/faulthandler-dump-the-python-traceback/index.md
+          - pdb — The Python Debugger: versions/3.14.5/standard-library/debugging-and-profiling/pdb-the-python-debugger/index.md
+          - The Python Profilers: versions/3.14.5/standard-library/debugging-and-profiling/the-python-profilers/index.md
+          - timeit — Measure execution time of small code snippets: versions/3.14.5/standard-library/debugging-and-profiling/timeit-measure-execution-time-of-small-code-snippets/index.md
+          - trace — Trace or track Python statement execution: versions/3.14.5/standard-library/debugging-and-profiling/trace-trace-or-track-python-statement-execution/index.md
+          - tracemalloc — Trace memory allocations: versions/3.14.5/standard-library/debugging-and-profiling/tracemalloc-trace-memory-allocations/index.md
+        - Software Packaging and Distribution:
+          - Software Packaging and Distribution: versions/3.14.5/standard-library/software-packaging-and-distribution/index.md
+          - ensurepip — Bootstrapping the pip installer: versions/3.14.5/standard-library/software-packaging-and-distribution/ensurepip-bootstrapping-the-pip-installer/index.md
+          - venv — Creation of virtual environments: versions/3.14.5/standard-library/software-packaging-and-distribution/venv-creation-of-virtual-environments/index.md
+          - zipapp — Manage executable Python zip archives: versions/3.14.5/standard-library/software-packaging-and-distribution/zipapp-manage-executable-python-zip-archives/index.md
         - Python Runtime Services:
           - Python Runtime Services: versions/3.14.5/standard-library/python-runtime-services/index.md
           - \_\_future\_\_ — Future statement definitions: versions/3.14.5/standard-library/python-runtime-services/__future__-future-statement-definitions/index.md
@@ -677,50 +689,39 @@ nav:
           - sys.monitoring — Execution event monitoring: versions/3.14.5/standard-library/python-runtime-services/sysmonitoring-execution-event-monitoring/index.md
           - traceback — Print or retrieve a stack traceback: versions/3.14.5/standard-library/python-runtime-services/traceback-print-or-retrieve-a-stack-traceback/index.md
           - warnings — Warning control: versions/3.14.5/standard-library/python-runtime-services/warnings-warning-control/index.md
-        - Removed Modules: versions/3.14.5/standard-library/removed-modules/index.md
-        - Security Considerations: versions/3.14.5/standard-library/security-considerations/index.md
-        - Software Packaging and Distribution:
-          - Software Packaging and Distribution: versions/3.14.5/standard-library/software-packaging-and-distribution/index.md
-          - ensurepip — Bootstrapping the pip installer: versions/3.14.5/standard-library/software-packaging-and-distribution/ensurepip-bootstrapping-the-pip-installer/index.md
-          - venv — Creation of virtual environments: versions/3.14.5/standard-library/software-packaging-and-distribution/venv-creation-of-virtual-environments/index.md
-          - zipapp — Manage executable Python zip archives: versions/3.14.5/standard-library/software-packaging-and-distribution/zipapp-manage-executable-python-zip-archives/index.md
-        - Structured Markup Processing Tools:
-          - Structured Markup Processing Tools: versions/3.14.5/standard-library/structured-markup-processing-tools/index.md
-          - html — HyperText Markup Language support: versions/3.14.5/standard-library/structured-markup-processing-tools/html-hypertext-markup-language-support/index.md
-          - html.entities — Definitions of HTML general entities: versions/3.14.5/standard-library/structured-markup-processing-tools/htmlentities-definitions-of-html-general-entities/index.md
-          - html.parser — Simple HTML and XHTML parser: versions/3.14.5/standard-library/structured-markup-processing-tools/htmlparser-simple-html-and-xhtml-parser/index.md
-          - XML Processing Modules: versions/3.14.5/standard-library/structured-markup-processing-tools/xml-processing-modules/index.md
-          - xml.dom — The Document Object Model API: versions/3.14.5/standard-library/structured-markup-processing-tools/xmldom-the-document-object-model-api/index.md
-          - xml.dom.minidom — Minimal DOM implementation: versions/3.14.5/standard-library/structured-markup-processing-tools/xmldomminidom-minimal-dom-implementation/index.md
-          - xml.dom.pulldom — Support for building partial DOM trees: versions/3.14.5/standard-library/structured-markup-processing-tools/xmldompulldom-support-for-building-partial-dom-trees/index.md
-          - xml.etree.ElementTree — The ElementTree XML API: versions/3.14.5/standard-library/structured-markup-processing-tools/xmletreeelementtree-the-elementtree-xml-api/index.md
-          - xml.parsers.expat — Fast XML parsing using Expat: versions/3.14.5/standard-library/structured-markup-processing-tools/xmlparsersexpat-fast-xml-parsing-using-expat/index.md
-          - xml.sax — Support for SAX2 parsers: versions/3.14.5/standard-library/structured-markup-processing-tools/xmlsax-support-for-sax2-parsers/index.md
-          - xml.sax.handler — Base classes for SAX handlers: versions/3.14.5/standard-library/structured-markup-processing-tools/xmlsaxhandler-base-classes-for-sax-handlers/index.md
-          - xml.sax.saxutils — SAX Utilities: versions/3.14.5/standard-library/structured-markup-processing-tools/xmlsaxsaxutils-sax-utilities/index.md
-          - xml.sax.xmlreader — Interface for XML parsers: versions/3.14.5/standard-library/structured-markup-processing-tools/xmlsaxxmlreader-interface-for-xml-parsers/index.md
-        - Superseded Modules:
-          - Superseded Modules: versions/3.14.5/standard-library/superseded-modules/index.md
-          - getopt — C-style parser for command line options: versions/3.14.5/standard-library/superseded-modules/getopt-c-style-parser-for-command-line-options/index.md
-        - Text Processing Services:
-          - Text Processing Services: versions/3.14.5/standard-library/text-processing-services/index.md
-          - difflib — Helpers for computing deltas: versions/3.14.5/standard-library/text-processing-services/difflib-helpers-for-computing-deltas/index.md
-          - re — Regular expression operations: versions/3.14.5/standard-library/text-processing-services/re-regular-expression-operations/index.md
-          - readline — GNU readline interface: versions/3.14.5/standard-library/text-processing-services/readline-gnu-readline-interface/index.md
-          - rlcompleter — Completion function for GNU readline: versions/3.14.5/standard-library/text-processing-services/rlcompleter-completion-function-for-gnu-readline/index.md
-          - string — Common string operations: versions/3.14.5/standard-library/text-processing-services/string-common-string-operations/index.md
-          - stringprep — Internet String Preparation: versions/3.14.5/standard-library/text-processing-services/stringprep-internet-string-preparation/index.md
-          - string.templatelib — Support for template string literals: versions/3.14.5/standard-library/text-processing-services/stringtemplatelib-support-for-template-string-literals/index.md
-          - textwrap — Text wrapping and filling: versions/3.14.5/standard-library/text-processing-services/textwrap-text-wrapping-and-filling/index.md
-          - unicodedata — Unicode Database: versions/3.14.5/standard-library/text-processing-services/unicodedata-unicode-database/index.md
-        - Thread Safety Guarantees:
-          - Thread Safety Guarantees: versions/3.14.5/standard-library/thread-safety-guarantees/index.md
-          - Thread safety for bytearray objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-bytearray-objects/index.md
-          - Thread safety for dict objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-dict-objects/index.md
-          - Thread safety for list objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-list-objects/index.md
-          - Thread safety for memoryview objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-memoryview-objects/index.md
-          - Thread safety for set objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-set-objects/index.md
-          - Thread safety levels: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-levels/index.md
+        - Custom Python Interpreters:
+          - Custom Python Interpreters: versions/3.14.5/standard-library/custom-python-interpreters/index.md
+          - code — Interpreter base classes: versions/3.14.5/standard-library/custom-python-interpreters/code-interpreter-base-classes/index.md
+          - codeop — Compile Python code: versions/3.14.5/standard-library/custom-python-interpreters/codeop-compile-python-code/index.md
+        - Importing Modules:
+          - Importing Modules: versions/3.14.5/standard-library/importing-modules/index.md
+          - importlib — The implementation of import: versions/3.14.5/standard-library/importing-modules/importlib-the-implementation-of-import/index.md
+          - importlib.metadata – Accessing package metadata: versions/3.14.5/standard-library/importing-modules/importlibmetadata-accessing-package-metadata/index.md
+          - importlib.resources – Package resource reading, opening and access: versions/3.14.5/standard-library/importing-modules/importlibresources-package-resource-reading-opening-and-access/index.md
+          - importlib.resources.abc – Abstract base classes for resources: versions/3.14.5/standard-library/importing-modules/importlibresourcesabc-abstract-base-classes-for-resources/index.md
+          - modulefinder — Find modules used by a script: versions/3.14.5/standard-library/importing-modules/modulefinder-find-modules-used-by-a-script/index.md
+          - pkgutil — Package extension utility: versions/3.14.5/standard-library/importing-modules/pkgutil-package-extension-utility/index.md
+          - runpy — Locating and executing Python modules: versions/3.14.5/standard-library/importing-modules/runpy-locating-and-executing-python-modules/index.md
+          - The initialization of the sys.path module search path: versions/3.14.5/standard-library/importing-modules/the-initialization-of-the-syspath-module-search-path/index.md
+          - zipimport — Import modules from Zip archives: versions/3.14.5/standard-library/importing-modules/zipimport-import-modules-from-zip-archives/index.md
+        - Python Language Services:
+          - Python Language Services: versions/3.14.5/standard-library/python-language-services/index.md
+          - ast — Abstract syntax trees: versions/3.14.5/standard-library/python-language-services/ast-abstract-syntax-trees/index.md
+          - compileall — Byte-compile Python libraries: versions/3.14.5/standard-library/python-language-services/compileall-byte-compile-python-libraries/index.md
+          - dis — Disassembler for Python bytecode: versions/3.14.5/standard-library/python-language-services/dis-disassembler-for-python-bytecode/index.md
+          - keyword — Testing for Python keywords: versions/3.14.5/standard-library/python-language-services/keyword-testing-for-python-keywords/index.md
+          - pickletools — Tools for pickle developers: versions/3.14.5/standard-library/python-language-services/pickletools-tools-for-pickle-developers/index.md
+          - py_compile — Compile Python source files: versions/3.14.5/standard-library/python-language-services/py_compile-compile-python-source-files/index.md
+          - pyclbr — Python module browser support: versions/3.14.5/standard-library/python-language-services/pyclbr-python-module-browser-support/index.md
+          - symtable — Access to the compiler’s symbol tables: versions/3.14.5/standard-library/python-language-services/symtable-access-to-the-compilers-symbol-tables/index.md
+          - tabnanny — Detection of ambiguous indentation: versions/3.14.5/standard-library/python-language-services/tabnanny-detection-of-ambiguous-indentation/index.md
+          - token — Constants used with Python parse trees: versions/3.14.5/standard-library/python-language-services/token-constants-used-with-python-parse-trees/index.md
+          - tokenize — Tokenizer for Python source: versions/3.14.5/standard-library/python-language-services/tokenize-tokenizer-for-python-source/index.md
+        - MS Windows Specific Services:
+          - MS Windows Specific Services: versions/3.14.5/standard-library/ms-windows-specific-services/index.md
+          - msvcrt — Useful routines from the MS VC++ runtime: versions/3.14.5/standard-library/ms-windows-specific-services/msvcrt-useful-routines-from-the-ms-vc-runtime/index.md
+          - winreg — Windows registry access: versions/3.14.5/standard-library/ms-windows-specific-services/winreg-windows-registry-access/index.md
+          - winsound — Sound-playing interface for Windows: versions/3.14.5/standard-library/ms-windows-specific-services/winsound-sound-playing-interface-for-windows/index.md
         - Unix-specific services:
           - Unix-specific services: versions/3.14.5/standard-library/unix-specific-services/index.md
           - fcntl — The fcntl and ioctl system calls: versions/3.14.5/standard-library/unix-specific-services/fcntl-the-fcntl-and-ioctl-system-calls/index.md
@@ -733,6 +734,15 @@ nav:
           - syslog — Unix syslog library routines: versions/3.14.5/standard-library/unix-specific-services/syslog-unix-syslog-library-routines/index.md
           - termios — POSIX style tty control: versions/3.14.5/standard-library/unix-specific-services/termios-posix-style-tty-control/index.md
           - tty — Terminal control functions: versions/3.14.5/standard-library/unix-specific-services/tty-terminal-control-functions/index.md
+
+        - Modules command-line interface (CLI): versions/3.14.5/standard-library/modules-command-line-interface-cli/index.md
+        - Superseded Modules:
+          - Superseded Modules: versions/3.14.5/standard-library/superseded-modules/index.md
+          - getopt — C-style parser for command line options: versions/3.14.5/standard-library/superseded-modules/getopt-c-style-parser-for-command-line-options/index.md
+        - Removed Modules: versions/3.14.5/standard-library/removed-modules/index.md
+        - Security Considerations: versions/3.14.5/standard-library/security-considerations/index.md
+
+      # Python Language Reference
       - The Python Language Reference:
         - The Python Language Reference: versions/3.14.5/language-reference/index.md
         - 8. Compound statements:
