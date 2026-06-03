@@ -15,8 +15,6 @@ PYTHON_314_5_BOOK_ORDER = (
     "tutorial",
     "standard-library",
     "language-reference",
-    "extending-and-embedding-python-interpreter",
-    "python-c-api-reference-manual",
 )
 
 
