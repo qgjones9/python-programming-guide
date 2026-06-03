@@ -1,166 +1,165 @@
 ---
 name: python-docs-section
 description: >-
-  Scaffold and enrich nested Markdown mirrors of docs.python.org Sphinx books
-  (tutorial, library, c-api, reference, extending, …): Phase 0 scrape of
-  index.html toctree, Phase 1 stubs with canonical chapter.html#anchor H1s,
-  Phase 2 enrichment with python or c fences and teaching comments. Supports
-  strict tutorial mode (exec-validated python) and reference/C-API modes.
-  Includes version-bump workflow for local docs/X.Y.Z trees and
-  python-programming-guide script map (tutorial, standard-library, c-api,
-  language-reference, extending).
+  Mirror and enrich official docs.python.org manuals (tutorial, standard library,
+  C API, language reference, extending) under docs/<release>/: scrape the book
+  index for the real table of contents, scaffold index.md stubs with canonical
+  chapter links, then add teaching bullets and code examples. Tutorial chapters
+  require runnable Python; C API/extending use illustrative C. Includes
+  version-bump steps and python-programming-guide scraper commands.
 ---
 
-# Python documentation section (unified)
+# Python documentation mirror (unified workflow)
 
-**Canonical project skill:** `.cursor/skills/python-docs-section/SKILL.md`
+**Project copy:** `.cursor/skills/python-docs-section/SKILL.md`
 
-Use this skill whenever you mirror or refresh **any** official Python manual under a versioned `docs/<python-release>/...` tree—especially when **CPython bumps** and you want local notes, TOC sync, and a clear place to record **what changed** (new sections, renames, link fixes).
-
----
-
-## Inputs (contract)
-
-| Input | Meaning |
-|-------|---------|
-| **`SECTION`** | Path segment after the version root, e.g. `tutorial`, `library`, `c-api`, `reference`, `extending`. |
-| **`BASE`** | Book root URL, e.g. **`https://docs.python.org/3/{SECTION}/`** or **`https://docs.python.org/3.14/{SECTION}/`** for a **minor-pinned** doc set. |
-| **`INDEX`** | **`{BASE}index.html`** — always scrape this for the global toctree; do not guess chapter filenames from titles. |
-| **`LOCAL_ROOT`** | Directory in your repo holding this book’s mirror, e.g. `docs/3.14.5/tutorial/`. |
-
-Relative `href` values in Sphinx HTML join against **`BASE`**, not bare `/3/`.
-
-**Version choice:** `…/3/…` tracks the **current** 3.x branch on python.org; `…/3.N/…` pins to a **specific minor** (closer to a frozen release). Match that choice to the folder name you use locally (`3.14.5` vs `3.15.0`).
+Use this skill when you **mirror or refresh** an official Python manual in a versioned tree such as `docs/3.14.5/tutorial/`. Typical triggers: a **new CPython release**, upstream TOC edits, or filling in teaching notes next to the official text.
 
 ---
 
-## python-programming-guide — manual map
+## Key terms
 
-These local trees follow this skill; **automated scrapers** exist where listed.
+These names appear throughout the workflow. **Prefer the plain-language label** in prose; use the **shorthand** only in tables, scripts, or when it matches a real URL path.
 
-| Local directory (under `docs/<ver>/`) | `SECTION` | Upstream index | Scrape + enrich scripts |
-|--------------------------------------|-----------|----------------|-------------------------|
-| `tutorial/` | `tutorial` | [tutorial index](https://docs.python.org/3/tutorial/index.html) | Manual / agent (no dedicated script yet); use **tutorial-strict** enrichment for chapter `index.md`. |
-| `standard-library/` | `library` | [library index](https://docs.python.org/3/library/index.html) | Manual / agent or future script; huge tree—usually chapter-by-chapter. |
-| `python-c-api-reference-manual/` | `c-api` | [c-api index](https://docs.python.org/3/c-api/index.html) | `scripts/scrape_c_api_toc.py` → `_c_api_toc.json`; `scripts/enrich_c_api_markdown.py`. |
-| `language-reference/` | `reference` | [reference index](https://docs.python.org/3/reference/index.html) | `scripts/scrape_reference_toc.py` → `_reference_toc.json`; `scripts/enrich_reference_markdown.py`. |
-| `extending-and-embedding-python-interpreter/` | `extending` | [extending index](https://docs.python.org/3/extending/index.html) | `scripts/scrape_extending_toc.py` → `_extending_toc.json`; `scripts/enrich_extending_markdown.py`. |
+| Plain language | Shorthand (when needed) | Meaning |
+|----------------|-------------------------|---------|
+| **Manual slug** | `SECTION` | The path segment on docs.python.org after the version, e.g. `tutorial`, `library`, `c-api`, `reference`, `extending`. |
+| **Upstream book root** | `BASE` | Root URL for that manual, e.g. `https://docs.python.org/3/tutorial/` or `https://docs.python.org/3.14/tutorial/` when pinned to a minor version. |
+| **Book index page** | `INDEX` | Always `{BASE}index.html` — scrape this for the **full** table of contents; never guess chapter filenames from titles. |
+| **Local mirror folder** | `LOCAL_ROOT` | Repo directory for this book, e.g. `docs/versions/3.14.5/tutorial/`. |
 
----
+Relative links in Sphinx HTML resolve against **`BASE`**, not bare `/3/`.
 
-## When to use
-
-- **New stubs or TOC refresh** after upstream edits or a **new Python release**.
-- **Enriched chapter pages**: bullets + fenced examples + **`## Sections in this repo`**.
-- **Changelog-style maintenance**: diff old vs new scraped JSON or grep for changed `canonical` URLs; update prose in a repo changelog or chapter notes—not in this skill file.
+**Which upstream version to follow:** `…/3/…` tracks the **current** 3.x docs; `…/3.N/…` pins to a **specific minor** (closer to a frozen release). Use the same choice as your local folder name (`3.14.5` vs `3.15.0`).
 
 ---
 
-## Phase 0 — Resolve section + chapter map
+## python-programming-guide — where each manual lives
 
-1. Fetch **`INDEX`** HTML.
-2. Find **`toctree-wrapper compound`** blocks. Some indices have **multiple** wrappers (e.g. `extending/index.html`) or synthetic sections anchored on **`INDEX#fragment`** only—merge those into your JSON model explicitly (see extending scraper pattern).
-3. Parse **`toctree-l1` / `toctree-l2`** (and deeper if present): `<a class="reference internal" href="…">` → join to **`BASE`**.
-
-**Hard rule:** Never infer chapter filenames (e.g. `exceptions.html` vs `exceptions`) from slugified titles—**href is truth**.
+| Local folder (under `docs/<ver>/`) | Manual slug on python.org | Official index | Automation in this repo |
+|------------------------------------|---------------------------|----------------|-------------------------|
+| `tutorial/` | `tutorial` | [tutorial index](https://docs.python.org/3/tutorial/index.html) | By hand or agent; use **runnable-tutorial** rules on chapter `index.md`. |
+| `standard-library/` | `library` | [library index](https://docs.python.org/3/library/index.html) | By hand or agent; large tree — usually one chapter at a time. |
+| `python-c-api-reference-manual/` | `c-api` | [c-api index](https://docs.python.org/3/c-api/index.html) | `scrape_c_api_toc.py` → `_c_api_toc.json`; `enrich_c_api_markdown.py`. |
+| `language-reference/` | `reference` | [reference index](https://docs.python.org/3/reference/index.html) | `scrape_reference_toc.py` → `_reference_toc.json`; `enrich_reference_markdown.py`. |
+| `extending-and-embedding-python-interpreter/` | `extending` | [extending index](https://docs.python.org/3/extending/index.html) | `scrape_extending_toc.py` → `_extending_toc.json`; `enrich_extending_markdown.py`. |
 
 ---
 
-## Phase 1 — Scaffold `slug/…/index.md`
+## When to use this skill
 
-### Directory layout
+- **New stub pages or TOC sync** after upstream changes or a new Python release.
+- **Enriched chapters**: distilled bullets, fenced examples, and **`## Sections in this repo`** linking child folders.
+- **Release maintenance**: diff old vs new scraped JSON or search for changed canonical URLs; record deltas in project changelog or chapter notes — not in this skill file.
 
-Each logical § gets `{LOCAL_ROOT}/{segment}/…/index.md`; **H1**:
+---
+
+## Step 1 — Discover the outline from the official index
+
+1. Fetch the **book index page** (`INDEX`) HTML.
+2. Locate Sphinx **`toctree-wrapper compound`** blocks. Some books have **several** wrappers (e.g. extending) or sections that exist only as **`index.html#fragment`** — merge those into one outline model (see `scrape_extending_toc.py`).
+3. Walk **`toctree-l1`**, **`toctree-l2`**, and deeper levels: each `<a class="reference internal" href="…">` becomes a full URL by joining **`href`** to **`BASE`**.
+
+**Hard rule:** Chapter filenames come from **`href`**, not from slugified titles (`exceptions.html` vs `exceptions` are not interchangeable).
+
+---
+
+## Step 2 — Scaffold local folders and stub `index.md`
+
+### Folder layout
+
+Each outline entry gets `{LOCAL_ROOT}/{slug}/…/index.md` with an H1 that links upstream:
 
 `# [Title](https://…/{chapter}.html#fragment)`
 
-Use **fragments from `href`** when present (`#py-getargcargv`), not slugify drift.
+Use **URL fragments from `href`** when present (e.g. `#py-getargcargv`), not guesses from directory names.
 
-### Hierarchy
+### Nesting
 
-- **Indented GFM TOC** ↔ path depth (two spaces per level), **or**
-- **Numeral outline** `N.M.§ Title` ↔ stack-of-slugs (see original tutorial convention).
+- **Indented GitHub-flavored TOC** ↔ directory depth (two spaces per level), **or**
+- **Numbered outline** `N.M. Title` ↔ nested slug paths (tutorial convention).
 
-### Slugify
+### Slug rules
 
-Lowercase; normalize dashes; strip characters unsafe in paths; collapse `-`. Strip leading **`N.`** numbering from titles when deriving **directory** slugs if your tree omits numeric prefixes—**keep numbers in markdown link titles** when the upstream outline uses them.
+Lowercase; normalize dashes; remove characters unsafe in paths; collapse repeated `-`. You may strip leading **`N.`** from titles for **directory** names while **keeping numbers in link text** when the official outline uses them.
 
-### Parent TOC in `index.md`
+### Parent page table of contents
 
-Headings **`#` × (2 + depth)**; every internal target ends with **`…/index.md`**.
+Use heading level **`#` × (2 + depth)**; internal links always end with **`…/index.md`**.
 
-Markdown links must be **`[text](url)`** — never `](url]` by mistake.
-
----
-
-## Phase 2 — Enrich chapter `index.md`
-
-1. **`# [Chapter title](canonical chapter URL)`** (fragment only when that chapter truly lives at `index.html#§`).
-2. One short scope paragraph pointing at upstream for full prose.
-3. Per subsection: **`### … — [Title](chapter.html#anchor)`**, bullets (teaching distilled, not a copy-paste of docs.python.org), then fenced examples.
-4. **`## Sections in this repo`** with `[Title](relative/index.md)` children.
+Markdown links must be **`[text](url)`** — balanced parentheses (avoid `](url]` typos).
 
 ---
 
-## Enrichment modes (pick one per book/chapter)
+## Step 3 — Enrich each chapter `index.md`
 
-| Mode | Fences | Comments | Validation |
-|------|--------|----------|------------|
-| **tutorial-strict** | **` ```python `** | **`#`** line comments, optional end-of-line; one-line **goal** at top of bigger blocks | **Required:** each ` ```python ` block **`exec`** clean. Use **`ns = {}; exec(code, ns, ns)`** if the block defines nested functions that close over globals—**not** distinct empty `{}` for globals vs locals. Prefer `assert`; use `io.StringIO` for `print` checks. |
-| **reference-manual** (language ref) | **` ```python `** mostly | Teach edge cases (“`\n` in `s` vs `repr(s)`”) | Prefer **same exec policy** when blocks are pedagogical snippets. |
-| **c-api / extending** | **` ```c `** | **`//`** for ownership, GIL, errors | Illustrative only—**no mandatory compile.** |
-| **mixed** | `python` + `c` | As appropriate | Gate **exec** only on `python`. |
-
-### Tutorial-strict specifics (carry-over from legacy tutorial skill)
-
-- No **`input()`**, no **`while True`**, no “press Ctrl+C” in executable fences.
-- **REPL `_`**: mention in comments; don’t **`assert`** on `_` in a `.py` exec unless you simulate REPL semantics.
-- **REPL vs file:** state when behavior differs.
-
-### Forbidden everywhere
-
-Infinite loops in any executable fence; `input()`; misleading `repr` vs string content checks (`"\n"` in `repr(s)` vs `"\n"` in `s`)—prefer the pairing explained in prose/comments.
+1. **`# [Chapter title](canonical chapter URL)`** — add a `#fragment` only when the section truly lives on `index.html#…`.
+2. One short **scope** paragraph: what this chapter covers and that full prose stays on docs.python.org.
+3. Per subsection: **`### … — [Title](chapter.html#anchor)`**, teaching bullets (distilled, not copied), then fenced examples.
+4. **`## Sections in this repo`** listing `[Title](child-path/index.md)` for subfolders.
 
 ---
 
-## Python release bump (changelog-minded workflow)
+## Example styles (pick one per book or chapter)
 
-1. **Choose doc URL lineage:** stay on **`/3/`** or pin **`/3.N/`** and record that in `_*.json` commit messages or project notes.
-2. **Clone or copy** the prior `docs/X.Y.Z/` tree to **`docs/X.Y.Z′/`** (or work on a branch) so history is comparable.
-3. **Re-fetch `INDEX`** and regenerate **`_*_toc.json`** for each scripted manual (**c-api**, **reference**, **`extending`**).
-4. **Diff JSON** (`git diff`, `jq`) for added/removed **`chapter_slug`** / **`subsection.slug`** / changed **`canonical`** strings—those deltas are your **TOC changelog**.
-5. **Re-run enrichers** to refresh boilerplate headers/snippets; resolve merge conflicts where you hand-edited bullets.
-6. **Tutorial / library:** re-scrape TOC from `tutorial/index.html` / `library/index.html` via agent pass or future scripts; bump **tutorial-strict** `exec()` after edits.
-7. **Optional:** add a short **`docs/<ver>/changelog.md`** (or repo **CHANGELOG**) section: synced to docs.python.org 3.K with a dated note listing new sections and notable link changes — user-maintained.
+| Style | Code fences | Comments | Validation |
+|-------|-------------|----------|------------|
+| **Runnable tutorial** | ` ```python ` | `#` line comments; optional one-line **goal** at top of longer blocks | **Required:** every ` ```python ` block runs with **`exec`** without error. Use **`ns = {}; exec(code, ns, ns)`** when nested functions need shared globals — not separate empty `{}` for globals and locals. Prefer `assert`; use `io.StringIO` to capture `print`. |
+| **Language reference** | ` ```python ` mostly | Explain edge cases (e.g. newline in `s` vs in `repr(s)`) | Run **`exec`** on pedagogical snippets when practical. |
+| **C API / extending** | ` ```c ` | `//` for ownership, GIL, errors | Illustrative only — no compile step required. |
+| **Mixed** | `python` and `c` | As needed | **`exec`** only on `python` blocks. |
+
+### Runnable tutorial — extra rules
+
+- No **`input()`**, no **`while True`**, no “press Ctrl+C” in executable blocks.
+- **REPL `_`**: mention in comments; do not **`assert`** on `_` in a `.py` exec unless you simulate REPL behavior.
+- Say when **interactive session** behavior differs from **script file** behavior.
+
+### Avoid in all executable examples
+
+Infinite loops; `input()`; checks that confuse `repr` with string content (`"\n"` in `repr(s)` vs `"\n"` in `s`) — explain the distinction in prose or comments instead.
 
 ---
 
-## Repo tooling (python-programming-guide)
+## Bumping to a new Python release
 
-| `SECTION` | Commands |
-|-----------|----------|
+1. **Pick upstream URL style:** rolling `…/3/…` or pinned `…/3.N/…`; note the choice in scraped JSON commits or project notes.
+2. **Copy** the prior `docs/X.Y.Z/` tree to `docs/X.Y.Z′/` (or use a branch) so you can compare.
+3. **Re-fetch the book index** and regenerate `_*_toc.json` for scripted manuals (C API, language reference, extending).
+4. **Diff JSON** (`git diff`, `jq`) for new/removed chapters, subsection slugs, or changed canonical URLs — that diff is your **outline changelog**.
+5. **Re-run enrich scripts** for boilerplate; resolve conflicts where you edited bullets by hand.
+6. **Tutorial and standard library:** re-scrape TOC from the official index (agent or future scripts); re-**`exec`** runnable-tutorial blocks after edits.
+7. **Optional:** add `docs/<ver>/changelog.md` (or repo CHANGELOG) noting sync date, new sections, and notable link changes.
+
+---
+
+## Repo commands (python-programming-guide)
+
+Replace `<ver>` with your release folder (e.g. `3.14.5`).
+
+| Manual slug | Commands |
+|-------------|----------|
 | `reference` | `python3 scripts/scrape_reference_toc.py --json docs/<ver>/language-reference/_reference_toc.json` then `python3 scripts/enrich_reference_markdown.py` |
 | `c-api` | `python3 scripts/scrape_c_api_toc.py --json docs/<ver>/python-c-api-reference-manual/_c_api_toc.json` then `python3 scripts/enrich_c_api_markdown.py` |
 | `extending` | `python3 scripts/scrape_extending_toc.py --json docs/<ver>/extending-and-embedding-python-interpreter/_extending_toc.json` then `python3 scripts/enrich_extending_markdown.py` |
 
-**Paths:** Replace `<ver>` with your folder (e.g. `3.14.5`).  
-**tutorial** / **library:** follow Phase 0–2 manually until dedicated scripts land.
+**Tutorial** and **library:** follow Steps 1–3 manually until dedicated scripts exist.
 
 ---
 
-## Conventions aligned with existing docs
+## Conventions (match existing repo pages)
 
-- **Canonical HTTPS** in H1s and subsection links; **`[text](url)`** balanced parentheses.
-- **Internal links:** explicit `subdir/index.md` paths.
-- **Commit messages:** one line, ≤120 characters if workspace rule requires; no Conventional Commit prefix where project rules disallow it.
+- **Canonical HTTPS** in H1s and subsection links; balanced **`[text](url)`**.
+- **Internal links:** explicit paths such as `subdir/index.md`.
+- **Commit messages:** one line, ≤120 characters when workspace rules require it; no Conventional Commit prefix if the project disallows it.
 
 ---
 
 ## Quick checklist
 
-- [ ] `BASE`/`INDEX` match the Python version strategy you document locally (`/3/` vs `/3.N/`).
-- [ ] TOC parsed from real **`href`** values; fragments from Sphinx, not guesses.
-- [ ] Fence language matches mode (**tutorial-strict python** vs **c-api c**).
-- [ ] Tutorial-strict chapters: all ` ```python ` blocks **`exec`** clean (correct namespace for nested defs).
-- [ ] **`## Sections in this repo`** uses **`…/index.md`**.
-- [ ] Scope limited to requested `docs/` paths unless asked to expand.
+- [ ] **Upstream book root** and **index page** match your documented version strategy (`/3/` vs `/3.N/`).
+- [ ] Outline built from real **`href`** values; fragments taken from Sphinx, not guessed.
+- [ ] Example style matches the book (**runnable tutorial** vs **illustrative C**).
+- [ ] Runnable tutorial: every ` ```python ` block **`exec`** clean (shared namespace for nested defs).
+- [ ] **`## Sections in this repo`** links end with **`…/index.md`**.
+- [ ] Work stays in requested `docs/` paths unless the user asks to expand.
