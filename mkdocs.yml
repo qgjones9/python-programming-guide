@@ -291,14 +291,9 @@ nav:
 
         - Built-in Types:
           - Built-in Types: versions/3.14.5/standard-library/built-in-types/index.md
-          - Binary Sequence Types — bytes, bytearray, memoryview: versions/3.14.5/standard-library/built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md
+          - Truth Value Testing: versions/3.14.5/standard-library/built-in-types/truth-value-testing/index.md
           - Boolean Operations — and, or, not: versions/3.14.5/standard-library/built-in-types/boolean-operations-and-or-not/index.md
-          - Boolean Type - bool: versions/3.14.5/standard-library/built-in-types/boolean-type-bool/index.md
           - Comparisons: versions/3.14.5/standard-library/built-in-types/comparisons/index.md
-          - Context Manager Types: versions/3.14.5/standard-library/built-in-types/context-manager-types/index.md
-          - Integer string conversion length limitation: versions/3.14.5/standard-library/built-in-types/integer-string-conversion-length-limitation/index.md
-          - Iterator Types: versions/3.14.5/standard-library/built-in-types/iterator-types/index.md
-          - Mapping Types — dict: versions/3.14.5/standard-library/built-in-types/mapping-types-dict/index.md
           - Numeric Types — int, float, complex:
             - Numeric Types — int, float, complex: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/index.md
             - Additional Methods on Complex: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-complex/index.md
@@ -306,14 +301,19 @@ nav:
             - Additional Methods on Integer Types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-integer-types/index.md
             - Bitwise Operations on Integer Types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/bitwise-operations-on-integer-types/index.md
             - Hashing of numeric types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/hashing-of-numeric-types/index.md
-          - Other Built-in Types: versions/3.14.5/standard-library/built-in-types/other-built-in-types/index.md
+          - Boolean Type - bool: versions/3.14.5/standard-library/built-in-types/boolean-type-bool/index.md
+          - Iterator Types: versions/3.14.5/standard-library/built-in-types/iterator-types/index.md
           - Sequence Types — list, tuple, range: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/index.md
-          - Set Types — set, frozenset: versions/3.14.5/standard-library/built-in-types/set-types-set-frozenset/index.md
-          - Special Attributes: versions/3.14.5/standard-library/built-in-types/special-attributes/index.md
           - Text and Binary Sequence Type Methods Summary: versions/3.14.5/standard-library/built-in-types/text-and-binary-sequence-type-methods-summary/index.md
+          - Set Types — set, frozenset: versions/3.14.5/standard-library/built-in-types/set-types-set-frozenset/index.md
+          - Mapping Types — dict: versions/3.14.5/standard-library/built-in-types/mapping-types-dict/index.md
           - Text Sequence Type — str: versions/3.14.5/standard-library/built-in-types/text-sequence-type-str/index.md
-          - Truth Value Testing: versions/3.14.5/standard-library/built-in-types/truth-value-testing/index.md
+          - Binary Sequence Types — bytes, bytearray, memoryview: versions/3.14.5/standard-library/built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md
+          - Context Manager Types: versions/3.14.5/standard-library/built-in-types/context-manager-types/index.md
           - Type Annotation Types — Generic Alias, Union: versions/3.14.5/standard-library/built-in-types/type-annotation-types-generic-alias-union/index.md
+          - Other Built-in Types: versions/3.14.5/standard-library/built-in-types/other-built-in-types/index.md
+          - Special Attributes: versions/3.14.5/standard-library/built-in-types/special-attributes/index.md
+          - Integer string conversion length limitation: versions/3.14.5/standard-library/built-in-types/integer-string-conversion-length-limitation/index.md
 
         - Built-in Exceptions:
           - Built-in Exceptions: versions/3.14.5/standard-library/built-in-exceptions/index.md
