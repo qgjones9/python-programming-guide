@@ -464,21 +464,22 @@ nav:
 
         - Data Types:
           - Data Types: versions/3.14.5/standard-library/data-types/index.md
-          - array — Efficient arrays of numeric values: versions/3.14.5/standard-library/data-types/array-efficient-arrays-of-numeric-values/index.md
-          - bisect — Array bisection algorithm: versions/3.14.5/standard-library/data-types/bisect-array-bisection-algorithm/index.md
+          - datetime — Basic date and time types: versions/3.14.5/standard-library/data-types/datetime-basic-date-and-time-types/index.md
+          - zoneinfo — IANA time zone support: versions/3.14.5/standard-library/data-types/zoneinfo-iana-time-zone-support/index.md
           - calendar — General calendar-related functions: versions/3.14.5/standard-library/data-types/calendar-general-calendar-related-functions/index.md
           - collections — Container datatypes: versions/3.14.5/standard-library/data-types/collections-container-datatypes/index.md
           - collections.abc — Abstract Base Classes for Containers: versions/3.14.5/standard-library/data-types/collectionsabc-abstract-base-classes-for-containers/index.md
-          - copy — Shallow and deep copy operations: versions/3.14.5/standard-library/data-types/copy-shallow-and-deep-copy-operations/index.md
-          - datetime — Basic date and time types: versions/3.14.5/standard-library/data-types/datetime-basic-date-and-time-types/index.md
-          - enum — Support for enumerations: versions/3.14.5/standard-library/data-types/enum-support-for-enumerations/index.md
-          - graphlib — Functionality to operate with graph-like structures: versions/3.14.5/standard-library/data-types/graphlib-functionality-to-operate-with-graph-like-structures/index.md
           - heapq — Heap queue algorithm: versions/3.14.5/standard-library/data-types/heapq-heap-queue-algorithm/index.md
+          - bisect — Array bisection algorithm: versions/3.14.5/standard-library/data-types/bisect-array-bisection-algorithm/index.md
+          - array — Efficient arrays of numeric values: versions/3.14.5/standard-library/data-types/array-efficient-arrays-of-numeric-values/index.md
+          - weakref — Weak references: versions/3.14.5/standard-library/data-types/weakref-weak-references/index.md
+          - types — Dynamic type creation and names for built-in types: versions/3.14.5/standard-library/data-types/types-dynamic-type-creation-and-names-for-built-in-types/index.md
+          - copy — Shallow and deep copy operations: versions/3.14.5/standard-library/data-types/copy-shallow-and-deep-copy-operations/index.md
           - pprint — Data pretty printer: versions/3.14.5/standard-library/data-types/pprint-data-pretty-printer/index.md
           - reprlib — Alternate repr() implementation: versions/3.14.5/standard-library/data-types/reprlib-alternate-repr-implementation/index.md
-          - types — Dynamic type creation and names for built-in types: versions/3.14.5/standard-library/data-types/types-dynamic-type-creation-and-names-for-built-in-types/index.md
-          - weakref — Weak references: versions/3.14.5/standard-library/data-types/weakref-weak-references/index.md
-          - zoneinfo — IANA time zone support: versions/3.14.5/standard-library/data-types/zoneinfo-iana-time-zone-support/index.md
+          - enum — Support for enumerations: versions/3.14.5/standard-library/data-types/enum-support-for-enumerations/index.md
+          - graphlib — Functionality to operate with graph-like structures: versions/3.14.5/standard-library/data-types/graphlib-functionality-to-operate-with-graph-like-structures/index.md
+
         - Numeric and Mathematical Modules:
           - Numeric and Mathematical Modules: versions/3.14.5/standard-library/numeric-and-mathematical-modules/index.md
           - cmath — Mathematical functions for complex numbers: versions/3.14.5/standard-library/numeric-and-mathematical-modules/cmath-mathematical-functions-for-complex-numbers/index.md

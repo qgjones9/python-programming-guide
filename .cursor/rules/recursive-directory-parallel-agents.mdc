@@ -1,0 +1,57 @@
+---
+description: Spawn multiple background agents when a task recursively processes a directory tree
+alwaysApply: true
+---
+
+# Parallel agents for recursive directory work
+
+When a task requires **recursively** processing a directory tree (enriching docs, populating stubs, scraping sections, validating many files, etc.), **spawn multiple background agents** to speed it up. Do not walk the entire tree serially in the foreground unless the tree is trivially small (roughly **≤3 leaf pages** with no nested stubs).
+
+## When to parallelize
+
+Split work when any of these apply:
+
+- Multiple **top-level subdirectories** or sibling modules under one parent
+- **Many stub pages** (for example ≤10 lines) across a subtree
+- Independent **workstreams** (hub vs module A vs module B vs final validation pass)
+- The user asks to **"spawn agents"**, **"speed up"**, or references prior parallel runs (for example built-in-exceptions, thread-safety-guarantees)
+
+## How to split
+
+| Pattern | Agent assignment |
+|---------|------------------|
+| Sectioned tree | One agent per major subdirectory (for example `concrete-exceptions/`, `os-exceptions/`, `warnings/`) |
+| Flat module list | Batch modules (for example hub + struct; codecs subtree; validation pass) |
+| Large single branch | Hub/overview agent + leaf-batch agents + **final QA agent** (stub scan + exec validation) |
+
+Each agent prompt must include:
+
+- Exact root path and assigned scope (skip already-enriched pages when noted)
+- Quality/style reference files from the repo
+- Upstream canonical URLs
+- Definition of done (zero stubs, validated examples, `## Sections in this repo` on parents)
+- Instruction to return files edited, stub counts, and validation results
+
+## Defaults
+
+- Prefer **3–6 parallel agents** for medium/large trees; avoid dozens of tiny agents (coordination cost).
+- Always include a **final pass agent** when examples must be exec-validated across the whole subtree.
+- After agents complete, run a **brief coordinator check**: stub count, thin pages, merge summary for the user.
+- Do **not** duplicate the same files across agents without explicit skip rules (>50 lines already enriched, or named exclusions).
+
+## Example split (docs enrichment)
+
+For `docs/.../built-in-exceptions/`:
+
+1. `base-classes/` + `exception-groups/`
+2. `concrete-exceptions/` (recursive)
+3. `os-exceptions/` + `warnings/`
+4. Parent hub + hierarchy + inheriting
+5. Follow-up for any remaining stubs
+
+For `docs/.../binary-data-services/`:
+
+1. Full tree enrichment
+2. Hub + `struct`
+3. `codecs` + other modules
+4. Final validation pass
