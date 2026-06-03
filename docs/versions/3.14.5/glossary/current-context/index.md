@@ -1,8 +1,3 @@
 # [current context](https://docs.python.org/3.14/glossary.html#term-current-context)
 
-The [context](../context/index.md) ([contextvars.Context](https://docs.python.org/3.14/library/contextvars.html#contextvars.Context) object) that is
-currently used by [ContextVar](https://docs.python.org/3.14/library/contextvars.html#contextvars.ContextVar) objects to access (get
-or set) the values of [context variables](../context-variable/index.md).  Each
-thread has its own current context.  Frameworks for executing asynchronous
-tasks (see [asyncio](https://docs.python.org/3.14/library/asyncio.html#module-asyncio)) associate each task with a context which
-becomes the current context whenever the task starts or resumes execution.
+The [context](../context/index.md) ([contextvars.Context](https://docs.python.org/3.14/library/contextvars.html#contextvars.Context) object) that is currently used by [ContextVar](https://docs.python.org/3.14/library/contextvars.html#contextvars.ContextVar) objects to access (get or set) the values of [context variables](../context-variable/index.md).  Each thread has its own current context.  Frameworks for executing asynchronous tasks (see [asyncio](https://docs.python.org/3.14/library/asyncio.html#module-asyncio)) associate each task with a context which becomes the current context whenever the task starts or resumes execution.

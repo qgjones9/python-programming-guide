@@ -1,7 +1,3 @@
 # [coroutine function](https://docs.python.org/3.14/glossary.html#term-coroutine-function)
 
-A function which returns a [coroutine](../coroutine/index.md) object.  A coroutine
-function may be defined with the [asyncdef](https://docs.python.org/3.14/reference/compound_stmts.html#async-def) statement,
-and may contain [await](https://docs.python.org/3.14/reference/expressions.html#await), [asyncfor](https://docs.python.org/3.14/reference/compound_stmts.html#async-for), and
-[asyncwith](https://docs.python.org/3.14/reference/compound_stmts.html#async-with) keywords.  These were introduced
-by [PEP 492](https://peps.python.org/pep-0492/).
+A function which returns a [coroutine](../coroutine/index.md) object.  A coroutine function may be defined with the [asyncdef](https://docs.python.org/3.14/reference/compound_stmts.html#async-def) statement, and may contain [await](https://docs.python.org/3.14/reference/expressions.html#await), [asyncfor](https://docs.python.org/3.14/reference/compound_stmts.html#async-for), and [asyncwith](https://docs.python.org/3.14/reference/compound_stmts.html#async-with) keywords.  These were introduced by [PEP 492](https://peps.python.org/pep-0492/).

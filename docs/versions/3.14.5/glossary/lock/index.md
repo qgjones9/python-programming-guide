@@ -1,13 +1,3 @@
 # [lock](https://docs.python.org/3.14/glossary.html#term-lock)
 
-A [synchronization primitive](../synchronization-primitive/index.md) that allows only one thread at a
-time to access a shared resource.  A thread must acquire a lock before
-accessing the protected resource and release it afterward.  If a thread
-attempts to acquire a lock that is already held by another thread, it
-will block until the lock becomes available.  Python’s [threading](https://docs.python.org/3.14/library/threading.html#module-threading)
-module provides [Lock](https://docs.python.org/3.14/library/threading.html#threading.Lock) (a basic lock) and
-[RLock](https://docs.python.org/3.14/library/threading.html#threading.RLock) (a [reentrant](../reentrant/index.md) lock).  Locks are used
-to prevent [race conditions](../race-condition/index.md) and ensure
-[thread-safe](../thread-safe/index.md) access to shared data.  Alternative design patterns
-to locks exist such as queues, producer/consumer patterns, and
-thread-local state. See also [deadlock](../deadlock/index.md), and reentrant.
+A [synchronization primitive](../synchronization-primitive/index.md) that allows only one thread at a time to access a shared resource.  A thread must acquire a lock before accessing the protected resource and release it afterward.  If a thread attempts to acquire a lock that is already held by another thread, it will block until the lock becomes available.  Python’s [threading](https://docs.python.org/3.14/library/threading.html#module-threading) module provides [Lock](https://docs.python.org/3.14/library/threading.html#threading.Lock) (a basic lock) and [RLock](https://docs.python.org/3.14/library/threading.html#threading.RLock) (a [reentrant](../reentrant/index.md) lock).  Locks are used to prevent [race conditions](../race-condition/index.md) and ensure [thread-safe](../thread-safe/index.md) access to shared data.  Alternative design patterns to locks exist such as queues, producer/consumer patterns, and thread-local state. See also [deadlock](../deadlock/index.md), and reentrant.

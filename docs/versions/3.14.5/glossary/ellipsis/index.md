@@ -2,11 +2,7 @@
 
 Can refer to:
 
-- The default Python prompt of the [interactive](../interactive/index.md) shell when entering the
-code for an indented code block, when within a pair of matching left and
-right delimiters (parentheses, square brackets, curly braces or triple
-quotes), or after specifying a decorator.
-
+- The default Python prompt of the [interactive](../interactive/index.md) shell when entering the code for an indented code block, when within a pair of matching left and right delimiters (parentheses, square brackets, curly braces or triple quotes), or after specifying a decorator.
 
 ```shell
 

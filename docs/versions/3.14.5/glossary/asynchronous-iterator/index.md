@@ -1,7 +1,3 @@
 # [asynchronous iterator](https://docs.python.org/3.14/glossary.html#term-asynchronous-iterator)
 
-An object that implements the [__aiter__()](https://docs.python.org/3.14/reference/datamodel.html#object.__aiter__) and [__anext__()](https://docs.python.org/3.14/reference/datamodel.html#object.__anext__)
-methods.  `__anext__()` must return an [awaitable](../awaitable/index.md) object.
-[asyncfor](https://docs.python.org/3.14/reference/compound_stmts.html#async-for) resolves the awaitables returned by an asynchronous
-iterator’s `__anext__()` method until it raises a
-[StopAsyncIteration](https://docs.python.org/3.14/library/exceptions.html#StopAsyncIteration) exception.  Introduced by [PEP 492](https://peps.python.org/pep-0492/).
+An object that implements the [__aiter__()](https://docs.python.org/3.14/reference/datamodel.html#object.__aiter__) and [__anext__()](https://docs.python.org/3.14/reference/datamodel.html#object.__anext__) methods.  `__anext__()` must return an [awaitable](../awaitable/index.md) object. [asyncfor](https://docs.python.org/3.14/reference/compound_stmts.html#async-for) resolves the awaitables returned by an asynchronous iterator’s `__anext__()` method until it raises a [StopAsyncIteration](https://docs.python.org/3.14/library/exceptions.html#StopAsyncIteration) exception.  Introduced by [PEP 492](https://peps.python.org/pep-0492/).

@@ -1,9 +1,3 @@
 # [expression](https://docs.python.org/3.14/glossary.html#term-expression)
 
-A piece of syntax which can be evaluated to some value.  In other words,
-an expression is an accumulation of expression elements like literals,
-names, attribute access, operators or function calls which all return a
-value.  In contrast to many other languages, not all language constructs
-are expressions.  There are also [statement](../statement/index.md)s which cannot be used
-as expressions, such as [while](https://docs.python.org/3.14/reference/compound_stmts.html#while).  Assignments are also statements,
-not expressions.
+A piece of syntax which can be evaluated to some value.  In other words, an expression is an accumulation of expression elements like literals, names, attribute access, operators or function calls which all return a value.  In contrast to many other languages, not all language constructs are expressions.  There are also [statement](../statement/index.md)s which cannot be used as expressions, such as [while](https://docs.python.org/3.14/reference/compound_stmts.html#while).  Assignments are also statements, not expressions.

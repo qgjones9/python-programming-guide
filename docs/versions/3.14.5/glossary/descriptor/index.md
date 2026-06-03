@@ -1,15 +1,5 @@
 # [descriptor](https://docs.python.org/3.14/glossary.html#term-descriptor)
 
-Any object which defines the methods [__get__()](https://docs.python.org/3.14/reference/datamodel.html#object.__get__),
-[__set__()](https://docs.python.org/3.14/reference/datamodel.html#object.__set__), or [__delete__()](https://docs.python.org/3.14/reference/datamodel.html#object.__delete__).
-When a class attribute is a descriptor, its special
-binding behavior is triggered upon attribute lookup.  Normally, using
-*a.b* to get, set or delete an attribute looks up the object named *b* in
-the class dictionary for *a*, but if *b* is a descriptor, the respective
-descriptor method gets called.  Understanding descriptors is a key to a
-deep understanding of Python because they are the basis for many features
-including functions, methods, properties, class methods, static methods,
-and reference to super classes.
+Any object which defines the methods [__get__()](https://docs.python.org/3.14/reference/datamodel.html#object.__get__), [__set__()](https://docs.python.org/3.14/reference/datamodel.html#object.__set__), or [__delete__()](https://docs.python.org/3.14/reference/datamodel.html#object.__delete__). When a class attribute is a descriptor, its special binding behavior is triggered upon attribute lookup.  Normally, using *a.b* to get, set or delete an attribute looks up the object named *b* in the class dictionary for *a*, but if *b* is a descriptor, the respective descriptor method gets called.  Understanding descriptors is a key to a deep understanding of Python because they are the basis for many features including functions, methods, properties, class methods, static methods, and reference to super classes.
 
-For more information about descriptors’ methods, see [Implementing Descriptors](https://docs.python.org/3.14/reference/datamodel.html#descriptors)
-or the [Descriptor How To Guide](https://docs.python.org/3.14/howto/descriptor.html#descriptorhowto).
+For more information about descriptors’ methods, see [Implementing Descriptors](https://docs.python.org/3.14/reference/datamodel.html#descriptors) or the [Descriptor How To Guide](https://docs.python.org/3.14/howto/descriptor.html#descriptorhowto).

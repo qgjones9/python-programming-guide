@@ -1,24 +1,9 @@
 # [iterator](https://docs.python.org/3.14/glossary.html#term-iterator)
 
-An object representing a stream of data.  Repeated calls to the iterator’s
-[__next__()](https://docs.python.org/3.14/library/stdtypes.html#iterator.__next__) method (or passing it to the built-in function
-[next()](https://docs.python.org/3.14/library/functions.html#next)) return successive items in the stream.  When no more data
-are available a [StopIteration](https://docs.python.org/3.14/library/exceptions.html#StopIteration) exception is raised instead.  At this
-point, the iterator object is exhausted and any further calls to its
-`__next__()` method just raise `StopIteration` again.  Iterators
-are required to have an [__iter__()](https://docs.python.org/3.14/library/stdtypes.html#iterator.__iter__) method that returns the iterator
-object itself so every iterator is also iterable and may be used in most
-places where other iterables are accepted.  One notable exception is code
-which attempts multiple iteration passes.  A container object (such as a
-[list](https://docs.python.org/3.14/library/stdtypes.html#list)) produces a fresh new iterator each time you pass it to the
-[iter()](https://docs.python.org/3.14/library/functions.html#iter) function or use it in a [for](https://docs.python.org/3.14/reference/compound_stmts.html#for) loop.  Attempting this
-with an iterator will just return the same exhausted iterator object used
-in the previous iteration pass, making it appear like an empty container.
+An object representing a stream of data.  Repeated calls to the iterator’s [__next__()](https://docs.python.org/3.14/library/stdtypes.html#iterator.__next__) method (or passing it to the built-in function [next()](https://docs.python.org/3.14/library/functions.html#next)) return successive items in the stream.  When no more data are available a [StopIteration](https://docs.python.org/3.14/library/exceptions.html#StopIteration) exception is raised instead.  At this point, the iterator object is exhausted and any further calls to its `__next__()` method just raise `StopIteration` again.  Iterators are required to have an [__iter__()](https://docs.python.org/3.14/library/stdtypes.html#iterator.__iter__) method that returns the iterator object itself so every iterator is also iterable and may be used in most places where other iterables are accepted.  One notable exception is code which attempts multiple iteration passes.  A container object (such as a [list](https://docs.python.org/3.14/library/stdtypes.html#list)) produces a fresh new iterator each time you pass it to the [iter()](https://docs.python.org/3.14/library/functions.html#iter) function or use it in a [for](https://docs.python.org/3.14/reference/compound_stmts.html#for) loop.  Attempting this with an iterator will just return the same exhausted iterator object used in the previous iteration pass, making it appear like an empty container.
 
 More information can be found in [Iterator Types](https://docs.python.org/3.14/library/stdtypes.html#typeiter).
 
-**CPython implementation detail:** CPython does not consistently apply the requirement that an iterator
-define [__iter__()](https://docs.python.org/3.14/library/stdtypes.html#iterator.__iter__).
-And also please note that [free-threaded](../free-threading/index.md)
-CPython does not guarantee [thread-safe](../thread-safe/index.md) behavior of iterator
-operations.
+**CPython implementation detail:** CPython does not consistently apply the requirement that an iterator define [__iter__()](https://docs.python.org/3.14/library/stdtypes.html#iterator.__iter__).
+
+And also please note that [free-threaded](../free-threading/index.md) CPython does not guarantee [thread-safe](../thread-safe/index.md) behavior of iterator operations.

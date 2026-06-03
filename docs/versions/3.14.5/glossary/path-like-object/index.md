@@ -1,10 +1,3 @@
 # [path-like object](https://docs.python.org/3.14/glossary.html#term-path-like-object)
 
-An object representing a file system path. A path-like object is either
-a [str](https://docs.python.org/3.14/library/stdtypes.html#str) or [bytes](https://docs.python.org/3.14/library/stdtypes.html#bytes) object representing a path, or an object
-implementing the [os.PathLike](https://docs.python.org/3.14/library/os.html#os.PathLike) protocol. An object that supports
-the `os.PathLike` protocol can be converted to a `str` or
-`bytes` file system path by calling the [os.fspath()](https://docs.python.org/3.14/library/os.html#os.fspath) function;
-[os.fsdecode()](https://docs.python.org/3.14/library/os.html#os.fsdecode) and [os.fsencode()](https://docs.python.org/3.14/library/os.html#os.fsencode) can be used to guarantee a
-`str` or `bytes` result instead, respectively. Introduced
-by [PEP 519](https://peps.python.org/pep-0519/).
+An object representing a file system path. A path-like object is either a [str](https://docs.python.org/3.14/library/stdtypes.html#str) or [bytes](https://docs.python.org/3.14/library/stdtypes.html#bytes) object representing a path, or an object implementing the [os.PathLike](https://docs.python.org/3.14/library/os.html#os.PathLike) protocol. An object that supports the `os.PathLike` protocol can be converted to a `str` or `bytes` file system path by calling the [os.fspath()](https://docs.python.org/3.14/library/os.html#os.fspath) function; [os.fsdecode()](https://docs.python.org/3.14/library/os.html#os.fsdecode) and [os.fsencode()](https://docs.python.org/3.14/library/os.html#os.fsencode) can be used to guarantee a `str` or `bytes` result instead, respectively. Introduced by [PEP 519](https://peps.python.org/pep-0519/).

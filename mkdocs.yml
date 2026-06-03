@@ -311,10 +311,10 @@ nav:
             - Common Sequence Operations: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/common-sequence-operations/index.md
             - Immutable Sequence Types: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/immutable-sequence-types/index.md
             - Mutable Sequence Types: versions/3.14.5/standard-library/built-in-types/sequence-types-list-tuple-range/mutable-sequence-types/index.md
+          - Binary Sequence Types — bytes, bytearray, memoryview: versions/3.14.5/standard-library/built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md
           - Set Types — set, frozenset: versions/3.14.5/standard-library/built-in-types/set-types-set-frozenset/index.md
           - Mapping Types — dict: versions/3.14.5/standard-library/built-in-types/mapping-types-dict/index.md
           - Text Sequence Type — str: versions/3.14.5/standard-library/built-in-types/text-sequence-type-str/index.md
-          - Binary Sequence Types — bytes, bytearray, memoryview: versions/3.14.5/standard-library/built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md
           - Context Manager Types: versions/3.14.5/standard-library/built-in-types/context-manager-types/index.md
           - Type Annotation Types — Generic Alias, Union: versions/3.14.5/standard-library/built-in-types/type-annotation-types-generic-alias-union/index.md
           - Other Built-in Types: versions/3.14.5/standard-library/built-in-types/other-built-in-types/index.md
