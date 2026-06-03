@@ -419,15 +419,15 @@ nav:
 
         - Text Processing Services:
           - Text Processing Services: versions/3.14.5/standard-library/text-processing-services/index.md
-          - difflib — Helpers for computing deltas: versions/3.14.5/standard-library/text-processing-services/difflib-helpers-for-computing-deltas/index.md
-          - re — Regular expression operations: versions/3.14.5/standard-library/text-processing-services/re-regular-expression-operations/index.md
-          - readline — GNU readline interface: versions/3.14.5/standard-library/text-processing-services/readline-gnu-readline-interface/index.md
-          - rlcompleter — Completion function for GNU readline: versions/3.14.5/standard-library/text-processing-services/rlcompleter-completion-function-for-gnu-readline/index.md
           - string — Common string operations: versions/3.14.5/standard-library/text-processing-services/string-common-string-operations/index.md
-          - stringprep — Internet String Preparation: versions/3.14.5/standard-library/text-processing-services/stringprep-internet-string-preparation/index.md
           - string.templatelib — Support for template string literals: versions/3.14.5/standard-library/text-processing-services/stringtemplatelib-support-for-template-string-literals/index.md
+          - re — Regular expression operations: versions/3.14.5/standard-library/text-processing-services/re-regular-expression-operations/index.md
+          - difflib — Helpers for computing deltas: versions/3.14.5/standard-library/text-processing-services/difflib-helpers-for-computing-deltas/index.md
           - textwrap — Text wrapping and filling: versions/3.14.5/standard-library/text-processing-services/textwrap-text-wrapping-and-filling/index.md
           - unicodedata — Unicode Database: versions/3.14.5/standard-library/text-processing-services/unicodedata-unicode-database/index.md
+          - stringprep — Internet String Preparation: versions/3.14.5/standard-library/text-processing-services/stringprep-internet-string-preparation/index.md
+          - readline — GNU readline interface: versions/3.14.5/standard-library/text-processing-services/readline-gnu-readline-interface/index.md
+          - rlcompleter — Completion function for GNU readline: versions/3.14.5/standard-library/text-processing-services/rlcompleter-completion-function-for-gnu-readline/index.md
 
         - Binary Data Services:
           - Binary Data Services: versions/3.14.5/standard-library/binary-data-services/index.md
