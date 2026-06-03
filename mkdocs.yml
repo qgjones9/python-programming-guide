@@ -323,6 +323,8 @@ nav:
 
         - Built-in Exceptions:
           - Built-in Exceptions: versions/3.14.5/standard-library/built-in-exceptions/index.md
+          - Exception context: versions/3.14.5/standard-library/built-in-exceptions/exception-context/index.md
+          - Inheriting from built-in exceptions: versions/3.14.5/standard-library/built-in-exceptions/inheriting-from-built-in-exceptions/index.md
           - Base classes:
             - Base classes: versions/3.14.5/standard-library/built-in-exceptions/base-classes/index.md
             - ArithmeticError: versions/3.14.5/standard-library/built-in-exceptions/base-classes/arithmeticerror/index.md
@@ -369,30 +371,23 @@ nav:
             - ValueError: versions/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/valueerror/index.md
             - WindowsError: versions/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/windowserror/index.md
             - ZeroDivisionError: versions/3.14.5/standard-library/built-in-exceptions/concrete-exceptions/zerodivisionerror/index.md
-          - Exception context: versions/3.14.5/standard-library/built-in-exceptions/exception-context/index.md
-          - Exception groups:
-            - Exception groups: versions/3.14.5/standard-library/built-in-exceptions/exception-groups/index.md
-            - BaseExceptionGroup: versions/3.14.5/standard-library/built-in-exceptions/exception-groups/baseexceptiongroup/index.md
-            - ExceptionGroup: versions/3.14.5/standard-library/built-in-exceptions/exception-groups/exceptiongroup/index.md
-          - Exception hierarchy: versions/3.14.5/standard-library/built-in-exceptions/exception-hierarchy/index.md
-          - Inheriting from built-in exceptions: versions/3.14.5/standard-library/built-in-exceptions/inheriting-from-built-in-exceptions/index.md
-          - OS exceptions:
-            - OS exceptions: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/index.md
-            - BlockingIOError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/blockingioerror/index.md
-            - BrokenPipeError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/brokenpipeerror/index.md
-            - ChildProcessError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/childprocesserror/index.md
-            - ConnectionAbortedError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/connectionabortederror/index.md
-            - ConnectionError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/connectionerror/index.md
-            - ConnectionRefusedError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/connectionrefusederror/index.md
-            - ConnectionResetError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/connectionreseterror/index.md
-            - FileExistsError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/fileexistserror/index.md
-            - FileNotFoundError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/filenotfounderror/index.md
-            - InterruptedError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/interruptederror/index.md
-            - IsADirectoryError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/isadirectoryerror/index.md
-            - NotADirectoryError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/notadirectoryerror/index.md
-            - PermissionError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/permissionerror/index.md
-            - ProcessLookupError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/processlookuperror/index.md
-            - TimeoutError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/timeouterror/index.md
+            - OS exceptions:
+              - OS exceptions: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/index.md
+              - BlockingIOError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/blockingioerror/index.md
+              - BrokenPipeError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/brokenpipeerror/index.md
+              - ChildProcessError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/childprocesserror/index.md
+              - ConnectionAbortedError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/connectionabortederror/index.md
+              - ConnectionError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/connectionerror/index.md
+              - ConnectionRefusedError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/connectionrefusederror/index.md
+              - ConnectionResetError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/connectionreseterror/index.md
+              - FileExistsError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/fileexistserror/index.md
+              - FileNotFoundError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/filenotfounderror/index.md
+              - InterruptedError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/interruptederror/index.md
+              - IsADirectoryError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/isadirectoryerror/index.md
+              - NotADirectoryError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/notadirectoryerror/index.md
+              - PermissionError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/permissionerror/index.md
+              - ProcessLookupError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/processlookuperror/index.md
+              - TimeoutError: versions/3.14.5/standard-library/built-in-exceptions/os-exceptions/timeouterror/index.md
           - Warnings:
             - Warnings: versions/3.14.5/standard-library/built-in-exceptions/warnings/index.md
             - BytesWarning: versions/3.14.5/standard-library/built-in-exceptions/warnings/byteswarning/index.md
@@ -407,14 +402,21 @@ nav:
             - UnicodeWarning: versions/3.14.5/standard-library/built-in-exceptions/warnings/unicodewarning/index.md
             - UserWarning: versions/3.14.5/standard-library/built-in-exceptions/warnings/userwarning/index.md
             - Warning: versions/3.14.5/standard-library/built-in-exceptions/warnings/warning/index.md
+          - Exception groups:
+            - Exception groups: versions/3.14.5/standard-library/built-in-exceptions/exception-groups/index.md
+            - BaseExceptionGroup: versions/3.14.5/standard-library/built-in-exceptions/exception-groups/baseexceptiongroup/index.md
+            - ExceptionGroup: versions/3.14.5/standard-library/built-in-exceptions/exception-groups/exceptiongroup/index.md
+          - Exception hierarchy: versions/3.14.5/standard-library/built-in-exceptions/exception-hierarchy/index.md
+
         - Thread Safety Guarantees:
           - Thread Safety Guarantees: versions/3.14.5/standard-library/thread-safety-guarantees/index.md
-          - Thread safety for bytearray objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-bytearray-objects/index.md
-          - Thread safety for dict objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-dict-objects/index.md
-          - Thread safety for list objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-list-objects/index.md
-          - Thread safety for memoryview objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-memoryview-objects/index.md
-          - Thread safety for set objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-set-objects/index.md
           - Thread safety levels: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-levels/index.md
+          - Thread safety for list objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-list-objects/index.md
+          - Thread safety for dict objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-dict-objects/index.md
+          - Thread safety for set objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-set-objects/index.md
+          - Thread safety for bytearray objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-bytearray-objects/index.md
+          - Thread safety for memoryview objects: versions/3.14.5/standard-library/thread-safety-guarantees/thread-safety-for-memoryview-objects/index.md
+
         - Text Processing Services:
           - Text Processing Services: versions/3.14.5/standard-library/text-processing-services/index.md
           - difflib — Helpers for computing deltas: versions/3.14.5/standard-library/text-processing-services/difflib-helpers-for-computing-deltas/index.md
@@ -426,6 +428,7 @@ nav:
           - string.templatelib — Support for template string literals: versions/3.14.5/standard-library/text-processing-services/stringtemplatelib-support-for-template-string-literals/index.md
           - textwrap — Text wrapping and filling: versions/3.14.5/standard-library/text-processing-services/textwrap-text-wrapping-and-filling/index.md
           - unicodedata — Unicode Database: versions/3.14.5/standard-library/text-processing-services/unicodedata-unicode-database/index.md
+
         - Binary Data Services:
           - Binary Data Services: versions/3.14.5/standard-library/binary-data-services/index.md
           - codecs — Codec registry and base classes:
