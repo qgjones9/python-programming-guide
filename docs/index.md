@@ -6,11 +6,11 @@ Structured notes and reference for Python 3.14.5, built with [MkDocs Material](h
 
 | Section | Topic | Highlights |
 |---|---|---|
-| :material-school: [Tutorial](python/3.14.5/tutorial/index.md) | Getting started | Interpreter, syntax, data structures, modules, classes, exceptions, venv |
-| :material-bookshelf: [Standard Library](python/3.14.5/standard-library/index.md) | Built-in modules | I/O, networking, data types, concurrency, development tools |
-| :material-file-document: [Language Reference](python/3.14.5/language-reference/index.md) | Syntax and semantics | Lexical analysis, data model, statements, imports, grammar |
-| :material-cog: [Extending and Embedding](python/3.14.5/extending-and-embedding-python-interpreter/index.md) | C extensions | Building extensions, embedding Python, Windows notes |
-| :material-memory: [Python/C API](python/3.14.5/python-c-api-reference-manual/index.md) | C API reference | Objects, reference counting, concrete types, utilities |
+| :material-school: [Tutorial](versions/3.14.5/tutorial/index.md) | Getting started | Interpreter, syntax, data structures, modules, classes, exceptions, venv |
+| :material-bookshelf: [Standard Library](versions/3.14.5/standard-library/index.md) | Built-in modules | I/O, networking, data types, concurrency, development tools |
+| :material-file-document: [Language Reference](versions/3.14.5/language-reference/index.md) | Syntax and semantics | Lexical analysis, data model, statements, imports, grammar |
+| :material-cog: [Extending and Embedding](versions/3.14.5/extending-and-embedding-python-interpreter/index.md) | C extensions | Building extensions, embedding Python, Windows notes |
+| :material-memory: [Python/C API](versions/3.14.5/python-c-api-reference-manual/index.md) | C API reference | Objects, reference counting, concrete types, utilities |
 
 
 ## :material-language-python: data structures and algorithms

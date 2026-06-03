@@ -10,7 +10,7 @@ from pathlib import Path
 DOCS_DIR = Path(__file__).resolve().parent.parent / "docs"
 SKIP_DIRS = {"stylesheets", "__pycache__"}
 
-# Match docs/python/3.14.5/index.md "Documentation books" table order.
+# Match docs/versions/3.14.5/index.md "Documentation books" table order.
 PYTHON_314_5_BOOK_ORDER = (
     "tutorial",
     "standard-library",
@@ -22,7 +22,7 @@ PYTHON_314_5_BOOK_ORDER = (
 
 def sort_child_dirs(parent: Path, child_dirs: list[Path]) -> list[Path]:
     rel = parent.relative_to(DOCS_DIR).as_posix()
-    if rel == "python/3.14.5":
+    if rel == "versions/3.14.5":
         order = {name: index for index, name in enumerate(PYTHON_314_5_BOOK_ORDER)}
         return sorted(
             child_dirs,

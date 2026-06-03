@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DOCS = ROOT / "docs/python/3.14.5/standard-library/built-in-functions"
+DOCS = ROOT / "docs/versions/3.14.5/standard-library/built-in-functions"
 INDEX = DOCS / "index.md"
 
 ROWS: list[tuple[str, str, str]] = [

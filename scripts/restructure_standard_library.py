@@ -14,9 +14,9 @@ from pathlib import Path
 from urllib.request import urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
-STD_LIB = ROOT / "docs/python/3.14.5/standard-library"
+STD_LIB = ROOT / "docs/versions/3.14.5/standard-library"
 MKDOCS = ROOT / "mkdocs.yml"
-NAV_PREFIX = "python/3.14.5/standard-library"
+NAV_PREFIX = "versions/3.14.5/standard-library"
 TABLE_SOURCE = ROOT / "scripts/standard-library-module-table.md"
 
 

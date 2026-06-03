@@ -20,7 +20,7 @@ Before diving into implementations, be comfortable with:
 |---|-----------|-------------|
 | 1 | [Complexity analysis](complexity/index.md) | Big-O time and space; best, average, and worst case; how to read cost rows on other pages. |
 | 2 | [Recursion](recursion/index.md) | Base cases, call stack intuition, and when recursion maps naturally to trees and divide-and-conquer. |
-| 3 | [Python tutorial](../python/3.14.5/tutorial/index.md) | Lists, dicts, sets, and loops; you will reimplement many of these ideas by hand in the DSA pages. |
+| 3 | [Python tutorial](../versions/3.14.5/tutorial/index.md) | Lists, dicts, sets, and loops; you will reimplement many of these ideas by hand in the DSA pages. |
 
 
 ### Phase 1 — Linear structures

@@ -12,7 +12,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup, NavigableString, Tag
 
 ROOT = Path(__file__).resolve().parent.parent
-GLOSSARY_DIR = ROOT / "docs" / "python" / "3.14.5" / "glossary"
+GLOSSARY_DIR = ROOT / "docs" / "versions" / "3.14.5" / "glossary"
 INDEX_PATH = GLOSSARY_DIR / "index.md"
 MKDOCS_PATH = ROOT / "mkdocs.yml"
 GLOSSARY_URL = "https://docs.python.org/3.14/glossary.html"
@@ -279,16 +279,16 @@ def safe_nav_title(title: str) -> str:
 
 def update_mkdocs_nav(entries: list[tuple[str, str]]) -> None:
     text = MKDOCS_PATH.read_text(encoding="utf-8")
-    nav_lines = ["      - Glossary:", "          - python/3.14.5/glossary/index.md"]
+    nav_lines = ["      - Glossary:", "          - versions/3.14.5/glossary/index.md"]
     for title, slug in entries:
         safe = safe_nav_title(title)
         nav_lines.append(
-            f"          - {safe}: python/3.14.5/glossary/{slug_dir(slug)}/index.md"
+            f"          - {safe}: versions/3.14.5/glossary/{slug_dir(slug)}/index.md"
         )
     new_block = "\n".join(nav_lines)
     patterns = [
         r"      - Glossary:\n(?:          - .+\n)+",
-        r"      - Glossary: python/3\.14\.5/glossary/index\.md\n",
+        r"      - Glossary: versions/3\.14\.5/glossary/index\.md\n",
     ]
     for pattern in patterns:
         if re.search(pattern, text):
