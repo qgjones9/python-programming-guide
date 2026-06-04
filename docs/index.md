@@ -1,8 +1,6 @@
 # Python Programming Guide
 
-Structured notes and reference for Python3
-
-## :material-language-python: What's here
+## :material-language-python: The Beginner's Guide to Python
 
 | Section | Topic | Highlights |
 |---|---|---|
@@ -18,8 +16,8 @@ Structured notes and reference for Python3
 | :material-chart-tree: [Overview](dsa/index.md) | Hub and learning roadmap | Complexity, recursion, structures, sorting and searching |
 | :material-timer-sand-empty: [Complexity](dsa/complexity/index.md) | Time and space analysis | Big O, best/worst/average case, trade-offs |
 | :material-repeat: [Recursion](dsa/recursion/index.md) | Thinking recursively | Recurrence relations, call stack, base and inductive step, tail recursion |
-| :material-algorithm: [Data structures](dsa/data-structures/index.md) | Core structures | Lists, trees, heaps, graphs, hash tables |
-| :material-algorithm: [Algorithms](dsa/algorithms/index.md) | Sorting and searching | Comparison sorts, radix and bucket sort, quickselect |
+| :material-graph: [Data structures](dsa/data-structures/index.md) | Core structures | Lists, trees, heaps, graphs, hash tables |
+| :material-sort-variant: [Algorithms](dsa/algorithms/index.md) | Sorting and searching | Comparison sorts, radix and bucket sort, quickselect |
 
 ## :material-brain: Coding Interview Practice
 
@@ -103,11 +101,11 @@ Structured notes and reference for Python3
 
 | :material-database: Database | :material-information-outline: Description |
 |---|---|
-| [:material-vector-arrange: Pinecone](https://www.pinecone.io/) | Pinecone is a fully managed vector database service designed for similarity search and AI applications, enabling fast and scalable retrieval of embeddings for tasks like semantic search and recommendation. |
+| [:material-pine-tree: Pinecone](https://www.pinecone.io/) | Pinecone is a fully managed vector database service designed for similarity search and AI applications, enabling fast and scalable retrieval of embeddings for tasks like semantic search and recommendation. |
 | [:material-vector-difference-ab: Weaviate](https://weaviate.io/) | Weaviate is an open-source vector database with built-in machine learning and support for hybrid search, semantic search, and generative AI integrations. |
 | [:material-vector-point: Milvus](https://milvus.io/) | Milvus is a high-performance, open-source vector database that supports scalable storage and similarity search of vector embeddings, popular for AI and deep learning applications. |
 | [:material-vector-square: Qdrant](https://qdrant.tech/) | Qdrant is an open-source vector similarity search engine and database, offering efficient and reliable search and filtering of large-scale embedding data. |
-| [:material-vector-arrange-ab: Chroma](https://www.trychroma.com/) | Chroma is a simple, open-source embedding database for AI applications, providing easy-to-use APIs and persistent storage for vector data. |
+| [:material-vector-circle-variant: Chroma](https://www.trychroma.com/) | Chroma is a simple, open-source embedding database for AI applications, providing easy-to-use APIs and persistent storage for vector data. |
 
 ### :material-chart-scatter-plot: Core Machine Learning & Statistical Modeling
 

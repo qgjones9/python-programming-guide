@@ -4,8 +4,8 @@
 |---|---|---|
 | :material-chart-timeline-variant: [Complexity analysis](complexity/index.md) | Foundations | Big-O, time and space, best / average / worst case, amortized cost |
 | :material-source-branch: [Recursion](recursion/index.md) | Foundations | Base cases, call stack, divide-and-conquer, trees and graph DFS |
-| :material-algorithm: [Data Structures](data-structures/index.md) | Data structures | Arrays, linked lists, trees, graphs, hash tables, heaps, queues, stacks |
-| :material-algorithm: [Algorithms](algorithms/index.md) | Algorithms | Sorting, searching, graph algorithms, dynamic programming, greedy algorithms, backtracking |
+| :material-graph: [Data Structures](data-structures/index.md) | Data structures | Arrays, linked lists, trees, graphs, hash tables, heaps, queues, stacks |
+| :material-sort-variant: [Algorithms](algorithms/index.md) | Algorithms | Sorting, searching, graph algorithms, dynamic programming, greedy algorithms, backtracking |
 
 
 ## Learning roadmap
