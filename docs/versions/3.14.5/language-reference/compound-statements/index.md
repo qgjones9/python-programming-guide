@@ -1,162 +1,124 @@
-# [8. Compound statements](https://docs.python.org/3/reference/compound_stmts.html)
+# [Compound statements](https://docs.python.org/3/reference/compound_stmts.html)
 
-Local notes for [**8. Compound statements**](https://docs.python.org/3/reference/compound_stmts.html) in *[The Python Language Reference](https://docs.python.org/3/reference/index.html)*. This mirror is shorthand; wording and grammar are authoritative only on docs.python.org.
+**Compound statements** group other statements and control how those inner statements run: conditional branches (`if`), loops (`while`, `for`), resource management (`with`), exception handling (`try`), structural pattern matching (`match`), and definitions that create callable or class objects (`def`, `class`, `async def`). Each compound form is built from one or more **clauses** (header keyword + colon + **suite**). Normative grammar and edge cases live on [docs.python.org](https://docs.python.org/3/reference/compound_stmts.html); this hub orients you to each construct and links to deeper notes in this repo.
 
-### [8.1. The if statement](https://docs.python.org/3/reference/compound_stmts.html#the-if-statement)
+Related chapters: [Boolean operations](../expressions/boolean-operations/index.md) (truth tests in `if`/`while`), [Assignment statements](../simple-statements/assignment-statements/index.md) (`for` targets), [Exceptions](../execution-model/exceptions/index.md) (`try` / `raise`), [The raise statement](../simple-statements/the-raise-statement/index.md), [With Statement Context Managers](https://docs.python.org/3/library/stdtypes.html#context-manager-types) (stdlib protocol).
 
-- Canonical: **[8.1. The if statement](https://docs.python.org/3/reference/compound_stmts.html#the-if-statement)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
+---
 
-```python
-# Parentheses alter evaluation order versus default precedence.
-assert (1 + 2) * 3 == 9  # grouped addition first
-assert 1 + 2 * 3 == 7  # multiplication binds tighter without parens
-```
+## Statement overview
 
-### [8.2. The while statement](https://docs.python.org/3/reference/compound_stmts.html#the-while-statement)
+| Construct | Role |
+|-----------|------|
+| [`if`](the-if-statement/index.md) | Run exactly one suite from `if` / `elif` / `else` |
+| [`while`](the-while-statement/index.md) | Repeat a suite while a condition is true |
+| [`for`](the-for-statement/index.md) | Iterate an iterable; optional `else` when not broken |
+| [`try`](the-try-statement/index.md) | Handle exceptions, run `else` / `finally`, or `except*` groups |
+| [`with`](the-with-statement/index.md) | Enter/exit context managers (sync or `async with`) |
+| [`match`](the-match-statement/index.md) | Structural pattern matching (3.10+) |
+| [`def`](function-definitions/index.md) | Bind a function object; decorators, defaults, annotations |
+| [`class`](class-definitions/index.md) | Create a class object from a suite and bases |
+| [Coroutines](coroutines/index.md) | `async def`, `async for`, `async with` |
+| [Type parameter lists](type-parameter-lists/index.md) | Generic `def` / `class` / `type` syntax (3.12+) |
+| [Annotations](annotations/index.md) | Parameter, return, and variable annotations |
 
-- Canonical: **[8.2. The while statement](https://docs.python.org/3/reference/compound_stmts.html#the-while-statement)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
+---
 
-```python
-# Indentation defines blocks; only the reference is normative for edge cases.
-def ok():
-    return True
+## Clause and suite structure
 
+| Term | Meaning |
+|------|---------|
+| **Clause** | Header (`if`, `for`, `try`, …) ending with `:` at one indentation level |
+| **Suite** | Statements controlled by the clause: same-line simple statements after `:`, or an indented block |
+| **Nested compound** | Only the indented suite form may contain another compound statement |
 
-assert ok() is True
-```
-
-### [8.3. The for statement](https://docs.python.org/3/reference/compound_stmts.html#the-for-statement)
-
-- Canonical: **[8.3. The for statement](https://docs.python.org/3/reference/compound_stmts.html#the-for-statement)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Parentheses alter evaluation order versus default precedence.
-assert (1 + 2) * 3 == 9  # grouped addition first
-assert 1 + 2 * 3 == 7  # multiplication binds tighter without parens
-```
-
-### [8.4. The try statement](https://docs.python.org/3/reference/compound_stmts.html#the-try-statement)
-
-- Canonical: **[8.4. The try statement](https://docs.python.org/3/reference/compound_stmts.html#the-try-statement)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
+Semicolons on one line bind tighter than the colon: in `if x: print(a); print(b)`, both prints are in the `if` suite when the condition is true.
 
 ```python
-# Parentheses alter evaluation order versus default precedence.
-assert (1 + 2) * 3 == 9  # grouped addition first
-assert 1 + 2 * 3 == 7  # multiplication binds tighter without parens
+# Goal: one-line suite vs indented nested if (else attaches to inner if)
+def nested_else(x):
+    if x > 0:
+        if x < 10:
+            return "small"
+        else:
+            return "large-nonpositive"
+    return "nonpositive"
+
+
+assert nested_else(5) == "small"
+assert nested_else(15) == "large-nonpositive"
 ```
 
-### [8.5. The with statement](https://docs.python.org/3/reference/compound_stmts.html#the-with-statement)
+---
 
-- Canonical: **[8.5. The with statement](https://docs.python.org/3/reference/compound_stmts.html#the-with-statement)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
+## Choosing the right construct
+
+| Goal | Prefer |
+|------|--------|
+| Pick one branch among many tests | `if` / `elif` / `else` |
+| Repeat until a condition fails | `while` (+ optional `else`) |
+| Walk every item of an iterable | `for` (+ optional `else`) |
+| Handle errors or guarantee cleanup | `try` / `except` / `finally` (or `except*` for groups) |
+| Acquire/release resources | `with` or `async with` |
+| Destructure by shape/type | `match` / `case` |
+| Reusable callable | `def` or `async def` |
+| New type with shared/class state | `class` |
+
+---
+
+## Cross-cutting best practices
+
+| Practice | Why |
+|----------|-----|
+| Indent `else` with the `if` it belongs to | Avoids the classic “dangling else” ambiguity |
+| Treat `for`/`while` `else` as “completed without `break`” | `else` does not run after `break` |
+| Use `None` defaults for mutable parameters | Default expressions run once at function definition time |
+| Prefer `with` over manual `try`/`finally` for resources | Documents enter/exit protocol clearly |
+| Put irrefutable `match` cases last | At most one catch-all `case _` without a guard |
+| Inspect generics via `__type_params__` at runtime | Type parameter names are not module globals |
 
 ```python
-# Expressions may nest; parentheses override default precedence safely.
-base, exp = 2, 8
-assert (base ** exp) == 256
+# Goal: for-else runs only when loop completes without break
+def classify(items, bad):
+    for item in items:
+        if item == bad:
+            break
+    else:
+        return "all_ok"
+    return "stopped_early"
+
+
+assert classify([1, 2, 3], 99) == "all_ok"
+assert classify([1, 2, 3], 2) == "stopped_early"
 ```
 
-### [8.6. The match statement](https://docs.python.org/3/reference/compound_stmts.html#the-match-statement)
+---
 
-- Canonical: **[8.6. The match statement](https://docs.python.org/3/reference/compound_stmts.html#the-match-statement)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
+## Common pitfalls
 
-```python
-# Containers compare element-wise per reference rules once types align.
-assert (1, 2) < (1, 3)
-```
+| Pitfall | What goes wrong | Mitigation |
+|---------|-----------------|------------|
+| `if` on one line with `;` and nested `if` | `else` may bind to the wrong `if` | Use indented blocks for nested conditionals |
+| Mutable default arguments | Shared list/dict across calls | Default to `None`, allocate in the body |
+| `return` in `finally` | Overrides `try`/`except` return value | Avoid returning from `finally` (3.14+ warns) |
+| Relying on bindings after failed `match` | Implementation may optimize evaluation | Only use names from the selected `case` |
+| `except*` with `BaseExceptionGroup` subclass | `TypeError` — ambiguous semantics | Match concrete exception types |
+| Assuming annotation expressions run at definition | Lazy evaluation by default (3.14+) | Use `annotationlib` / `typing.get_type_hints` |
 
-### [8.7. Function definitions](https://docs.python.org/3/reference/compound_stmts.html#function-definitions)
-
-- Canonical: **[8.7. Function definitions](https://docs.python.org/3/reference/compound_stmts.html#function-definitions)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Parentheses alter evaluation order versus default precedence.
-assert (1 + 2) * 3 == 9  # grouped addition first
-assert 1 + 2 * 3 == 7  # multiplication binds tighter without parens
-```
-
-### [8.8. Class definitions](https://docs.python.org/3/reference/compound_stmts.html#class-definitions)
-
-- Canonical: **[8.8. Class definitions](https://docs.python.org/3/reference/compound_stmts.html#class-definitions)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Parentheses alter evaluation order versus default precedence.
-assert (1 + 2) * 3 == 9  # grouped addition first
-assert 1 + 2 * 3 == 7  # multiplication binds tighter without parens
-```
-
-### [8.9. Coroutines](https://docs.python.org/3/reference/compound_stmts.html#coroutines)
-
-- Canonical: **[8.9. Coroutines](https://docs.python.org/3/reference/compound_stmts.html#coroutines)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Data model: double-underscore methods intercept builtins when defined.
-class C:
-    def __len__(self):
-        return 0
-
-
-assert len(C()) == 0
-```
-
-### [8.10. Type parameter lists](https://docs.python.org/3/reference/compound_stmts.html#type-parameter-lists)
-
-- Canonical: **[8.10. Type parameter lists](https://docs.python.org/3/reference/compound_stmts.html#type-parameter-lists)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Expressions may nest; parentheses override default precedence safely.
-base, exp = 2, 8
-assert (base ** exp) == 256
-```
-
-### [8.11. Annotations](https://docs.python.org/3/reference/compound_stmts.html#annotations)
-
-- Canonical: **[8.11. Annotations](https://docs.python.org/3/reference/compound_stmts.html#annotations)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Statements execute for effect; expressions inside them still follow semantics.
-seen = []
-
-def record():
-    seen.append(True)
-    return "done"
-
-
-record()
-assert seen == [True]
-```
+---
 
 ## Sections in this repo
 
-- [8.1. The if statement](the-if-statement/index.md)
-- [8.2. The while statement](the-while-statement/index.md)
-- [8.3. The for statement](the-for-statement/index.md)
-- [8.4. The try statement](the-try-statement/index.md)
-- [8.5. The with statement](the-with-statement/index.md)
-- [8.6. The match statement](the-match-statement/index.md)
-- [8.7. Function definitions](function-definitions/index.md)
-- [8.8. Class definitions](class-definitions/index.md)
-- [8.9. Coroutines](coroutines/index.md)
-- [8.10. Type parameter lists](type-parameter-lists/index.md)
-- [8.11. Annotations](annotations/index.md)
+| Section | Summary |
+|---------|---------|
+| [The if statement](the-if-statement/index.md) | `if` / `elif` / `else`, assignment expressions in headers |
+| [The while statement](the-while-statement/index.md) | Condition loop, `break` / `continue`, `else` |
+| [The for statement](the-for-statement/index.md) | Iteration, target assignment, starred `in` items |
+| [The try statement](the-try-statement/index.md) | `except`, `except*`, `else`, `finally` |
+| [The with statement](the-with-statement/index.md) | Context managers, multi-item `with` |
+| [The match statement](the-match-statement/index.md) | Patterns, guards, irrefutable cases |
+| [Function definitions](function-definitions/index.md) | `def`, decorators, parameters, defaults |
+| [Class definitions](class-definitions/index.md) | `class`, bases, metaclass hooks, decorators |
+| [Coroutines](coroutines/index.md) | `async def`, `async for`, `async with` |
+| [Type parameter lists](type-parameter-lists/index.md) | `TypeVar`, `TypeVarTuple`, `ParamSpec` |
+| [Annotations](annotations/index.md) | Lazy annotations, `__future__` strings |

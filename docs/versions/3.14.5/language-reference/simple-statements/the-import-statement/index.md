@@ -1,15 +1,22 @@
 # [7.11. The import statement](https://docs.python.org/3/reference/simple_stmts.html#the-import-statement)
 
-Scratch notes on **7.11. The import statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/simple_stmts.html#the-import-statement)** open.
+Notes on **7.11. The import statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html). Normative grammar and footnotes live on [docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-import-statement).
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-import-statement)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+- `import mod [as name]` finds/loads a module, then binds name(s) in the current namespace (like assignment).
+- `from pkg import attr` loads `pkg`, resolves `attr` (possibly via submodule import), then binds locally.
+- `from __future__ import …` is a compile-time *future statement* (see §7.11.1 on the canonical page).
 
 ```python
-# import forms create module bindings (see import system chapter for loaders).
+# import and from-import bind names in the current namespace.
 import json as j
-assert j.dumps([0]) == "[0]"
+
+assert j.dumps([1]) == "[1]"
+
+from collections import deque
+
+d = deque([1, 2])
+d.append(3)
+assert list(d) == [1, 2, 3]
 ```
 
 Parent: [7. Simple statements](../index.md)

@@ -1,22 +1,37 @@
 # [5.2. Packages](https://docs.python.org/3/reference/import.html#packages)
 
-Scratch notes on **5.2. Packages** within [*5. The import system*](https://docs.python.org/3/reference/import.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/import.html#packages)** open.
+Packages organize modules into a naming hierarchy (`email.mime.text`). **All packages are modules**, but only modules with a [`__path__`](https://docs.python.org/3/reference/import.html#index-10) attribute are packages. Python distinguishes **regular packages** (typically a directory with `__init__.py`) from **namespace packages** (portions spread across locations, no single `__init__.py` required—see PEP 420).
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/import.html#packages)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+| Package kind | Typical layout | `__path__` | `__init__.py` |
+|--------------|----------------|------------|---------------|
+| Regular | `pkg/__init__.py`, submodules as files | Set by loader (directory paths) | Executed on first import of the package |
+| Namespace | Multiple `pkg/` directories on the search path | Custom iterable; re-searches when parent path changes | Not required at the root |
+| Namespace subpackage | Subdir without `__init__.py` inside a regular package | Contributes a portion to the parent namespace | Absent in the subdir |
+
+Importing `parent.one` executes `parent/__init__.py` then `parent/one/__init__.py` (when present). Subsequent imports of sibling subpackages reuse the already-initialized parent package object.
 
 ```python
-# Statements execute for effect; expressions inside them still follow semantics.
-seen = []
+# Goal: a module with __path__ is a package; math is a plain module
+import math
+import importlib
+import importlib.util
+import pathlib
 
-def record():
-    seen.append(True)
-    return "done"
-
-
-record()
-assert seen == [True]
+assert not hasattr(math, "__path__")
+spec = importlib.util.find_spec("importlib")
+assert spec is not None
+pkg = importlib.import_module("importlib")
+assert hasattr(pkg, "__path__")
+assert all(isinstance(p, str) for p in pkg.__path__)
+assert any(pathlib.Path(p).is_dir() for p in pkg.__path__)
 ```
+
+## Common pitfalls
+
+| Pitfall | What goes wrong | Mitigation |
+|---------|-----------------|------------|
+| Treating directories without `__init__.py` as importable before 3.3 | Implicit namespace behavior differs by version | Target 3.3+ semantics; document namespace layout |
+| Forgetting that importing a submodule runs parent `__init__.py` | Side effects run earlier than expected | Keep package `__init__.py` lightweight |
+| Assuming one filesystem tree equals one namespace package | Portions may live in separate roots | Design install layout for PEP 420 discovery |
 
 Parent: [5. The import system](../index.md)

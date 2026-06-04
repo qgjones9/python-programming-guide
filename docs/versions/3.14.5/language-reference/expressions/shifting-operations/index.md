@@ -1,15 +1,26 @@
 # [6.8. Shifting operations](https://docs.python.org/3/reference/expressions.html#shifting-operations)
 
-Scratch notes on **6.8. Shifting operations** within [*6. Expressions*](https://docs.python.org/3/reference/expressions.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/expressions.html#shifting-operations)** open.
+Bit shifts have lower priority than additive arithmetic:
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/expressions.html#shifting-operations)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+```ebnf
+shift_expr: a_expr | shift_expr ("<<" | ">>") a_expr
+```
+
+| Operator | Meaning | Equivalent |
+|----------|---------|------------|
+| `<< n` | Left shift by `n` bits | multiply by `2**n` |
+| `>> n` | Right shift by `n` bits | floor division by `2**n` |
+
+Both operands must be integers (or types overriding `__lshift__` / `__rshift__`).
 
 ```python
-# Expressions may nest; parentheses override default precedence safely.
-base, exp = 2, 8
-assert (base ** exp) == 256
+assert 1 << 3 == 8
+assert 8 >> 2 == 2
+assert 1 << 3 == 1 * pow(2, 3)
+assert 8 >> 2 == 8 // pow(2, 2)
+
+# Large shifts follow integer semantics; watch overflow on left shift.
+assert (-1 >> 1) == -1  # arithmetic right shift toward negative infinity
 ```
 
 Parent: [6. Expressions](../index.md)

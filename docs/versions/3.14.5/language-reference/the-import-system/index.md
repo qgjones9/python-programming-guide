@@ -1,134 +1,35 @@
 # [5. The import system](https://docs.python.org/3/reference/import.html)
 
-Local notes for [**5. The import system**](https://docs.python.org/3/reference/import.html) in *[The Python Language Reference](https://docs.python.org/3/reference/index.html)*. This mirror is shorthand; wording and grammar are authoritative only on docs.python.org.
+The import system is how Python code in one module gains access to code in another. An `import` statement combines **search** (locate the module) and **binding** (attach it to a name in the local namespace). Since Python 3.3, the full machinery is exposed through [`sys.meta_path`](https://docs.python.org/3/library/sys.html#sys.meta_path) and related hooks—there is no hidden legacy path. Normative wording lives on [docs.python.org](https://docs.python.org/3/reference/import.html); these notes distill the chapter for quick study.
 
-### [5.1. importlib](https://docs.python.org/3/reference/import.html#importlib)
-
-- Canonical: **[5.1. importlib](https://docs.python.org/3/reference/import.html#importlib)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Data model: double-underscore methods intercept builtins when defined.
-class C:
-    def __len__(self):
-        return 0
-
-
-assert len(C()) == 0
-```
-
-### [5.2. Packages](https://docs.python.org/3/reference/import.html#packages)
-
-- Canonical: **[5.2. Packages](https://docs.python.org/3/reference/import.html#packages)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
+| Phase | What happens | Key objects |
+|-------|--------------|-------------|
+| Cache lookup | Return an already-loaded module if present | `sys.modules` |
+| Meta-path search | Finders locate a module and return a spec | `sys.meta_path`, `ModuleSpec` |
+| Loading | Loader executes module code into a namespace | `Loader.exec_module()` |
+| Binding | `import` binds names in the importer's scope | `import` / `from … import` |
 
 ```python
-# Names bind to objects; multiple names may reference the same value (aliases).
-nums = []
-alias = nums
-alias.append(1)
-assert nums == [1]
-```
+# Goal: import is search + bind; second import reuses the cached module object
+import sys
+import json
 
-### [5.3. Searching](https://docs.python.org/3/reference/import.html#searching)
-
-- Canonical: **[5.3. Searching](https://docs.python.org/3/reference/import.html#searching)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Containers compare element-wise per reference rules once types align.
-assert (1, 2) < (1, 3)
-```
-
-### [5.4. Loading](https://docs.python.org/3/reference/import.html#loading)
-
-- Canonical: **[5.4. Loading](https://docs.python.org/3/reference/import.html#loading)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Parentheses alter evaluation order versus default precedence.
-assert (1 + 2) * 3 == 9  # grouped addition first
-assert 1 + 2 * 3 == 7  # multiplication binds tighter without parens
-```
-
-### [5.5. The Path Based Finder](https://docs.python.org/3/reference/import.html#the-path-based-finder)
-
-- Canonical: **[5.5. The Path Based Finder](https://docs.python.org/3/reference/import.html#the-path-based-finder)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Containers compare element-wise per reference rules once types align.
-assert (1, 2) < (1, 3)
-```
-
-### [5.6. Replacing the standard import system](https://docs.python.org/3/reference/import.html#replacing-the-standard-import-system)
-
-- Canonical: **[5.6. Replacing the standard import system](https://docs.python.org/3/reference/import.html#replacing-the-standard-import-system)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Expressions may nest; parentheses override default precedence safely.
-base, exp = 2, 8
-assert (base ** exp) == 256
-```
-
-### [5.7. Package Relative Imports](https://docs.python.org/3/reference/import.html#package-relative-imports)
-
-- Canonical: **[5.7. Package Relative Imports](https://docs.python.org/3/reference/import.html#package-relative-imports)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Indentation defines blocks; only the reference is normative for edge cases.
-def ok():
-    return True
-
-
-assert ok() is True
-```
-
-### [5.8. Special considerations for __main__](https://docs.python.org/3/reference/import.html#special-considerations-for-main)
-
-- Canonical: **[5.8. Special considerations for __main__](https://docs.python.org/3/reference/import.html#special-considerations-for-main)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# import forms create module bindings (see import system chapter for loaders).
-import json as j
-assert j.dumps([0]) == "[0]"
-```
-
-### [5.9. References](https://docs.python.org/3/reference/import.html#references)
-
-- Canonical: **[5.9. References](https://docs.python.org/3/reference/import.html#references)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Data model: double-underscore methods intercept builtins when defined.
-class C:
-    def __len__(self):
-        return 0
-
-
-assert len(C()) == 0
+first_id = id(json)
+import json as alias
+assert id(alias) == first_id
+assert sys.modules["json"] is json
 ```
 
 ## Sections in this repo
 
-- [5.1. importlib](importlib/index.md)
-- [5.2. Packages](packages/index.md)
-- [5.3. Searching](searching/index.md)
-- [5.4. Loading](loading/index.md)
-- [5.5. The Path Based Finder](the-path-based-finder/index.md)
-- [5.6. Replacing the standard import system](replacing-the-standard-import-system/index.md)
-- [5.7. Package Relative Imports](package-relative-imports/index.md)
-- [5.8. Special considerations for __main__](special-considerations-for-main/index.md)
-- [5.9. References](references/index.md)
+| Section | Summary |
+|---------|---------|
+| [5.1. importlib](importlib/index.md) | Programmatic import API layered on the same machinery |
+| [5.2. Packages](packages/index.md) | Regular vs namespace packages; `__path__` marks packages |
+| [5.3. Searching](searching/index.md) | `sys.modules`, finders, loaders, meta path, hooks |
+| [5.4. Loading](loading/index.md) | `exec_module`, specs, submodules, bytecode caches |
+| [5.5. The Path Based Finder](the-path-based-finder/index.md) | `sys.path`, path hooks, path entry finders |
+| [5.6. Replacing the standard import system](replacing-the-standard-import-system/index.md) | Custom meta path hooks and `__import__` overrides |
+| [5.7. Package Relative Imports](package-relative-imports/index.md) | Leading-dot syntax and parent traversal |
+| [5.8. Special considerations for __main__](special-considerations-for-main/index.md) | How `__main__` is initialized and when `__spec__` is set |
+| [5.9. References](references/index.md) | PEP history for the modern import protocol |

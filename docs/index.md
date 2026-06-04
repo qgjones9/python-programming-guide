@@ -21,6 +21,11 @@ Structured notes and reference for Python3
 | :material-algorithm: [Data structures](dsa/data-structures/index.md) | Core structures | Lists, trees, heaps, graphs, hash tables |
 | :material-algorithm: [Algorithms](dsa/algorithms/index.md) | Sorting and searching | Comparison sorts, radix and bucket sort, quickselect |
 
+## :material-brain: Coding Interview Practice
+
+| Subject | Description |
+|---------|-------------|
+| [LeetCode](leetcode/index.md) | Coding interview practice problems and solutions organized by topic and difficulty. |
 
 ## :material-web: Web Development
 

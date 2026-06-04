@@ -1,5 +1,7 @@
 # [Notation](https://docs.python.org/3/reference/introduction.html#notation)
 
+Local notes on **Notation** within [*Introduction*](../index.md). Lexical and syntactic rules throughout the Language Reference use a grammar notation that mixes [EBNF](ebnf/index.md) with [PEG](peg/index.md) ordered choice. Full symbol definitions are on [docs.python.org](https://docs.python.org/3/reference/introduction.html#notation).
+
 The descriptions of lexical analysis and syntax use a grammar notation that is a mixture of [EBNF](ebnf/index.md) and [PEG](peg/index.md). For example:
 
 | Notation | Description |
@@ -113,3 +115,30 @@ The same BNF-style notation is used for both, but the *input* differs: character
 5. Stop on **terminals** and **token** symbols; for lexical rules, also use **character ranges** and **lookaheads** where shown.
 
 With these pieces, you can read the grammar for the full Python language as documented in the [Language Reference](../../index.md)—from identifiers and literals through statements, expressions, and the [full grammar specification](../../full-grammar-specification/index.md).
+
+## Best practices
+
+| Practice | Why |
+|----------|-----|
+| Learn [EBNF](ebnf/index.md) first, then [PEG ordered choice](peg/index.md). | Most rule shape is EBNF-like; `\|` semantics are the main PEG addition. |
+| Check which chapter a rule lives in before interpreting whitespace. | Lexical rules treat whitespace differently from syntactic rules. |
+| Follow links from rule names to their definitions. | Non-terminals expand recursively until you reach tokens or literals. |
+| Use `ast.parse` to test whether source matches the grammar on your version. | The running parser is the practical test of syntax rules. |
+| Prefer canonical grammar anchors over paraphrases when filing bugs. | Wording in this mirror is distilled; docs.python.org is normative. |
+
+```python
+import ast
+
+# The reference grammar is what CPython's PEG parser implements (since 3.9).
+tree = ast.parse("name = letter + '_suffix'")  # illustrative identifier-style assign
+assert isinstance(tree.body[0], ast.Assign)
+```
+
+## Sections in this repo
+
+| Section | Path |
+|---------|------|
+| [EBNF](ebnf/index.md) | `ebnf/index.md` |
+| [PEG](peg/index.md) | `peg/index.md` |
+
+Parent: [Introduction](../index.md)

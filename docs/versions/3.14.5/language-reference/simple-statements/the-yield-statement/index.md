@@ -1,22 +1,25 @@
 # [7.7. The yield statement](https://docs.python.org/3/reference/simple_stmts.html#the-yield-statement)
 
-Scratch notes on **7.7. The yield statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/simple_stmts.html#the-yield-statement)** open.
+Notes on **7.7. The yield statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html). Normative grammar and footnotes live on [docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-yield-statement).
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-yield-statement)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+- `yield_stmt` is semantically the same as a parenthesized yield *expression* statement.
+- Using `yield` (or `yield from`) in a `def` makes that function a generator function.
+- See [Yield expressions](https://docs.python.org/3/reference/expressions.html#yield-expressions) for full semantics.
 
 ```python
-# Statements execute for effect; expressions inside them still follow semantics.
-seen = []
-
-def record():
-    seen.append(True)
-    return "done"
+def countdown(n):
+    while n:
+        yield n
+        n -= 1
 
 
-record()
-assert seen == [True]
+def flatten(nested):
+    for part in nested:
+        yield from part
+
+
+assert list(countdown(3)) == [3, 2, 1]
+assert list(flatten([[1, 2], [3]])) == [1, 2, 3]
 ```
 
 Parent: [7. Simple statements](../index.md)

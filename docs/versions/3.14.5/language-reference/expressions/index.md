@@ -1,227 +1,49 @@
 # [6. Expressions](https://docs.python.org/3/reference/expressions.html)
 
-Local notes for [**6. Expressions**](https://docs.python.org/3/reference/expressions.html) in *[The Python Language Reference](https://docs.python.org/3/reference/index.html)*. This mirror is shorthand; wording and grammar are authoritative only on docs.python.org.
+This chapter defines the **syntax and semantics of Python expressions**: atoms, operators, calls, comprehensions embedded in displays, and the order in which sub-expressions evaluate. Full normative prose and grammar live on [docs.python.org](https://docs.python.org/3/reference/expressions.html); these notes distill each section with runnable examples.
 
-### [6.1. Arithmetic conversions](https://docs.python.org/3/reference/expressions.html#arithmetic-conversions)
+Related chapters: [Data model](../data-model/index.md) (objects and special methods), [Simple statements](../simple-statements/index.md) (expression statements), [Compound statements](../compound-statements/index.md) (`if`, `while`, comprehensions in statement context).
 
-- Canonical: **[6.1. Arithmetic conversions](https://docs.python.org/3/reference/expressions.html#arithmetic-conversions)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
+---
 
-```python
-# Indentation defines blocks; only the reference is normative for edge cases.
-def ok():
-    return True
+## Section overview
 
+| Section | Topic |
+|---------|-------|
+| [6.1. Arithmetic conversions](arithmetic-conversions/index.md) | Common numeric type promotion before binary ops |
+| [6.2. Atoms](atoms/index.md) | Names, literals, parentheses, displays |
+| [6.3. Primaries](primaries/index.md) | Attribute, subscription, call |
+| [6.4. Await expression](await-expression/index.md) | `await` in coroutines |
+| [6.5. The power operator](the-power-operator/index.md) | `**` and right-to-left binding |
+| [6.6. Unary arithmetic and bitwise operations](unary-arithmetic-and-bitwise-operations/index.md) | `-`, `+`, `~` |
+| [6.7. Binary arithmetic operations](binary-arithmetic-operations/index.md) | `+`, `-`, `*`, `/`, `//`, `%`, `@` |
+| [6.8. Shifting operations](shifting-operations/index.md) | `<<`, `>>` |
+| [6.9. Binary bitwise operations](binary-bitwise-operations/index.md) | `&`, `^`, `\|` |
+| [6.10. Comparisons](comparisons/index.md) | Chained comparisons, `in`, `is` |
+| [6.11. Boolean operations](boolean-operations/index.md) | `and`, `or`, `not` short-circuit |
+| [6.12. Assignment expressions](assignment-expressions/index.md) | Walrus `:=` (PEP 572) |
+| [6.13. Conditional expressions](conditional-expressions/index.md) | `x if C else y` |
+| [6.14. Lambdas](lambda/index.md) | Anonymous functions |
+| [6.15. Expression lists](expression-lists/index.md) | Commas, tuples, `*` unpacking |
+| [6.16. Evaluation order](evaluation-order/index.md) | Left-to-right rules |
+| [6.17. Operator precedence](operator-precedence/index.md) | Binding table |
 
-assert ok() is True
-```
+---
 
-### [6.2. Atoms](https://docs.python.org/3/reference/expressions.html#atoms)
+## Cross-cutting ideas
 
-- Canonical: **[6.2. Atoms](https://docs.python.org/3/reference/expressions.html#atoms)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Containers compare element-wise per reference rules once types align.
-assert (1, 2) < (1, 3)
-```
-
-### [6.3. Primaries](https://docs.python.org/3/reference/expressions.html#primaries)
-
-- Canonical: **[6.3. Primaries](https://docs.python.org/3/reference/expressions.html#primaries)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Containers compare element-wise per reference rules once types align.
-assert (1, 2) < (1, 3)
-```
-
-### [6.4. Await expression](https://docs.python.org/3/reference/expressions.html#await-expression)
-
-- Canonical: **[6.4. Await expression](https://docs.python.org/3/reference/expressions.html#await-expression)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
+| Idea | Where it shows up |
+|------|-------------------|
+| Special methods | Most operators call `__add__`, `__getitem__`, etc. — see [Special method names](../data-model/special-method-names/index.md) |
+| Short-circuit | `and`, `or`, chained comparisons, conditional expressions |
+| Side effects vs value | Expression lists and calls may run user code while producing a value |
+| Precedence vs evaluation order | Precedence groups syntax; evaluation order is mostly left-to-right among operands |
 
 ```python
-# Expressions may nest; parentheses override default precedence safely.
-base, exp = 2, 8
-assert (base ** exp) == 256
-```
-
-### [6.5. The power operator](https://docs.python.org/3/reference/expressions.html#the-power-operator)
-
-- Canonical: **[6.5. The power operator](https://docs.python.org/3/reference/expressions.html#the-power-operator)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Containers compare element-wise per reference rules once types align.
-assert (1, 2) < (1, 3)
-```
-
-### [6.6. Unary arithmetic and bitwise operations](https://docs.python.org/3/reference/expressions.html#unary-arithmetic-and-bitwise-operations)
-
-- Canonical: **[6.6. Unary arithmetic and bitwise operations](https://docs.python.org/3/reference/expressions.html#unary-arithmetic-and-bitwise-operations)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Expressions may nest; parentheses override default precedence safely.
-base, exp = 2, 8
-assert (base ** exp) == 256
-```
-
-### [6.7. Binary arithmetic operations](https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations)
-
-- Canonical: **[6.7. Binary arithmetic operations](https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Statements execute for effect; expressions inside them still follow semantics.
-seen = []
-
-def record():
-    seen.append(True)
-    return "done"
-
-
-record()
-assert seen == [True]
-```
-
-### [6.8. Shifting operations](https://docs.python.org/3/reference/expressions.html#shifting-operations)
-
-- Canonical: **[6.8. Shifting operations](https://docs.python.org/3/reference/expressions.html#shifting-operations)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Statements execute for effect; expressions inside them still follow semantics.
-seen = []
-
-def record():
-    seen.append(True)
-    return "done"
-
-
-record()
-assert seen == [True]
-```
-
-### [6.9. Binary bitwise operations](https://docs.python.org/3/reference/expressions.html#binary-bitwise-operations)
-
-- Canonical: **[6.9. Binary bitwise operations](https://docs.python.org/3/reference/expressions.html#binary-bitwise-operations)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Data model: double-underscore methods intercept builtins when defined.
-class C:
-    def __len__(self):
-        return 0
-
-
-assert len(C()) == 0
-```
-
-### [6.10. Comparisons](https://docs.python.org/3/reference/expressions.html#comparisons)
-
-- Canonical: **[6.10. Comparisons](https://docs.python.org/3/reference/expressions.html#comparisons)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Parentheses alter evaluation order versus default precedence.
-assert (1 + 2) * 3 == 9  # grouped addition first
-assert 1 + 2 * 3 == 7  # multiplication binds tighter without parens
-```
-
-### [6.11. Boolean operations](https://docs.python.org/3/reference/expressions.html#boolean-operations)
-
-- Canonical: **[6.11. Boolean operations](https://docs.python.org/3/reference/expressions.html#boolean-operations)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# import forms create module bindings (see import system chapter for loaders).
-import json as j
-assert j.dumps([0]) == "[0]"
-```
-
-### [6.12. Assignment expressions](https://docs.python.org/3/reference/expressions.html#assignment-expressions)
-
-- Canonical: **[6.12. Assignment expressions](https://docs.python.org/3/reference/expressions.html#assignment-expressions)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# import forms create module bindings (see import system chapter for loaders).
-import json as j
-assert j.dumps([0]) == "[0]"
-```
-
-### [6.13. Conditional expressions](https://docs.python.org/3/reference/expressions.html#conditional-expressions)
-
-- Canonical: **[6.13. Conditional expressions](https://docs.python.org/3/reference/expressions.html#conditional-expressions)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Containers compare element-wise per reference rules once types align.
-assert (1, 2) < (1, 3)
-```
-
-### [6.14. Lambdas](https://docs.python.org/3/reference/expressions.html#lambda)
-
-- Canonical: **[6.14. Lambdas](https://docs.python.org/3/reference/expressions.html#lambda)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# import forms create module bindings (see import system chapter for loaders).
-import json as j
-assert j.dumps([0]) == "[0]"
-```
-
-### [6.15. Expression lists](https://docs.python.org/3/reference/expressions.html#expression-lists)
-
-- Canonical: **[6.15. Expression lists](https://docs.python.org/3/reference/expressions.html#expression-lists)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Containers compare element-wise per reference rules once types align.
-assert (1, 2) < (1, 3)
-```
-
-### [6.16. Evaluation order](https://docs.python.org/3/reference/expressions.html#evaluation-order)
-
-- Canonical: **[6.16. Evaluation order](https://docs.python.org/3/reference/expressions.html#evaluation-order)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# import forms create module bindings (see import system chapter for loaders).
-import json as j
-assert j.dumps([0]) == "[0]"
-```
-
-### [6.17. Operator precedence](https://docs.python.org/3/reference/expressions.html#operator-precedence)
-
-- Canonical: **[6.17. Operator precedence](https://docs.python.org/3/reference/expressions.html#operator-precedence)** — definitions, judgments, and edge cases.
-- Other Python implementations may differ unless they claim compliance; settle disputes against CPython docs.
-- Prefer the linked anchors when bisecting language changes across minor versions.
-
-```python
-# Names bind to objects; multiple names may reference the same value (aliases).
-nums = []
-alias = nums
-alias.append(1)
-assert nums == [1]
+# Goal: operator chain — multiplication before addition; comparison chains
+assert 2 + 3 * 4 == 14
+assert 0 < 1 < 2
+assert (lambda x: x * 2)(5) == 10
 ```
 
 ## Sections in this repo

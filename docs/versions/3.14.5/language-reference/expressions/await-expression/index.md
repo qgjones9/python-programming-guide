@@ -1,15 +1,28 @@
 # [6.4. Await expression](https://docs.python.org/3/reference/expressions.html#await-expression)
 
-Scratch notes on **6.4. Await expression** within [*6. Expressions*](https://docs.python.org/3/reference/expressions.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/expressions.html#await-expression)** open.
+An **await expression** suspends a coroutine until an awaitable completes. Syntax:
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/expressions.html#await-expression)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+```ebnf
+await_expr: "await" primary
+```
+
+`await` may appear only inside a **coroutine function** (`async def`). It evaluates the primary (which must be awaitable), schedules it on the event loop, and resumes with the result.
 
 ```python
-# import forms create module bindings (see import system chapter for loaders).
-import json as j
-assert j.dumps([0]) == "[0]"
+import asyncio
+
+
+async def fetch_value():
+    await asyncio.sleep(0)  # yield control; resume immediately
+    return 42
+
+
+async def main():
+    result = await fetch_value()
+    assert result == 42
+
+
+asyncio.run(main())
 ```
 
 Parent: [6. Expressions](../index.md)

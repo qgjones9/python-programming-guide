@@ -1,19 +1,26 @@
 # [6.13. Conditional expressions](https://docs.python.org/3/reference/expressions.html#conditional-expressions)
 
-Scratch notes on **6.13. Conditional expressions** within [*6. Expressions*](https://docs.python.org/3/reference/expressions.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/expressions.html#conditional-expressions)** open.
+Also called the **ternary operator**, `x if C else y` is an expression that picks one of two values (PEP 308). The **condition** `C` is evaluated first; only then is `x` or `y` evaluated.
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/expressions.html#conditional-expressions)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+```ebnf
+conditional_expression: or_test ["if" or_test "else" expression]
+```
+
+Unlike an `if` statement, this form **returns a value** and can nest inside other expressions. The `else` branch binds less tightly than conditional expressions to its left (see [Operator precedence](../operator-precedence/index.md)).
 
 ```python
-# Data model: double-underscore methods intercept builtins when defined.
-class C:
-    def __len__(self):
-        return 0
+def sign(n):
+    return "positive" if n > 0 else "non-positive"
 
 
-assert len(C()) == 0
+assert sign(3) == "positive"
+assert sign(-1) == "non-positive"
+assert sign(0) == "non-positive"
+
+# Condition checked before branches; only one branch runs.
+x = 0
+result = (1 / x) if False else "safe"
+assert result == "safe"
 ```
 
 Parent: [6. Expressions](../index.md)

@@ -1,15 +1,20 @@
 # [7.9. The break statement](https://docs.python.org/3/reference/simple_stmts.html#the-break-statement)
 
-Scratch notes on **7.9. The break statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/simple_stmts.html#the-break-statement)** open.
+Notes on **7.9. The break statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html). Normative grammar and footnotes live on [docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-break-statement).
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-break-statement)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+- `break` exits the nearest enclosing `for` or `while` loop, skipping an optional `else` suite.
+- If the loop target variable was bound by `for`, it keeps its value at the break point.
+- A `finally` clause on an enclosing `try` runs before the loop is actually left.
 
 ```python
-# Expressions may nest; parentheses override default precedence safely.
-base, exp = 2, 8
-assert (base ** exp) == 256
+# break exits early; for-target keeps its last value.
+total = 0
+for n in range(10):
+    if n == 5:
+        last = n
+        break
+    total += n
+assert total == 10 and last == 5
 ```
 
 Parent: [7. Simple statements](../index.md)

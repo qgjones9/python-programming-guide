@@ -1,6 +1,19 @@
 # [The if statement](https://docs.python.org/3/reference/compound_stmts.html#the-if-statement)
 
-The `if` statement allows you to execute code conditionally based on one or more expressions:
+The **`if` statement** selects **exactly one** suite to run: Python evaluates each `if` / `elif` condition in order until one is [true](../expressions/boolean-operations/index.md), executes that suite, and skips the rest. If every condition is false and an `else` clause exists, the `else` suite runs. Full grammar and the “dangling else” rules are on [docs.python.org](https://docs.python.org/3/reference/compound_stmts.html#the-if-statement).
+
+Parent: [Compound statements](../index.md)
+
+---
+
+## Grammar and evaluation
+
+| Piece | Role |
+|-------|------|
+| `if assignment_expression :` | First test; may use walrus `:=` in the condition |
+| `elif assignment_expression :` | Further tests, same rules as `if` |
+| `else :` | Runs only when no earlier condition was true |
+| **Suite** | Block executed for the first true branch only |
 
 ```ebnf
 if_stmt ::= "if" assignment_expression ":" suite
@@ -8,21 +21,52 @@ if_stmt ::= "if" assignment_expression ":" suite
             ["else" ":" suite]
 ```
 
-Here's how it works:
+Conditions use the same truth-value rules as `while` and `and` / `or`: falsy values include `0`, empty containers, `None`, and `False`.
 
-- Each condition (the `if` or any `elif`) is evaluated in order.
-- The first condition that evaluates to true (see [Boolean operations](../../expressions/boolean-operations/index.md)) causes its corresponding suite (block) to be executed.
-- No other part of the if-statement is executed after a true condition.
-- If none of the conditions are true, and there is an `else` clause, the `else` suite is executed.
+---
 
-For example:
+## Best practices
+
+| Practice | Why |
+|----------|-----|
+| Order `elif` from most specific to general | First match wins; broader tests hide later branches |
+| Use `elif` instead of nested `if` when branches are mutually exclusive | Clearer intent and correct `else` binding |
+| Keep conditions simple; assign in the header with `:=` when it helps readability | Walrus is allowed in `assignment_expression` |
+| Prefer early `return`/`continue` in functions over deep nesting | Reduces indentation and dangling-else risk |
+
+---
+
+## Common pitfalls
+
+| Pitfall | What goes wrong | Mitigation |
+|---------|-----------------|------------|
+| One-line `if` with `;` and inner `if` | `else` attaches to the nearest `if` | Indent nested branches |
+| Truthiness surprises (`[]`, `0`, `""`) | Empty data skips the “happy path” | Compare explicitly (`is None`, `len`, `==`) |
+| Side effects in conditions | Runs only until first true branch | Do not rely on every branch being evaluated |
+| Using `if` for value selection | Verbose vs `x if cond else y` | Ternary for expressions; `if` for statements |
 
 ```python
-x = 10
-if x < 0:
-    print("Negative")
-elif x == 0:
-    print("Zero")
+# Goal: first true branch wins; else runs when all tests fail
+def sign_label(n):
+    if n < 0:
+        return "negative"
+    elif n == 0:
+        return "zero"
+    else:
+        return "positive"
+
+
+assert sign_label(-3) == "negative"
+assert sign_label(0) == "zero"
+assert sign_label(7) == "positive"
+```
+
+```python
+# Goal: walrus in if header avoids double lookup
+data = {"items": [1, 2, 3]}
+if (n := len(data.get("items", []))) > 2:
+    result = f"many ({n})"
 else:
-    print("Positive")
+    result = f"few ({n})"
+assert result == "many (3)"
 ```

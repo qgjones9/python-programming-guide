@@ -46,3 +46,35 @@ integer          = "0" | [ "-" ], positive integer ;
 - `[ "-" ]` — the part inside may appear once or be omitted. So `integer` matches `0`, `42`, or `-42`.
 
 For how Python applies grammar notation in the Language Reference, see [Python's grammar notation](../index.md).
+
+## Python's EBNF dialect
+
+Classic EBNF often uses `=` between a rule name and its definition. Python's reference uses a **colon** instead:
+
+| Classic EBNF | Python reference |
+|--------------|------------------|
+| `digit = "0" \| …` | `digit: "0" \| …` |
+| `{ digit }` for repetition | `digit*` or `(digit)*` |
+| `[ "-" ]` for optional | `[ "-"]` or `"-"?` |
+
+Alternatives use `\|` with **PEG ordered-choice** semantics—see [PEG](../peg/index.md)—not the commutative "any disjoint alternative" style of some LL parser generators.
+
+## Best practices
+
+| Practice | Why |
+|----------|-----|
+| Expand non-terminals until you reach quoted terminals or TOKEN names. | That is how you decide if a source fragment matches a rule. |
+| Read commas in classic EBNF examples as **sequence**; in Python rules, whitespace separates sequence items. | Same idea, different punctuation convention. |
+| Do not treat `{ e }` and `e*` as interchangeable when reading Python docs. | Python rules prefer `*`, `+`, and `[ ]` / `?`. |
+| Cross-check surprising syntax against [Lexical analysis](../../../lexical-analysis/index.md). | Token rules use extra notation (ranges, lookaheads). |
+
+```python
+import ast
+
+# EBNF-style rules describe valid source; the parser rejects strings outside the grammar.
+ast.parse("answer = 42")
+tree = ast.parse("items = [1, 2, 3]")
+assert isinstance(tree.body[0], ast.Assign)
+```
+
+Parent: [Notation](../index.md)

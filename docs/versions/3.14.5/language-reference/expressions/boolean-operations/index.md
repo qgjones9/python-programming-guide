@@ -1,34 +1,39 @@
 # [6.11. Boolean operations](https://docs.python.org/3/reference/expressions.html#boolean-operations)
 
-Boolean operations evaluate to either `True` or `False`. They are used to combine conditions in [`if`](../../compound-statements/the-if-statement/index.md) statements and other control flow structures.
+Boolean operators combine comparison expressions. Grammar:
 
 ```ebnf
-boolean_expr ::= comparison_expr
-                | boolean_expr "and" comparison_expr
-                | boolean_expr "or" comparison_expr
-                | "not" boolean_expr
+or_test:  and_test | or_test "or" and_test
+and_test: not_test | and_test "and" not_test
+not_test: comparison | "not" not_test
 ```
 
-Here's how they work:
+### Truth values
+
+In boolean contexts, these are **false**: `False`, `None`, numeric zero, empty strings, and empty containers. Everything else is true unless `__bool__` or `__len__` says otherwise.
+
+### Short-circuit evaluation
+
+| Expression | Behavior |
+|------------|----------|
+| `x and y` | If `x` is false, return `x` without evaluating `y`; else return `y` |
+| `x or y` | If `x` is true, return `x` without evaluating `y`; else return `y` |
+| `not x` | Always returns `True` or `False` |
+
+**Important:** `and` / `or` return the **last evaluated operand**, not necessarily a `bool`. Only `not` always produces a boolean.
 
 ```python
-# Names bind to objects; multiple names may reference the same value (aliases).
-nums = []
-alias = nums
-alias.append(1)
-assert nums == [1]
+assert (0 and 99) == 0
+assert (1 and 99) == 99
+assert (0 or 99) == 99
+assert (1 or 99) == 1
+assert not "" == True
+assert not "hello" == False
+
+# Default-value idiom: empty string is falsy.
+name = ""
+label = name or "anonymous"
+assert label == "anonymous"
 ```
 
-
-**Examples:**
-
-```python
-x = 10
-if x > 0 and x < 10:
-    print("x is between 0 and 10")
-elif x > 10 and x < 20:
-    print("x is between 10 and 20")
-else:
-    print("x is not between 0 and 20")
-```
-
+Parent: [6. Expressions](../index.md)

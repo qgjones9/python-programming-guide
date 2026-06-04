@@ -1,20 +1,43 @@
 # [The Python Language Reference](https://docs.python.org/3/reference/index.html#reference-index)
 
-- Informal onboarding: *[The Tutorial](https://docs.python.org/3/tutorial/index.html)*.
-- Built-ins and modules: *[The Python Standard Library](https://docs.python.org/3/library/index.html)*.
-- C embedding: *[Python/C API](https://docs.python.org/3/c-api/index.html)* and *[Extending and Embedding](https://docs.python.org/3/extending/index.html)*.
+The [language reference](https://docs.python.org/3/reference/index.html) is the **normative, terse** description of Python syntax and core semantics. It is meant to be exact and complete for language lawyers and implementers; it is not a tutorial. Builtin types, functions, and standard modules are specified in [The Python Standard Library](../standard-library/index.md). For a guided introduction, use [The Tutorial](../tutorial/index.md). C/C++ extension authors should also read [Python/C API](../python-c-api-reference-manual/index.md) and [Extending and Embedding](../extending-and-embedding-python-interpreter/index.md).
 
-### Table of Contents
+This repo mirrors the official outline under `docs/versions/3.14.5/language-reference/`. Each chapter `index.md` links to the canonical `reference/*.html` page; teaching bullets and small `exec`-validated examples live here—full prose and the complete grammar remain on docs.python.org.
 
-| Section | Description |
-|---------|-------------|
-| [Introduction](introduction/index.md) | High-level overview of Python’s language structure and features. |
-| [Lexical analysis](lexical-analysis/index.md) | Describes Python’s lexical structure: tokens, encoding, source code, indentation, and more. |
-| [Data model](data-model/index.md) | Details Python’s object model: types, special methods, and core language data structures. |
-| [Execution model](execution-model/index.md) | Explains how Python executes code, including namespaces, scope, and execution frames. |
-| [The import system](the-import-system/index.md) | Outlines how Python locates and loads modules and packages. |
-| [Expressions](expressions/index.md) | Describes the syntax and semantics of Python’s expression forms and operators. |
-| [Simple statements](simple-statements/index.md) | Documents single-line statements like `print`, `return`, `import`, and others. |
-| [Compound statements](compound-statements/index.md) | Covers multi-line statements and code blocks such as `if`, `for`, `while`, `try`, and function/class defs. |
-| [Top-level components](top-level-components/index.md) | Explains modules, packages, and the top-level organization of Python programs. |
-| [Full Grammar specification](full-grammar-specification/index.md) | Complete formal grammar definition for Python source code, including all syntax rules. |
+---
+
+## Choosing the right manual
+
+| You need… | Start here |
+|-----------|------------|
+| “How do I write Python?” step by step | [The Tutorial](../tutorial/index.md) |
+| “What does this statement/expression *mean*?” | Language reference (this tree) |
+| “What does `json.loads` / `pathlib` do?” | [Standard Library](../standard-library/index.md) |
+| Embedding, `PyObject*`, GIL | [C API](../python-c-api-reference-manual/index.md) + [Extending](../extending-and-embedding-python-interpreter/index.md) |
+| Full EBNF grammar rules | [Full Grammar specification](full-grammar-specification/index.md) |
+
+| Reading order (first pass) | Why |
+|----------------------------|-----|
+| [Introduction](introduction/index.md) → [Lexical analysis](lexical-analysis/index.md) | Tokens, indentation, literals before syntax |
+| [Data model](data-model/index.md) → [Execution model](execution-model/index.md) | Objects, binding, exceptions, frames |
+| [The import system](the-import-system/index.md) | How modules load before you rely on `import` |
+| [Expressions](expressions/index.md) → [Simple](simple-statements/index.md) / [Compound](compound-statements/index.md) statements | Syntax and semantics of code you write daily |
+| [Top-level components](top-level-components/index.md) | How scripts, modules, `exec`, and `eval` are parsed |
+| [Full Grammar specification](full-grammar-specification/index.md) | When you need the formal production rules |
+
+---
+
+## Sections in this repo
+
+| Chapter | Summary |
+|---------|---------|
+| [1. Introduction](introduction/index.md) | Scope of the reference, alternate implementations, and BNF notation used in later chapters. |
+| [2. Lexical analysis](lexical-analysis/index.md) | Source structure: lines, indentation, identifiers, literals, operators, and encoding. |
+| [3. Data model](data-model/index.md) | Objects, values, types, the standard hierarchy, special methods, and coroutines. |
+| [4. Execution model](execution-model/index.md) | Program structure, namespaces, binding rules, exceptions, and runtime components. |
+| [5. The import system](the-import-system/index.md) | `importlib`, packages, finders, loaders, and customizing import. |
+| [6. Expressions](expressions/index.md) | Atoms, operators, comprehensions, lambdas, and expression grammar. |
+| [7. Simple statements](simple-statements/index.md) | Assignment, `assert`, `return`, `import`, `raise`, and other one-line statements. |
+| [8. Compound statements](compound-statements/index.md) | `if`, loops, `try`, `with`, functions, classes, and pattern matching. |
+| [9. Top-level components](top-level-components/index.md) | Complete programs, file/module/`exec` input, REPL input, and `eval` input. |
+| [10. Full Grammar specification](full-grammar-specification/index.md) | Entire Python grammar in one formal specification. |

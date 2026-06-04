@@ -1,14 +1,31 @@
 # [7.2. Assignment statements](https://docs.python.org/3/reference/simple_stmts.html#assignment-statements)
 
-Scratch notes on **7.2. Assignment statements** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/simple_stmts.html#assignment-statements)** open.
+Notes on **7.2. Assignment statements** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html). Normative grammar and footnotes live on [docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#assignment-statements).
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#assignment-statements)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+- `(target_list "=")+ expression` binds names or mutates attributes, subscriptions, and slices.
+- Sequence unpacking requires matching arity; `*target` collects surplus items (PEP 3132).
+- Overlapping targets in one statement are applied **left to right** — e.g. `i, x[i] = 1, 2` can surprise readers.
+- See also [7.2.1 Augmented assignment](https://docs.python.org/3/reference/simple_stmts.html#augmented-assignment-statements) and [7.2.2 Annotated assignment](https://docs.python.org/3/reference/simple_stmts.html#annotated-assignment-statements) on the same page.
 
 ```python
-# Containers compare element-wise per reference rules once types align.
-assert (1, 2) < (1, 3)
+# Basic binding and tuple unpacking.
+a, b = 1, 2
+assert (a, b) == (1, 2)
+
+first, *middle, last = range(5)
+assert first == 0 and middle == [1, 2, 3] and last == 4
+
+# Left-to-right overlap within one target list (reference example).
+x = [0, 1]
+i = 0
+i, x[i] = 1, 2
+assert i == 1 and x == [0, 2]
+
+# Augmented assignment evaluates the target once before the RHS.
+nums = [1, 2, 3]
+idx = 1
+nums[idx] += 10
+assert nums == [1, 12, 3]
 ```
 
 Parent: [7. Simple statements](../index.md)

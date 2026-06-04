@@ -1,18 +1,23 @@
 # [7.3. The assert statement](https://docs.python.org/3/reference/simple_stmts.html#the-assert-statement)
 
-Scratch notes on **7.3. The assert statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/simple_stmts.html#the-assert-statement)** open.
+Notes on **7.3. The assert statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html). Normative grammar and footnotes live on [docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-assert-statement).
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-assert-statement)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+- `assert expr` is equivalent to `if __debug__: if not expr: raise AssertionError`.
+- The two-expression form `assert expr1, expr2` supplies `AssertionError(expr2)` when the check fails.
+- With `python -O`, assert statements are not emitted — do not rely on them for production invariants.
 
 ```python
-# Indentation defines blocks; only the reference is normative for edge cases.
-def ok():
-    return True
+# Passing checks do nothing; failures raise AssertionError (when __debug__ is True).
+flag = True
+assert flag
+assert 1 + 1 == 2, "expected two"
 
-
-assert ok() is True
+errors = []
+try:
+    assert False, "boom"
+except AssertionError as exc:
+    errors.append(str(exc))
+assert errors == ["boom"]
 ```
 
 Parent: [7. Simple statements](../index.md)

@@ -1,19 +1,33 @@
 # [6.15. Expression lists](https://docs.python.org/3/reference/expressions.html#expression-lists)
 
-Scratch notes on **6.15. Expression lists** within [*6. Expressions*](https://docs.python.org/3/reference/expressions.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/expressions.html#expression-lists)** open.
+Comma-separated expressions form **expression lists**. Outside list/set displays, **two or more** items (or a trailing comma after one item) produce a **tuple**.
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/expressions.html#expression-lists)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+```ebnf
+expression_list: expression ("," expression)* [","]
+starred_expression: "*" or_expr | expression
+```
+
+| Form | Yields |
+|------|--------|
+| `1, 2, 3` | Tuple `(1, 2, 3)` |
+| `1,` | One-item tuple `(1,)` |
+| `1` (no comma) | The integer `1`, not a tuple |
+| `()` | Empty tuple |
+
+`*iterable` **unpacks** into the surrounding list, tuple, set, or call (PEP 448).
 
 ```python
-# Data model: double-underscore methods intercept builtins when defined.
-class C:
-    def __len__(self):
-        return 0
+assert (1, 2, 3) == (1, 2, 3)
+assert (1,) == (1,)
+assert 1 == 1
+assert () == tuple()
 
+first, *rest = [1, 2, 3, 4]
+assert first == 1
+assert rest == [2, 3, 4]
 
-assert len(C()) == 0
+merged = (0, *[1, 2], 3)
+assert merged == (0, 1, 2, 3)
 ```
 
 Parent: [6. Expressions](../index.md)

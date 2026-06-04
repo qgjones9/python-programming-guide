@@ -1,17 +1,36 @@
 # [6.16. Evaluation order](https://docs.python.org/3/reference/expressions.html#evaluation-order)
 
-Scratch notes on **6.16. Evaluation order** within [*6. Expressions*](https://docs.python.org/3/reference/expressions.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/expressions.html#evaluation-order)** open.
+Python evaluates expressions **from left to right**. For assignment, the **right-hand side** is evaluated before the left-hand side binds names.
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/expressions.html#evaluation-order)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+The reference lists these patterns (suffixes show evaluation order relative to operators, not numeric values):
+
+| Pattern | Order note |
+|---------|------------|
+| `expr1, expr2, expr3, expr4` | Left to right |
+| `(expr1, expr2, expr3, expr4)` | Left to right inside |
+| `{expr1: expr2, expr3: expr4}` | Keys and values left to right |
+| `expr1 + expr2 * (expr3 - expr4)` | Operands before operators bind |
+| `expr1(expr2, expr3, *expr4, **expr5)` | Callable, then arguments left to right |
+| `expr3, expr4 = expr1, expr2` | RHS tuple first, then unpack to LHS |
 
 ```python
-# Names bind to objects; multiple names may reference the same value (aliases).
-nums = []
-alias = nums
-alias.append(1)
-assert nums == [1]
+order = []
+
+
+def mark(label):
+    order.append(label)
+    return label
+
+
+# Comma-separated: left to right.
+mark("a"), mark("b"), mark("c")
+assert order == ["a", "b", "c"]
+
+order.clear()
+# Assignment: RHS fully evaluated before LHS names bind.
+lhs_a, lhs_b = mark("rhs1"), mark("rhs2")
+assert order == ["rhs1", "rhs2"]
+assert lhs_a == "rhs1" and lhs_b == "rhs2"
 ```
 
 Parent: [6. Expressions](../index.md)

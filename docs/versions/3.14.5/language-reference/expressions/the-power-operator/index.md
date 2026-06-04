@@ -1,19 +1,27 @@
 # [6.5. The power operator](https://docs.python.org/3/reference/expressions.html#the-power-operator)
 
-Scratch notes on **6.5. The power operator** within [*6. Expressions*](https://docs.python.org/3/reference/expressions.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/expressions.html#the-power-operator)** open.
+The `**` operator raises its left operand to the power of its right operand. Grammar:
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/expressions.html#the-power-operator)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+```ebnf
+power: (await_expr | primary) ["**" u_expr]
+```
+
+**Binding:** `**` binds tighter than unary operators on its **left**, but looser than unary operators on its **right**. In a chain, evaluation proceeds **right to left** for `**` and unary `-`:
+
+| Expression | Result | Why |
+|------------|--------|-----|
+| `2 ** 3 ** 2` | `512` | `3**2` first → `2**9` |
+| `-1 ** 2` | `-1` | parsed as `-(1**2)` |
+| `10 ** -2` | `0.01` | negative exponent → `float` |
 
 ```python
-# Data model: double-underscore methods intercept builtins when defined.
-class C:
-    def __len__(self):
-        return 0
-
-
-assert len(C()) == 0
+assert 2 ** 3 ** 2 == 512
+assert -1 ** 2 == -1
+assert (-1) ** 2 == 1
+assert 10 ** 2 == 100
+assert 10 ** -2 == 0.01
 ```
+
+For `int` operands the result is usually `int`, except when the exponent is negative (then operands convert to `float`). `0.0 ** negative` raises `ZeroDivisionError`. Negative base to a fractional exponent yields `complex`.
 
 Parent: [6. Expressions](../index.md)

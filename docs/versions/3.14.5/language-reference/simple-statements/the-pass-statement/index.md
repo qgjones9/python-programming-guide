@@ -1,22 +1,22 @@
 # [7.4. The pass statement](https://docs.python.org/3/reference/simple_stmts.html#the-pass-statement)
 
-Scratch notes on **7.4. The pass statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/simple_stmts.html#the-pass-statement)** open.
+Notes on **7.4. The pass statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html). Normative grammar and footnotes live on [docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-pass-statement).
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-pass-statement)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+- `pass` is a null operation — syntactic filler where a statement is required.
+- Common in empty function or class bodies until implementation arrives.
 
 ```python
-# Statements execute for effect; expressions inside them still follow semantics.
-seen = []
-
-def record():
-    seen.append(True)
-    return "done"
+# pass satisfies syntax without executing meaningful work.
+def stub():
+    pass
 
 
-record()
-assert seen == [True]
+class Placeholder:
+    pass
+
+
+assert stub() is None
+assert Placeholder.__name__ == "Placeholder"
 ```
 
 Parent: [7. Simple statements](../index.md)

@@ -1,15 +1,19 @@
 # [7.10. The continue statement](https://docs.python.org/3/reference/simple_stmts.html#the-continue-statement)
 
-Scratch notes on **7.10. The continue statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/simple_stmts.html#the-continue-statement)** open.
+Notes on **7.10. The continue statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html). Normative grammar and footnotes live on [docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-continue-statement).
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-continue-statement)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+- `continue` skips the rest of the current loop body and starts the next iteration.
+- Like `break`, it may appear only directly inside `for`/`while` (not inside nested defs in the loop).
+- Enclosing `try`/`finally` still runs the `finally` suite before the next cycle begins.
 
 ```python
-# Expressions may nest; parentheses override default precedence safely.
-base, exp = 2, 8
-assert (base ** exp) == 256
+# continue skips to the next iteration without finishing the body.
+evens = []
+for n in range(6):
+    if n % 2:
+        continue
+    evens.append(n)
+assert evens == [0, 2, 4]
 ```
 
 Parent: [7. Simple statements](../index.md)

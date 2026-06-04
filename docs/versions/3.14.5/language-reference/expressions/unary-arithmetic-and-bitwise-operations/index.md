@@ -1,15 +1,28 @@
 # [6.6. Unary arithmetic and bitwise operations](https://docs.python.org/3/reference/expressions.html#unary-arithmetic-and-bitwise-operations)
 
-Scratch notes on **6.6. Unary arithmetic and bitwise operations** within [*6. Expressions*](https://docs.python.org/3/reference/expressions.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/expressions.html#unary-arithmetic-and-bitwise-operations)** open.
+Unary `-`, `+`, and `~` share the same precedence level:
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/expressions.html#unary-arithmetic-and-bitwise-operations)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+```ebnf
+u_expr: power | "-" u_expr | "+" u_expr | "~" u_expr
+```
+
+| Operator | Effect | Special method |
+|----------|--------|----------------|
+| `-x` | Numeric negation | `__neg__` |
+| `+x` | Numeric identity (unchanged) | `__pos__` |
+| `~x` | Bitwise inversion: `-(x + 1)` for integers | `__invert__` |
 
 ```python
-# import forms create module bindings (see import system chapter for loaders).
-import json as j
-assert j.dumps([0]) == "[0]"
+assert -5 == 0 - 5
+assert +5 == 5
+assert ~0 == -1
+assert ~1 == -2
+
+# ~n is equivalent to -(n + 1) for integers.
+n = 7
+assert ~n == -(n + 1)
 ```
+
+Wrong operand types raise `TypeError`. Custom classes can override the special methods above.
 
 Parent: [6. Expressions](../index.md)

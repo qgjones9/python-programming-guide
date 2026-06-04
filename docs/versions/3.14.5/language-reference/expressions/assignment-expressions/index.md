@@ -1,17 +1,29 @@
 # [6.12. Assignment expressions](https://docs.python.org/3/reference/expressions.html#assignment-expressions)
 
-Scratch notes on **6.12. Assignment expressions** within [*6. Expressions*](https://docs.python.org/3/reference/expressions.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/expressions.html#assignment-expressions)** open.
+The **walrus operator** `:=` binds a name and **returns** the expression value in one step (PEP 572, Python 3.8+):
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/expressions.html#assignment-expressions)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+```ebnf
+assignment_expression: [identifier ":="] expression
+```
+
+Common patterns: capture a regex match or read chunks in a loop without a separate assignment statement.
 
 ```python
-# Names bind to objects; multiple names may reference the same value (aliases).
-nums = []
-alias = nums
-alias.append(1)
-assert nums == [1]
+import re
+
+data = "user: ada"
+pattern = re.compile(r"user: (\w+)")
+if match := pattern.search(data):
+    assert match.group(1) == "ada"
+
+# Simulate chunked reads without a real file.
+chunks = ["abc", "def", ""]
+collected = []
+while chunk := (chunks.pop(0) if chunks else ""):
+    collected.append(chunk)
+assert collected == ["abc", "def"]
 ```
+
+Parentheses are **required** when `:=` appears as a statement, in slices, lambdas, comprehensions, `assert`, `with`, and plain assignments. In `if` / `while` headers they are optional.
 
 Parent: [6. Expressions](../index.md)

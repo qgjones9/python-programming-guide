@@ -1,22 +1,108 @@
-# [8.8. Class definitions](https://docs.python.org/3/reference/compound_stmts.html#class-definitions)
+# [Class definitions](https://docs.python.org/3/reference/compound_stmts.html#class-definitions)
 
-Scratch notes on **8.8. Class definitions** within [*8. Compound statements*](https://docs.python.org/3/reference/compound_stmts.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/compound_stmts.html#class-definitions)** open.
+A **`class` statement** executes its suite in a new local namespace, then creates a **class object** from the inheritance list and that namespace, binding the class name in the surrounding scope. Class attributes are defined in the body; instance attributes are typically set on `self` in methods. Metaclasses and [type parameter lists](type-parameter-lists/index.md) customize creation. Reference: [docs.python.org](https://docs.python.org/3/reference/compound_stmts.html#class-definitions).
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/compound_stmts.html#class-definitions)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+Parent: [Compound statements](../index.md)
+
+---
+
+## Execution model
+
+| Step | Effect |
+|------|--------|
+| Evaluate decorators | Outermost first; must return callable applied to class |
+| Build inheritance list | Each base must allow subclassing |
+| Run suite in new frame | Names become class attributes (order preserved in `__dict__`) |
+| Create class object | Bases + namespace; name bound in outer scope |
+| `class Foo:` with no bases | Equivalent to `class Foo(object):` |
+
+---
+
+## Class vs instance attributes
+
+| Kind | Defined | Access |
+|------|---------|--------|
+| Class attribute | In class body (`x = 1`) | Shared by instances unless shadowed |
+| Instance attribute | `self.name =` in methods | Per instance |
+| Descriptor | `__get__` on class attribute | Controls attribute access |
+
+Using **mutable class attributes** as per-instance defaults causes shared state across instances.
+
+---
+
+## Best practices
+
+| Practice | Why |
+|----------|-----|
+| Put immutable defaults on the class; mutable per instance in `__init__` | Avoid shared list/dict on the class |
+| Use `__slots__` only when memory/layout warrants it | Restricts dynamic attributes |
+| Decorate classes like functions (PEP 3129) | Registration, ABC enforcement, dataclass transforms |
+| Read `__match_args__` when supporting `match` on your type | Enables positional class patterns |
+
+---
+
+## Common pitfalls
+
+| Pitfall | What goes wrong | Mitigation |
+|---------|-----------------|------------|
+| `class C: items = []` then `self.items.append` | All instances share list | Set `self.items = []` in `__init__` |
+| Assuming method dict order before 3.7 | Insertion order now guaranteed for class body | Still do not rely on reordering at runtime |
+| Decorator expects instance methods on class | Class not fully built yet | Use metaclass or `__init_subclass__` |
+| Multiple inheritance MRO surprises | Method resolution order | Understand C3 linearization ([data model](../../data-model/index.md)) |
 
 ```python
-# Statements execute for effect; expressions inside them still follow semantics.
-seen = []
+# Goal: class attribute vs instance shadowing
+class Counter:
+    total = 0
 
-def record():
-    seen.append(True)
-    return "done"
+    def __init__(self):
+        self.total = 1
 
 
-record()
-assert seen == [True]
+a, b = Counter(), Counter()
+assert Counter.total == 0
+assert a.total == 1 and b.total == 1
 ```
 
-Parent: [8. Compound statements](../index.md)
+```python
+# Goal: class decorator registers subclasses
+registry = []
+
+def register(cls):
+    registry.append(cls.__name__)
+    return cls
+
+
+@register
+class Alpha:
+    pass
+
+
+@register
+class Beta:
+    pass
+
+
+assert registry == ["Alpha", "Beta"]
+```
+
+```python
+# Goal: __match_args__ enables positional class patterns (3.10+)
+class Point:
+    __match_args__ = ("x", "y")
+
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+
+
+def origin_if_zero(p):
+    match p:
+        case Point(0, 0):
+            return True
+        case Point(x, y):
+            return False
+
+
+assert origin_if_zero(Point(0, 0)) is True
+assert origin_if_zero(Point(1, 0)) is False
+```

@@ -1,14 +1,25 @@
 # [7.13. The nonlocal statement](https://docs.python.org/3/reference/simple_stmts.html#the-nonlocal-statement)
 
-Scratch notes on **7.13. The nonlocal statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/simple_stmts.html#the-nonlocal-statement)** open.
+Notes on **7.13. The nonlocal statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html). Normative grammar and footnotes live on [docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-nonlocal-statement).
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-nonlocal-statement)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+- `nonlocal name` binds assignments to the nearest enclosing function scope (not globals).
+- If no enclosing binding exists, `SyntaxError` is raised at compile time.
+- Like `global`, it applies to the entire function body and is a parser directive.
 
 ```python
-# Containers compare element-wise per reference rules once types align.
-assert (1, 2) < (1, 3)
+def make_counter(start=0):
+    count = start
+
+    def inc():
+        nonlocal count
+        count += 1
+        return count
+
+    return inc
+
+
+step = make_counter(10)
+assert step() == 11 and step() == 12
 ```
 
 Parent: [7. Simple statements](../index.md)

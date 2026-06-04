@@ -1,18 +1,20 @@
 # [7.14. The type statement](https://docs.python.org/3/reference/simple_stmts.html#the-type-statement)
 
-Scratch notes on **7.14. The type statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/simple_stmts.html#the-type-statement)** open.
+Notes on **7.14. The type statement** within [*7. Simple statements*](https://docs.python.org/3/reference/simple_stmts.html). Normative grammar and footnotes live on [docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-type-statement).
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/simple_stmts.html#the-type-statement)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+- `type Name = expression` declares a type alias (`typing.TypeAliasType`), added in Python 3.12 (PEP 695).
+- The RHS is evaluated lazily when `Name.__value__` is accessed (annotation scope).
+- `type` is a soft keyword; generic aliases add a type parameter list after the name.
 
 ```python
-# Indentation defines blocks; only the reference is normative for edge cases.
-def ok():
-    return True
+# type aliases are TypeAliasType instances with lazy __value__.
+type Point = tuple[float, float]
 
+assert Point.__name__ == "Point"
+assert Point.__value__ == tuple[float, float]
 
-assert ok() is True
+type IntMap = dict[str, int]
+assert IntMap.__value__ == dict[str, int]
 ```
 
 Parent: [7. Simple statements](../index.md)

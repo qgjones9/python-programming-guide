@@ -1,15 +1,35 @@
 # [6.7. Binary arithmetic operations](https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations)
 
-Scratch notes on **6.7. Binary arithmetic operations** within [*6. Expressions*](https://docs.python.org/3/reference/expressions.html); language lawyers should keep the **[official §](https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations)** open.
+Binary arithmetic splits into **multiplicative** (`m_expr`) and **additive** (`a_expr`) levels. Multiplication binds tighter than addition.
 
-- Normative wording lives at **[docs.python.org](https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations)** — especially footnotes about implementation.
-- The reference is terse; *[The Tutorial](https://docs.python.org/3/tutorial/index.html)* motivates many of the same constructs.
-- When behavior touches imports, loaders, or `__main__`, also skim *The import system* chapter as needed.
+```ebnf
+m_expr: u_expr | m_expr "*" u_expr | m_expr "@" u_expr |
+        m_expr "//" u_expr | m_expr "/" u_expr | m_expr "%" u_expr
+a_expr: m_expr | a_expr "+" m_expr | a_expr "-" m_expr
+```
+
+| Operator | Meaning | Notes |
+|----------|---------|-------|
+| `*` | Multiplication or sequence repetition | `3 * "ab"` → `"ababab"` |
+| `@` | Matrix multiplication | No built-in types implement it |
+| `/` | True division | `int / int` → `float` |
+| `//` | Floor division | `int // int` → `int` |
+| `%` | Remainder or string formatting | Sign matches divisor |
+| `+` | Addition or sequence concatenation | |
+| `-` | Subtraction | |
 
 ```python
-# Expressions may nest; parentheses override default precedence safely.
-base, exp = 2, 8
-assert (base ** exp) == 256
+assert 10 / 4 == 2.5
+assert 10 // 4 == 2
+assert 10 % 3 == 1
+assert 3 * "xy" == "xyxyxy"
+assert [1, 2] + [3] == [1, 2, 3]
+
+# Floor division and modulo satisfy: x == (x//y)*y + (x%y)
+x, y = 10, 3
+assert x == (x // y) * y + (x % y)
 ```
+
+Identity: `divmod(x, y) == (x // y, x % y)` for numeric types that support both. Floor division, modulo, and `divmod` are undefined for `complex`.
 
 Parent: [6. Expressions](../index.md)
