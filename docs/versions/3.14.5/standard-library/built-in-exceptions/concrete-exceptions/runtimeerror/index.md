@@ -35,17 +35,17 @@ assert issubclass(RuntimeError, Exception)
 
 | Type | Purpose |
 |------|---------|
-| [`NotImplementedError`](notimplementederror/index.md) | Abstract / stub methods |
-| [`RecursionError`](recursionerror/index.md) | Exceeded recursion limit |
-| [`PythonFinalizationError`](pythonfinalizationerror/index.md) | Blocked during shutdown |
+| [`NotImplementedError`](../notimplementederror/index.md) | Abstract / stub methods |
+| [`RecursionError`](../recursionerror/index.md) | Exceeded recursion limit |
+| [`PythonFinalizationError`](../pythonfinalizationerror/index.md) | Blocked during shutdown |
 
 ---
 
 ## Sections in this repo
 
-- [NotImplementedError](notimplementederror/index.md)
-- [RecursionError](recursionerror/index.md)
-- [PythonFinalizationError](pythonfinalizationerror/index.md)
+- [NotImplementedError](../notimplementederror/index.md)
+- [RecursionError](../recursionerror/index.md)
+- [PythonFinalizationError](../pythonfinalizationerror/index.md)
 
 ---
 

@@ -2,7 +2,7 @@
 
 The [`ast`](https://docs.python.org/3/library/ast.html) module defines the node types Python's parser builds from source and provides utilities to **parse**, **walk**, **transform**, and **unparse** those trees. It is the foundation for linters, formatters, macro systems, and static analysis. Full node reference and edge cases remain on [docs.python.org](https://docs.python.org/3/library/ast.html).
 
-Related: [`tokenize`](../tokenize-tokenizer-for-python-source/index.md) for lexical tokens, [`symtable`](../symtable-access-to-the-compilers-symbol-tables/index.md) for scope tables, and [`compile`](../../built-in-functions-and-types/compile/index.md) to turn an AST back into executable code.
+Related: [`tokenize`](../tokenize-tokenizer-for-python-source/index.md) for lexical tokens, [`symtable`](../symtable-access-to-the-compilers-symbol-tables/index.md) for scope tables, and [`compile`](../../built-in-functions/compile/index.md) to turn an AST back into executable code.
 
 ---
 

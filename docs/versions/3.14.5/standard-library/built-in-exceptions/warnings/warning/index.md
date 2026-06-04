@@ -1,6 +1,6 @@
 # [Warning](https://docs.python.org/3/library/exceptions.html#Warning)
 
-`Warning` is the root of all built-in warning categories and the required base for user-defined warning classes. It inherits from [`Exception`](../base-classes/exception/index.md), so warnings can be turned into errors by the filter. Canonical prose is on [docs.python.org](https://docs.python.org/3/library/exceptions.html#Warning); this page covers hierarchy, defaults, and custom categories.
+`Warning` is the root of all built-in warning categories and the required base for user-defined warning classes. It inherits from [`Exception`](../../base-classes/exception/index.md), so warnings can be turned into errors by the filter. Canonical prose is on [docs.python.org](https://docs.python.org/3/library/exceptions.html#Warning); this page covers hierarchy, defaults, and custom categories.
 
 ---
 
@@ -14,7 +14,7 @@ Warning categories are labels for the [`warnings`](https://docs.python.org/3/lib
 
 | Aspect | Behavior |
 |--------|----------|
-| `warnings.warn()` default | Uses [`UserWarning`](userwarning/index.md), not bare `Warning` |
+| `warnings.warn()` default | Uses [`UserWarning`](../userwarning/index.md), not bare `Warning` |
 | Matching filters | Specs use `category=Warning` to match **any** warning subclass |
 | `"error"` action | Raises `category(message)` because `Warning` is an `Exception` subclass |
 
@@ -31,7 +31,7 @@ Subclass `Warning` (almost always via `UserWarning` or a specific built-in) when
 - Subclass `Warning` (or `UserWarning`) for custom categories; never use a bare `Exception` as a warning category.
 - Pass an explicit `category=` to `warnings.warn()`; relying on the `UserWarning` default is fine for ad hoc messages.
 - Use `stacklevel=2+` in helper functions so the reported line is the caller’s code (see [`warnings.warn` docs](https://docs.python.org/3/library/warnings.html#warnings.warn)).
-- Prefer a specific built-in category ([`DeprecationWarning`](deprecationwarning/index.md), [`FutureWarning`](futurewarning/index.md), etc.) when one fits; reserve custom subclasses for repeated, filterable families of messages.
+- Prefer a specific built-in category ([`DeprecationWarning`](../deprecationwarning/index.md), [`FutureWarning`](../futurewarning/index.md), etc.) when one fits; reserve custom subclasses for repeated, filterable families of messages.
 
 ---
 

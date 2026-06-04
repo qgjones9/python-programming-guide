@@ -70,4 +70,4 @@ with tempfile.TemporaryDirectory() as tmp:
 ## See also
 
 - [`importlib`](https://docs.python.org/3/library/importlib.html)
-- [`test.support`](testsupport-utilities-for-the-python-test-suite/index.md)
+- [`test.support`](../testsupport-utilities-for-the-python-test-suite/index.md)

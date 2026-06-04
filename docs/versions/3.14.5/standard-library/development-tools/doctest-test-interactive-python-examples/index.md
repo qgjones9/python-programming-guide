@@ -6,7 +6,7 @@
 
 ## Purpose
 
-Use `doctest` to keep **examples honest**: regression-test pure functions, demonstrate APIs in docstrings, and validate tutorial snippets. For larger suites prefer [`unittest`](unittest-unit-testing-framework/index.md); doctest excels at literate, copy-paste-friendly examples.
+Use `doctest` to keep **examples honest**: regression-test pure functions, demonstrate APIs in docstrings, and validate tutorial snippets. For larger suites prefer [`unittest`](../unittest-unit-testing-framework/index.md); doctest excels at literate, copy-paste-friendly examples.
 
 ---
 
@@ -81,5 +81,5 @@ assert "a" in show_dict()
 
 ## See also
 
-- [`unittest`](unittest-unit-testing-framework/index.md) — full test framework
+- [`unittest`](../unittest-unit-testing-framework/index.md) — full test framework
 - [How to write docstrings](https://docs.python.org/3/tutorial/documentation.html)

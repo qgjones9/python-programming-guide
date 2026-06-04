@@ -103,5 +103,5 @@ assert "RESUME" in text or "RETURN" in text
 
 ## See also
 
-- [`compile`](../../built-in-functions-and-types/compile/index.md) — build code objects from source/AST
+- [`compile`](../../built-in-functions/compile/index.md) — build code objects from source/AST
 - [`pickletools`](../pickletools-tools-for-pickle-developers/index.md) — pickle format disassembly

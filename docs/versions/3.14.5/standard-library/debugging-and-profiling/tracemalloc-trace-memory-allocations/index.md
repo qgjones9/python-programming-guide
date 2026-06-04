@@ -82,5 +82,5 @@ tracemalloc.stop()
 
 ## See also
 
-- [`faulthandler`](faulthandler-dump-the-python-traceback/index.md)
+- [`faulthandler`](../faulthandler-dump-the-python-traceback/index.md)
 - [`resource`](https://docs.python.org/3/library/resource.html) — OS-level usage (Unix)

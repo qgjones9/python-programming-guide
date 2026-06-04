@@ -2,7 +2,7 @@
 
 The [`syslog`](https://docs.python.org/3/library/syslog.html) module sends messages to the **Unix syslog** facility (`syslogd`, `journald` on Linux). It wraps `openlog`, `syslog`, and `closelog` with Pythonic helpers and priority constants. Unix-only. Full option flags remain on [docs.python.org](https://docs.python.org/3/library/syslog.html).
 
-Related: [`logging`](../../development-tools/logging-logging-facility-for-python/index.md) with `SysLogHandler`; [`os`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md).
+Related: [`logging`](../../generic-operating-system-services/logging-logging-facility-for-python/index.md) with `SysLogHandler`; [`os`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md).
 
 ---
 
@@ -82,5 +82,5 @@ For applications, prefer **`logging.handlers.SysLogHandler`**—it formats recor
 
 ## See also
 
-- [`logging.handlers.SysLogHandler`](../../development-tools/logging-logging-facility-for-python/index.md) — stdlib logging bridge
-- [`resource`](resource-resource-usage-information/index.md) — process metrics
+- [`logging.handlers.SysLogHandler`](../../generic-operating-system-services/logging-logging-facility-for-python/index.md) — stdlib logging bridge
+- [`resource`](../resource-resource-usage-information/index.md) — process metrics

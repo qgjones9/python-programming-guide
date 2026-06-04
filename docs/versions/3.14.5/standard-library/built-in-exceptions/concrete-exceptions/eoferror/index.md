@@ -39,7 +39,7 @@ assert io.StringIO('').read() == ''
 | Iterate file lines | Prefer `for line in f` over repeated `input()` |
 | Check empty read | `read()` returning `''` is normal EOF for files |
 
-Related: [`OSError`](oserror/index.md) (broken pipes), [`KeyboardInterrupt`](keyboardinterrupt/index.md).
+Related: [`OSError`](../oserror/index.md) (broken pipes), [`KeyboardInterrupt`](../keyboardinterrupt/index.md).
 
 ---
 
@@ -47,4 +47,4 @@ Related: [`OSError`](oserror/index.md) (broken pipes), [`KeyboardInterrupt`](key
 
 - In REPL-style loops, catch `EOFError` to exit cleanly when stdin closes.
 - For file parsing, iterate lines and check for empty results instead of calling `input()`.
-- Do not confuse with [`OSError`](oserror/index.md) from broken pipes.
+- Do not confuse with [`OSError`](../oserror/index.md) from broken pipes.

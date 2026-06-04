@@ -1,6 +1,6 @@
 # [KeyError](https://docs.python.org/3/library/exceptions.html#KeyError)
 
-Raised when a **mapping key is not found** among existing keys. Subclass of [`LookupError`](../base-classes/lookuperror/index.md). See [docs.python.org](https://docs.python.org/3/library/exceptions.html#KeyError).
+Raised when a **mapping key is not found** among existing keys. Subclass of [`LookupError`](../../base-classes/lookuperror/index.md). See [docs.python.org](https://docs.python.org/3/library/exceptions.html#KeyError).
 
 ---
 
@@ -40,7 +40,7 @@ assert data.get('missing', 0) == 0
 | `collections.defaultdict` | Every key should exist with a default |
 | `except KeyError` | Translate to HTTP 404 or domain-specific error |
 
-Related: [`IndexError`](indexerror/index.md), [`AttributeError`](attributeerror/index.md) (sometimes used after `getattr` translation).
+Related: [`IndexError`](../indexerror/index.md), [`AttributeError`](../attributeerror/index.md) (sometimes used after `getattr` translation).
 
 ---
 

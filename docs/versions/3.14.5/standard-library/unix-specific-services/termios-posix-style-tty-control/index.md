@@ -2,7 +2,7 @@
 
 The [`termios`](https://docs.python.org/3/library/termios.html) module configures **terminal line disciplines**: baud rate, echo, canonical mode, signal generation (`ISIG`), and special characters (`VINTR`, `VEOF`, …). It wraps `termios(3)` on Unix. Windows lacks this module. Full struct field reference remains on [docs.python.org](https://docs.python.org/3/library/termios.html).
 
-Related: [`tty`](tty-terminal-control-functions/index.md) for raw/cbreak helpers; [`pty`](pty-pseudo-terminal-utilities/index.md) for pseudo-TTY pairs.
+Related: [`tty`](../tty-terminal-control-functions/index.md) for raw/cbreak helpers; [`pty`](../pty-pseudo-terminal-utilities/index.md) for pseudo-TTY pairs.
 
 ---
 
@@ -84,5 +84,5 @@ if importlib.util.find_spec("termios") and sys.stdin.isatty():
 
 ## See also
 
-- [`tty`](tty-terminal-control-functions/index.md) — convenience wrappers
-- [`pty`](pty-pseudo-terminal-utilities/index.md) — allocate PTY for child processes
+- [`tty`](../tty-terminal-control-functions/index.md) — convenience wrappers
+- [`pty`](../pty-pseudo-terminal-utilities/index.md) — allocate PTY for child processes

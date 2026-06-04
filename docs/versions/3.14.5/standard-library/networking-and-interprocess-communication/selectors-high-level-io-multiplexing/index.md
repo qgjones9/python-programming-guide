@@ -1,6 +1,6 @@
 # [selectors — High-level I/O multiplexing](https://docs.python.org/3/library/selectors.html)
 
-[`selectors`](https://docs.python.org/3/library/selectors.html) (added in 3.4) provides **`BaseSelector`** and concrete backends (`EpollSelector`, `PollSelector`, …) built on [`select`](select-waiting-for-io-completion/index.md). **`DefaultSelector`** picks the fastest implementation for the current OS. **Not available on WASI.**
+[`selectors`](https://docs.python.org/3/library/selectors.html) (added in 3.4) provides **`BaseSelector`** and concrete backends (`EpollSelector`, `PollSelector`, …) built on [`select`](../select-waiting-for-io-completion/index.md). **`DefaultSelector`** picks the fastest implementation for the current OS. **Not available on WASI.**
 
 ---
 
@@ -117,4 +117,4 @@ b.close()
 
 ## See also
 
-- [`select`](select-waiting-for-io-completion/index.md) — low-level primitives and constants
+- [`select`](../select-waiting-for-io-completion/index.md) — low-level primitives and constants

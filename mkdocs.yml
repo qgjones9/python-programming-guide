@@ -14,20 +14,9 @@ watch:
 nav:
   - Home: index.md
   - Data structures and algorithms:
-    - Data structures and algorithms: dsa/index.md
-    - Algorithms:
-      - Algorithms: dsa/algorithms/index.md
-      - Bubble sort: dsa/algorithms/bubble-sort/index.md
-      - Bucket sort: dsa/algorithms/bucket-sort/index.md
-      - Heap sort: dsa/algorithms/heap-sort/index.md
-      - Insertion sort: dsa/algorithms/insertion-sort/index.md
-      - Merge sort: dsa/algorithms/merge-sort/index.md
-      - Quickselect: dsa/algorithms/quickselect/index.md
-      - Quicksort: dsa/algorithms/quicksort/index.md
-      - Radix sort: dsa/algorithms/radix-sort/index.md
-      - Selection sort: dsa/algorithms/selection-sort/index.md
-      - Shell sort: dsa/algorithms/shell-sort/index.md
+    - Overview: dsa/index.md
     - Complexity analysis: dsa/complexity/index.md
+    - Recursion: dsa/recursion/index.md
     - Data structures:
       - Data structures: dsa/data-structures/index.md
       - 2-3-4 tree: dsa/data-structures/2-3-4-tree/index.md
@@ -50,7 +39,18 @@ nav:
       - Stacks: dsa/data-structures/stacks/index.md
       - Treaps: dsa/data-structures/treaps/index.md
       - Tries: dsa/data-structures/tries/index.md
-    - Recursion: dsa/recursion/index.md
+    - Algorithms:
+      - Algorithms: dsa/algorithms/index.md
+      - Bubble sort: dsa/algorithms/bubble-sort/index.md
+      - Bucket sort: dsa/algorithms/bucket-sort/index.md
+      - Heap sort: dsa/algorithms/heap-sort/index.md
+      - Insertion sort: dsa/algorithms/insertion-sort/index.md
+      - Merge sort: dsa/algorithms/merge-sort/index.md
+      - Quickselect: dsa/algorithms/quickselect/index.md
+      - Quicksort: dsa/algorithms/quicksort/index.md
+      - Radix sort: dsa/algorithms/radix-sort/index.md
+      - Selection sort: dsa/algorithms/selection-sort/index.md
+      - Shell sort: dsa/algorithms/shell-sort/index.md
   - LeetCode:
     - LeetCode: leetcode/index.md
     - Blind 75:

@@ -86,5 +86,5 @@ repo.save.assert_called_once_with({"id": 1})
 
 ## See also
 
-- [Getting started guide](unittestmock-getting-started/index.md)
-- [`unittest`](unittest-unit-testing-framework/index.md)
+- [Getting started guide](../unittestmock-getting-started/index.md)
+- [`unittest`](../unittest-unit-testing-framework/index.md)

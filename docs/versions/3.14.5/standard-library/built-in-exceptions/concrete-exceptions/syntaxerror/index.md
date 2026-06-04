@@ -45,12 +45,12 @@ assert issubclass(IndentationError, SyntaxError)
 
 ## Sections in this repo
 
-- [IndentationError](indentationerror/index.md)
-- [TabError](taberror/index.md)
+- [IndentationError](../indentationerror/index.md)
+- [TabError](../taberror/index.md)
 
 ---
 
 ## Best practices
 
 - Catch at tooling boundaries (REPL, plugin loaders) and show `lineno` / `offset` to users.
-- Indentation issues often appear as [`IndentationError`](indentationerror/index.md) or [`TabError`](taberror/index.md).
+- Indentation issues often appear as [`IndentationError`](../indentationerror/index.md) or [`TabError`](../taberror/index.md).

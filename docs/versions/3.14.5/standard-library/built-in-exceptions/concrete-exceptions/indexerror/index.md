@@ -1,6 +1,6 @@
 # [IndexError](https://docs.python.org/3/library/exceptions.html#IndexError)
 
-Raised when a **sequence subscript is out of range**. Subclass of [`LookupError`](../base-classes/lookuperror/index.md). See [docs.python.org](https://docs.python.org/3/library/exceptions.html#IndexError).
+Raised when a **sequence subscript is out of range**. Subclass of [`LookupError`](../../base-classes/lookuperror/index.md). See [docs.python.org](https://docs.python.org/3/library/exceptions.html#IndexError).
 
 ---
 
@@ -10,7 +10,7 @@ Raised when a **sequence subscript is out of range**. Subclass of [`LookupError`
 |-----------|----------------------|
 | `seq[i]` | **`IndexError`** when `i` is invalid |
 | `seq[i:j]` slice | **Silent** clamping—no exception |
-| Non-integer index | [`TypeError`](typeerror/index.md) |
+| Non-integer index | [`TypeError`](../typeerror/index.md) |
 
 ---
 
@@ -34,9 +34,9 @@ assert items[1:100] == [20, 30]
 
 | Type | When |
 |------|------|
-| [`KeyError`](keyerror/index.md) | Mapping key missing |
-| [`LookupError`](../base-classes/lookuperror/index.md) | Catch either |
-| [`ValueError`](valueerror/index.md) | Wrong value, not bad index |
+| [`KeyError`](../keyerror/index.md) | Mapping key missing |
+| [`LookupError`](../../base-classes/lookuperror/index.md) | Catch either |
+| [`ValueError`](../valueerror/index.md) | Wrong value, not bad index |
 
 ---
 

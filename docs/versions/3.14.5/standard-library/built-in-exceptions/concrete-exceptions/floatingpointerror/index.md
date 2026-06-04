@@ -1,6 +1,6 @@
 # [FloatingPointError](https://docs.python.org/3/library/exceptions.html#FloatingPointError)
 
-Subclass of [`ArithmeticError`](../base-classes/arithmeticerror/index.md) reserved for floating-point failures. Upstream notes it is **not currently used** by CPython ([docs.python.org](https://docs.python.org/3/library/exceptions.html#FloatingPointError)).
+Subclass of [`ArithmeticError`](../../base-classes/arithmeticerror/index.md) reserved for floating-point failures. Upstream notes it is **not currently used** by CPython ([docs.python.org](https://docs.python.org/3/library/exceptions.html#FloatingPointError)).
 
 ---
 
@@ -18,8 +18,8 @@ Subclass of [`ArithmeticError`](../base-classes/arithmeticerror/index.md) reserv
 
 | Type | Relationship |
 |------|--------------|
-| Parent | [`ArithmeticError`](../base-classes/arithmeticerror/index.md) |
-| Siblings | [`OverflowError`](overflowerror/index.md), [`ZeroDivisionError`](zerodivisionerror/index.md) |
+| Parent | [`ArithmeticError`](../../base-classes/arithmeticerror/index.md) |
+| Siblings | [`OverflowError`](../overflowerror/index.md), [`ZeroDivisionError`](../zerodivisionerror/index.md) |
 | Typical use today | Rarely raised; catch `ArithmeticError` if you model numeric libraries that might raise it |
 
 ---
@@ -47,7 +47,7 @@ assert caught == 'FloatingPointError'
 | Do not catch for ordinary float math | `inf` / `nan` are normal, not errors |
 | Manual raise in tests | Stub handlers for extension integration |
 
-Related: [`OverflowError`](overflowerror/index.md), [`ZeroDivisionError`](zerodivisionerror/index.md).
+Related: [`OverflowError`](../overflowerror/index.md), [`ZeroDivisionError`](../zerodivisionerror/index.md).
 
 ---
 
@@ -55,4 +55,4 @@ Related: [`OverflowError`](overflowerror/index.md), [`ZeroDivisionError`](zerodi
 
 - Do not expect CPython to raise this during ordinary float math (`inf` / `nan` are normal values).
 - Third-party extensions linked against platform float exception machinery may still use it.
-- Prefer catching [`ArithmeticError`](../base-classes/arithmeticerror/index.md) only when you truly intend to handle all numeric failure modes together.
+- Prefer catching [`ArithmeticError`](../../base-classes/arithmeticerror/index.md) only when you truly intend to handle all numeric failure modes together.

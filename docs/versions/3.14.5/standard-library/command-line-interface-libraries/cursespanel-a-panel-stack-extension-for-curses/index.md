@@ -1,6 +1,6 @@
 # [curses.panel — A panel stack extension for curses](https://docs.python.org/3/library/curses.panel.html)
 
-The [`curses.panel`](https://docs.python.org/3/library/curses.panel.html) module adds a **depth-ordered stack** of panels over [`curses`](curses-terminal-handling-for-character-cell-displays/index.md) windows. Each panel wraps a window; **`top_panel()`** / **`bottom_panel()`** change Z-order, and **`update_panels()`** refreshes visible stacking. Use it for overlapping dialogs, menus, and status bars in TUIs. Full API remains on [docs.python.org](https://docs.python.org/3/library/curses.panel.html).
+The [`curses.panel`](https://docs.python.org/3/library/curses.panel.html) module adds a **depth-ordered stack** of panels over [`curses`](../curses-terminal-handling-for-character-cell-displays/index.md) windows. Each panel wraps a window; **`top_panel()`** / **`bottom_panel()`** change Z-order, and **`update_panels()`** refreshes visible stacking. Use it for overlapping dialogs, menus, and status bars in TUIs. Full API remains on [docs.python.org](https://docs.python.org/3/library/curses.panel.html).
 
 Panel operations require curses initialization (`initscr`); examples below validate **imports and function signatures** without a TTY.
 
@@ -82,6 +82,6 @@ Forgetting `update_panels()` after reordering often leaves stale overlap artifac
 
 | Module | Use |
 |--------|-----|
-| [`curses`](curses-terminal-handling-for-character-cell-displays/index.md) | Window creation and drawing |
-| [`curses.textpad`](cursestextpad-text-input-widget-for-curses-programs/index.md) | Input widgets inside panel windows |
+| [`curses`](../curses-terminal-handling-for-character-cell-displays/index.md) | Window creation and drawing |
+| [`curses.textpad`](../cursestextpad-text-input-widget-for-curses-programs/index.md) | Input widgets inside panel windows |
 | HOWTO | [Curses Programming with Python](https://docs.python.org/3/howto/curses.html) |

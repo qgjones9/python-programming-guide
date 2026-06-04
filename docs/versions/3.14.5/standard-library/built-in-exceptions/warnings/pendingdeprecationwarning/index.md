@@ -1,6 +1,6 @@
 # [PendingDeprecationWarning](https://docs.python.org/3/library/exceptions.html#PendingDeprecationWarning)
 
-`PendingDeprecationWarning` is for features that are **obsolete and expected to become deprecated**, but are not formally deprecated yet. It is rarely used; [`DeprecationWarning`](deprecationwarning/index.md) is preferred once deprecation is active. Canonical docs: [exceptions.html#PendingDeprecationWarning](https://docs.python.org/3/library/exceptions.html#PendingDeprecationWarning).
+`PendingDeprecationWarning` is for features that are **obsolete and expected to become deprecated**, but are not formally deprecated yet. It is rarely used; [`DeprecationWarning`](../deprecationwarning/index.md) is preferred once deprecation is active. Canonical docs: [exceptions.html#PendingDeprecationWarning](https://docs.python.org/3/library/exceptions.html#PendingDeprecationWarning).
 
 ---
 

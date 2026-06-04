@@ -1,6 +1,6 @@
 # [Wave_read Objects](https://docs.python.org/3/library/wave.html#wave-read-objects)
 
-[`wave.open(..., 'rb')`](https://docs.python.org/3/library/wave.html#wave.open) returns a **`Wave_read`** instance for parsing PCM WAV files. The object exposes header getters, frame reads as **`bytes`**, and limited seeking. It does not decode samples into integers — pair with [`array`](../../data-types/array-efficient-arrays-of-numeric-values/index.md) or [`struct`](../../binary-data-services/struct-interpret-bytes-as-packed-binary-data/index.md) for typed views. Parent overview: [wave — Read and write WAV files](../index.md).
+[`wave.open(..., 'rb')`](https://docs.python.org/3/library/wave.html#wave.open) returns a **`Wave_read`** instance for parsing PCM WAV files. The object exposes header getters, frame reads as **`bytes`**, and limited seeking. It does not decode samples into integers — pair with [`array`](../../../data-types/array-efficient-arrays-of-numeric-values/index.md) or [`struct`](../../../binary-data-services/struct-interpret-bytes-as-packed-binary-data/index.md) for typed views. Parent overview: [wave — Read and write WAV files](../index.md).
 
 ---
 

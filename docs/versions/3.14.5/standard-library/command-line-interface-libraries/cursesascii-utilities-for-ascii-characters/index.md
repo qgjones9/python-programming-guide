@@ -1,6 +1,6 @@
 # [curses.ascii — Utilities for ASCII characters](https://docs.python.org/3/library/curses.ascii.html)
 
-The [`curses.ascii`](https://docs.python.org/3/library/curses.ascii.html) submodule supplies **ASCII classification functions** and **control-character constants** independent of locale. Unlike most of [`curses`](curses-terminal-handling-for-character-cell-displays/index.md), it works **without a terminal** — useful in parsers, log formatters, and TUI code that must classify bytes. Full reference remains on [docs.python.org](https://docs.python.org/3/library/curses.ascii.html).
+The [`curses.ascii`](https://docs.python.org/3/library/curses.ascii.html) submodule supplies **ASCII classification functions** and **control-character constants** independent of locale. Unlike most of [`curses`](../curses-terminal-handling-for-character-cell-displays/index.md), it works **without a terminal** — useful in parsers, log formatters, and TUI code that must classify bytes. Full reference remains on [docs.python.org](https://docs.python.org/3/library/curses.ascii.html).
 
 ---
 
@@ -104,6 +104,6 @@ assert a.controlnames[-1] == "SP"
 
 | Module | Relationship |
 |--------|--------------|
-| [`curses`](curses-terminal-handling-for-character-cell-displays/index.md) | Full-screen TUI; import `curses.ascii` for byte-safe checks |
-| [`string`](../text-processing-services/string-common-string-operations/index.md) | `string.digits`, `hexdigits` overlap with `isdigit` / `isxdigit` |
-| [`bytes`](../built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md) | Often paired when parsing terminal protocols |
+| [`curses`](../curses-terminal-handling-for-character-cell-displays/index.md) | Full-screen TUI; import `curses.ascii` for byte-safe checks |
+| [`string`](../../text-processing-services/string-common-string-operations/index.md) | `string.digits`, `hexdigits` overlap with `isdigit` / `isxdigit` |
+| [`bytes`](../../built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md) | Often paired when parsing terminal protocols |

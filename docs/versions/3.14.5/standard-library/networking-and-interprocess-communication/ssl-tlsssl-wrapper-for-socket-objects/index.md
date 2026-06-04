@@ -1,6 +1,6 @@
 # [ssl — TLS/SSL wrapper for socket objects](https://docs.python.org/3/library/ssl.html)
 
-The [`ssl`](https://docs.python.org/3/library/ssl.html) module wraps [`socket`](socket-low-level-networking-interface/index.md) objects with **TLS** using OpenSSL. Prefer **`SSLContext`** + **`wrap_socket()`** over legacy module-level helpers. Read upstream **Security considerations** before deploying. **Optional module** on some builds; **not available on WASI.**
+The [`ssl`](https://docs.python.org/3/library/ssl.html) module wraps [`socket`](../socket-low-level-networking-interface/index.md) objects with **TLS** using OpenSSL. Prefer **`SSLContext`** + **`wrap_socket()`** over legacy module-level helpers. Read upstream **Security considerations** before deploying. **Optional module** on some builds; **not available on WASI.**
 
 ---
 
@@ -86,5 +86,5 @@ assert modes[ctx.verify_mode] == "required"
 
 ## See also
 
-- [`socket`](socket-low-level-networking-interface/index.md) — underlying transport
+- [`socket`](../socket-low-level-networking-interface/index.md) — underlying transport
 - [SSL/TLS security considerations](https://docs.python.org/3/library/ssl.html#ssl-security)

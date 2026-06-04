@@ -67,12 +67,12 @@ assert caught == errno.ENOENT
 
 - Catch specific subclasses (`FileNotFoundError`) when you know the operation.
 - Use `except OSError` for broad filesystem/network recovery.
-- Legacy aliases: [`EnvironmentError`](environmenterror/index.md), [`IOError`](ioerror/index.md), [`WindowsError`](windowserror/index.md).
+- Legacy aliases: [`EnvironmentError`](../environmenterror/index.md), [`IOError`](../ioerror/index.md), [`WindowsError`](../windowserror/index.md).
 
 ---
 
 ## Sections in this repo
 
-- [EnvironmentError](environmenterror/index.md)
-- [IOError](ioerror/index.md)
-- [WindowsError](windowserror/index.md)
+- [EnvironmentError](../environmenterror/index.md)
+- [IOError](../ioerror/index.md)
+- [WindowsError](../windowserror/index.md)

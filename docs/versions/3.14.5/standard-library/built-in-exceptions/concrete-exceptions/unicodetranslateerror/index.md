@@ -1,6 +1,6 @@
 # [UnicodeTranslateError](https://docs.python.org/3/library/exceptions.html#UnicodeTranslateError)
 
-Subclass of [`UnicodeError`](unicodeerror/index.md) raised during **Unicode translation** between codecs (not plain encode/decode). See [docs.python.org](https://docs.python.org/3/library/exceptions.html#UnicodeTranslateError).
+Subclass of [`UnicodeError`](../unicodeerror/index.md) raised during **Unicode translation** between codecs (not plain encode/decode). See [docs.python.org](https://docs.python.org/3/library/exceptions.html#UnicodeTranslateError).
 
 ---
 
@@ -39,11 +39,11 @@ assert issubclass(UnicodeTranslateError, UnicodeError)
 | `except UnicodeTranslateError` | Custom codec or `codecs` translation step |
 | Split encode/decode | Simpler errors from two-step conversion |
 
-Related: [`UnicodeEncodeError`](unicodeencodeerror/index.md), [`UnicodeDecodeError`](unicodedecodeerror/index.md).
+Related: [`UnicodeEncodeError`](../unicodeencodeerror/index.md), [`UnicodeDecodeError`](../unicodedecodeerror/index.md).
 
 ---
 
 ## Best practices
 
-- Prefer catching [`UnicodeError`](unicodeerror/index.md) unless you know translation is the failing phase.
-- Parent: [`UnicodeError`](unicodeerror/index.md).
+- Prefer catching [`UnicodeError`](../unicodeerror/index.md) unless you know translation is the failing phase.
+- Parent: [`UnicodeError`](../unicodeerror/index.md).

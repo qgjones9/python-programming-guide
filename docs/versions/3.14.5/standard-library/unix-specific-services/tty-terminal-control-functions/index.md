@@ -1,8 +1,8 @@
 # [tty — Terminal control functions](https://docs.python.org/3/library/tty.html)
 
-The [`tty`](https://docs.python.org/3/library/tty.html) module provides small helpers to put a terminal fd into **raw** or **cbreak** mode using [`termios`](termios-posix-style-tty-control/index.md). Raw mode disables echo and line buffering; cbreak keeps character-at-a-time input but may retain some signal handling. Unix-only. Full definitions remain on [docs.python.org](https://docs.python.org/3/library/tty.html).
+The [`tty`](https://docs.python.org/3/library/tty.html) module provides small helpers to put a terminal fd into **raw** or **cbreak** mode using [`termios`](../termios-posix-style-tty-control/index.md). Raw mode disables echo and line buffering; cbreak keeps character-at-a-time input but may retain some signal handling. Unix-only. Full definitions remain on [docs.python.org](https://docs.python.org/3/library/tty.html).
 
-Related: [`termios`](termios-posix-style-tty-control/index.md); [`msvcrt`](../../ms-windows-specific-services/msvcrt-useful-routines-from-the-ms-vc-runtime/index.md) on Windows for keypress I/O.
+Related: [`termios`](../termios-posix-style-tty-control/index.md); [`msvcrt`](../../ms-windows-specific-services/msvcrt-useful-routines-from-the-ms-vc-runtime/index.md) on Windows for keypress I/O.
 
 ---
 
@@ -85,5 +85,5 @@ elif importlib.util.find_spec("tty"):
 
 ## See also
 
-- [`termios`](termios-posix-style-tty-control/index.md) — underlying attribute structs
-- [`pty`](pty-pseudo-terminal-utilities/index.md) — child processes with tty semantics
+- [`termios`](../termios-posix-style-tty-control/index.md) — underlying attribute structs
+- [`pty`](../pty-pseudo-terminal-utilities/index.md) — child processes with tty semantics

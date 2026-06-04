@@ -40,4 +40,4 @@ assert caught == 'gone'
 ## Best practices
 
 - Prefer plain weak references when you can test for `None` instead of catching `ReferenceError`.
-- Related: [`AttributeError`](attributeerror/index.md) on live objects.
+- Related: [`AttributeError`](../attributeerror/index.md) on live objects.

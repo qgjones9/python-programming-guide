@@ -69,4 +69,4 @@ assert sorted(results) == [0, 1, 2]
 ## See also
 
 - [`threading`](https://docs.python.org/3/library/threading.html)
-- [`test.support`](testsupport-utilities-for-the-python-test-suite/index.md)
+- [`test.support`](../testsupport-utilities-for-the-python-test-suite/index.md)

@@ -82,4 +82,4 @@ with warnings.catch_warnings(record=True) as log:
 ## See also
 
 - [`warnings`](https://docs.python.org/3/library/warnings.html)
-- [`test.support`](testsupport-utilities-for-the-python-test-suite/index.md)
+- [`test.support`](../testsupport-utilities-for-the-python-test-suite/index.md)

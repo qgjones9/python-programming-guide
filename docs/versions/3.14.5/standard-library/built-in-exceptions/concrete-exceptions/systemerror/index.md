@@ -38,11 +38,11 @@ assert issubclass(SystemError, Exception)
 | Log and re-raise | Extension boundary where recovery is impossible |
 | Report upstream | Include `sys.version` and minimal repro |
 
-Related: [`SystemExit`](systemexit/index.md), [`RuntimeError`](runtimeerror/index.md).
+Related: [`SystemExit`](../systemexit/index.md), [`RuntimeError`](../runtimeerror/index.md).
 
 ---
 
 ## Best practices
 
 - If you did not misuse the C API, report to [Python issue tracker](https://github.com/python/cpython/issues) with reproduction steps.
-- Do not confuse with [`SystemExit`](systemexit/index.md) or [`RuntimeError`](runtimeerror/index.md).
+- Do not confuse with [`SystemExit`](../systemexit/index.md) or [`RuntimeError`](../runtimeerror/index.md).

@@ -2,7 +2,7 @@
 
 [`asyncio`](https://docs.python.org/3/library/asyncio.html) runs **coroutines** on an **event loop** so I/O-bound work can overlap without threads. It underpins many async web stacks and client libraries. Full task, stream, subprocess, and synchronization APIs remain on [docs.python.org](https://docs.python.org/3/library/asyncio.html). **Not available on WASI.**
 
-Related: [`socket`](socket-low-level-networking-interface/index.md) (loopback transports), [`selectors`](selectors-high-level-io-multiplexing/index.md) (blocking multiplexing alternative), [`signal`](signal-set-handlers-for-asynchronous-events/index.md) (loop signal handlers).
+Related: [`socket`](../socket-low-level-networking-interface/index.md) (loopback transports), [`selectors`](../selectors-high-level-io-multiplexing/index.md) (blocking multiplexing alternative), [`signal`](../signal-set-handlers-for-asynchronous-events/index.md) (loop signal handlers).
 
 ---
 

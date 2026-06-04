@@ -1,6 +1,6 @@
 # [cmd — Support for line-oriented command interpreters](https://docs.python.org/3/library/cmd.html)
 
-The [`cmd`](https://docs.python.org/3/library/cmd.html) module provides a **line-oriented command interpreter** framework. Subclass [`Cmd`](https://docs.python.org/3/library/cmd.html#cmd.Cmd), implement `do_commandname()` methods, and run [`cmdloop()`](https://docs.python.org/3/library/cmd.html#cmd.Cmd.cmdloop) for an interactive shell with help, history (via [`readline`](../text-processing-services/readline-gnu-readline-interface/index.md)), and tab completion. Ideal for admin tools, test harnesses, and prototypes. Full API remains on [docs.python.org](https://docs.python.org/3/library/cmd.html).
+The [`cmd`](https://docs.python.org/3/library/cmd.html) module provides a **line-oriented command interpreter** framework. Subclass [`Cmd`](https://docs.python.org/3/library/cmd.html#cmd.Cmd), implement `do_commandname()` methods, and run [`cmdloop()`](https://docs.python.org/3/library/cmd.html#cmd.Cmd.cmdloop) for an interactive shell with help, history (via [`readline`](../../text-processing-services/readline-gnu-readline-interface/index.md)), and tab completion. Ideal for admin tools, test harnesses, and prototypes. Full API remains on [docs.python.org](https://docs.python.org/3/library/cmd.html).
 
 ---
 
@@ -146,6 +146,6 @@ assert "Respond to ping" in out.getvalue()
 
 | Module | Use with cmd |
 |--------|--------------|
-| [`readline`](../text-processing-services/readline-gnu-readline-interface/index.md) | History and completion backend |
-| [`argparse`](argparse-parser-for-command-line-options-arguments-and-subcommands/index.md) | Non-interactive CLI alongside an optional cmd shell |
+| [`readline`](../../text-processing-services/readline-gnu-readline-interface/index.md) | History and completion backend |
+| [`argparse`](../argparse-parser-for-command-line-options-arguments-and-subcommands/index.md) | Non-interactive CLI alongside an optional cmd shell |
 | [`shlex`](https://docs.python.org/3/library/shlex.html) | Parse quoted arguments inside `do_*` handlers |

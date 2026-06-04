@@ -11,7 +11,7 @@ Raised when an operation or function is applied to an object of **inappropriate 
 | Wrong type (list where int expected) | **`TypeError`** |
 | Right type, bad value (negative where positive required) | **`ValueError`** |
 | Operation not supported at all | **`TypeError`** or undefined method |
-| Supported but not implemented yet | [`NotImplementedError`](notimplementederror/index.md) |
+| Supported but not implemented yet | [`NotImplementedError`](../notimplementederror/index.md) |
 
 ---
 
@@ -49,4 +49,4 @@ assert caught_value == 'value'
 ## Best practices
 
 - Raise `TypeError` from APIs when the **type** is wrong; document expected types in docstrings.
-- Related: [`AttributeError`](attributeerror/index.md), [`ValueError`](valueerror/index.md).
+- Related: [`AttributeError`](../attributeerror/index.md), [`ValueError`](../valueerror/index.md).

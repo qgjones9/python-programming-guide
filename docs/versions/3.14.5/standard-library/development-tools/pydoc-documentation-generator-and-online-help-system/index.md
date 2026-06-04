@@ -76,4 +76,4 @@ These commands are meant for a terminal, not `exec` blocks:
 ## See also
 
 - [`inspect`](https://docs.python.org/3/library/inspect.html) — lower-level introspection
-- [`doctest`](doctest-test-interactive-python-examples/index.md) — executable examples in docstrings
+- [`doctest`](../doctest-test-interactive-python-examples/index.md) — executable examples in docstrings

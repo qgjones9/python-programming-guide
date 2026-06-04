@@ -66,5 +66,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
 
 ## See also
 
-- [`test.support`](testsupport-utilities-for-the-python-test-suite/index.md)
+- [`test.support`](../testsupport-utilities-for-the-python-test-suite/index.md)
 - [`socket`](https://docs.python.org/3/library/socket.html)

@@ -58,5 +58,5 @@ with warnings.catch_warnings(record=True) as log:
 ## See also
 
 - [`-X dev` command-line option](https://docs.python.org/3/using/cmdline.html#cmdoption-X)
-- [`faulthandler`](../debugging-and-profiling/faulthandler-dump-the-python-traceback/index.md)
+- [`faulthandler`](../../debugging-and-profiling/faulthandler-dump-the-python-traceback/index.md)
 - [`warnings`](https://docs.python.org/3/library/warnings.html)

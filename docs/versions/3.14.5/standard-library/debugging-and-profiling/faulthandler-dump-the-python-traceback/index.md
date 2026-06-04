@@ -1,6 +1,6 @@
 # [faulthandler — Dump the Python traceback](https://docs.python.org/3/library/faulthandler.html)
 
-`faulthandler` dumps **Python tracebacks** on fatal errors, **Unix signals** (when enabled), or **explicit request**—useful when processes hang or crash without a clean exception. Enabled automatically in [Development Mode](../development-tools/python-development-mode/index.md). Canonical reference: [faulthandler.html](https://docs.python.org/3/library/faulthandler.html).
+`faulthandler` dumps **Python tracebacks** on fatal errors, **Unix signals** (when enabled), or **explicit request**—useful when processes hang or crash without a clean exception. Enabled automatically in [Development Mode](../../development-tools/python-development-mode/index.md). Canonical reference: [faulthandler.html](https://docs.python.org/3/library/faulthandler.html).
 
 ---
 
@@ -69,5 +69,5 @@ On supported platforms, `faulthandler` can also dump the **native C stack** (see
 
 ## See also
 
-- [Python Development Mode](../development-tools/python-development-mode/index.md)
+- [Python Development Mode](../../development-tools/python-development-mode/index.md)
 - [`traceback`](https://docs.python.org/3/library/traceback.html)

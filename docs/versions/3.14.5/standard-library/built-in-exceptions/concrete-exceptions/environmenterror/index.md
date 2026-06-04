@@ -1,6 +1,6 @@
 # [EnvironmentError](https://docs.python.org/3/library/exceptions.html#EnvironmentError)
 
-**Compatibility alias** of [`OSError`](oserror/index.md) since Python 3.3. Kept so older code catching `EnvironmentError` continues to work. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#EnvironmentError).
+**Compatibility alias** of [`OSError`](../oserror/index.md) since Python 3.3. Kept so older code catching `EnvironmentError` continues to work. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#EnvironmentError).
 
 ---
 
@@ -36,11 +36,11 @@ assert exc.errno == 2
 | `except EnvironmentError` | Maintaining pre-3.3 libraries without renaming |
 | Catch `FileNotFoundError`, etc. | Known filesystem operations |
 
-Related: [`IOError`](ioerror/index.md), [`WindowsError`](windowserror/index.md), [`OSError`](oserror/index.md).
+Related: [`IOError`](../ioerror/index.md), [`WindowsError`](../windowserror/index.md), [`OSError`](../oserror/index.md).
 
 ---
 
 ## Best practices
 
-- Write new code against [`OSError`](oserror/index.md) and PEP 3151 subclasses (`FileNotFoundError`, etc.).
+- Write new code against [`OSError`](../oserror/index.md) and PEP 3151 subclasses (`FileNotFoundError`, etc.).
 - When maintaining Python 2/3 straddling code, `EnvironmentError` may still appear in `except` clauses—safe on 3.x.

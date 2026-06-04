@@ -141,4 +141,4 @@ The official table maps every syntax form (`a + b`, `seq[i:j]`, `a is b`, …) t
 
 - [`functools.reduce`](../functools-higher-order-functions-and-operations-on-callable-objects/index.md) — fold with `operator.add`
 - [`itertools`](../itertools-functions-creating-iterators-for-efficient-looping/index.md) — `starmap`, `accumulate` with operator funcs
-- [`collections`](../data-types/collections-container-datatypes/index.md) — `Counter` vs `countOf` for tallies
+- [`collections`](../../data-types/collections-container-datatypes/index.md) — `Counter` vs `countOf` for tallies

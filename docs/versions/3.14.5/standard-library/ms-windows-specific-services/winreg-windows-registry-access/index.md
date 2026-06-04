@@ -2,7 +2,7 @@
 
 The [`winreg`](https://docs.python.org/3/library/winreg.html) module reads and writes the **Windows registry**: keys, subkeys, and typed values (`REG_SZ`, `REG_DWORD`, …). Installers, IT scripts, and desktop tools use it to persist settings. The module is **Windows-only**. Full API and value types remain on [docs.python.org](https://docs.python.org/3/library/winreg.html).
 
-Related: [`msvcrt`](../msvcrt-useful-routines-from-the-ms-vc-runtime/index.md); portable config via files or [`configparser`](../../data-types/configparser-configuration-file-parser/index.md).
+Related: [`msvcrt`](../msvcrt-useful-routines-from-the-ms-vc-runtime/index.md); portable config via files or [`configparser`](../../file-formats/configparser-configuration-file-parser/index.md).
 
 ---
 
@@ -87,4 +87,4 @@ Always pass the correct **`type`** to `SetValueEx`; wrong types corrupt the valu
 ## See also
 
 - [`msvcrt`](../msvcrt-useful-routines-from-the-ms-vc-runtime/index.md) — Windows CRT helpers
-- [`configparser`](../../data-types/configparser-configuration-file-parser/index.md) — cross-platform INI files
+- [`configparser`](../../file-formats/configparser-configuration-file-parser/index.md) — cross-platform INI files

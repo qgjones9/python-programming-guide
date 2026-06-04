@@ -1,6 +1,6 @@
 # [string — Common string operations](https://docs.python.org/3/library/string.html)
 
-The [`string`](https://docs.python.org/3/library/string.html) module supplies **ASCII character-set constants** and the **`Formatter` machinery** behind `str.format()`. Everyday text work usually lives on built-in [`str`](../built-in-types/text-sequence-type-str/index.md) methods and f-strings; reach for this module when you need portable character classes or a customizable formatting pipeline. Full specification remains on [docs.python.org](https://docs.python.org/3/library/string.html).
+The [`string`](https://docs.python.org/3/library/string.html) module supplies **ASCII character-set constants** and the **`Formatter` machinery** behind `str.format()`. Everyday text work usually lives on built-in [`str`](../../built-in-types/text-sequence-type-str/index.md) methods and f-strings; reach for this module when you need portable character classes or a customizable formatting pipeline. Full specification remains on [docs.python.org](https://docs.python.org/3/library/string.html).
 
 ---
 

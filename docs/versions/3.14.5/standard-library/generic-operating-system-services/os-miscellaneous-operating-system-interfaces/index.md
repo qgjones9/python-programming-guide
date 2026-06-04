@@ -2,7 +2,7 @@
 
 The [`os`](https://docs.python.org/3/library/os.html) module wraps **operating-system services** in a mostly POSIX-shaped, portable API: environment variables, current working directory, file and directory operations, process identifiers, and platform-specific extensions guarded by availability notes. For path manipulation use [`os.path`](../../file-and-directory-access/ospath-common-pathname-manipulations/index.md) or [`pathlib`](../../file-and-directory-access/pathlib-object-oriented-filesystem-paths/index.md); for high-level copies see [`shutil`](../../file-and-directory-access/shutil-high-level-file-operations/index.md). Full API reference remains on [docs.python.org](https://docs.python.org/3/library/os.html).
 
-Related: [`io`](../io-core-tools-for-working-with-streams/index.md) for stream types; [`errno`](../errno-standard-errno-system-symbols/index.md) for errno constants; [`subprocess`](../../subprocess-management/subprocess-subprocess-management/index.md) for spawning processes.
+Related: [`io`](../io-core-tools-for-working-with-streams/index.md) for stream types; [`errno`](../errno-standard-errno-system-symbols/index.md) for errno constants; [`subprocess`](../../concurrent-execution/subprocess-subprocess-management/index.md) for spawning processes.
 
 ---
 

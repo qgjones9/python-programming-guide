@@ -2,7 +2,7 @@
 
 The [`shlex`](https://docs.python.org/3/library/shlex.html) module provides **POSIX-like shell tokenization**: split command strings while honoring quotes, escapes, and comments. Unlike `str.split`, it understands `'single'`, `"double"`, and `\` escapes—essential for safely parsing user shell commands. It is **portable** (available on all platforms). Full API remains on [docs.python.org](https://docs.python.org/3/library/shlex.html).
 
-Related: [`subprocess`](../../subprocess-management/subprocess-subprocess-management/index.md) with `shell=False` and a list argv; [`tokenize`](../tokenize-tokenizer-for-python-source/index.md) for Python source, not shell syntax.
+Related: [`subprocess`](../../concurrent-execution/subprocess-subprocess-management/index.md) with `shell=False` and a list argv; [`tokenize`](../../python-language-services/tokenize-tokenizer-for-python-source/index.md) for Python source, not shell syntax.
 
 ---
 
@@ -75,5 +75,5 @@ assert tokens == ["one", "two"]
 
 ## See also
 
-- [`subprocess`](../../subprocess-management/subprocess-subprocess-management/index.md) — process spawning
+- [`subprocess`](../../concurrent-execution/subprocess-subprocess-management/index.md) — process spawning
 - [`argparse`](../../command-line-interface-libraries/argparse-parser-for-command-line-options-arguments-and-subcommands/index.md) — structured CLI parsing

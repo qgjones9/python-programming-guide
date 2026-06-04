@@ -1,6 +1,6 @@
 # [Internet Protocols and Support](https://docs.python.org/3/library/internet.html)
 
-This chapter covers **pure-Python client and server modules** for URLs, HTTP, email protocols, UUIDs, IP addressing, and related web infrastructure. Most modules depend on the system [`socket`](../../networking-and-inter-process-communication/socket-low-level-networking-interface/index.md) module. Full reference: [docs.python.org](https://docs.python.org/3/library/internet.html).
+This chapter covers **pure-Python client and server modules** for URLs, HTTP, email protocols, UUIDs, IP addressing, and related web infrastructure. Most modules depend on the system [`socket`](../networking-and-interprocess-communication/socket-low-level-networking-interface/index.md) module. Full reference: [docs.python.org](https://docs.python.org/3/library/internet.html).
 
 ---
 

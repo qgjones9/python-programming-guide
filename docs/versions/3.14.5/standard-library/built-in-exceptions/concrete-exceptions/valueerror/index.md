@@ -8,11 +8,11 @@ Raised when an argument has the **correct type but an inappropriate value**, and
 
 | Situation | Exception |
 |-----------|-----------|
-| Wrong type | [`TypeError`](typeerror/index.md) |
+| Wrong type | [`TypeError`](../typeerror/index.md) |
 | Wrong value (general) | **`ValueError`** |
-| Bad sequence index | [`IndexError`](indexerror/index.md) |
-| Bad mapping key | [`KeyError`](keyerror/index.md) |
-| Unicode codec failure | [`UnicodeError`](unicodeerror/index.md) subclass |
+| Bad sequence index | [`IndexError`](../indexerror/index.md) |
+| Bad mapping key | [`KeyError`](../keyerror/index.md) |
+| Unicode codec failure | [`UnicodeError`](../unicodeerror/index.md) subclass |
 
 ---
 

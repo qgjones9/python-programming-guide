@@ -1,6 +1,6 @@
 # [Class definitions](https://docs.python.org/3/reference/compound_stmts.html#class-definitions)
 
-A **`class` statement** executes its suite in a new local namespace, then creates a **class object** from the inheritance list and that namespace, binding the class name in the surrounding scope. Class attributes are defined in the body; instance attributes are typically set on `self` in methods. Metaclasses and [type parameter lists](type-parameter-lists/index.md) customize creation. Reference: [docs.python.org](https://docs.python.org/3/reference/compound_stmts.html#class-definitions).
+A **`class` statement** executes its suite in a new local namespace, then creates a **class object** from the inheritance list and that namespace, binding the class name in the surrounding scope. Class attributes are defined in the body; instance attributes are typically set on `self` in methods. Metaclasses and [type parameter lists](../type-parameter-lists/index.md) customize creation. Reference: [docs.python.org](https://docs.python.org/3/reference/compound_stmts.html#class-definitions).
 
 Parent: [Compound statements](../index.md)
 

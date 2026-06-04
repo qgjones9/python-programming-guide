@@ -1,6 +1,6 @@
 # [9.1. Complete Python programs](https://docs.python.org/3/reference/toplevel_components.html#complete-python-programs)
 
-A **complete Python program** is the unit CPython executes when you are not in “one line at a time” interactive mode. The reference defines a **minimally initialized** environment and treats the program’s syntax as [**file input**](file-input/index.md) (statements until end of file).
+A **complete Python program** is the unit CPython executes when you are not in “one line at a time” interactive mode. The reference defines a **minimally initialized** environment and treats the program’s syntax as [**file input**](../file-input/index.md) (statements until end of file).
 
 ---
 

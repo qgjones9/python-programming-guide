@@ -6,7 +6,7 @@
 
 ## Purpose
 
-Use `unittest` when you want **structured tests** with setup/teardown, rich assertions, and subtests. Subclass `unittest.TestCase`, name methods `test_*`, and run with `unittest.main()` or discovery. For mocking dependencies see [`unittest.mock`](unittestmock-mock-object-library/index.md).
+Use `unittest` when you want **structured tests** with setup/teardown, rich assertions, and subtests. Subclass `unittest.TestCase`, name methods `test_*`, and run with `unittest.main()` or discovery. For mocking dependencies see [`unittest.mock`](../unittestmock-mock-object-library/index.md).
 
 ---
 
@@ -83,11 +83,11 @@ t.test_integers()
 | Use `assertRaises` as context manager | Ensures exception type and optional message |
 | Prefer `setUp` over duplicating preamble | Keeps tests readable |
 | Avoid inter-test shared mutable state | Order-independent runs |
-| Combine with [`doctest`](doctest-test-interactive-python-examples/index.md) via `load_tests` | Docstring examples in larger suites |
+| Combine with [`doctest`](../doctest-test-interactive-python-examples/index.md) via `load_tests` | Docstring examples in larger suites |
 
 ---
 
 ## See also
 
-- [`unittest.mock`](unittestmock-mock-object-library/index.md)
-- [`unittest.mock — getting started`](unittestmock-getting-started/index.md)
+- [`unittest.mock`](../unittestmock-mock-object-library/index.md)
+- [`unittest.mock — getting started`](../unittestmock-getting-started/index.md)

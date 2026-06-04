@@ -2,7 +2,7 @@
 
 The **Unix-specific services** section covers modules tied to **POSIX** and Unix-like systems: shell-like lexing (`shlex`), low-level syscalls (`posix`, `fcntl`), account databases (`pwd`, `grp`), TTY control (`termios`, `tty`, `pty`), resource limits (`resource`), and syslog (`syslog`). Most are unavailable or limited on native Windows Python. Full reference remains on [docs.python.org](https://docs.python.org/3/library/unix.html).
 
-Portable code should use [`os`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md) and [`pathlib`](../../file-and-directory-access/pathlib-object-oriented-filesystem-paths/index.md) first, then reach for these modules when POSIX semantics are required.
+Portable code should use [`os`](../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md) and [`pathlib`](../file-and-directory-access/pathlib-object-oriented-filesystem-paths/index.md) first, then reach for these modules when POSIX semantics are required.
 
 ---
 

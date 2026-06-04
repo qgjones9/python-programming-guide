@@ -40,5 +40,5 @@ assert caught == 'math broke'
 
 | Type | Relationship |
 |------|--------------|
-| [`Exception`](../base-classes/exception/index.md) | Direct base class |
-| [`ValueError`](valueerror/index.md) | Prefer for invalid user arguments |
+| [`Exception`](../../base-classes/exception/index.md) | Direct base class |
+| [`ValueError`](../valueerror/index.md) | Prefer for invalid user arguments |

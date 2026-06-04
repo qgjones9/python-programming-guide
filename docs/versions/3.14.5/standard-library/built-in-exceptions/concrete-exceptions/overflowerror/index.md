@@ -1,6 +1,6 @@
 # [OverflowError](https://docs.python.org/3/library/exceptions.html#OverflowError)
 
-Subclass of [`ArithmeticError`](../base-classes/arithmeticerror/index.md) raised when an arithmetic result is **too large to represent** in the target type. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#OverflowError).
+Subclass of [`ArithmeticError`](../../base-classes/arithmeticerror/index.md) raised when an arithmetic result is **too large to represent** in the target type. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#OverflowError).
 
 ---
 
@@ -8,7 +8,7 @@ Subclass of [`ArithmeticError`](../base-classes/arithmeticerror/index.md) raised
 
 | Situation | Raises? |
 |-----------|---------|
-| Huge Python `int` arithmetic | **No** — arbitrary precision; may raise [`MemoryError`](memoryerror/index.md) |
+| Huge Python `int` arithmetic | **No** — arbitrary precision; may raise [`MemoryError`](../memoryerror/index.md) |
 | `int` → fixed C type conversion | **Yes** when out of range |
 | Most float ops in CPython | **Rarely checked** (platform-dependent) |
 
@@ -37,9 +37,9 @@ assert issubclass(OverflowError, ArithmeticError)
 
 | Type | When |
 |------|------|
-| [`ZeroDivisionError`](zerodivisionerror/index.md) | Division by zero |
-| [`FloatingPointError`](floatingpointerror/index.md) | Reserved, rarely used |
-| [`ArithmeticError`](../base-classes/arithmeticerror/index.md) | Catch all three |
+| [`ZeroDivisionError`](../zerodivisionerror/index.md) | Division by zero |
+| [`FloatingPointError`](../floatingpointerror/index.md) | Reserved, rarely used |
+| [`ArithmeticError`](../../base-classes/arithmeticerror/index.md) | Catch all three |
 
 ---
 

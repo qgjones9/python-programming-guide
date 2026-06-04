@@ -1,6 +1,6 @@
 # [hashlib — Secure hashes and message digests](https://docs.python.org/3/library/hashlib.html)
 
-The [`hashlib`](https://docs.python.org/3/library/hashlib.html) module exposes a uniform interface to **cryptographic hash algorithms**: SHA-2, SHA-3, BLAKE2, legacy MD5/SHA-1, and **SHAKE** variable-length XOF digests. Construct with named functions (`sha256()`, `blake2b()`, …) or `new(name)`. Feed bytes via `update()`; read `digest()` or `hexdigest()`. For non-cryptographic checksums see [`zlib`](../data-compression-and-archiving/zlib-compression-compatible-with-gzip/index.md). Full OpenSSL availability and FIPS notes remain on [docs.python.org](https://docs.python.org/3/library/hashlib.html).
+The [`hashlib`](https://docs.python.org/3/library/hashlib.html) module exposes a uniform interface to **cryptographic hash algorithms**: SHA-2, SHA-3, BLAKE2, legacy MD5/SHA-1, and **SHAKE** variable-length XOF digests. Construct with named functions (`sha256()`, `blake2b()`, …) or `new(name)`. Feed bytes via `update()`; read `digest()` or `hexdigest()`. For non-cryptographic checksums see [`zlib`](../../data-compression-and-archiving/zlib-compression-compatible-with-gzip/index.md). Full OpenSSL availability and FIPS notes remain on [docs.python.org](https://docs.python.org/3/library/hashlib.html).
 
 ---
 

@@ -1,6 +1,6 @@
 # [UnicodeError](https://docs.python.org/3/library/exceptions.html#UnicodeError)
 
-Subclass of [`ValueError`](valueerror/index.md) for **Unicode encoding, decoding, or translation** failures. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#UnicodeError).
+Subclass of [`ValueError`](../valueerror/index.md) for **Unicode encoding, decoding, or translation** failures. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#UnicodeError).
 
 ---
 
@@ -8,9 +8,9 @@ Subclass of [`ValueError`](valueerror/index.md) for **Unicode encoding, decoding
 
 | Phase | Subclass |
 |-------|----------|
-| str → bytes | [`UnicodeEncodeError`](unicodeencodeerror/index.md) |
-| bytes → str | [`UnicodeDecodeError`](unicodedecodeerror/index.md) |
-| Codec translation | [`UnicodeTranslateError`](unicodetranslateerror/index.md) |
+| str → bytes | [`UnicodeEncodeError`](../unicodeencodeerror/index.md) |
+| bytes → str | [`UnicodeDecodeError`](../unicodedecodeerror/index.md) |
+| Codec translation | [`UnicodeTranslateError`](../unicodetranslateerror/index.md) |
 
 Any of these inherit the shared attributes below.
 
@@ -31,9 +31,9 @@ Any of these inherit the shared attributes below.
 
 | Type | Phase |
 |------|-------|
-| [`UnicodeEncodeError`](unicodeencodeerror/index.md) | Encoding str → bytes |
-| [`UnicodeDecodeError`](unicodedecodeerror/index.md) | Decoding bytes → str |
-| [`UnicodeTranslateError`](unicodetranslateerror/index.md) | Codec-to-codec translation |
+| [`UnicodeEncodeError`](../unicodeencodeerror/index.md) | Encoding str → bytes |
+| [`UnicodeDecodeError`](../unicodedecodeerror/index.md) | Decoding bytes → str |
+| [`UnicodeTranslateError`](../unicodetranslateerror/index.md) | Codec-to-codec translation |
 
 ---
 
@@ -54,9 +54,9 @@ assert issubclass(UnicodeError, ValueError)
 
 ## Sections in this repo
 
-- [UnicodeEncodeError](unicodeencodeerror/index.md)
-- [UnicodeDecodeError](unicodedecodeerror/index.md)
-- [UnicodeTranslateError](unicodetranslateerror/index.md)
+- [UnicodeEncodeError](../unicodeencodeerror/index.md)
+- [UnicodeDecodeError](../unicodedecodeerror/index.md)
+- [UnicodeTranslateError](../unicodetranslateerror/index.md)
 
 ---
 
@@ -68,7 +68,7 @@ assert issubclass(UnicodeError, ValueError)
 | Catch specific subclass | Known encode vs decode path |
 | `errors='replace'` / `'surrogateescape'` | Controlled data loss or binary round-trip |
 
-Related: [`ValueError`](valueerror/index.md) (non-Unicode bad values).
+Related: [`ValueError`](../valueerror/index.md) (non-Unicode bad values).
 
 ---
 

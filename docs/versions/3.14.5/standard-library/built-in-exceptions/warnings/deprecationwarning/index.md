@@ -6,7 +6,7 @@
 
 ## Purpose
 
-Tell maintainers that an interface will be removed or changed in a future version. Distinct from [`FutureWarning`](futurewarning/index.md), which targets people *using* applications written in Python (data scientists, CLI users, etc.).
+Tell maintainers that an interface will be removed or changed in a future version. Distinct from [`FutureWarning`](../futurewarning/index.md), which targets people *using* applications written in Python (data scientists, CLI users, etc.).
 
 ---
 
@@ -29,7 +29,7 @@ This default prevents end users of packaged apps from seeing low-level library d
 - Behavior that still works but will change in a future major/minor release per your project's policy.
 - Internals of frameworks consumed by other Python packages.
 
-Use [`FutureWarning`](futurewarning/index.md) when the primary audience is someone running an application, not importing your module as a dependency.
+Use [`FutureWarning`](../futurewarning/index.md) when the primary audience is someone running an application, not importing your module as a dependency.
 
 ---
 

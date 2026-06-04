@@ -1,6 +1,6 @@
 # [Function definitions](https://docs.python.org/3/reference/compound_stmts.html#function-definitions)
 
-A **`def` statement** binds a name to a **function object** wrapping the suite. The body runs only on **call**; decorators run at **definition** time. Parameters support defaults, `/` positional-only, `*` keyword-only, `*args` / `**kwargs`, [annotations](annotations/index.md), and [type parameter lists](type-parameter-lists/index.md). Call semantics: [Calls](../../expressions/index.md). Reference: [docs.python.org](https://docs.python.org/3/reference/compound_stmts.html#function-definitions).
+A **`def` statement** binds a name to a **function object** wrapping the suite. The body runs only on **call**; decorators run at **definition** time. Parameters support defaults, `/` positional-only, `*` keyword-only, `*args` / `**kwargs`, [annotations](../annotations/index.md), and [type parameter lists](../type-parameter-lists/index.md). Call semantics: [Calls](../../expressions/index.md). Reference: [docs.python.org](https://docs.python.org/3/reference/compound_stmts.html#function-definitions).
 
 Parent: [Compound statements](../index.md)
 
@@ -29,7 +29,7 @@ funcdef ::= [decorators] "def" funcname [type_params] "(" [parameter_list] ")"
 |--------|------|
 | `name` | Positional or keyword (unless `/` or `*` rules apply) |
 | `name=expr` | Default if argument omitted |
-| `name: annotation` | Annotation only; see [Annotations](annotations/index.md) |
+| `name: annotation` | Annotation only; see [Annotations](../annotations/index.md) |
 | `/` | Parameters before `/` are positional-only |
 | `*` | Starts keyword-only section |
 | `*name` | Var-positional tuple |

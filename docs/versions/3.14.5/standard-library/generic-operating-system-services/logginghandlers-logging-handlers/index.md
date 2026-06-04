@@ -2,7 +2,7 @@
 
 The [`logging.handlers`](https://docs.python.org/3/library/logging.handlers.html) module supplies **production handlers** beyond `StreamHandler` and `FileHandler`: size- and time-based rotation, syslog, SMTP, HTTP, and cross-thread/process queues. Reference these classes by fully qualified name in [`dictConfig`](../loggingconfig-logging-configuration/index.md). Full API reference remains on [docs.python.org](https://docs.python.org/3/library/logging.handlers.html).
 
-Related: [`logging`](../logging-logging-facility-for-python/index.md) base handler API; [`queue`](../../concurrency/queue-a-synchronized-queue-class/index.md) used by `QueueHandler`/`QueueListener`.
+Related: [`logging`](../logging-logging-facility-for-python/index.md) base handler API; [`queue`](../../concurrent-execution/queue-a-synchronized-queue-class/index.md) used by `QueueHandler`/`QueueListener`.
 
 ---
 

@@ -1,6 +1,6 @@
 # [KeyboardInterrupt](https://docs.python.org/3/library/exceptions.html#KeyboardInterrupt)
 
-Raised when the user presses the interrupt key (typically Control-C). Inherits from [`BaseException`](../base-classes/baseexception/index.md), not [`Exception`](../base-classes/exception/index.md), so generic `except Exception` handlers do not swallow it. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#KeyboardInterrupt).
+Raised when the user presses the interrupt key (typically Control-C). Inherits from [`BaseException`](../../base-classes/baseexception/index.md), not [`Exception`](../../base-classes/exception/index.md), so generic `except Exception` handlers do not swallow it. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#KeyboardInterrupt).
 
 ---
 
@@ -39,4 +39,4 @@ assert handler(ValueError()) == 'caught Exception'
 
 - Allow `KeyboardInterrupt` to propagate unless you are shutting down gracefully (save state, then re-raise).
 - Catching it can leave programs in inconsistent state if cleanup is incomplete.
-- Related: [`SystemExit`](systemexit/index.md) (also inherits from `BaseException`).
+- Related: [`SystemExit`](../systemexit/index.md) (also inherits from `BaseException`).

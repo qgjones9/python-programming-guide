@@ -51,5 +51,5 @@ XML-RPC parses XML from the network—**disable for untrusted peers** or place b
 
 | Section | Summary |
 |---------|---------|
-| [xmlrpc.client — XML-RPC client access](xmlrpcclient-xml-rpc-client-access/index.md) | Proxy objects and transports |
-| [xmlrpc.server — Basic XML-RPC servers](xmlrpcserver-basic-xml-rpc-servers/index.md) | Publish callables over HTTP |
+| [xmlrpc.client — XML-RPC client access](../xmlrpcclient-xml-rpc-client-access/index.md) | Proxy objects and transports |
+| [xmlrpc.server — Basic XML-RPC servers](../xmlrpcserver-basic-xml-rpc-servers/index.md) | Publish callables over HTTP |

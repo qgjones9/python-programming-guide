@@ -2,7 +2,7 @@
 
 The [`warnings`](https://docs.python.org/3/library/warnings.html) module implements Python's **warning subsystem**: emit `Warning` subclasses, apply filters (`default`, `ignore`, `error`, …), and integrate with `-W` CLI options via `sys.warnoptions`. Unlike exceptions, warnings default to printing once and continuing. Reference: [docs.python.org](https://docs.python.org/3/library/warnings.html).
 
-Related exception docs: [Built-in Exceptions — warnings](../built-in-exceptions/warnings/index.md).
+Related exception docs: [Built-in Exceptions — warnings](../../built-in-exceptions/warnings/index.md).
 
 ---
 
@@ -72,5 +72,5 @@ with warnings.catch_warnings(record=True) as log:
 
 ## See also
 
-- [`BytesWarning`](../built-in-exceptions/warnings/byteswarning/index.md) — binary/text misuse
+- [`BytesWarning`](../../built-in-exceptions/warnings/byteswarning/index.md) — binary/text misuse
 - [`sys`](../sys-system-specific-parameters-and-functions/index.md) — `warnoptions` from `-W`

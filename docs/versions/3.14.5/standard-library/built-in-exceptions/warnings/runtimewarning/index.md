@@ -6,7 +6,7 @@
 
 ## Purpose
 
-Separate “something looks wrong while executing” from hard failures ([`ValueError`](../../concrete-exceptions/valueerror/index.md), [`TypeError`](../../concrete-exceptions/typeerror/index.md)) and from compile-time [`SyntaxWarning`](syntaxwarning/index.md). The interpreter and extension modules emit `RuntimeWarning` for edge cases in numeric and platform code.
+Separate “something looks wrong while executing” from hard failures ([`ValueError`](../../concrete-exceptions/valueerror/index.md), [`TypeError`](../../concrete-exceptions/typeerror/index.md)) and from compile-time [`SyntaxWarning`](../syntaxwarning/index.md). The interpreter and extension modules emit `RuntimeWarning` for edge cases in numeric and platform code.
 
 ---
 
@@ -26,7 +26,7 @@ Separate “something looks wrong while executing” from hard failures ([`Value
 - Soft signals from C extensions surfaced to Python.
 - Library code when the operation completes but the input or environment is suspicious.
 
-Use [`UserWarning`](userwarning/index.md) for generic application notices; use `RuntimeWarning` when the issue is specifically “this runtime operation is fishy.”
+Use [`UserWarning`](../userwarning/index.md) for generic application notices; use `RuntimeWarning` when the issue is specifically “this runtime operation is fishy.”
 
 ---
 

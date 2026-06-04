@@ -1,6 +1,6 @@
 # [ImportError](https://docs.python.org/3/library/exceptions.html#ImportError)
 
-Raised when an `import` statement cannot load a module or resolve a name in `from module import name`. Full reference: [docs.python.org](https://docs.python.org/3/library/exceptions.html#ImportError). Since 3.6, missing modules usually surface as [`ModuleNotFoundError`](modulenotfounderror/index.md) instead.
+Raised when an `import` statement cannot load a module or resolve a name in `from module import name`. Full reference: [docs.python.org](https://docs.python.org/3/library/exceptions.html#ImportError). Since 3.6, missing modules usually surface as [`ModuleNotFoundError`](../modulenotfounderror/index.md) instead.
 
 ---
 
@@ -47,4 +47,4 @@ assert issubclass(ModuleNotFoundError, ImportError)
 
 ## Sections in this repo
 
-- [ModuleNotFoundError](modulenotfounderror/index.md)
+- [ModuleNotFoundError](../modulenotfounderror/index.md)

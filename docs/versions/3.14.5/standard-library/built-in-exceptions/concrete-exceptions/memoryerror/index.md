@@ -36,7 +36,7 @@ assert caught == 'unable to allocate array'
 | `except MemoryError` | Degrade feature and notify user |
 | Avoid catching in inner loops | Recovery is expensive and often fails again |
 
-Related: [`OverflowError`](overflowerror/index.md) (fixed-width bounds, not heap exhaustion).
+Related: [`OverflowError`](../overflowerror/index.md) (fixed-width bounds, not heap exhaustion).
 
 ---
 
@@ -44,4 +44,4 @@ Related: [`OverflowError`](overflowerror/index.md) (fixed-width bounds, not heap
 
 - Catch only at process boundaries; free caches or degrade functionality, then retry if safe.
 - Do not catch in tight loops—recovery is expensive and may fail again.
-- Related: [`OverflowError`](overflowerror/index.md) (fixed-width numeric bounds, not heap exhaustion).
+- Related: [`OverflowError`](../overflowerror/index.md) (fixed-width numeric bounds, not heap exhaustion).

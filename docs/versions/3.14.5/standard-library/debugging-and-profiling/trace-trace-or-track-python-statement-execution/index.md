@@ -6,7 +6,7 @@ The **`trace`** module monitors **which lines execute** and how often—useful f
 
 ## Purpose
 
-Unlike [`cProfile`](the-python-profilers/index.md) (function timing), `trace` focuses on **line execution counts** and optional **coverage** reports showing missed lines.
+Unlike [`cProfile`](../the-python-profilers/index.md) (function timing), `trace` focuses on **line execution counts** and optional **coverage** reports showing missed lines.
 
 ---
 
@@ -79,4 +79,4 @@ assert tr.results is not None
 ## See also
 
 - [`sys.settrace`](https://docs.python.org/3/library/sys.html#sys.settrace)
-- [`tracemalloc`](tracemalloc-trace-memory-allocations/index.md)
+- [`tracemalloc`](../tracemalloc-trace-memory-allocations/index.md)

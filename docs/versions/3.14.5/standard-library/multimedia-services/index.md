@@ -2,7 +2,7 @@
 
 Python’s **Multimedia Services** chapter groups small, optional standard-library modules aimed at audio and color workflows. They ship with CPython when the build includes them, but unlike core I/O modules they are not always needed for everyday scripting. Full API reference remains on [docs.python.org](https://docs.python.org/3/library/mm.html); this hub orients you to each module and when to reach for it.
 
-For production audio pipelines (MP3, AAC, resampling, device I/O), third-party packages such as **soundfile**, **pydub**, or **PyAudio** usually replace or wrap these primitives. For image/video, look elsewhere in the library ([`mimetypes`](../internet-protocols-and-support/mimetypes-map-filenames-to-mime-types/index.md), [`base64`](../internet-protocols-and-support/base64-base16-base32-base64-base85-data-encodings/index.md)) or external libraries.
+For production audio pipelines (MP3, AAC, resampling, device I/O), third-party packages such as **soundfile**, **pydub**, or **PyAudio** usually replace or wrap these primitives. For image/video, look elsewhere in the library ([`mimetypes`](../internet-data-handling/mimetypes-map-filenames-to-mime-types/index.md), [`base64`](../internet-data-handling/base64-base16-base32-base64-base85-data-encodings/index.md)) or external libraries.
 
 ---
 

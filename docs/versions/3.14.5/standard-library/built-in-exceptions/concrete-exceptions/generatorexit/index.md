@@ -1,6 +1,6 @@
 # [GeneratorExit](https://docs.python.org/3/library/exceptions.html#GeneratorExit)
 
-Raised when a **generator or coroutine is closed** via `.close()`. It inherits from [`BaseException`](../base-classes/baseexception/index.md), not [`Exception`](../base-classes/exception/index.md), because closing is control flow—not a program error. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#GeneratorExit).
+Raised when a **generator or coroutine is closed** via `.close()`. It inherits from [`BaseException`](../../base-classes/baseexception/index.md), not [`Exception`](../../base-classes/exception/index.md), because closing is control flow—not a program error. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#GeneratorExit).
 
 ---
 
@@ -37,4 +37,4 @@ assert not issubclass(GeneratorExit, Exception)
 
 - Use `try` / `finally` inside generators for cleanup; treat `GeneratorExit` like a shutdown signal.
 - Broad `except Exception` will **not** catch `GeneratorExit`—by design.
-- Related: [`StopIteration`](stopiteration/index.md) for normal exhaustion.
+- Related: [`StopIteration`](../stopiteration/index.md) for normal exhaustion.

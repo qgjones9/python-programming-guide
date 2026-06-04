@@ -1,6 +1,6 @@
 # [FutureWarning](https://docs.python.org/3/library/exceptions.html#FutureWarning)
 
-`FutureWarning` marks deprecated behavior aimed at **end users of applications** written in Python—people who run notebooks, scripts, or GUIs but may not maintain the library code. Since Python 3.7, it is distinguished from [`DeprecationWarning`](deprecationwarning/index.md) by **audience and default filters**, not by whether behavior is removed entirely. Canonical docs: [exceptions.html#FutureWarning](https://docs.python.org/3/library/exceptions.html#FutureWarning).
+`FutureWarning` marks deprecated behavior aimed at **end users of applications** written in Python—people who run notebooks, scripts, or GUIs but may not maintain the library code. Since Python 3.7, it is distinguished from [`DeprecationWarning`](../deprecationwarning/index.md) by **audience and default filters**, not by whether behavior is removed entirely. Canonical docs: [exceptions.html#FutureWarning](https://docs.python.org/3/library/exceptions.html#FutureWarning).
 
 ---
 

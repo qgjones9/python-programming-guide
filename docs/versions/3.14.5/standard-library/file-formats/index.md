@@ -2,7 +2,7 @@
 
 The standard library ships parsers for **tabular**, **INI-style**, **TOML**, **FTP credential**, and **Apple plist** file formats—miscellaneous structured files that are not markup languages or email. Use [`csv`](csv-csv-file-reading-and-writing/index.md) for spreadsheet/database interchange; [`configparser`](configparser-configuration-file-parser/index.md) for INI-style app settings; [`tomllib`](tomllib-parse-toml-files/index.md) (3.11+, read-only) for modern config such as `pyproject.toml`; [`netrc`](netrc-netrc-file-processing/index.md) for FTP login files; [`plistlib`](plistlib-generate-and-parse-apple-plist-files/index.md) for macOS/iOS property lists. Full API reference remains on [docs.python.org](https://docs.python.org/3/library/fileformats.html).
 
-Related material: [`json`](../data-types/json-json-encoder-and-decoder/index.md) for JSON config, [`pickle`](../data-persistence/pickle-python-object-serialization/index.md) for Python-native serialization (not cross-language), and [`io`](../built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md) for text vs binary file modes.
+Related material: [`json`](../internet-data-handling/json-json-encoder-and-decoder/index.md) for JSON config, [`pickle`](../data-persistence/pickle-python-object-serialization/index.md) for Python-native serialization (not cross-language), and [`io`](../built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md) for text vs binary file modes.
 
 ---
 

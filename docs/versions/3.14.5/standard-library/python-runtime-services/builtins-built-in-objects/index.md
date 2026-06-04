@@ -60,6 +60,6 @@ assert issubclass(builtins.str, builtins.object)
 
 ## See also
 
-- [Built-in Types](../built-in-types/index.md) — stdlib chapter on `int`, `str`, containers, …
-- [Built-in Exceptions](../built-in-exceptions/index.md) — exception hierarchy
+- [Built-in Types](../../built-in-types/index.md) — stdlib chapter on `int`, `str`, containers, …
+- [Built-in Exceptions](../../built-in-exceptions/index.md) — exception hierarchy
 - [`sys`](../sys-system-specific-parameters-and-functions/index.md) — interpreter services (separate from built-in objects)

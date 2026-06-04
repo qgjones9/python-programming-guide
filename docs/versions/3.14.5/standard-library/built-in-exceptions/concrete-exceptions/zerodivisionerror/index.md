@@ -1,6 +1,6 @@
 # [ZeroDivisionError](https://docs.python.org/3/library/exceptions.html#ZeroDivisionError)
 
-Subclass of [`ArithmeticError`](../base-classes/arithmeticerror/index.md) raised when the **second operand of division or modulo is zero**. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#ZeroDivisionError).
+Subclass of [`ArithmeticError`](../../base-classes/arithmeticerror/index.md) raised when the **second operand of division or modulo is zero**. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#ZeroDivisionError).
 
 ---
 
@@ -36,11 +36,11 @@ assert caught == 'ZeroDivisionError'
 | `except ZeroDivisionError` | Translate to domain error or return sentinel |
 | `except ArithmeticError` | Single handler for overflow and division-by-zero |
 
-Related: [`OverflowError`](overflowerror/index.md), [`ArithmeticError`](../base-classes/arithmeticerror/index.md).
+Related: [`OverflowError`](../overflowerror/index.md), [`ArithmeticError`](../../base-classes/arithmeticerror/index.md).
 
 ---
 
 ## Best practices
 
 - Validate divisors from user input before dividing.
-- Catch [`ArithmeticError`](../base-classes/arithmeticerror/index.md) only when overflow and division-by-zero need the same handling.
+- Catch [`ArithmeticError`](../../base-classes/arithmeticerror/index.md) only when overflow and division-by-zero need the same handling.

@@ -1,6 +1,6 @@
 # [UnboundLocalError](https://docs.python.org/3/library/exceptions.html#UnboundLocalError)
 
-Subclass of [`NameError`](nameerror/index.md) raised when a **local variable is referenced before assignment** in a function or method. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#UnboundLocalError).
+Subclass of [`NameError`](../nameerror/index.md) raised when a **local variable is referenced before assignment** in a function or method. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#UnboundLocalError).
 
 ---
 
@@ -39,4 +39,4 @@ assert issubclass(UnboundLocalError, NameError)
 
 - Initialize locals before use; use `nonlocal` when mutating enclosing scope.
 - Catch `NameError` (base) if you want both unbound-local and undefined-global failures.
-- Parent: [`NameError`](nameerror/index.md).
+- Parent: [`NameError`](../nameerror/index.md).

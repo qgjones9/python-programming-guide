@@ -26,7 +26,7 @@ Help find implicit `encoding=None` call sites (`open()`, [`io.text_encoding()`](
 - CPython and `io` when default locale encoding is selected and opt-in is active.
 - Wrapper libraries via `io.text_encoding()` so **callers** get the warning, not the helper internals.
 
-Do not use `EncodingWarning` for general Unicode issues—see [`UnicodeWarning`](unicodewarning/index.md).
+Do not use `EncodingWarning` for general Unicode issues—see [`UnicodeWarning`](../unicodewarning/index.md).
 
 ---
 

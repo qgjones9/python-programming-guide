@@ -91,7 +91,7 @@ Without metadata (HTTP `charset`, file spec), prefer **explicit encoding** at AP
 | Practice | Why |
 |----------|-----|
 | Standardize on **UTF-8** for new text | Full Unicode, no endianness |
-| Normalize with **`unicodedata`** before compare | See [unicodedata](../../text-processing-services/unicodedata-unicode-database/index.md) |
+| Normalize with **`unicodedata`** before compare | See [unicodedata](../../../text-processing-services/unicodedata-unicode-database/index.md) |
 | Treat **BOM** as format metadata, not content | Strip or preserve consistently |
 | Never guess encoding for **security-critical** parsing | Use declared charset |
 

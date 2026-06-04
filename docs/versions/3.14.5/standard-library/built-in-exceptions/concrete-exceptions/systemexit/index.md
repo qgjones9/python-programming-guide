@@ -1,6 +1,6 @@
 # [SystemExit](https://docs.python.org/3/library/exceptions.html#SystemExit)
 
-Raised by [`sys.exit()`](https://docs.python.org/3/library/sys.html#sys.exit) to terminate the interpreter. Inherits from [`BaseException`](../base-classes/baseexception/index.md), not [`Exception`](../base-classes/exception/index.md). See [docs.python.org](https://docs.python.org/3/library/exceptions.html#SystemExit).
+Raised by [`sys.exit()`](https://docs.python.org/3/library/sys.html#sys.exit) to terminate the interpreter. Inherits from [`BaseException`](../../base-classes/baseexception/index.md), not [`Exception`](../../base-classes/exception/index.md). See [docs.python.org](https://docs.python.org/3/library/exceptions.html#SystemExit).
 
 ---
 
@@ -45,4 +45,4 @@ assert caught == 0
 
 - Use `sys.exit()` in CLI apps; let `SystemExit` propagate from `main`.
 - Use [`os._exit()`](https://docs.python.org/3/library/os.html#os._exit) only when `finally` must not run (e.g. after `fork`).
-- Related: [`KeyboardInterrupt`](keyboardinterrupt/index.md).
+- Related: [`KeyboardInterrupt`](../keyboardinterrupt/index.md).

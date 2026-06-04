@@ -2,7 +2,7 @@
 
 The [`pty`](https://docs.python.org/3/library/pty.html) module allocates **pseudo-terminal (PTY) pairs** on Unix: a master fd for the parent and a slave tty for the child—so programs that expect a terminal (colors, password prompts, pagers) behave correctly when automated. Unix-only. Full API remains on [docs.python.org](https://docs.python.org/3/library/pty.html).
 
-Related: [`subprocess`](../../subprocess-management/subprocess-subprocess-management/index.md); [`tty`](tty-terminal-control-functions/index.md).
+Related: [`subprocess`](../../concurrent-execution/subprocess-subprocess-management/index.md); [`tty`](../tty-terminal-control-functions/index.md).
 
 ---
 
@@ -73,5 +73,5 @@ if importlib.util.find_spec("pty"):
 
 ## See also
 
-- [`subprocess`](../../subprocess-management/subprocess-subprocess-management/index.md) — process management
-- [`termios`](termios-posix-style-tty-control/index.md) — configure slave tty
+- [`subprocess`](../../concurrent-execution/subprocess-subprocess-management/index.md) — process management
+- [`termios`](../termios-posix-style-tty-control/index.md) — configure slave tty

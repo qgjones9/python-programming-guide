@@ -1,6 +1,6 @@
 # [AttributeError](https://docs.python.org/3/library/exceptions.html#AttributeError)
 
-Raised when **attribute reference or assignment** fails on an object. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#AttributeError). If the object does not support attributes at all, Python raises [`TypeError`](typeerror/index.md) instead.
+Raised when **attribute reference or assignment** fails on an object. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#AttributeError). If the object does not support attributes at all, Python raises [`TypeError`](../typeerror/index.md) instead.
 
 ---
 
@@ -48,4 +48,4 @@ except AttributeError as exc:
 | `hasattr` then access | Duck-typing probe (beware `__getattr__` side effects) |
 | `except AttributeError` | Translate to domain error or retry path |
 
-Related: [`TypeError`](typeerror/index.md) (unsupported operation), [`NameError`](nameerror/index.md) (undefined name, not missing attr).
+Related: [`TypeError`](../typeerror/index.md) (unsupported operation), [`NameError`](../nameerror/index.md) (undefined name, not missing attr).

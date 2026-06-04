@@ -85,5 +85,5 @@ assert list(a) == [1.0, 2.0, 3.0]
 
 ## See also
 
-- [`struct`](../binary-data-services/struct-interpret-bytes-as-packed-binary-data/index.md) — heterogeneous packing
+- [`struct`](../../binary-data-services/struct-interpret-bytes-as-packed-binary-data/index.md) — heterogeneous packing
 - [`memoryview`](https://docs.python.org/3/library/stdtypes.html#memoryview) — zero-copy buffer views

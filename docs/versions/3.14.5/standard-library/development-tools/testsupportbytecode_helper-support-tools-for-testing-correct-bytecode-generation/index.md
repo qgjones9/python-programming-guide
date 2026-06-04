@@ -49,4 +49,4 @@ unittest.main(argv=["demo"], exit=False, verbosity=0)
 ## See also
 
 - [`dis` — Disassembler](https://docs.python.org/3/library/dis.html)
-- [`test.support`](testsupport-utilities-for-the-python-test-suite/index.md)
+- [`test.support`](../testsupport-utilities-for-the-python-test-suite/index.md)

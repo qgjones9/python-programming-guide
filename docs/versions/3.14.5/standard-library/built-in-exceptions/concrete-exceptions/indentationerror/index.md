@@ -1,6 +1,6 @@
 # [IndentationError](https://docs.python.org/3/library/exceptions.html#IndentationError)
 
-Subclass of [`SyntaxError`](syntaxerror/index.md) for syntax errors caused by **incorrect indentation**. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#IndentationError).
+Subclass of [`SyntaxError`](../syntaxerror/index.md) for syntax errors caused by **incorrect indentation**. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#IndentationError).
 
 ---
 
@@ -31,11 +31,11 @@ assert issubclass(IndentationError, SyntaxError)
 
 ## Sections in this repo
 
-- [TabError](taberror/index.md)
+- [TabError](../taberror/index.md)
 
 ---
 
 ## Best practices
 
-- Configure editors for **spaces-only** (PEP 8) to avoid [`TabError`](taberror/index.md).
-- Parent: [`SyntaxError`](syntaxerror/index.md).
+- Configure editors for **spaces-only** (PEP 8) to avoid [`TabError`](../taberror/index.md).
+- Parent: [`SyntaxError`](../syntaxerror/index.md).

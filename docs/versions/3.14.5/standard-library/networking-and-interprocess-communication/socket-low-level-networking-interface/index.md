@@ -2,7 +2,7 @@
 
 The [`socket`](https://docs.python.org/3/library/socket.html) module exposes the **BSD socket API** in an object-oriented form: `socket()` returns a socket whose methods map to `bind`, `listen`, `connect`, `send`, `recv`, and friends. Buffer sizing on receive is automatic. Full address-family tables and platform notes remain on [docs.python.org](https://docs.python.org/3/library/socket.html). **Not available on WASI.**
 
-Related: [`ssl`](ssl-tlsssl-wrapper-for-socket-objects/index.md), [`selectors`](selectors-high-level-io-multiplexing/index.md), [`socketserver`](../internet-protocols-and-support/socketserver-a-framework-for-network-servers/index.md).
+Related: [`ssl`](../ssl-tlsssl-wrapper-for-socket-objects/index.md), [`selectors`](../selectors-high-level-io-multiplexing/index.md), [`socketserver`](../../internet-protocols-and-support/socketserver-a-framework-for-network-servers/index.md).
 
 ---
 

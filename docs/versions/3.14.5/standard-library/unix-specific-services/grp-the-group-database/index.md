@@ -2,7 +2,7 @@
 
 The [`grp`](https://docs.python.org/3/library/grp.html) module reads the **Unix group database** (`/etc/group` and nss backends). It returns **`struct_group`** records: group name, GID, member list. Unix-only. Full API remains on [docs.python.org](https://docs.python.org/3/library/grp.html).
 
-Related: [`pwd`](pwd-the-password-database/index.md); [`os.getgid`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md).
+Related: [`pwd`](../pwd-the-password-database/index.md); [`os.getgid`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md).
 
 ---
 
@@ -69,5 +69,5 @@ if importlib.util.find_spec("grp"):
 
 ## See also
 
-- [`pwd`](pwd-the-password-database/index.md) — user database
-- [`resource`](resource-resource-usage-information/index.md) — per-process limits
+- [`pwd`](../pwd-the-password-database/index.md) — user database
+- [`resource`](../resource-resource-usage-information/index.md) — per-process limits

@@ -1,6 +1,6 @@
 # [lzma — Compression using the LZMA algorithm](https://docs.python.org/3/library/lzma.html)
 
-The [`lzma`](https://docs.python.org/3/library/lzma.html) module compresses and decompresses data with the **LZMA** algorithm, including **`.xz`** containers and legacy **`.lzma`** streams. The API parallels [`gzip`](gzip-support-for-gzip-files/index.md) and [`bz2`](bz2-support-for-bzip2-compression/index.md): file objects, one-shot helpers, and incremental compressor classes. **`LZMAFile` is not thread-safe** — guard shared instances with a lock. Full filter-chain and preset documentation is on [docs.python.org](https://docs.python.org/3/library/lzma.html).
+The [`lzma`](https://docs.python.org/3/library/lzma.html) module compresses and decompresses data with the **LZMA** algorithm, including **`.xz`** containers and legacy **`.lzma`** streams. The API parallels [`gzip`](../gzip-support-for-gzip-files/index.md) and [`bz2`](../bz2-support-for-bzip2-compression/index.md): file objects, one-shot helpers, and incremental compressor classes. **`LZMAFile` is not thread-safe** — guard shared instances with a lock. Full filter-chain and preset documentation is on [docs.python.org](https://docs.python.org/3/library/lzma.html).
 
 **Optional module.** Requires liblzma at build time.
 
@@ -96,7 +96,7 @@ assert lzma.decompress(blob) == b"blah blah blah\n" * 20
 
 ## Choosing lzma vs alternatives
 
-| Criterion | lzma | [`gzip`](gzip-support-for-gzip-files/index.md) | [`bz2`](bz2-support-for-bzip2-compression/index.md) |
+| Criterion | lzma | [`gzip`](../gzip-support-for-gzip-files/index.md) | [`bz2`](../bz2-support-for-bzip2-compression/index.md) |
 |-----------|------|-------------------------------------------------|-----------------------------------------------------|
 | Ratio | Best (slowest at high presets) | Moderate | Good |
 | `.xz` tooling | `xz` utility, many packagers | N/A | N/A |

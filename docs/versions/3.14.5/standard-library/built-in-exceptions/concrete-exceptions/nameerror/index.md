@@ -11,7 +11,7 @@ Raised when a **local or global name is not found** (unqualified names only). Se
 | Undefined variable | Reference before assignment in global scope |
 | Misspelled name | `pritn('hi')` |
 | Deleted name | `del x` then use `x` |
-| Not for missing attributes | Use [`AttributeError`](attributeerror/index.md) instead |
+| Not for missing attributes | Use [`AttributeError`](../attributeerror/index.md) instead |
 
 ---
 
@@ -42,11 +42,11 @@ assert ns['result'] == 'undefined_symbol'
 
 ## Sections in this repo
 
-- [UnboundLocalError](unboundlocalerror/index.md)
+- [UnboundLocalError](../unboundlocalerror/index.md)
 
 ---
 
 ## Best practices
 
 - Fix the underlying typo or import; do not catch `NameError` in production paths except for dynamic evaluation (`eval` / template engines).
-- Distinguish from [`UnboundLocalError`](unboundlocalerror/index.md) when a local is referenced before assignment.
+- Distinguish from [`UnboundLocalError`](../unboundlocalerror/index.md) when a local is referenced before assignment.

@@ -1,6 +1,6 @@
 # [PythonFinalizationError](https://docs.python.org/3/library/exceptions.html#PythonFinalizationError)
 
-Subclass of [`RuntimeError`](runtimeerror/index.md) raised when an operation is **blocked during interpreter shutdown** (finalization). Added in Python 3.13 ([docs.python.org](https://docs.python.org/3/library/exceptions.html#PythonFinalizationError)).
+Subclass of [`RuntimeError`](../runtimeerror/index.md) raised when an operation is **blocked during interpreter shutdown** (finalization). Added in Python 3.13 ([docs.python.org](https://docs.python.org/3/library/exceptions.html#PythonFinalizationError)).
 
 ---
 
@@ -38,4 +38,4 @@ if exc_cls is not None:
 ## Best practices
 
 - Avoid starting threads or heavy cleanup in `atexit` handlers that may run during finalization.
-- Parent: [`RuntimeError`](runtimeerror/index.md).
+- Parent: [`RuntimeError`](../runtimeerror/index.md).

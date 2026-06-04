@@ -10,7 +10,7 @@ Raised by [`next()`](https://docs.python.org/3/library/functions.html#next) and 
 |---------|----------|
 | Exhausted iterator | Normal control flow for `for` loops |
 | Generator `return value` | Becomes `StopIteration(value)` (3.3+) |
-| `raise StopIteration` inside generator | Converted to [`RuntimeError`](runtimeerror/index.md) (PEP 479, 3.7+) |
+| `raise StopIteration` inside generator | Converted to [`RuntimeError`](../runtimeerror/index.md) (PEP 479, 3.7+) |
 
 ---
 
@@ -54,4 +54,4 @@ except StopIteration as exc:
 ## Best practices
 
 - Do not catch `StopIteration` around `for` loops—the loop handles it.
-- Related: [`StopAsyncIteration`](stopasynciteration/index.md), [`GeneratorExit`](generatorexit/index.md).
+- Related: [`StopAsyncIteration`](../stopasynciteration/index.md), [`GeneratorExit`](../generatorexit/index.md).

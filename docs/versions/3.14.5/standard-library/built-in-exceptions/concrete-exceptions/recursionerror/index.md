@@ -1,6 +1,6 @@
 # [RecursionError](https://docs.python.org/3/library/exceptions.html#RecursionError)
 
-Subclass of [`RuntimeError`](runtimeerror/index.md) raised when the interpreter exceeds **maximum recursion depth** ([`sys.getrecursionlimit()`](https://docs.python.org/3/library/sys.html#sys.getrecursionlimit)). Added in Python 3.5 ([docs.python.org](https://docs.python.org/3/library/exceptions.html#RecursionError)).
+Subclass of [`RuntimeError`](../runtimeerror/index.md) raised when the interpreter exceeds **maximum recursion depth** ([`sys.getrecursionlimit()`](https://docs.python.org/3/library/sys.html#sys.getrecursionlimit)). Added in Python 3.5 ([docs.python.org](https://docs.python.org/3/library/exceptions.html#RecursionError)).
 
 ---
 
@@ -40,11 +40,11 @@ assert issubclass(RecursionError, RuntimeError)
 | `except RecursionError` | Guard dynamic user code (eval, plugins) |
 | `sys.setrecursionlimit()` | Last resort after algorithm review |
 
-Related: [`RuntimeError`](runtimeerror/index.md).
+Related: [`RuntimeError`](../runtimeerror/index.md).
 
 ---
 
 ## Best practices
 
 - Fix the algorithm rather than raising `sys.setrecursionlimit()` without analysis.
-- Parent: [`RuntimeError`](runtimeerror/index.md).
+- Parent: [`RuntimeError`](../runtimeerror/index.md).

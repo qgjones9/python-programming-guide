@@ -1,6 +1,6 @@
 # [UnicodeEncodeError](https://docs.python.org/3/library/exceptions.html#UnicodeEncodeError)
 
-Subclass of [`UnicodeError`](unicodeerror/index.md) raised during **Unicode encoding** (str → bytes). See [docs.python.org](https://docs.python.org/3/library/exceptions.html#UnicodeEncodeError).
+Subclass of [`UnicodeError`](../unicodeerror/index.md) raised during **Unicode encoding** (str → bytes). See [docs.python.org](https://docs.python.org/3/library/exceptions.html#UnicodeEncodeError).
 
 ---
 
@@ -42,4 +42,4 @@ assert caught == ('ascii', 3, 4, 'é')
 
 - Default to UTF-8 for wire format and file output; restrict to ASCII only when the protocol requires it.
 - When using `errors='ignore'`, document that output may be lossy.
-- Parent: [`UnicodeError`](unicodeerror/index.md).
+- Parent: [`UnicodeError`](../unicodeerror/index.md).

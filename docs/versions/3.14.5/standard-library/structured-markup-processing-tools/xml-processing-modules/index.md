@@ -65,12 +65,12 @@ assert "".join(handler.parts) == "Hello"
 
 | Section | Summary |
 |---------|---------|
-| [xml.etree.ElementTree — The ElementTree XML API](xmletreeelementtree-the-elementtree-xml-api/index.md) | Element trees and XPath subset |
-| [xml.dom — The Document Object Model API](xmldom-the-document-object-model-api/index.md) | DOM node types and exceptions |
-| [xml.dom.minidom — Minimal DOM implementation](xmldomminidom-minimal-dom-implementation/index.md) | Lightweight DOM documents |
-| [xml.dom.pulldom — Support for building partial DOM trees](xmldompulldom-support-for-building-partial-dom-trees/index.md) | Pull-based partial DOM |
-| [xml.sax — Support for SAX2 parsers](xmlsax-support-for-sax2-parsers/index.md) | SAX parse drivers |
-| [xml.sax.handler — Base classes for SAX handlers](xmlsaxhandler-base-classes-for-sax-handlers/index.md) | Handler base classes |
-| [xml.sax.saxutils — SAX Utilities](xmlsaxsaxutils-sax-utilities/index.md) | Escaping and helper handlers |
-| [xml.sax.xmlreader — Interface for XML parsers](xmlsaxxmlreader-interface-for-xml-parsers/index.md) | XMLReader interface |
-| [xml.parsers.expat — Fast XML parsing using Expat](xmlparsersexpat-fast-xml-parsing-using-expat/index.md) | Expat bindings |
+| [xml.etree.ElementTree — The ElementTree XML API](../xmletreeelementtree-the-elementtree-xml-api/index.md) | Element trees and XPath subset |
+| [xml.dom — The Document Object Model API](../xmldom-the-document-object-model-api/index.md) | DOM node types and exceptions |
+| [xml.dom.minidom — Minimal DOM implementation](../xmldomminidom-minimal-dom-implementation/index.md) | Lightweight DOM documents |
+| [xml.dom.pulldom — Support for building partial DOM trees](../xmldompulldom-support-for-building-partial-dom-trees/index.md) | Pull-based partial DOM |
+| [xml.sax — Support for SAX2 parsers](../xmlsax-support-for-sax2-parsers/index.md) | SAX parse drivers |
+| [xml.sax.handler — Base classes for SAX handlers](../xmlsaxhandler-base-classes-for-sax-handlers/index.md) | Handler base classes |
+| [xml.sax.saxutils — SAX Utilities](../xmlsaxsaxutils-sax-utilities/index.md) | Escaping and helper handlers |
+| [xml.sax.xmlreader — Interface for XML parsers](../xmlsaxxmlreader-interface-for-xml-parsers/index.md) | XMLReader interface |
+| [xml.parsers.expat — Fast XML parsing using Expat](../xmlparsersexpat-fast-xml-parsing-using-expat/index.md) | Expat bindings |

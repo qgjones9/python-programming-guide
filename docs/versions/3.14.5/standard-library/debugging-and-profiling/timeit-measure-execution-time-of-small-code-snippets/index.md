@@ -72,5 +72,5 @@ assert min(samples) <= max(samples)
 
 ## See also
 
-- [`cProfile`](the-python-profilers/index.md) — function-level profiling
+- [`cProfile`](../the-python-profilers/index.md) — function-level profiling
 - [`statistics`](https://docs.python.org/3/library/statistics.html) — analyze repeat samples

@@ -56,4 +56,4 @@ assert rc == 2
 ## See also
 
 - [`subprocess`](https://docs.python.org/3/library/subprocess.html)
-- [`test.support`](testsupport-utilities-for-the-python-test-suite/index.md)
+- [`test.support`](../testsupport-utilities-for-the-python-test-suite/index.md)

@@ -94,5 +94,5 @@ python -m cProfile -s cumulative myscript.py
 
 ## See also
 
-- [`timeit`](timeit-measure-execution-time-of-small-code-snippets/index.md) — micro-benchmarks
-- [`trace`](trace-trace-or-track-python-statement-execution/index.md) — line-level counts
+- [`timeit`](../timeit-measure-execution-time-of-small-code-snippets/index.md) — micro-benchmarks
+- [`trace`](../trace-trace-or-track-python-statement-execution/index.md) — line-level counts

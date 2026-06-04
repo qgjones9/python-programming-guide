@@ -45,7 +45,7 @@ for name in ("msvcrt", "winreg", "winsound"):
 | Read installer config from `HKLM` / `HKCU` | [`winreg`](winreg-windows-registry-access/index.md) |
 | Non-blocking console keypress in a CLI | [`msvcrt`](msvcrt-useful-routines-from-the-ms-vc-runtime/index.md) |
 | Alert sound in a desktop script | [`winsound`](winsound-sound-playing-interface-for-windows/index.md) |
-| Cross-platform terminal UI | Prefer [`curses`-style libraries](../../development-tools/index.md) or GUI toolkits—not these modules |
+| Cross-platform terminal UI | Prefer [`curses`-style libraries](../development-tools/index.md) or GUI toolkits—not these modules |
 
 ---
 

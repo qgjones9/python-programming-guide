@@ -1,6 +1,6 @@
 # [TabError](https://docs.python.org/3/library/exceptions.html#TabError)
 
-Subclass of [`IndentationError`](indentationerror/index.md) raised when indentation **mixes tabs and spaces** inconsistently. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#TabError).
+Subclass of [`IndentationError`](../indentationerror/index.md) raised when indentation **mixes tabs and spaces** inconsistently. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#TabError).
 
 ---
 
@@ -36,11 +36,11 @@ assert issubclass(TabError, IndentationError)
 | `python -m tabnanny` | CI check for ambiguous indentation |
 | `except TabError` | Tooling that loads user scripts—show line number |
 
-Related: [`IndentationError`](indentationerror/index.md), [`SyntaxError`](syntaxerror/index.md).
+Related: [`IndentationError`](../indentationerror/index.md), [`SyntaxError`](../syntaxerror/index.md).
 
 ---
 
 ## Best practices
 
 - Use spaces only (4 per indent level per PEP 8).
-- Parent chain: [`IndentationError`](indentationerror/index.md) → [`SyntaxError`](syntaxerror/index.md).
+- Parent chain: [`IndentationError`](../indentationerror/index.md) → [`SyntaxError`](../syntaxerror/index.md).

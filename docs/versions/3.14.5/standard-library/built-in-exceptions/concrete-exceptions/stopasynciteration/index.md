@@ -11,7 +11,7 @@ Must be raised by an asynchronous iterator's `__anext__()` to **stop async itera
 | `async for` over exhausted async iterator | Normal control flow |
 | Manual `await anext()` | Propagates to caller |
 
-Analogous to [`StopIteration`](stopiteration/index.md) for synchronous iterators.
+Analogous to [`StopIteration`](../stopiteration/index.md) for synchronous iterators.
 
 ---
 
@@ -46,4 +46,4 @@ assert issubclass(StopAsyncIteration, Exception)
 ## Best practices
 
 - Never use `StopIteration` inside async iterators—always `StopAsyncIteration`.
-- Related: [`StopIteration`](stopiteration/index.md).
+- Related: [`StopIteration`](../stopiteration/index.md).

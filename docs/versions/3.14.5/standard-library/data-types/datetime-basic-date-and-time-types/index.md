@@ -1,6 +1,6 @@
 # [datetime — Basic date and time types](https://docs.python.org/3/library/datetime.html)
 
-The [`datetime`](https://docs.python.org/3/library/datetime.html) module supplies immutable types for **dates**, **times**, **datetimes**, **durations**, and simple **UTC offsets**. Full reference: [docs.python.org](https://docs.python.org/3/library/datetime.html). For IANA zones, pair with [`zoneinfo`](zoneinfo-iana-time-zone-support/index.md).
+The [`datetime`](https://docs.python.org/3/library/datetime.html) module supplies immutable types for **dates**, **times**, **datetimes**, **durations**, and simple **UTC offsets**. Full reference: [docs.python.org](https://docs.python.org/3/library/datetime.html). For IANA zones, pair with [`zoneinfo`](../zoneinfo-iana-time-zone-support/index.md).
 
 ---
 
@@ -112,6 +112,6 @@ assert dt.isoformat() == text
 
 ## See also
 
-- [`zoneinfo`](zoneinfo-iana-time-zone-support/index.md) — IANA time zone database
-- [`calendar`](calendar-general-calendar-related-functions/index.md) — month grids and weekday helpers
+- [`zoneinfo`](../zoneinfo-iana-time-zone-support/index.md) — IANA time zone database
+- [`calendar`](../calendar-general-calendar-related-functions/index.md) — month grids and weekday helpers
 - [`time`](https://docs.python.org/3/library/time.html) — epoch seconds and `struct_time`

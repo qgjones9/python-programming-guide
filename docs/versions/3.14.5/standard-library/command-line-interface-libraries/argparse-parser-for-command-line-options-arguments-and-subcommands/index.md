@@ -2,7 +2,7 @@
 
 The [`argparse`](https://docs.python.org/3/library/argparse.html) module (since 3.2) is the **recommended** standard-library way to build command-line interfaces. You declare arguments on an [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser); `parse_args()` reads `sys.argv` (or a list you pass in) and returns a [`Namespace`](https://docs.python.org/3/library/argparse.html#argparse.Namespace) of attributes. Help text, usage lines, and basic error messages are generated automatically. Full reference remains on [docs.python.org](https://docs.python.org/3/library/argparse.html).
 
-For legacy [`optparse`](optparse-parser-for-command-line-options/index.md) code or cases needing finer control over option/positional interleaving, see [Choosing an argument parsing library](https://docs.python.org/3/library/optparse.html#choosing-an-argument-parsing-library).
+For legacy [`optparse`](../optparse-parser-for-command-line-options/index.md) code or cases needing finer control over option/positional interleaving, see [Choosing an argument parsing library](https://docs.python.org/3/library/optparse.html#choosing-an-argument-parsing-library).
 
 ---
 
@@ -115,8 +115,8 @@ else:
 
 | Library | Status |
 |---------|--------|
-| [`optparse`](optparse-parser-for-command-line-options/index.md) | Deprecated; retained for existing code |
-| [`getopt`](../superseded-modules/getopt-c-style-parser-for-command-line-options/index.md) | C-style; mostly legacy |
+| [`optparse`](../optparse-parser-for-command-line-options/index.md) | Deprecated; retained for existing code |
+| [`getopt`](../../superseded-modules/getopt-c-style-parser-for-command-line-options/index.md) | C-style; mostly legacy |
 | Third-party (`click`, `typer`, …) | When argparse’s defaults are too rigid |
 
 See [Upgrading Optparse Code](https://docs.python.org/3/howto/argparse.html#upgrading-optparse-code) when migrating older projects.

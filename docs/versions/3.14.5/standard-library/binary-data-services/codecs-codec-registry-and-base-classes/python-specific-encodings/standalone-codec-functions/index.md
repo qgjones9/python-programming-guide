@@ -38,7 +38,7 @@ assert escaped == b"\\x00"
 
 ## Relation to removed `string_escape`
 
-Python 2’s **`string_escape`** codec was removed in Python 3. For **text**, use [`unicode_escape`](text-encodings/index.md); for **raw bytes**, use these standalone functions or `codecs.decode(..., 'unicode_escape')` on appropriately encoded data.
+Python 2’s **`string_escape`** codec was removed in Python 3. For **text**, use [`unicode_escape`](../text-encodings/index.md); for **raw bytes**, use these standalone functions or `codecs.decode(..., 'unicode_escape')` on appropriately encoded data.
 
 ---
 

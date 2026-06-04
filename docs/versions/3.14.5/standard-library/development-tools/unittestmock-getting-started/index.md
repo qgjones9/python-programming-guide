@@ -1,6 +1,6 @@
 # [unittest.mock — getting started](https://docs.python.org/3/library/unittest.mock-examples.html)
 
-This page walks through **common mocking patterns** from the official examples document: patching modules, autospec, side effects, and chaining. Full API details live in [`unittest.mock`](unittestmock-mock-object-library/index.md); canonical prose is at [unittest.mock-examples.html](https://docs.python.org/3/library/unittest.mock-examples.html).
+This page walks through **common mocking patterns** from the official examples document: patching modules, autospec, side effects, and chaining. Full API details live in [`unittest.mock`](../unittestmock-mock-object-library/index.md); canonical prose is at [unittest.mock-examples.html](https://docs.python.org/3/library/unittest.mock-examples.html).
 
 ---
 
@@ -91,5 +91,5 @@ with patch.object(type(cfg), "debug", new_callable=PropertyMock) as mock_debug:
 
 ## See also
 
-- [`unittest.mock` API reference](unittestmock-mock-object-library/index.md)
-- [`unittest`](unittest-unit-testing-framework/index.md)
+- [`unittest.mock` API reference](../unittestmock-mock-object-library/index.md)
+- [`unittest`](../unittest-unit-testing-framework/index.md)

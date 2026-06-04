@@ -1,6 +1,6 @@
 # [select — Waiting for I/O completion](https://docs.python.org/3/library/select.html)
 
-The [`select`](https://docs.python.org/3/library/select.html) module wraps OS **I/O multiplexing** primitives: `select()`, `poll()`, `epoll()`, `devpoll()`, and `kqueue()`. On **Windows**, only **sockets** are supported for `select()`. Prefer [`selectors`](selectors-high-level-io-multiplexing/index.md) for portable application code unless you need exact kernel flags. **Not available on WASI.**
+The [`select`](https://docs.python.org/3/library/select.html) module wraps OS **I/O multiplexing** primitives: `select()`, `poll()`, `epoll()`, `devpoll()`, and `kqueue()`. On **Windows**, only **sockets** are supported for `select()`. Prefer [`selectors`](../selectors-high-level-io-multiplexing/index.md) for portable application code unless you need exact kernel flags. **Not available on WASI.**
 
 ---
 
@@ -135,4 +135,4 @@ if hasattr(select, "epoll"):
 
 ## See also
 
-- [`selectors`](selectors-high-level-io-multiplexing/index.md) — recommended high-level API
+- [`selectors`](../selectors-high-level-io-multiplexing/index.md) — recommended high-level API

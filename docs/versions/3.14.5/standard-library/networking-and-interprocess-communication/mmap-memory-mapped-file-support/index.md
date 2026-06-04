@@ -2,7 +2,7 @@
 
 The [`mmap`](https://docs.python.org/3/library/mmap.html) module maps files or **anonymous memory** into a mutable byte-like object supporting slicing, `find`, `seek`, and `read`/`write`. Useful for **large-file random access** and **same-machine IPC** without copying entire files into RAM. **Not available on WASI.**
 
-Related: built-in [`memoryview`](../built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md), [`os.open`](../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md) for raw fds.
+Related: built-in [`memoryview`](../../built-in-types/binary-sequence-types-bytes-bytearray-memoryview/index.md), [`os.open`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md) for raw fds.
 
 ---
 
@@ -146,4 +146,4 @@ os.remove(path)
 
 ## See also
 
-- [`re`](../text-processing-services/re-regular-expression-operations/index.md) — can search mmap objects like `bytearray`
+- [`re`](../../text-processing-services/re-regular-expression-operations/index.md) — can search mmap objects like `bytearray`

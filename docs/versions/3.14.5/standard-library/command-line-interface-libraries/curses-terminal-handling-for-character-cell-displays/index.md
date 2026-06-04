@@ -4,7 +4,7 @@ The [`curses`](https://docs.python.org/3/library/curses.html) module wraps the *
 
 **Availability:** not Android, iOS, or WASI. Optional in some builds — import may fail if ncurses is missing.
 
-Submodules: [`curses.ascii`](cursesascii-utilities-for-ascii-characters/index.md), [`curses.textpad`](cursestextpad-text-input-widget-for-curses-programs/index.md), [`curses.panel`](cursespanel-a-panel-stack-extension-for-curses/index.md).
+Submodules: [`curses.ascii`](../cursesascii-utilities-for-ascii-characters/index.md), [`curses.textpad`](../cursestextpad-text-input-widget-for-curses-programs/index.md), [`curses.panel`](../cursespanel-a-panel-stack-extension-for-curses/index.md).
 
 ---
 
@@ -115,6 +115,6 @@ assert methods.issubset(dir(curses.window))
 | Resource | Link |
 |----------|------|
 | HOWTO tutorial | [Curses Programming with Python](https://docs.python.org/3/howto/curses.html) |
-| ASCII helpers | [`curses.ascii`](cursesascii-utilities-for-ascii-characters/index.md) |
-| Text fields | [`curses.textpad`](cursestextpad-text-input-widget-for-curses-programs/index.md) |
-| Z-order panels | [`curses.panel`](cursespanel-a-panel-stack-extension-for-curses/index.md) |
+| ASCII helpers | [`curses.ascii`](../cursesascii-utilities-for-ascii-characters/index.md) |
+| Text fields | [`curses.textpad`](../cursestextpad-text-input-widget-for-curses-programs/index.md) |
+| Z-order panels | [`curses.panel`](../cursespanel-a-panel-stack-extension-for-curses/index.md) |

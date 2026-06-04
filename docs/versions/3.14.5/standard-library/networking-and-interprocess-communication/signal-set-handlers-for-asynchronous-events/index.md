@@ -2,7 +2,7 @@
 
 The [`signal`](https://docs.python.org/3/library/signal.html) module installs **Unix signal handlers** and exposes constants for `SIG*`, masks, and alarms. Handlers run in the **main thread** at interpreter checkpoints—not inside the C signal handler. Behavior differs on **WebAssembly** emulated platforms.
 
-Related: [`asyncio` event loop signal APIs](asyncio-asynchronous-io/index.md), [`threading`](../concurrent-execution/thread-based-parallelism/index.md) for inter-thread wakeups.
+Related: [`asyncio` event loop signal APIs](../asyncio-asynchronous-io/index.md), [`threading`](../concurrent-execution/thread-based-parallelism/index.md) for inter-thread wakeups.
 
 ---
 
@@ -125,4 +125,4 @@ if hasattr(signal, "pthread_sigmask") and hasattr(signal, "SIGUSR2"):
 
 ## See also
 
-- [`faulthandler`](../development-tools/faulthandler-dump-the-python-traceback/index.md) — synchronous fault dumps
+- [`faulthandler`](../../debugging-and-profiling/faulthandler-dump-the-python-traceback/index.md) — synchronous fault dumps

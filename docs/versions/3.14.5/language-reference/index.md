@@ -1,6 +1,6 @@
 # [The Python Language Reference](https://docs.python.org/3/reference/index.html#reference-index)
 
-The [language reference](https://docs.python.org/3/reference/index.html) is the **normative, terse** description of Python syntax and core semantics. It is meant to be exact and complete for language lawyers and implementers; it is not a tutorial. Builtin types, functions, and standard modules are specified in [The Python Standard Library](../standard-library/index.md). For a guided introduction, use [The Tutorial](../tutorial/index.md). C/C++ extension authors should also read [Python/C API](../python-c-api-reference-manual/index.md) and [Extending and Embedding](../extending-and-embedding-python-interpreter/index.md).
+The [language reference](https://docs.python.org/3/reference/index.html) is the **normative, terse** description of Python syntax and core semantics. It is meant to be exact and complete for language lawyers and implementers; it is not a tutorial. Builtin types, functions, and standard modules are specified in [The Python Standard Library](../standard-library/index.md). For a guided introduction, use [The Tutorial](../tutorial/index.md). C/C++ extension authors should also read [Python/C API](https://docs.python.org/3/c-api/index.html) and [Extending and Embedding](https://docs.python.org/3/extending/index.html).
 
 This repo mirrors the official outline under `docs/versions/3.14.5/language-reference/`. Each chapter `index.md` links to the canonical `reference/*.html` page; teaching bullets and small `exec`-validated examples live here—full prose and the complete grammar remain on docs.python.org.
 
@@ -13,7 +13,7 @@ This repo mirrors the official outline under `docs/versions/3.14.5/language-refe
 | “How do I write Python?” step by step | [The Tutorial](../tutorial/index.md) |
 | “What does this statement/expression *mean*?” | Language reference (this tree) |
 | “What does `json.loads` / `pathlib` do?” | [Standard Library](../standard-library/index.md) |
-| Embedding, `PyObject*`, GIL | [C API](../python-c-api-reference-manual/index.md) + [Extending](../extending-and-embedding-python-interpreter/index.md) |
+| Embedding, `PyObject*`, GIL | [C API](https://docs.python.org/3/c-api/index.html) + [Extending](https://docs.python.org/3/extending/index.html) |
 | Full EBNF grammar rules | [Full Grammar specification](full-grammar-specification/index.md) |
 
 | Reading order (first pass) | Why |

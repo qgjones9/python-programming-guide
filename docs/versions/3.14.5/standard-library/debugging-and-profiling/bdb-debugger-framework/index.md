@@ -1,6 +1,6 @@
 # [bdb — Debugger framework](https://docs.python.org/3/library/bdb.html)
 
-`bdb` implements the **debugger framework** underlying [`pdb`](pdb-the-python-debugger/index.md): breakpoints, stepping, stack frames, and dispatch to user-defined debuggers via `Bdb` subclasses. Canonical reference: [bdb.html](https://docs.python.org/3/library/bdb.html).
+`bdb` implements the **debugger framework** underlying [`pdb`](../pdb-the-python-debugger/index.md): breakpoints, stepping, stack frames, and dispatch to user-defined debuggers via `Bdb` subclasses. Canonical reference: [bdb.html](https://docs.python.org/3/library/bdb.html).
 
 ---
 
@@ -67,7 +67,7 @@ db.clear_all_breaks()
 
 | Layer | Module |
 |-------|--------|
-| User-facing CLI | [`pdb`](pdb-the-python-debugger/index.md) |
+| User-facing CLI | [`pdb`](../pdb-the-python-debugger/index.md) |
 | Framework | `bdb` |
 | Execution tracing | [`sys.settrace`](https://docs.python.org/3/library/sys.html#sys.settrace) |
 
@@ -75,5 +75,5 @@ db.clear_all_breaks()
 
 ## See also
 
-- [`pdb`](pdb-the-python-debugger/index.md)
+- [`pdb`](../pdb-the-python-debugger/index.md)
 - [`inspect`](https://docs.python.org/3/library/inspect.html) — stack frame introspection

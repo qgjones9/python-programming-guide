@@ -11,7 +11,7 @@ The **`codecs.Codec`** base class defines the **stateless** contract: each `enco
 | `Codec.encode(input, errors='strict')` | `str` (text codec) or bytes-like | `(encoded_object, chars_consumed)` |
 | `Codec.decode(input, errors='strict')` | bytes-like (text codec) | `(decoded_object, bytes_consumed)` |
 
-State must **not** persist on the `Codec` instance—use [incremental](incremental-encoding-and-decoding/index.md) or [stream](stream-encoding-and-decoding/index.md) classes when multibyte sequences span calls.
+State must **not** persist on the `Codec` instance—use [incremental](../incremental-encoding-and-decoding/index.md) or [stream](../stream-encoding-and-decoding/index.md) classes when multibyte sequences span calls.
 
 ```python
 # Goal: stateless encode/decode via registry functions

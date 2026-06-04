@@ -52,7 +52,7 @@ assert out == b"a?b"
 | Stream objects | Delegate unknown attributes to underlying stream |
 | Registry entry | `getregentry()` in `encodings.*` modules returns `CodecInfo` |
 
-Custom codecs register through `codecs.register()` or by adding a module under the [`encodings`](encodings-encodings-package/index.md) package.
+Custom codecs register through `codecs.register()` or by adding a module under the [`encodings`](../encodings-encodings-package/index.md) package.
 
 ---
 

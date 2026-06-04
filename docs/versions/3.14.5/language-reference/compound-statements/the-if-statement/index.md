@@ -1,6 +1,6 @@
 # [The if statement](https://docs.python.org/3/reference/compound_stmts.html#the-if-statement)
 
-The **`if` statement** selects **exactly one** suite to run: Python evaluates each `if` / `elif` condition in order until one is [true](../expressions/boolean-operations/index.md), executes that suite, and skips the rest. If every condition is false and an `else` clause exists, the `else` suite runs. Full grammar and the “dangling else” rules are on [docs.python.org](https://docs.python.org/3/reference/compound_stmts.html#the-if-statement).
+The **`if` statement** selects **exactly one** suite to run: Python evaluates each `if` / `elif` condition in order until one is [true](../../expressions/boolean-operations/index.md), executes that suite, and skips the rest. If every condition is false and an `else` clause exists, the `else` suite runs. Full grammar and the “dangling else” rules are on [docs.python.org](https://docs.python.org/3/reference/compound_stmts.html#the-if-statement).
 
 Parent: [Compound statements](../index.md)
 

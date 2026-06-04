@@ -26,7 +26,7 @@ Use `UserWarning` for conditions worth surfacing to someone running the programâ
 - Data quality issues that do not warrant an exception.
 - Generic notices when no more specific built-in category applies.
 
-Prefer [`DeprecationWarning`](deprecationwarning/index.md) or [`FutureWarning`](futurewarning/index.md) for API removals, [`ResourceWarning`](resourcewarning/index.md) for unclosed resources, and [`RuntimeWarning`](runtimewarning/index.md) for suspicious numeric or interpreter behavior.
+Prefer [`DeprecationWarning`](../deprecationwarning/index.md) or [`FutureWarning`](../futurewarning/index.md) for API removals, [`ResourceWarning`](../resourcewarning/index.md) for unclosed resources, and [`RuntimeWarning`](../runtimewarning/index.md) for suspicious numeric or interpreter behavior.
 
 ---
 

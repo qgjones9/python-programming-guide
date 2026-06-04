@@ -81,6 +81,6 @@ assert "@" in label and label.split("@")[0]
 
 | Module | Relationship |
 |--------|--------------|
-| [`argparse`](argparse-parser-for-command-line-options-arguments-and-subcommands/index.md) | Declare `--password` flags; call `getpass()` when flag omitted |
-| [`readline`](../text-processing-services/readline-gnu-readline-interface/index.md) | Not used for hidden input; getpass uses tty layer |
+| [`argparse`](../argparse-parser-for-command-line-options-arguments-and-subcommands/index.md) | Declare `--password` flags; call `getpass()` when flag omitted |
+| [`readline`](../../text-processing-services/readline-gnu-readline-interface/index.md) | Not used for hidden input; getpass uses tty layer |
 | [`secrets`](https://docs.python.org/3/library/secrets.html) | Generate tokens; getpass collects them from users |

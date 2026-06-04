@@ -2,7 +2,7 @@
 
 The [`resource`](https://docs.python.org/3/library/resource.html) module reports **process resource usage** and sets **soft/hard limits** for CPU time, memory, file descriptors, and core size on Unix (`getrusage`, `getrlimit`, `setrlimit`). Unix-only. Full resource ID tables remain on [docs.python.org](https://docs.python.org/3/library/resource.html).
 
-Related: [`os.times`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md); [`signal`](../../generic-operating-system-services/signal-set-handlers-for-asynchronous-events/index.md) for `SIGXCPU`.
+Related: [`os.times`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md); [`signal`](../../networking-and-interprocess-communication/signal-set-handlers-for-asynchronous-events/index.md) for `SIGXCPU`.
 
 ---
 
@@ -78,4 +78,4 @@ if importlib.util.find_spec("resource"):
 ## See also
 
 - [`os.times`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md) — lighter-weight timing
-- [`subprocess`](../../subprocess-management/subprocess-subprocess-management/index.md) — child `RUSAGE_CHILDREN`
+- [`subprocess`](../../concurrent-execution/subprocess-subprocess-management/index.md) — child `RUSAGE_CHILDREN`

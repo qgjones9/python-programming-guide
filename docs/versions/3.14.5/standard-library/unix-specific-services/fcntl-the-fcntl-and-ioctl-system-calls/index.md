@@ -76,4 +76,4 @@ The **`ioctl`** request codes are device-specific (terminal sizes, socket flags,
 ## See also
 
 - [`os`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md) — fd open/close
-- [`termios`](termios-posix-style-tty-control/index.md) — tty ioctls via higher API
+- [`termios`](../termios-posix-style-tty-control/index.md) — tty ioctls via higher API

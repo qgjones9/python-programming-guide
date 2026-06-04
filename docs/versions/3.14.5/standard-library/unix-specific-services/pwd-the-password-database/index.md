@@ -2,7 +2,7 @@
 
 The [`pwd`](https://docs.python.org/3/library/pwd.html) module reads the **Unix user account database** (`/etc/passwd`, NIS, LDAP via nss). It returns **`struct_passwd`** records with login name, UID, GID, home directory, and shell path. Unix-only. Full API remains on [docs.python.org](https://docs.python.org/3/library/pwd.html).
 
-Related: [`grp`](grp-the-group-database/index.md); [`os.getuid`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md).
+Related: [`grp`](../grp-the-group-database/index.md); [`os.getuid`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md).
 
 ---
 
@@ -72,5 +72,5 @@ if importlib.util.find_spec("pwd"):
 
 ## See also
 
-- [`grp`](grp-the-group-database/index.md) — group database
+- [`grp`](../grp-the-group-database/index.md) — group database
 - [`os.getuid`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md) — current UID

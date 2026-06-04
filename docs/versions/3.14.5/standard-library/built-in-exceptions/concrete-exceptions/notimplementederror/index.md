@@ -1,6 +1,6 @@
 # [NotImplementedError](https://docs.python.org/3/library/exceptions.html#NotImplementedError)
 
-Subclass of [`RuntimeError`](runtimeerror/index.md) for abstract methods that subclasses must override, or placeholders during development. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#NotImplementedError). **Not** the same as the singleton [`NotImplemented`](https://docs.python.org/3/library/constants.html#NotImplemented).
+Subclass of [`RuntimeError`](../runtimeerror/index.md) for abstract methods that subclasses must override, or placeholders during development. See [docs.python.org](https://docs.python.org/3/library/exceptions.html#NotImplementedError). **Not** the same as the singleton [`NotImplemented`](https://docs.python.org/3/library/constants.html#NotImplemented).
 
 ---
 
@@ -10,7 +10,7 @@ Subclass of [`RuntimeError`](runtimeerror/index.md) for abstract methods that su
 |-----------|------------------|
 | Abstract method in base class | **`NotImplementedError`** |
 | Operation never supported on this type | Leave method undefined or set to `None` |
-| Wrong operand types | [`TypeError`](typeerror/index.md) |
+| Wrong operand types | [`TypeError`](../typeerror/index.md) |
 | Supported in principle but not yet coded | **`NotImplementedError`** |
 
 ---
@@ -44,5 +44,5 @@ assert Square(3).area() == 9
 ## Best practices
 
 - Prefer `abc.ABC` and `@abstractmethod` for formal abstract APIs.
-- Do not use for “wrong type” cases—that is [`TypeError`](typeerror/index.md).
-- Parent: [`RuntimeError`](runtimeerror/index.md).
+- Do not use for “wrong type” cases—that is [`TypeError`](../typeerror/index.md).
+- Parent: [`RuntimeError`](../runtimeerror/index.md).

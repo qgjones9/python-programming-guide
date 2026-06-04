@@ -1,6 +1,6 @@
 # [pdb — The Python Debugger](https://docs.python.org/3/library/pdb.html)
 
-`pdb` is the **interactive source-level debugger** for Python. Set breakpoints, step through statements, inspect locals, and evaluate expressions at runtime. Built on [`bdb`](bdb-debugger-framework/index.md). Canonical reference: [pdb.html](https://docs.python.org/3/library/pdb.html).
+`pdb` is the **interactive source-level debugger** for Python. Set breakpoints, step through statements, inspect locals, and evaluate expressions at runtime. Built on [`bdb`](../bdb-debugger-framework/index.md). Canonical reference: [pdb.html](https://docs.python.org/3/library/pdb.html).
 
 ---
 
@@ -85,5 +85,5 @@ assert sample() == 20
 
 ## See also
 
-- [`bdb`](bdb-debugger-framework/index.md)
+- [`bdb`](../bdb-debugger-framework/index.md)
 - [`inspect`](https://docs.python.org/3/library/inspect.html)

@@ -2,7 +2,7 @@
 
 The [`logging`](https://docs.python.org/3/library/logging.html) module implements **hierarchical, level-filtered event logging** for applications and libraries. Loggers named with `getLogger(__name__)` forward records up the namespace tree to handlers on ancestor loggers (typically the root). Handlers write to files, stderr, or custom destinations; formatters control layout. Full API reference remains on [docs.python.org](https://docs.python.org/3/library/logging.html).
 
-Related: [`logging.config`](../loggingconfig-logging-configuration/index.md) for dict/file configuration; [`logging.handlers`](../logginghandlers-logging-handlers/index.md) for rotation and network handlers; [`warnings`](../../development-tools/warnings-warning-control/index.md) for non-logging alerts.
+Related: [`logging.config`](../loggingconfig-logging-configuration/index.md) for dict/file configuration; [`logging.handlers`](../logginghandlers-logging-handlers/index.md) for rotation and network handlers; [`warnings`](../../python-runtime-services/warnings-warning-control/index.md) for non-logging alerts.
 
 ---
 

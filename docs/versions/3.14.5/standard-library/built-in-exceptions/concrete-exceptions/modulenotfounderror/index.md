@@ -1,6 +1,6 @@
 # [ModuleNotFoundError](https://docs.python.org/3/library/exceptions.html#ModuleNotFoundError)
 
-Subclass of [`ImportError`](importerror/index.md) raised when `import` cannot locate a module or finds `None` in `sys.modules`. Added in Python 3.6 ([docs.python.org](https://docs.python.org/3/library/exceptions.html#ModuleNotFoundError)).
+Subclass of [`ImportError`](../importerror/index.md) raised when `import` cannot locate a module or finds `None` in `sys.modules`. Added in Python 3.6 ([docs.python.org](https://docs.python.org/3/library/exceptions.html#ModuleNotFoundError)).
 
 ---
 
@@ -40,7 +40,7 @@ assert classify(ImportError('bad relative import')) == 'import problem'
 | `except ImportError` | Handle missing modules and bad `from` imports |
 | Fix `PYTHONPATH` / venv | Deployment or packaging misconfiguration |
 
-Related: [`ImportError`](importerror/index.md).
+Related: [`ImportError`](../importerror/index.md).
 
 ---
 
@@ -48,4 +48,4 @@ Related: [`ImportError`](importerror/index.md).
 
 - Catch `ModuleNotFoundError` for optional dependencies; fall back or re-raise with install instructions.
 - Use `except ImportError` when you want to handle **both** this type and other import failures.
-- Parent page: [`ImportError`](importerror/index.md).
+- Parent page: [`ImportError`](../importerror/index.md).

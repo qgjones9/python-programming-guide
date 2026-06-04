@@ -149,7 +149,7 @@ assert eg.__traceback__ is match.__traceback__ is rest.__traceback__
 
 ---
 
-## `derive(excs)` — [derive()](https://docs.python.org/3/library/exceptions.html#BaseExceptionGroup.derive)
+## `derive(excs)` — [derive()](https://docs.python.org/3/library/exceptions.html#BaseExceptionGroup.derive) {#deriveexcs--derive}
 
 Builds a new group with the same `message` but a different `excs` sequence. `subgroup()` and `split()` call `derive()` internally. Override `derive()` on **subclasses** so those methods return your type instead of plain `ExceptionGroup`.
 

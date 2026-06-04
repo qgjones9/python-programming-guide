@@ -1,6 +1,6 @@
 # [zoneinfo — IANA time zone support](https://docs.python.org/3/library/zoneinfo.html)
 
-The [`zoneinfo`](https://docs.python.org/3/library/zoneinfo.html) module (3.9+) supplies [`ZoneInfo`](https://docs.python.org/3/library/zoneinfo.html#zoneinfo.ZoneInfo), a concrete [`datetime.tzinfo`](https://docs.python.org/3/library/datetime.html#datetime.tzinfo) backed by the **IANA time zone database**. Pair it with [`datetime`](datetime-basic-date-and-time-types/index.md) for DST-aware local times.
+The [`zoneinfo`](https://docs.python.org/3/library/zoneinfo.html) module (3.9+) supplies [`ZoneInfo`](https://docs.python.org/3/library/zoneinfo.html#zoneinfo.ZoneInfo), a concrete [`datetime.tzinfo`](https://docs.python.org/3/library/datetime.html#datetime.tzinfo) backed by the **IANA time zone database**. Pair it with [`datetime`](../datetime-basic-date-and-time-types/index.md) for DST-aware local times.
 
 ---
 
@@ -95,5 +95,5 @@ assert before.hour == after.hour == 1
 
 ## See also
 
-- [`datetime`](datetime-basic-date-and-time-types/index.md) — naive vs aware datetimes
-- [`calendar`](calendar-general-calendar-related-functions/index.md) — calendar arithmetic without zones
+- [`datetime`](../datetime-basic-date-and-time-types/index.md) — naive vs aware datetimes
+- [`calendar`](../calendar-general-calendar-related-functions/index.md) — calendar arithmetic without zones

@@ -1,6 +1,6 @@
 # [optparse — Parser for command line options](https://docs.python.org/3/library/optparse.html)
 
-The [`optparse`](https://docs.python.org/3/library/optparse.html) module provides a **declarative** option parser that predates [`argparse`](argparse-parser-for-command-line-options-arguments-and-subcommands/index.md). `OptionParser.parse_args()` returns **`(options, args)`** — an [`Values`](https://docs.python.org/3/library/optparse.html#optparse.Values) object and a **separate list of positional arguments**. The module is **deprecated** since Python 3.2; new code should use argparse unless you need optparse-specific parsing behavior. Full API remains on [docs.python.org](https://docs.python.org/3/library/optparse.html).
+The [`optparse`](https://docs.python.org/3/library/optparse.html) module provides a **declarative** option parser that predates [`argparse`](../argparse-parser-for-command-line-options-arguments-and-subcommands/index.md). `OptionParser.parse_args()` returns **`(options, args)`** — an [`Values`](https://docs.python.org/3/library/optparse.html#optparse.Values) object and a **separate list of positional arguments**. The module is **deprecated** since Python 3.2; new code should use argparse unless you need optparse-specific parsing behavior. Full API remains on [docs.python.org](https://docs.python.org/3/library/optparse.html).
 
 ---
 
@@ -110,4 +110,4 @@ assert opts2.count == 10
 
 ## Migration
 
-See [Upgrading Optparse Code](https://docs.python.org/3/howto/argparse.html#upgrading-optparse-code) for a side-by-side translation to [`argparse`](argparse-parser-for-command-line-options-arguments-and-subcommands/index.md). Key change: positional arguments become first-class `add_argument()` entries, and `parse_args()` returns a single namespace instead of a tuple.
+See [Upgrading Optparse Code](https://docs.python.org/3/howto/argparse.html#upgrading-optparse-code) for a side-by-side translation to [`argparse`](../argparse-parser-for-command-line-options-arguments-and-subcommands/index.md). Key change: positional arguments become first-class `add_argument()` entries, and `parse_args()` returns a single namespace instead of a tuple.

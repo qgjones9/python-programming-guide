@@ -1,6 +1,6 @@
 # [Standard Encodings](https://docs.python.org/3/library/codecs.html#standard-encodings)
 
-Python ships dozens of **built-in text encodings**—implemented in C or via charmap tables in the [`encodings`](encodings-encodings-package/index.md) package. Names are looked up through `codecs.lookup()` with alias normalization. The complete alias list lives in upstream `encodings/aliases.py`; this page highlights categories and portability rules from [docs.python.org](https://docs.python.org/3/library/codecs.html#standard-encodings).
+Python ships dozens of **built-in text encodings**—implemented in C or via charmap tables in the [`encodings`](../encodings-encodings-package/index.md) package. Names are looked up through `codecs.lookup()` with alias normalization. The complete alias list lives in upstream `encodings/aliases.py`; this page highlights categories and portability rules from [docs.python.org](https://docs.python.org/3/library/codecs.html#standard-encodings).
 
 ---
 

@@ -14,7 +14,7 @@ Stdlib test modules import `test.support` to avoid duplicating **portability che
 
 | Symbol | Role |
 |--------|------|
-| `TESTFN`, `TESTFN_UNDECODABLE`, … | Unique temp file basenames (via [`os_helper`](testsupportos_helper-utilities-for-os-tests/index.md)) |
+| `TESTFN`, `TESTFN_UNDECODABLE`, … | Unique temp file basenames (via [`os_helper`](../testsupportos_helper-utilities-for-os-tests/index.md)) |
 | `verbose` | Mirrors `-v` regrtest flag |
 | `Matcher` | Flexible equality for complex objects |
 | `ALWAYS_EQ`, `NEVER_EQ` | Sentinel objects for ordering tests |
@@ -55,16 +55,16 @@ Specialized helpers live in submodules—each has a local page:
 
 | Module | Focus |
 |--------|-------|
-| [`socket_helper`](testsupportsocket_helper-utilities-for-socket-tests/index.md) | Ephemeral ports, socket timeouts |
-| [`script_helper`](testsupportscript_helper-utilities-for-the-python-execution-tests/index.md) | Spawn `python` subprocesses |
-| [`bytecode_helper`](testsupportbytecode_helper-support-tools-for-testing-correct-bytecode-generation/index.md) | Expected bytecode sequences |
-| [`threading_helper`](testsupportthreading_helper-utilities-for-threading-tests/index.md) | Thread lifecycle in tests |
-| [`os_helper`](testsupportos_helper-utilities-for-os-tests/index.md) | Filesystem and env guards |
-| [`import_helper`](testsupportimport_helper-utilities-for-import-tests/index.md) | Clean import contexts |
-| [`warnings_helper`](testsupportwarnings_helper-utilities-for-warnings-tests/index.md) | Capture and assert warnings |
+| [`socket_helper`](../testsupportsocket_helper-utilities-for-socket-tests/index.md) | Ephemeral ports, socket timeouts |
+| [`script_helper`](../testsupportscript_helper-utilities-for-the-python-execution-tests/index.md) | Spawn `python` subprocesses |
+| [`bytecode_helper`](../testsupportbytecode_helper-support-tools-for-testing-correct-bytecode-generation/index.md) | Expected bytecode sequences |
+| [`threading_helper`](../testsupportthreading_helper-utilities-for-threading-tests/index.md) | Thread lifecycle in tests |
+| [`os_helper`](../testsupportos_helper-utilities-for-os-tests/index.md) | Filesystem and env guards |
+| [`import_helper`](../testsupportimport_helper-utilities-for-import-tests/index.md) | Clean import contexts |
+| [`warnings_helper`](../testsupportwarnings_helper-utilities-for-warnings-tests/index.md) | Capture and assert warnings |
 
 ---
 
 ## See also
 
-- [`test` package overview](test-regression-tests-package-for-python/index.md)
+- [`test` package overview](../test-regression-tests-package-for-python/index.md)

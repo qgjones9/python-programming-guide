@@ -1,6 +1,6 @@
 # [UnicodeDecodeError](https://docs.python.org/3/library/exceptions.html#UnicodeDecodeError)
 
-Subclass of [`UnicodeError`](unicodeerror/index.md) raised during **Unicode decoding** (bytes → str). See [docs.python.org](https://docs.python.org/3/library/exceptions.html#UnicodeDecodeError).
+Subclass of [`UnicodeError`](../unicodeerror/index.md) raised during **Unicode decoding** (bytes → str). See [docs.python.org](https://docs.python.org/3/library/exceptions.html#UnicodeDecodeError).
 
 ---
 
@@ -35,9 +35,9 @@ assert caught[1] == b'\xc3'
 |---------|----------|
 | `decode('utf-8', errors='replace')` | Display or log corrupted bytes without crashing |
 | `except UnicodeDecodeError` | Reject upload with “invalid UTF-8” message |
-| Catch [`UnicodeError`](unicodeerror/index.md) | Either encode or decode direction is unknown |
+| Catch [`UnicodeError`](../unicodeerror/index.md) | Either encode or decode direction is unknown |
 
-Related: [`UnicodeEncodeError`](unicodeencodeerror/index.md), [`ValueError`](valueerror/index.md).
+Related: [`UnicodeEncodeError`](../unicodeencodeerror/index.md), [`ValueError`](../valueerror/index.md).
 
 ---
 
@@ -45,4 +45,4 @@ Related: [`UnicodeEncodeError`](unicodeencodeerror/index.md), [`ValueError`](val
 
 - Open text files with explicit `encoding='utf-8'` (3.10+ defaults help but be explicit in libraries).
 - Log `exc.object[exc.start:exc.end]` when debugging corrupted input.
-- Parent: [`UnicodeError`](unicodeerror/index.md).
+- Parent: [`UnicodeError`](../unicodeerror/index.md).

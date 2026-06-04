@@ -2,7 +2,7 @@
 
 The [`posix`](https://docs.python.org/3/library/posix.html) module exposes **POSIX system call bindings** that also appear on the public [`os`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md) module. Historically it was the low-level namespace; new code should **`import os`** rather than `posix` directly. On Windows, most `posix` names are absent. Full name list remains on [docs.python.org](https://docs.python.org/3/library/posix.html).
 
-Related: [`os`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md); [`fcntl`](fcntl-the-fcntl-and-ioctl-system-calls/index.md) for fd control.
+Related: [`os`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md); [`fcntl`](../fcntl-the-fcntl-and-ioctl-system-calls/index.md) for fd control.
 
 ---
 
@@ -67,4 +67,4 @@ if sys.platform != "win32":
 ## See also
 
 - [`os`](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md) — preferred POSIX facade
-- [`pwd`](pwd-the-password-database/index.md) / [`grp`](grp-the-group-database/index.md) — account databases
+- [`pwd`](../pwd-the-password-database/index.md) / [`grp`](../grp-the-group-database/index.md) — account databases

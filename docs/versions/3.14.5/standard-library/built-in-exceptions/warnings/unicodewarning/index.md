@@ -26,7 +26,7 @@ Surface questionable Unicode handling—deprecated codecs, odd normalization, or
 - APIs that accept ill-formed text but proceed with a replacement strategy.
 - Rare in new code; prefer explicit `encoding="utf-8"` and strict error handlers.
 
-For default-encoding issues in 3.10+, see [`EncodingWarning`](encodingwarning/index.md).
+For default-encoding issues in 3.10+, see [`EncodingWarning`](../encodingwarning/index.md).
 
 ---
 

@@ -2,7 +2,7 @@
 
 The [`time`](https://docs.python.org/3/library/time.html) module exposes **C-style time functions**: seconds since the epoch, struct tuples, formatting/parsing, and sleep. Use **`time.monotonic()`** or **`perf_counter()`** for intervals; **`time.time()`** for wall-clock timestamps. For timezone-aware datetimes prefer [`datetime`](../../data-types/datetime-basic-date-and-time-types/index.md). Full API reference remains on [docs.python.org](https://docs.python.org/3/library/time.html).
 
-Related: [`threading`](../../thread-based-parallelism/threading-thread-based-parallelism/index.md) `Event.wait`; [`asyncio`](../../asynchronous-io/asyncio-asynchronous-io/index.md) for non-blocking delays; [`calendar`](../../data-types/calendar-general-calendar-related-functions/index.md) for calendar arithmetic.
+Related: [`threading`](../../concurrent-execution/threading-thread-based-parallelism/index.md) `Event.wait`; [`asyncio`](../../networking-and-interprocess-communication/asyncio-asynchronous-io/index.md) for non-blocking delays; [`calendar`](../../data-types/calendar-general-calendar-related-functions/index.md) for calendar arithmetic.
 
 ---
 

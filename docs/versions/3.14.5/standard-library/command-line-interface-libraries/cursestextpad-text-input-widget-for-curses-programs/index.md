@@ -1,6 +1,6 @@
 # [curses.textpad — Text input widget for curses programs](https://docs.python.org/3/library/curses.textpad.html)
 
-The [`curses.textpad`](https://docs.python.org/3/library/curses.textpad.html) module provides [`Textbox`](https://docs.python.org/3/library/curses.textpad.html#curses.textpad.Textbox), an **editable text field** inside a curses window with **Emacs-like** key bindings (Ctrl-A beginning of line, Ctrl-K kill, and so on). Use it for forms and prompts in full-screen TUIs built with [`curses`](curses-terminal-handling-for-character-cell-displays/index.md). Full API remains on [docs.python.org](https://docs.python.org/3/library/curses.textpad.html).
+The [`curses.textpad`](https://docs.python.org/3/library/curses.textpad.html) module provides [`Textbox`](https://docs.python.org/3/library/curses.textpad.html#curses.textpad.Textbox), an **editable text field** inside a curses window with **Emacs-like** key bindings (Ctrl-A beginning of line, Ctrl-K kill, and so on). Use it for forms and prompts in full-screen TUIs built with [`curses`](../curses-terminal-handling-for-character-cell-displays/index.md). Full API remains on [docs.python.org](https://docs.python.org/3/library/curses.textpad.html).
 
 Rendering requires an initialized curses window (typically via `curses.wrapper`); examples below validate the **API surface** and validator contracts without a TTY.
 
@@ -89,6 +89,6 @@ Exact behavior depends on terminal key encoding; use `keypad(True)` on the paren
 
 | Module | Use |
 |--------|-----|
-| [`curses`](curses-terminal-handling-for-character-cell-displays/index.md) | Screen setup, subwindows, colors |
-| [`curses.ascii`](cursesascii-utilities-for-ascii-characters/index.md) | Classify control characters in validators |
-| [`readline`](../text-processing-services/readline-gnu-readline-interface/index.md) | Line editing for non-curses CLIs |
+| [`curses`](../curses-terminal-handling-for-character-cell-displays/index.md) | Screen setup, subwindows, colors |
+| [`curses.ascii`](../cursesascii-utilities-for-ascii-characters/index.md) | Classify control characters in validators |
+| [`readline`](../../text-processing-services/readline-gnu-readline-interface/index.md) | Line editing for non-curses CLIs |

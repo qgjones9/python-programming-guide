@@ -53,7 +53,7 @@ for code, expected in mapping:
     assert isinstance(exc, expected), (code, type(exc).__name__)
 ```
 
-### errno → exception mapping
+### errno → exception mapping {#errno--exception-mapping}
 
 | errno constant(s) | Exception |
 |-------------------|-----------|
