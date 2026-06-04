@@ -97,5 +97,5 @@ The zip parent directory is prepended to `sys.path` at execution time.
 ## See also
 
 - [`__main__`](../../python-runtime-services/__main__-top-level-code-environment/index.md) — entry-point semantics
-- [`zipfile`](../data-compression-and-archiving/zipfile/index.md) — underlying archive format
+- [`zipfile`](../../data-compression-and-archiving/zipfile-work-with-zip-archives/index.md) — underlying archive format
 - [Specifying the Interpreter](https://docs.python.org/3/library/zipapp.html#specifying-the-interpreter)

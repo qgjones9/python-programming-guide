@@ -1,6 +1,6 @@
 # [difflib — Helpers for computing deltas](https://docs.python.org/3/library/difflib.html)
 
-[`difflib`](https://docs.python.org/3/library/difflib.html) compares **sequences** (usually lines of text) and produces human-readable or machine-readable deltas. Use it for test failure output, merge tools, “did you mean?” suggestions, and HTML side-by-side diffs. For directory comparison see [`filecmp`](../file-and-directory-access/filecmp/index.md). Full API reference remains on [docs.python.org](https://docs.python.org/3/library/difflib.html).
+[`difflib`](https://docs.python.org/3/library/difflib.html) compares **sequences** (usually lines of text) and produces human-readable or machine-readable deltas. Use it for test failure output, merge tools, “did you mean?” suggestions, and HTML side-by-side diffs. For directory comparison see [`filecmp`](../../file-and-directory-access/filecmp-file-and-directory-comparisons/index.md). Full API reference remains on [docs.python.org](https://docs.python.org/3/library/difflib.html).
 
 ---
 

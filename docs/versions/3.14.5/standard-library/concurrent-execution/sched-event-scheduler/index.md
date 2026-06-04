@@ -88,4 +88,4 @@ If handlers run longer than the gap to the next event, the scheduler **falls beh
 
 - [threading](../threading-thread-based-parallelism/index.md) — `delayfunc(0)` cooperates with other threads
 - [asyncio](https://docs.python.org/3/library/asyncio.html) — event-loop scheduling
-- [time](../../numeric-and-mathematical-modules/time/index.md) — `monotonic`, `sleep`
+- [time](../../generic-operating-system-services/time-time-access-and-conversions/index.md) — `monotonic`, `sleep`

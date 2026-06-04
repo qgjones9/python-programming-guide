@@ -2,7 +2,7 @@
 
 **Python Runtime Services** modules sit closest to the interpreter: introspection, startup hooks, warnings, garbage collection, and packaging-related runtime glue. They expose `sys` parameters, help debuggers and profilers, and shape how code runs at import time and shutdown. Full reference: [docs.python.org](https://docs.python.org/3/library/python.html).
 
-See also [`concurrent.interpreters`](../custom-python-interpreters/concurrent-interpreters/index.md) for subinterpreter APIs that similarly expose core runtime behavior.
+See also [`concurrent.interpreters`](../concurrent-execution/concurrentinterpreters-multiple-interpreters-in-the-same-process/index.md) for subinterpreter APIs that similarly expose core runtime behavior.
 
 ---
 

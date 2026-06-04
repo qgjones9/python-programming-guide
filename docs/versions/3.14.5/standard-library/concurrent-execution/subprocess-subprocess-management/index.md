@@ -104,5 +104,5 @@ assert out.strip() == "99"
 ## See also
 
 - [multiprocessing](../multiprocessing-process-based-parallelism/index.md) — Python worker processes
-- [os](../../generic-operating-system-services/os/index.md) — low-level process IDs
+- [os](../../generic-operating-system-services/os-miscellaneous-operating-system-interfaces/index.md) — low-level process IDs
 - [asyncio subprocess](https://docs.python.org/3/library/asyncio-subprocess.html) — non-blocking integration

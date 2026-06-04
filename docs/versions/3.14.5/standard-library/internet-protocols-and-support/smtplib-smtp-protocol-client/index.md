@@ -15,7 +15,7 @@
 | Envelope | `mail(from_addr)`, `rcpt(to_addrs)` |
 | Body | `data(message_bytes)` — must use CRLF lines ending with `\r\n.\r\n` |
 
-Higher-level helpers: `sendmail`, `send_message` (with [`email`](../../netdata-and-net-services/email-mime-handling/index.md) package).
+Higher-level helpers: `sendmail`, `send_message` (with [`email`](../../internet-data-handling/email-an-email-and-mime-handling-package/index.md) package).
 
 ---
 

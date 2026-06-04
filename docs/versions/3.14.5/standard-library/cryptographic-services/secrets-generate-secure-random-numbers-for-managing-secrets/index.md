@@ -1,6 +1,6 @@
 # [secrets — Generate secure random numbers for managing secrets](https://docs.python.org/3/library/secrets.html)
 
-The [`secrets`](https://docs.python.org/3/library/secrets.html) module (3.6+) generates **cryptographically strong** random numbers for passwords, tokens, and reset links. It wraps the OS CSPRNG via `SystemRandom`. Use it instead of [`random`](../numeric-and-mathematical-modules/random-generate-pseudo-random-numbers-with-various-distributions/index.md), which is for simulation—not security. Token length guidance and recipes remain on [docs.python.org](https://docs.python.org/3/library/secrets.html).
+The [`secrets`](https://docs.python.org/3/library/secrets.html) module (3.6+) generates **cryptographically strong** random numbers for passwords, tokens, and reset links. It wraps the OS CSPRNG via `SystemRandom`. Use it instead of [`random`](../../numeric-and-mathematical-modules/random-generate-pseudo-random-numbers/index.md), which is for simulation—not security. Token length guidance and recipes remain on [docs.python.org](https://docs.python.org/3/library/secrets.html).
 
 ---
 

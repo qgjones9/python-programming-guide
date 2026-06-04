@@ -2,7 +2,7 @@
 
 The **Software Packaging and Distribution** section covers stdlib tools for **installing**, **isolating**, and **shipping** Python code. These modules work with PyPI or private indexes, but also support offline or local-only workflows. Full API reference remains on [docs.python.org](https://docs.python.org/3/library/distribution.html); this hub orients you to each module and typical workflows.
 
-Related material elsewhere: [`importlib.metadata`](../import-and-export-modules/importlib-metadata/index.md) for reading installed package metadata, [`distutils`](https://docs.python.org/3/library/distutils.html) (legacy build helpers), and the [Python Packaging User Guide](https://packaging.python.org/).
+Related material elsewhere: [`importlib.metadata`](../importing-modules/importlibmetadata-accessing-package-metadata/index.md) for reading installed package metadata, [`distutils`](https://docs.python.org/3/library/distutils.html) (legacy build helpers), and the [Python Packaging User Guide](https://packaging.python.org/).
 
 ---
 

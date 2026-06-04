@@ -62,5 +62,5 @@ with warnings.catch_warnings(record=True) as log:
 
 ## See also
 
-- [ImportError](../../concrete-exceptions/importererror/index.md)
+- [ImportError](../../concrete-exceptions/importerror/index.md)
 - [`warnings` — default filter list](https://docs.python.org/3/library/warnings.html#default-warning-filter)

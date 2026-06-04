@@ -2,7 +2,7 @@
 
 Python’s standard library groups string manipulation, pattern matching, Unicode normalization, and interactive line editing under **Text Processing Services**. Full API reference remains on [docs.python.org](https://docs.python.org/3/library/text.html); this hub orients you to each module, when to reach for it, and how the pieces fit together.
 
-Related material outside this section: built-in [`str`](../built-in-types/text-sequence-type-str/index.md) methods, the [`codecs`](../binary-services/codecs/index.md) module for encodings, and third-party packages such as [regex](https://pypi.org/project/regex/) when you need richer Unicode or backtracking control than [`re`](re-regular-expression-operations/index.md) provides.
+Related material outside this section: built-in [`str`](../built-in-types/text-sequence-type-str/index.md) methods, the [`codecs`](../binary-data-services/codecs-codec-registry-and-base-classes/index.md) module for encodings, and third-party packages such as [regex](https://pypi.org/project/regex/) when you need richer Unicode or backtracking control than [`re`](re-regular-expression-operations/index.md) provides.
 
 ---
 

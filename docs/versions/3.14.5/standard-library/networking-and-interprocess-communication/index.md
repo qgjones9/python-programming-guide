@@ -2,7 +2,7 @@
 
 The standard library groups **sockets**, **TLS**, **I/O multiplexing**, **signals**, **memory mapping**, and **async I/O** under **Networking and Interprocess Communication**. Some modules are **same-machine only** (`signal`, `mmap`); others support **cross-host** protocols (`socket`, `ssl`, `asyncio`). Full API reference remains on [docs.python.org](https://docs.python.org/3/library/ipc.html); this hub orients you to each module and when to reach for it.
 
-Related sections: [`socketserver`](../internet-protocols-and-support/socketserver-a-framework-for-network-servers/index.md) for threaded/forking servers, [`threading`](../concurrent-execution/thread-based-parallelism/index.md) for thread-based IPC, and [`multiprocessing`](../concurrent-execution/multiprocessing-process-based-parallelism/index.md) for process pools and shared memory.
+Related sections: [`socketserver`](../internet-protocols-and-support/socketserver-a-framework-for-network-servers/index.md) for threaded/forking servers, [`threading`](../concurrent-execution/threading-thread-based-parallelism/index.md) for thread-based IPC, and [`multiprocessing`](../concurrent-execution/multiprocessing-process-based-parallelism/index.md) for process pools and shared memory.
 
 ---
 
@@ -31,7 +31,7 @@ Related sections: [`socketserver`](../internet-protocols-and-support/socketserve
 | Need exact `epoll`/`kqueue` flags | [`select`](select-waiting-for-io-completion/index.md) directly |
 | Handle SIGTERM/SIGINT in a CLI daemon | [`signal`](signal-set-handlers-for-asynchronous-events/index.md) |
 | Share a large read-mostly file between processes | [`mmap`](mmap-memory-mapped-file-support/index.md) with `ACCESS_READ` or `MAP_SHARED` |
-| Wake a thread from another thread | [`threading`](../concurrent-execution/thread-based-parallelism/index.md) primitives — not signals |
+| Wake a thread from another thread | [`threading`](../concurrent-execution/threading-thread-based-parallelism/index.md) primitives — not signals |
 
 ---
 

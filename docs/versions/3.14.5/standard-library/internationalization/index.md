@@ -2,7 +2,7 @@
 
 The **Internationalization** chapter of the Python standard library helps programs stay **language-independent** while still presenting messages and formatted output that match a user’s locale. [`gettext`](gettext-multilingual-internationalization-services/index.md) handles **translated message catalogs** (GNU `.mo` files); [`locale`](locale-internationalization-services/index.md) exposes the **POSIX locale database** for collation, numeric formatting, and time conventions. Full API reference remains on [docs.python.org](https://docs.python.org/3/library/i18n.html); this hub orients you to each module and when to combine them.
 
-Related material: environment variables such as `LANG` and `LANGUAGE` (also used by gettext’s catalog search), [`time`](../generic-operating-system-services/time-access-and-conversions/index.md) for `strftime` with `LC_TIME`, and third-party tooling such as [Babel](https://babel.pocoo.org/) for extracting translatable strings from Python sources.
+Related material: environment variables such as `LANG` and `LANGUAGE` (also used by gettext’s catalog search), [`time`](../generic-operating-system-services/time-time-access-and-conversions/index.md) for `strftime` with `LC_TIME`, and third-party tooling such as [Babel](https://babel.pocoo.org/) for extracting translatable strings from Python sources.
 
 ---
 

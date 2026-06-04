@@ -130,4 +130,4 @@ python -m mimetypes --lenient filename.pict
 ## See also
 
 - [`email`](../email-an-email-and-mime-handling-package/index.md) — `Content-Type` on `EmailMessage`
-- [`urllib.request`](../../internet-protocols-and-support/urllib/index.md) — HTTP responses often need guessed types for downloads
+- [`urllib.request`](../../internet-protocols-and-support/urllib-url-handling-modules/index.md) — HTTP responses often need guessed types for downloads

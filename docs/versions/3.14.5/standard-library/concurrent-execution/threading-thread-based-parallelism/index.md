@@ -6,7 +6,7 @@ The [`threading`](https://docs.python.org/3/library/threading.html) module build
 
 ## GIL and when threads help
 
-CPython’s [GIL](../../glossary/global-interpreter-lock/index.md) lets only one thread execute Python bytecode at a time, so **CPU-bound pure Python** rarely speeds up with threads. Threads still help when code **blocks on I/O** or calls C extensions that release the GIL. For multi-core CPU work, prefer [`multiprocessing`](../multiprocessing-process-based-parallelism/index.md) or [`concurrent.futures.ProcessPoolExecutor`](../concurrentfutures-launching-parallel-tasks/index.md). Free-threaded builds (3.13+) can disable the GIL — see [Thread safety guarantees](../../thread-safety-guarantees/index.md).
+CPython’s [GIL](../../../glossary/global-interpreter-lock/index.md) lets only one thread execute Python bytecode at a time, so **CPU-bound pure Python** rarely speeds up with threads. Threads still help when code **blocks on I/O** or calls C extensions that release the GIL. For multi-core CPU work, prefer [`multiprocessing`](../multiprocessing-process-based-parallelism/index.md) or [`concurrent.futures.ProcessPoolExecutor`](../concurrentfutures-launching-parallel-tasks/index.md). Free-threaded builds (3.13+) can disable the GIL — see [Thread safety guarantees](../../thread-safety-guarantees/index.md).
 
 ---
 

@@ -107,4 +107,4 @@ Use `SimpleQueue` in destructors or weakref callbacks where re-entrancy matters.
 
 - [threading](../threading-thread-based-parallelism/index.md) — worker threads
 - [multiprocessing](../multiprocessing-process-based-parallelism/index.md) — `multiprocessing.Queue`
-- [collections.deque](../../data-types/collections/index.md) — fast unbounded deque without blocking semantics
+- [collections.deque](../../data-types/collections-container-datatypes/index.md) — fast unbounded deque without blocking semantics

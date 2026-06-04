@@ -2,7 +2,7 @@
 
 The [`ctypes`](https://docs.python.org/3/library/ctypes.html) module loads **shared libraries** (`.so`, `.dll`, `.dylib`) and calls C functions from pure Python — no C extension compile step. Define **`Structure`** layouts, **`POINTER`** types, and **`CFUNCTYPE`** callbacks; set **`argtypes`** and **`restype`** on function pointers for safety. Full API reference remains on [docs.python.org](https://docs.python.org/3/library/ctypes.html).
 
-Related: [`struct`](../../binary-data-services/struct-python-bytes-objects/index.md) for pure-Python packing; C extension docs for production FFI; [`os`](../os-miscellaneous-operating-system-interfaces/index.md) for loading paths.
+Related: [`struct`](../../binary-data-services/struct-interpret-bytes-as-packed-binary-data/index.md) for pure-Python packing; C extension docs for production FFI; [`os`](../os-miscellaneous-operating-system-interfaces/index.md) for loading paths.
 
 **Safety note:** incorrect prototypes can crash the interpreter; prefer [`cffi`](https://cffi.readthedocs.io/) or a compiled extension for complex APIs.
 

@@ -2,7 +2,7 @@
 
 Python’s standard library groups **wire-format and MIME data** under **Internet Data Handling**: JSON for APIs, email/MIME for messages, mailbox formats on disk, and ASCII encodings (base64, quoted-printable, hex). Full API reference remains on [docs.python.org](https://docs.python.org/3/library/netdata.html); this hub orients you to each module and when to reach for it.
 
-Related material outside this section: [`smtplib`](../internet-protocols-and-support/smtplib-smtp-protocol-client/index.md) and [`poplib`](../internet-protocols-and-support/poplib-pop3-protocol-client/index.md) for transport, [`urllib`](../internet-protocols-and-support/urllib/index.md) for HTTP, and [`codecs`](../binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/binary-transforms/index.md) for registry-based base64/hex/quopri transforms.
+Related material outside this section: [`smtplib`](../internet-protocols-and-support/smtplib-smtp-protocol-client/index.md) and [`poplib`](../internet-protocols-and-support/poplib-pop3-protocol-client/index.md) for transport, [`urllib`](../internet-protocols-and-support/urllib-url-handling-modules/index.md) for HTTP, and [`codecs`](../binary-data-services/codecs-codec-registry-and-base-classes/python-specific-encodings/binary-transforms/index.md) for registry-based base64/hex/quopri transforms.
 
 ---
 
