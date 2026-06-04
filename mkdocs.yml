@@ -13,123 +13,6 @@ watch:
 
 nav:
   - Home: index.md
-  - Data structures and algorithms:
-    - Overview: dsa/index.md
-    - Complexity analysis: dsa/complexity/index.md
-    - Recursion: dsa/recursion/index.md
-    - Data structures:
-      - Data structures: dsa/data-structures/index.md
-      - 2-3-4 tree: dsa/data-structures/2-3-4-tree/index.md
-      - Array-based lists: dsa/data-structures/array-based-lists/index.md
-      - AVL tree: dsa/data-structures/avl-tree/index.md
-      - Binary search tree: dsa/data-structures/binary-search-tree/index.md
-      - Circularly linked list: dsa/data-structures/circularly-linked-list/index.md
-      - Dequeue (deque): dsa/data-structures/dequeue-deque/index.md
-      - Doubly linked list: dsa/data-structures/doubly-linked-list/index.md
-      - Graphs: dsa/data-structures/graphs/index.md
-      - Hash table: dsa/data-structures/hash-table/index.md
-      - Heap sort: dsa/data-structures/heap-sort/index.md
-      - Honorable mention ADT: dsa/data-structures/honorable-mention-adt/index.md
-      - Linked list: dsa/data-structures/linked-list/index.md
-      - Max heap: dsa/data-structures/max-heap/index.md
-      - Priority queue: dsa/data-structures/priority-queue/index.md
-      - Queue: dsa/data-structures/queue/index.md
-      - Red–black tree: dsa/data-structures/red-black-tree/index.md
-      - Sets: dsa/data-structures/sets/index.md
-      - Stacks: dsa/data-structures/stacks/index.md
-      - Treaps: dsa/data-structures/treaps/index.md
-      - Tries: dsa/data-structures/tries/index.md
-    - Algorithms:
-      - Algorithms: dsa/algorithms/index.md
-      - Bubble sort: dsa/algorithms/bubble-sort/index.md
-      - Bucket sort: dsa/algorithms/bucket-sort/index.md
-      - Heap sort: dsa/algorithms/heap-sort/index.md
-      - Insertion sort: dsa/algorithms/insertion-sort/index.md
-      - Merge sort: dsa/algorithms/merge-sort/index.md
-      - Quickselect: dsa/algorithms/quickselect/index.md
-      - Quicksort: dsa/algorithms/quicksort/index.md
-      - Radix sort: dsa/algorithms/radix-sort/index.md
-      - Selection sort: dsa/algorithms/selection-sort/index.md
-      - Shell sort: dsa/algorithms/shell-sort/index.md
-  - LeetCode:
-    - LeetCode: leetcode/index.md
-    - Blind 75:
-      - Blind 75: leetcode/blind-75/index.md
-      - 3Sum: leetcode/blind-75/3sum/index.md
-      - Alien Dictionary: leetcode/blind-75/alien-dictionary/index.md
-      - Best Time to Buy and Sell Stock: leetcode/blind-75/best-time-to-buy-and-sell-stock/index.md
-      - Binary Tree Level Order Traversal: leetcode/blind-75/binary-tree-level-order-traversal/index.md
-      - Binary Tree Maximum Path Sum: leetcode/blind-75/binary-tree-maximum-path-sum/index.md
-      - Climbing Stairs: leetcode/blind-75/climbing-stairs/index.md
-      - Clone Graph: leetcode/blind-75/clone-graph/index.md
-      - Coin Change: leetcode/blind-75/coin-change/index.md
-      - Combination Sum: leetcode/blind-75/combination-sum/index.md
-      - Construct Binary Tree from Preorder and Inorder Traversal: leetcode/blind-75/construct-binary-tree-from-preorder-and-inorder-traversal/index.md
-      - Container With Most Water: leetcode/blind-75/container-with-most-water/index.md
-      - Contains Duplicate: leetcode/blind-75/contains-duplicate/index.md
-      - Counting Bits: leetcode/blind-75/counting-bits/index.md
-      - Course Schedule: leetcode/blind-75/course-schedule/index.md
-      - Decode Ways: leetcode/blind-75/decode-ways/index.md
-      - Design Add and Search Words Data Structure: leetcode/blind-75/design-add-and-search-words-data-structure/index.md
-      - Encode and Decode Strings: leetcode/blind-75/encode-and-decode-strings/index.md
-      - Find Median from Data Stream: leetcode/blind-75/find-median-from-data-stream/index.md
-      - Find Minimum in Rotated Sorted Array: leetcode/blind-75/find-minimum-in-rotated-sorted-array/index.md
-      - Graph Valid Tree: leetcode/blind-75/graph-valid-tree/index.md
-      - Group Anagrams: leetcode/blind-75/group-anagrams/index.md
-      - House Robber: leetcode/blind-75/house-robber/index.md
-      - House Robber II: leetcode/blind-75/house-robber-ii/index.md
-      - Implement Trie (Prefix Tree): leetcode/blind-75/implement-trie-prefix-tree/index.md
-      - Insert Interval: leetcode/blind-75/insert-interval/index.md
-      - Invert Binary Tree: leetcode/blind-75/invert-binary-tree/index.md
-      - Jump Game: leetcode/blind-75/jump-game/index.md
-      - Kth Smallest Element in a BST: leetcode/blind-75/kth-smallest-element-in-a-bst/index.md
-      - Linked List Cycle: leetcode/blind-75/linked-list-cycle/index.md
-      - Longest Common Subsequence: leetcode/blind-75/longest-common-subsequence/index.md
-      - Longest Consecutive Sequence: leetcode/blind-75/longest-consecutive-sequence/index.md
-      - Longest Increasing Subsequence: leetcode/blind-75/longest-increasing-subsequence/index.md
-      - Longest Palindromic Substring: leetcode/blind-75/longest-palindromic-substring/index.md
-      - Longest Repeating Character Replacement: leetcode/blind-75/longest-repeating-character-replacement/index.md
-      - Longest Substring Without Repeating Characters: leetcode/blind-75/longest-substring-without-repeating-characters/index.md
-      - Lowest Common Ancestor of a Binary Search Tree: leetcode/blind-75/lowest-common-ancestor-of-a-binary-search-tree/index.md
-      - Maximum Depth of Binary Tree: leetcode/blind-75/maximum-depth-of-binary-tree/index.md
-      - Maximum Product Subarray: leetcode/blind-75/maximum-product-subarray/index.md
-      - Maximum Subarray: leetcode/blind-75/maximum-subarray/index.md
-      - Meeting Rooms: leetcode/blind-75/meeting-rooms/index.md
-      - Meeting Rooms II: leetcode/blind-75/meeting-rooms-ii/index.md
-      - Merge Intervals: leetcode/blind-75/merge-intervals/index.md
-      - Merge k Sorted Lists: leetcode/blind-75/merge-k-sorted-lists/index.md
-      - Merge Two Sorted Lists: leetcode/blind-75/merge-two-sorted-lists/index.md
-      - Minimum Window Substring: leetcode/blind-75/minimum-window-substring/index.md
-      - Missing Number: leetcode/blind-75/missing-number/index.md
-      - Non-overlapping Intervals: leetcode/blind-75/non-overlapping-intervals/index.md
-      - Number of 1 Bits: leetcode/blind-75/number-of-1-bits/index.md
-      - Number of Connected Components in an Undirected Graph: leetcode/blind-75/number-of-connected-components-in-an-undirected-graph/index.md
-      - Number of Islands: leetcode/blind-75/number-of-islands/index.md
-      - Pacific Atlantic Water Flow: leetcode/blind-75/pacific-atlantic-water-flow/index.md
-      - Palindromic Substrings: leetcode/blind-75/palindromic-substrings/index.md
-      - Product of Array Except Self: leetcode/blind-75/product-of-array-except-self/index.md
-      - Remove Nth Node From End of List: leetcode/blind-75/remove-nth-node-from-end-of-list/index.md
-      - Reorder List: leetcode/blind-75/reorder-list/index.md
-      - Reverse Bits: leetcode/blind-75/reverse-bits/index.md
-      - Reverse Linked List: leetcode/blind-75/reverse-linked-list/index.md
-      - Rotate Image: leetcode/blind-75/rotate-image/index.md
-      - Same Tree: leetcode/blind-75/same-tree/index.md
-      - Search in Rotated Sorted Array: leetcode/blind-75/search-in-rotated-sorted-array/index.md
-      - Serialize and Deserialize Binary Tree: leetcode/blind-75/serialize-and-deserialize-binary-tree/index.md
-      - Set Matrix Zeroes: leetcode/blind-75/set-matrix-zeroes/index.md
-      - Spiral Matrix: leetcode/blind-75/spiral-matrix/index.md
-      - Subtree of Another Tree: leetcode/blind-75/subtree-of-another-tree/index.md
-      - Sum of Two Integers: leetcode/blind-75/sum-of-two-integers/index.md
-      - Top K Frequent Elements: leetcode/blind-75/top-k-frequent-elements/index.md
-      - Two Sum: leetcode/blind-75/two-sum/index.md
-      - Unique Paths: leetcode/blind-75/unique-paths/index.md
-      - Valid Anagram: leetcode/blind-75/valid-anagram/index.md
-      - Valid Palindrome: leetcode/blind-75/valid-palindrome/index.md
-      - Valid Parentheses: leetcode/blind-75/valid-parentheses/index.md
-      - Validate Binary Search Tree: leetcode/blind-75/validate-binary-search-tree/index.md
-      - Word Break: leetcode/blind-75/word-break/index.md
-      - Word Search: leetcode/blind-75/word-search/index.md
-      - Word Search II: leetcode/blind-75/word-search-ii/index.md
   - Versions:
     - Versions: versions/index.md
     - Python 3.14.5:
@@ -1126,6 +1009,123 @@ nav:
         - virtual environment: versions/3.14.5/glossary/virtual-environment/index.md
         - virtual machine: versions/3.14.5/glossary/virtual-machine/index.md
         - walrus operator: versions/3.14.5/glossary/walrus-operator/index.md
+  - Data structures and algorithms:
+    - Overview: dsa/index.md
+    - Complexity analysis: dsa/complexity/index.md
+    - Recursion: dsa/recursion/index.md
+    - Data structures:
+      - Data structures: dsa/data-structures/index.md
+      - 2-3-4 tree: dsa/data-structures/2-3-4-tree/index.md
+      - Array-based lists: dsa/data-structures/array-based-lists/index.md
+      - AVL tree: dsa/data-structures/avl-tree/index.md
+      - Binary search tree: dsa/data-structures/binary-search-tree/index.md
+      - Circularly linked list: dsa/data-structures/circularly-linked-list/index.md
+      - Dequeue (deque): dsa/data-structures/dequeue-deque/index.md
+      - Doubly linked list: dsa/data-structures/doubly-linked-list/index.md
+      - Graphs: dsa/data-structures/graphs/index.md
+      - Hash table: dsa/data-structures/hash-table/index.md
+      - Heap sort: dsa/data-structures/heap-sort/index.md
+      - Honorable mention ADT: dsa/data-structures/honorable-mention-adt/index.md
+      - Linked list: dsa/data-structures/linked-list/index.md
+      - Max heap: dsa/data-structures/max-heap/index.md
+      - Priority queue: dsa/data-structures/priority-queue/index.md
+      - Queue: dsa/data-structures/queue/index.md
+      - Red–black tree: dsa/data-structures/red-black-tree/index.md
+      - Sets: dsa/data-structures/sets/index.md
+      - Stacks: dsa/data-structures/stacks/index.md
+      - Treaps: dsa/data-structures/treaps/index.md
+      - Tries: dsa/data-structures/tries/index.md
+    - Algorithms:
+      - Algorithms: dsa/algorithms/index.md
+      - Bubble sort: dsa/algorithms/bubble-sort/index.md
+      - Bucket sort: dsa/algorithms/bucket-sort/index.md
+      - Heap sort: dsa/algorithms/heap-sort/index.md
+      - Insertion sort: dsa/algorithms/insertion-sort/index.md
+      - Merge sort: dsa/algorithms/merge-sort/index.md
+      - Quickselect: dsa/algorithms/quickselect/index.md
+      - Quicksort: dsa/algorithms/quicksort/index.md
+      - Radix sort: dsa/algorithms/radix-sort/index.md
+      - Selection sort: dsa/algorithms/selection-sort/index.md
+      - Shell sort: dsa/algorithms/shell-sort/index.md
+  - LeetCode:
+    - LeetCode: leetcode/index.md
+    - Blind 75:
+      - Blind 75: leetcode/blind-75/index.md
+      - 3Sum: leetcode/blind-75/3sum/index.md
+      - Alien Dictionary: leetcode/blind-75/alien-dictionary/index.md
+      - Best Time to Buy and Sell Stock: leetcode/blind-75/best-time-to-buy-and-sell-stock/index.md
+      - Binary Tree Level Order Traversal: leetcode/blind-75/binary-tree-level-order-traversal/index.md
+      - Binary Tree Maximum Path Sum: leetcode/blind-75/binary-tree-maximum-path-sum/index.md
+      - Climbing Stairs: leetcode/blind-75/climbing-stairs/index.md
+      - Clone Graph: leetcode/blind-75/clone-graph/index.md
+      - Coin Change: leetcode/blind-75/coin-change/index.md
+      - Combination Sum: leetcode/blind-75/combination-sum/index.md
+      - Construct Binary Tree from Preorder and Inorder Traversal: leetcode/blind-75/construct-binary-tree-from-preorder-and-inorder-traversal/index.md
+      - Container With Most Water: leetcode/blind-75/container-with-most-water/index.md
+      - Contains Duplicate: leetcode/blind-75/contains-duplicate/index.md
+      - Counting Bits: leetcode/blind-75/counting-bits/index.md
+      - Course Schedule: leetcode/blind-75/course-schedule/index.md
+      - Decode Ways: leetcode/blind-75/decode-ways/index.md
+      - Design Add and Search Words Data Structure: leetcode/blind-75/design-add-and-search-words-data-structure/index.md
+      - Encode and Decode Strings: leetcode/blind-75/encode-and-decode-strings/index.md
+      - Find Median from Data Stream: leetcode/blind-75/find-median-from-data-stream/index.md
+      - Find Minimum in Rotated Sorted Array: leetcode/blind-75/find-minimum-in-rotated-sorted-array/index.md
+      - Graph Valid Tree: leetcode/blind-75/graph-valid-tree/index.md
+      - Group Anagrams: leetcode/blind-75/group-anagrams/index.md
+      - House Robber: leetcode/blind-75/house-robber/index.md
+      - House Robber II: leetcode/blind-75/house-robber-ii/index.md
+      - Implement Trie (Prefix Tree): leetcode/blind-75/implement-trie-prefix-tree/index.md
+      - Insert Interval: leetcode/blind-75/insert-interval/index.md
+      - Invert Binary Tree: leetcode/blind-75/invert-binary-tree/index.md
+      - Jump Game: leetcode/blind-75/jump-game/index.md
+      - Kth Smallest Element in a BST: leetcode/blind-75/kth-smallest-element-in-a-bst/index.md
+      - Linked List Cycle: leetcode/blind-75/linked-list-cycle/index.md
+      - Longest Common Subsequence: leetcode/blind-75/longest-common-subsequence/index.md
+      - Longest Consecutive Sequence: leetcode/blind-75/longest-consecutive-sequence/index.md
+      - Longest Increasing Subsequence: leetcode/blind-75/longest-increasing-subsequence/index.md
+      - Longest Palindromic Substring: leetcode/blind-75/longest-palindromic-substring/index.md
+      - Longest Repeating Character Replacement: leetcode/blind-75/longest-repeating-character-replacement/index.md
+      - Longest Substring Without Repeating Characters: leetcode/blind-75/longest-substring-without-repeating-characters/index.md
+      - Lowest Common Ancestor of a Binary Search Tree: leetcode/blind-75/lowest-common-ancestor-of-a-binary-search-tree/index.md
+      - Maximum Depth of Binary Tree: leetcode/blind-75/maximum-depth-of-binary-tree/index.md
+      - Maximum Product Subarray: leetcode/blind-75/maximum-product-subarray/index.md
+      - Maximum Subarray: leetcode/blind-75/maximum-subarray/index.md
+      - Meeting Rooms: leetcode/blind-75/meeting-rooms/index.md
+      - Meeting Rooms II: leetcode/blind-75/meeting-rooms-ii/index.md
+      - Merge Intervals: leetcode/blind-75/merge-intervals/index.md
+      - Merge k Sorted Lists: leetcode/blind-75/merge-k-sorted-lists/index.md
+      - Merge Two Sorted Lists: leetcode/blind-75/merge-two-sorted-lists/index.md
+      - Minimum Window Substring: leetcode/blind-75/minimum-window-substring/index.md
+      - Missing Number: leetcode/blind-75/missing-number/index.md
+      - Non-overlapping Intervals: leetcode/blind-75/non-overlapping-intervals/index.md
+      - Number of 1 Bits: leetcode/blind-75/number-of-1-bits/index.md
+      - Number of Connected Components in an Undirected Graph: leetcode/blind-75/number-of-connected-components-in-an-undirected-graph/index.md
+      - Number of Islands: leetcode/blind-75/number-of-islands/index.md
+      - Pacific Atlantic Water Flow: leetcode/blind-75/pacific-atlantic-water-flow/index.md
+      - Palindromic Substrings: leetcode/blind-75/palindromic-substrings/index.md
+      - Product of Array Except Self: leetcode/blind-75/product-of-array-except-self/index.md
+      - Remove Nth Node From End of List: leetcode/blind-75/remove-nth-node-from-end-of-list/index.md
+      - Reorder List: leetcode/blind-75/reorder-list/index.md
+      - Reverse Bits: leetcode/blind-75/reverse-bits/index.md
+      - Reverse Linked List: leetcode/blind-75/reverse-linked-list/index.md
+      - Rotate Image: leetcode/blind-75/rotate-image/index.md
+      - Same Tree: leetcode/blind-75/same-tree/index.md
+      - Search in Rotated Sorted Array: leetcode/blind-75/search-in-rotated-sorted-array/index.md
+      - Serialize and Deserialize Binary Tree: leetcode/blind-75/serialize-and-deserialize-binary-tree/index.md
+      - Set Matrix Zeroes: leetcode/blind-75/set-matrix-zeroes/index.md
+      - Spiral Matrix: leetcode/blind-75/spiral-matrix/index.md
+      - Subtree of Another Tree: leetcode/blind-75/subtree-of-another-tree/index.md
+      - Sum of Two Integers: leetcode/blind-75/sum-of-two-integers/index.md
+      - Top K Frequent Elements: leetcode/blind-75/top-k-frequent-elements/index.md
+      - Two Sum: leetcode/blind-75/two-sum/index.md
+      - Unique Paths: leetcode/blind-75/unique-paths/index.md
+      - Valid Anagram: leetcode/blind-75/valid-anagram/index.md
+      - Valid Palindrome: leetcode/blind-75/valid-palindrome/index.md
+      - Valid Parentheses: leetcode/blind-75/valid-parentheses/index.md
+      - Validate Binary Search Tree: leetcode/blind-75/validate-binary-search-tree/index.md
+      - Word Break: leetcode/blind-75/word-break/index.md
+      - Word Search: leetcode/blind-75/word-search/index.md
+      - Word Search II: leetcode/blind-75/word-search-ii/index.md
 extra_css:
   - stylesheets/extra.css
 
