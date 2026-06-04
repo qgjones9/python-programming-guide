@@ -202,6 +202,8 @@
 |  | [ipaddress — IPv4/IPv6 manipulation library](internet-protocols-and-support/ipaddress-ipv4ipv6-manipulation-library/index.md) | |
 | Multimedia Services | [Multimedia Services](multimedia-services/index.md) | |
 |  | [wave — Read and write WAV files](multimedia-services/wave-read-and-write-wav-files/index.md) | |
+|  | [Wave_read Objects](multimedia-services/wave-read-and-write-wav-files/wave-read-objects/index.md) | |
+|  | [Wave_write Objects](multimedia-services/wave-read-and-write-wav-files/wave-write-objects/index.md) | |
 |  | [colorsys — Conversions between color systems](multimedia-services/colorsys-conversions-between-color-systems/index.md) | |
 | Internationalization | [Internationalization](internationalization/index.md) | |
 |  | [gettext — Multilingual internationalization services](internationalization/gettext-multilingual-internationalization-services/index.md) | |

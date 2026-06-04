@@ -38,15 +38,6 @@
 | [Redis](https://redis.io/) | Redis is an in-memory, open-source data structure store, used as a database, cache, and message broker, known for its high performance and flexibility. |
 | [Neo4j](https://neo4j.com/) | Neo4j is a graph database management system that stores data as nodes and relationships, enabling powerful graph queries and traversals for complex data relationships. |
 
-### Vector Databases
-
-| Database | Description |
-|---|---|
-| [Pinecone](https://www.pinecone.io/) | Pinecone is a fully managed vector database service designed for similarity search and AI applications, enabling fast and scalable retrieval of embeddings for tasks like semantic search and recommendation. |
-| [Weaviate](https://weaviate.io/) | Weaviate is an open-source vector database with built-in machine learning and support for hybrid search, semantic search, and generative AI integrations. |
-| [Milvus](https://milvus.io/) | Milvus is a high-performance, open-source vector database that supports scalable storage and similarity search of vector embeddings, popular for AI and deep learning applications. |
-| [Qdrant](https://qdrant.tech/) | Qdrant is an open-source vector similarity search engine and database, offering efficient and reliable search and filtering of large-scale embedding data. |
-| [Chroma](https://www.trychroma.com/) | Chroma is a simple, open-source embedding database for AI applications, providing easy-to-use APIs and persistent storage for vector data. |
 
 ## Data Manipulation & Analysis
 
@@ -64,21 +55,6 @@
 | [Seaborn](https://seaborn.pydata.org/) | Seaborn is a library for making statistical graphics in Python. It is built on top of Matplotlib and integrates closely with pandas data structures. |
 | [Plotly](https://plotly.com/) | Plotly is a Python library for creating interactive, publication-quality graphs. |
 
-## Machine Learning & Statistical Modeling
-
-| Library | Description |
-|---|---|
-| [Scikit-learn](https://scikit-learn.org/) | Scikit-learn is a machine learning library for Python. It features various classification, regression and clustering algorithms including support vector machines, random forests, gradient boosting, k-means and DBSCAN, and is designed to interoperate with the Python numerical and scientific libraries NumPy and SciPy. |
-| [Statsmodels](https://www.statsmodels.org/) | Statsmodels is a library for statistical modeling and econometrics in Python. It features various tools for regression analysis, time series analysis, and more. |
-
-## Gradient Boosting Libraries
-
-| Library | Description |
-|---|---|
-| [XGBoost](https://xgboost.readthedocs.io/) | XGBoost is a library for gradient boosting in Python. It features various tools for gradient boosting, including regression, classification and ranking. |
-| [LightGBM](https://lightgbm.readthedocs.io/) | LightGBM is a library for gradient boosting in Python. It features various tools for gradient boosting, including regression, classification and ranking. |
-| [CatBoost](https://catboost.ai/) | CatBoost is a library for gradient boosting in Python. It features various tools for gradient boosting, including regression, classification and ranking. |
-
 ## Search engines
 
 | Search Engine | Description |
@@ -88,13 +64,57 @@
 | [Sphinx](https://www.sphinxsearch.com/) | Sphinx is a full-text search server that provides fast, relevant search results for web applications and websites. |
 | [Whoosh](https://whoosh.readthedocs.io/) | Whoosh is a fast, pure Python full-text indexing and searching library, ideal for building custom search engines and applications. |
 
-## Machine learning frameworks
+## Machine Learning
+
+## AI Engineering
+
+### AI Agents Frameworks
+
+| Library | Description |
+|---|---|
+| [LangChain](https://python.langchain.com/) / [LangGraph](https://langchain-ai.github.io/langgraph/) | LangChain is a framework for building LLM-powered applications with composable chains, tools, and retrieval; LangGraph extends it with graph-based orchestration for stateful, multi-step agents and workflows. |
+| [LlamaIndex](https://docs.llamaindex.ai/) | LlamaIdex is a data framework for connecting custom data sources to large language models, with tools for ingestion, indexing, retrieval, and building RAG pipelines. |
+
+### LLM Fine-Tuning & Inference
+
+| Library | Description |
+|---|---|
+| [Hugging Face Transformers](https://huggingface.co/docs/transformers/en/index) | Transformers is a library for natural language processing, providing pre-trained models and tools for fine-tuning and inference. |
+| [OpenAI](https://openai.com/) | OpenAI is a company that provides a platform for building AI applications, including a library for fine-tuning and inference. |
+| [Anthropic](https://www.anthropic.com/) | Anthropic is a company that provides a platform for building AI applications, including a library for fine-tuning and inference. |
+
+### Vector Databases
+
+| Database | Description |
+|---|---|
+| [Pinecone](https://www.pinecone.io/) | Pinecone is a fully managed vector database service designed for similarity search and AI applications, enabling fast and scalable retrieval of embeddings for tasks like semantic search and recommendation. |
+| [Weaviate](https://weaviate.io/) | Weaviate is an open-source vector database with built-in machine learning and support for hybrid search, semantic search, and generative AI integrations. |
+| [Milvus](https://milvus.io/) | Milvus is a high-performance, open-source vector database that supports scalable storage and similarity search of vector embeddings, popular for AI and deep learning applications. |
+| [Qdrant](https://qdrant.tech/) | Qdrant is an open-source vector similarity search engine and database, offering efficient and reliable search and filtering of large-scale embedding data. |
+| [Chroma](https://www.trychroma.com/) | Chroma is a simple, open-source embedding database for AI applications, providing easy-to-use APIs and persistent storage for vector data. |
+ 
+### Core Machine Learning & Statistical Modeling
+
+| Library | Description |
+|---|---|
+| [Scikit-learn](https://scikit-learn.org/) | Scikit-learn is a machine learning library for Python. It features various classification, regression and clustering algorithms including support vector machines, random forests, gradient boosting, k-means and DBSCAN, and is designed to interoperate with the Python numerical and scientific libraries NumPy and SciPy. |
+| [Statsmodels](https://www.statsmodels.org/) | Statsmodels is a library for statistical modeling and econometrics in Python. It features various tools for regression analysis, time series analysis, and more. |
+
+### Gradient Boosting Libraries
+
+| Library | Description |
+|---|---|
+| [XGBoost](https://xgboost.readthedocs.io/) | XGBoost is a library for gradient boosting in Python. It features various tools for gradient boosting, including regression, classification and ranking. |
+| [LightGBM](https://lightgbm.readthedocs.io/) | LightGBM is a library for gradient boosting in Python. It features various tools for gradient boosting, including regression, classification and ranking. |
+| [CatBoost](https://catboost.ai/) | CatBoost is a library for gradient boosting in Python. It features various tools for gradient boosting, including regression, classification and ranking. |
+
+### Machine Learning Frameworks
 
 | Framework | Description |
 |---|---|
 | [TensorFlow](https://www.tensorflow.org/) | TensorFlow is a comprehensive open-source library for machine learning and deep learning, offering a wide range of tools and features for building and training models. |
 
-## Deep learning frameworks
+### Deep Learning Frameworks
 
 | Framework | Description |
 |---|---|
