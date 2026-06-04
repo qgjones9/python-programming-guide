@@ -108,7 +108,7 @@ Structured notes and reference for Python3
 | [:material-vector-point: Milvus](https://milvus.io/) | Milvus is a high-performance, open-source vector database that supports scalable storage and similarity search of vector embeddings, popular for AI and deep learning applications. |
 | [:material-vector-square: Qdrant](https://qdrant.tech/) | Qdrant is an open-source vector similarity search engine and database, offering efficient and reliable search and filtering of large-scale embedding data. |
 | [:material-vector-arrange-ab: Chroma](https://www.trychroma.com/) | Chroma is a simple, open-source embedding database for AI applications, providing easy-to-use APIs and persistent storage for vector data. |
- 
+
 ### :material-chart-scatter-plot: Core Machine Learning & Statistical Modeling
 
 | :material-folder-open-outline: Library | :material-information-outline: Description |
@@ -135,7 +135,6 @@ Structured notes and reference for Python3
 | :material-cube-outline: Framework | :material-information-outline: Description |
 |---|---|
 | [:material-fire: PyTorch](https://pytorch.org/) | PyTorch is a powerful, flexible deep learning framework that provides a seamless path from research prototyping to production deployment. |
-| [:material-cube: TensorFlow](https://www.tensorflow.org/) | TensorFlow is a comprehensive open-source library for machine learning and deep learning, offering a wide range of tools and features for building and training models. |
 | [:material-function: Keras](https://keras.io/) | Keras is a high-level neural networks API, written in Python and capable of running on top of TensorFlow, CNTK, or Theano. |
 
 ## Local development
