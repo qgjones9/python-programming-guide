@@ -25,15 +25,15 @@ Python has **no built-in singly linked list type**. You either implement nodes y
 | **Insert at tail** | O(1) with tail pointer; O(n) without | Amortized O(1) `append` |
 | **Insert in middle** | O(n) to find position; O(1) pointer rewiring once there | O(n) shift |
 | **Cache behavior** | Poor (nodes may be far apart in memory) | Good (sequential slots) |
-| **NFL-style workload** | One drive chain, merge/reverse exercises, live buffer at head | Full play-by-play column, `plays[i]`, `groupby`, export to parquet |
+| **NFL-style workload** | One drive chain | Full play-by-play column, `plays[i]`, `groupby`, export to parquet |
 
-In CPython, `list` is always a dynamic array. A “linked list” in Python is **your own classes** (or interview scratch code), not a language primitive. Your week-7 CSV belongs in a **`list` of dicts or a DataFrame**; a linked list is for **ordered chains** where pointer costs are the lesson or the algorithm (merge two sorted play-id chains without array shifts).
+In CPython, `list` is always a dynamic array. A “linked list” in Python is **your own classes**, not a language primitive. Your week-7 CSV belongs in a **`list` of dicts or a DataFrame**; a linked list is for **ordered chains** where pointer costs are the lesson or the algorithm (merge two sorted play-id chains without array shifts).
 
 ```mermaid
 flowchart LR
   subgraph array["Python list (dynamic array)"]
     direction LR
-    A0["[0]"] --- A1["[1]"] --- A2["[2]"] --- A3["[3]"]
+    A0["[0]"] --- A1["[1]"] --- A2["[2]"] --- A3["[3]"] 
   end
   subgraph linked["Singly linked list"]
     direction LR
@@ -50,7 +50,7 @@ Throughout this page, **n** means the number of nodes in the list (e.g. snaps in
 
 ## NFL data analysis: what a linked list models
 
-You will rarely store a full season in a hand-rolled `SinglyLinkedList`. The structure still matters because the **same costs** appear in custom code, interviews, and pointer-based algorithms you might use on **chunks** of data.
+You will rarely store a full season in a hand-rolled `LinkedList`. The structure still matters because the **same costs** appear in custom code, interviews, and pointer-based algorithms you might use on **chunks** of data.
 
 | NFL idea | Linked-list view | Typical *n* |
 | --- | --- | --- |
@@ -62,24 +62,22 @@ You will rarely store a full season in a hand-rolled `SinglyLinkedList`. The str
 **Reach for a Python `list` or pandas** when you filter 50,000 plays by team, sort receivers by yards, or need `plays[i]` in a loop. **Reach for a linked list (or `deque`)** when the problem is inherently **sequential** and **end-heavy**: stack of undo edits on a drive builder, merge sorted linked chains in a streaming join sketch, or learning how `insert(0)` on a `list` differs from O(1) `prepend`.
 
 ```python
-from dataclasses import dataclass
-
-@dataclass(frozen=True)
 class Snap:
     """Minimal snap record for examples on this page."""
-    play_id: int
-    epa: float
-    description: str
+    def __init__(self, play_id, epa, description):
+        self.play_id = play_id
+        self.epa = epa
+        self.description = description
 
-# After SinglyLinkedList is defined (see Reference implementation):
-# drive = SinglyLinkedList([
+# After LinkedList is defined (see Reference implementation):
+# drive = LinkedList([
 #     Snap(101, 0.4, "1st & 10 pass"),
 #     Snap(102, -1.2, "sack"),
 #     Snap(103, 0.1, "3rd & long checkdown"),
 # ])
 ```
 
-Each node’s `data` can be a `Snap`, a `play_id`, or a row dict. `SinglyLinkedList` is defined in [Reference implementation](#reference-implementation) below; later sections use `Snap` in operation examples.
+Each node’s `data` can be a `Snap`, a `play_id`, or a row dict. `LinkedList` is defined in [Reference implementation](#reference-implementation) below; later sections use `Snap` in operation examples.
 
 ---
 
@@ -119,20 +117,14 @@ sequenceDiagram
 
 ## Node definition (foundation for everything)
 
-Use a small class or `@dataclass`. The list **logic** lives in a wrapper class that holds `head` (and optionally `tail`, `_size`).
+Use a small class. The list **logic** lives in a wrapper class that holds `head` (and optionally `tail`, `size`).
 
 ```python
-from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import Any, Iterable, Iterator
-
-
-@dataclass
 class Node:
     """One link in the chain."""
-    data: Any
-    next: Node | None = None
+    def __init__(self, data, next=None):
+        self.data = data
+        self.next = next
 ```
 
 | | |
@@ -158,7 +150,7 @@ flowchart TB
 The canonical empty structure.
 
 ```python
-head: Node | None = None
+head = None
 ```
 
 | | |
@@ -166,15 +158,16 @@ head: Node | None = None
 | **Time** | O(1) |
 | **Space** | O(1) |
 
-### 2. Empty `SinglyLinkedList` wrapper
+### 2. Empty `LinkedList` wrapper
 
 ```python
-class SinglyLinkedList:
-    def __init__(self) -> None:
-        self.head: Node | None = None
-        self._size: int = 0  # optional but useful for O(1) len
+class LinkedList:
+    def __init__(self, values=None):
+        self.head = None
+        self.tail = None
+        self.size = 0  # optional but useful for O(1) len
 
-ll = SinglyLinkedList()
+ll = LinkedList()
 assert ll.head is None
 ```
 
@@ -201,15 +194,14 @@ head = Node("only", next=None)
 Preserves input order; needs O(n) steps (and a tail pointer for O(1) per append).
 
 ```python
-def from_iterable(items: Iterable[Any]) -> Node | None:
-    head: Node | None = None
-    tail: Node | None = None
+def from_iterable(items):
+    head = None
+    tail = None
     for item in items:
         node = Node(item)
         if head is None:
             head = tail = node
         else:
-            assert tail is not None
             tail.next = node
             tail = node
     return head
@@ -228,8 +220,8 @@ chain = from_iterable(play_ids)
 Each insert at head is O(1); result is **backwards** unless you reverse later.
 
 ```python
-def from_iterable_reversed(items: Iterable[Any]) -> Node | None:
-    head: Node | None = None
+def from_iterable_reversed(items):
+    head = None
     for item in items:
         head = Node(item, next=head)
     return head
@@ -246,16 +238,16 @@ chain = from_iterable_reversed([10, 20, 30])
 ### 6. Constructor on a class
 
 ```python
-class SinglyLinkedList:
-    def __init__(self, items: Iterable[Any] | None = None) -> None:
-        self.head: Node | None = None
-        self.tail: Node | None = None
-        self._size = 0
-        if items is not None:
-            for item in items:
-                self.append(item)
+class LinkedList:
+    def __init__(self, values=None):
+        self.head = None
+        self.tail = None
+        self.size = 0
+        if values is not None:
+            for value in values:
+                self.append(value)
 
-ll = SinglyLinkedList([1, 2, 3])
+ll = LinkedList([1, 2, 3])
 ```
 
 | | |
@@ -284,7 +276,7 @@ head = n1
 flowchart TD
   Start([Need a linked list?])
   Start --> Empty{Empty?}
-  Empty -->|yes| E1["head = None or SinglyLinkedList()"]
+  Empty -->|yes| E1["head = None or LinkedList()"]
   Empty -->|no| Order{Preserve input order?}
   Order -->|yes| Tail["append each item — keep tail pointer"]
   Order -->|no / reverse OK| Head["prepend each item — O(1) per item"]
@@ -299,189 +291,329 @@ flowchart TD
 
 ## Reference implementation
 
-The sections below use this **complete** singly linked list. Every method is documented with complexity in the following sections.
+The sections below use this **complete** singly linked list (`LinkedList` class). Every method is documented with complexity in the following sections.
 
 ```python
-from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import Any, Iterable, Iterator
-
-
-@dataclass
 class Node:
-    data: Any
-    next: Node | None = None
+    def __init__(self, data, next=None):
+        self.data = data # set node data to provided value
+        self.next = next # set next node
+   
+class LinkedList:
+    # initialize the linked list
+    def __init__(self, values=None):
+        self.head = None # set head pointer to None
+        self.tail = None # set tail pointer to None
+        self.next = None # set next pointer to None (unused for linked list instance)
+        self.size = 0 # set initial size to 0
 
+        if values is not None:
+            for value in values:
+                self.append(value)
+   
+    # print the linked list
+    def __str__(self):
+        """
+        (1) Traverse the linked list and append the data of each node to a list.
+        (2) Return a string representation of the linked list.
+        """
+        current = self.head # set starting point to head node
+        out = [] # initialize output list
+        while current: # iterate while current node is not None
+            out.append(repr(current.data)) # append string representation of node data
+            current = current.next # set current node to next node
+        return f"LinkedList([{', '.join(out)}])" # return formatted string
+   
+    # represent the linked list
+    def __repr__(self):
+        return self.__str__() # call __str__ to return string representation
 
-class SinglyLinkedList:
-    """Singly linked list with head, tail, and cached length."""
+    # get the size of the linked list
+    def __len__(self):
+        return self.size # return size attribute
 
-    def __init__(self, items: Iterable[Any] | None = None) -> None:
-        self.head: Node | None = None
-        self.tail: Node | None = None
-        self._size = 0
-        if items is not None:
-            for item in items:
-                self.append(item)
+    def __iter__(self):
+        """
+        (1) Iterate over the linked list and yield each node's data.
+        """
+        cur = self.head # set starting point to head node
+        while cur is not None: # iterate while cur node is not None
+            yield cur.data # yield the current node's data
+            cur = cur.next # set current node to next node
 
-    def __len__(self) -> int:
-        return self._size
+    # check if the linked list is empty
+    def is_empty(self):
+        """
+        (1) Return True if the linked list is empty, False otherwise.
+        """
+        # if the head is None, then the linked list is empty
+        return self.head is None # return True if head is None
 
-    def __iter__(self) -> Iterator[Any]:
-        cur = self.head
-        while cur is not None:
-            yield cur.data
-            cur = cur.next
+    # prepend a node to the linked list
+    def prepend(self, data):
+        """
+        (1) Create a new node with the given data and set its next pointer to the current head.
+        (2) Update the linked list's head pointer to the new node.
+        (3) Update the linked list's tail pointer to the new node only if the list was empty.
+        (4) Update the size of the linked list.
+        """
+        # create a new node
+        new_node = Node(data, next=self.head) # the new node's next pointer is the current head
 
-    def __repr__(self) -> str:
-        return f"SinglyLinkedList({list(self)})"
-
-    def is_empty(self) -> bool:
-        return self.head is None
-
-    def prepend(self, data: Any) -> None:
-        node = Node(data, next=self.head)
-        self.head = node
+        # update the head to the new node
+        self.head = new_node # set head to new node
+        
+        # update tail only if the list was empty
         if self.tail is None:
-            self.tail = node
-        self._size += 1
+            self.tail = new_node # set tail to new node if list was empty
+        
+        # update the size of the linked list
+        self.size += 1 # increment size
 
-    def append(self, data: Any) -> None:
-        node = Node(data)
+    # append a node to the linked list
+    def append(self, data):
+        """
+        (1) Create a new node with the given data and set its next pointer to None.
+        (2) If the list is empty, set the head and tail to the new node.
+        (3) If the list is not empty
+            (a) set the next pointer of the current tail node to the new node
+            (b) update the linked list's tail pointer to the new node.
+        (4) Update the size of the linked list.
+        """
+        # create a new node
+        node = Node(data) # create new node with given data
+
+        # if the list is empty, set the head and tail to the new node
         if self.tail is None:
-            self.head = self.tail = node
+            self.head = self.tail = node # set head and tail to the new node
         else:
-            self.tail.next = node
-            self.tail = node
-        self._size += 1
+            # set the next pointer of the current tail to the new node
+            self.tail.next = node # set current tail's next to new node
+            # update the tail to the new node
+            self.tail = node # set tail to new node
+        
+        # update the size of the linked list
+        self.size += 1 # increment size
 
-    def insert(self, index: int, data: Any) -> None:
-        if index < 0 or index > self._size:
-            raise IndexError("index out of range")
-        if index == 0:
-            self.prepend(data)
+    def insert(self, index, data):
+        """
+        (1) Create a new node from data in argument
+        (2) If the list is empty, set the head and tail to the new node.
+        (3) If the list is not empty
+            (a) set the next pointer of the current tail node to the new node
+            (b) update the linked list's tail pointer to the new node.
+        (4) Update the size of the linked list.
+        """
+        # if index is larger than the size of the linked list then append to end of linked list
+        if index >= self.size:
+            self.append(data) # append if index is out of range
             return
-        prev = self._node_at(index - 1)
-        node = Node(data, next=prev.next)
-        prev.next = node
-        self._size += 1
-
-    def pop_head(self) -> Any:
-        if self.head is None:
-            raise IndexError("pop from empty list")
-        data = self.head.data
-        self.head = self.head.next
-        if self.head is None:
-            self.tail = None
-        self._size -= 1
-        return data
-
-    def pop_tail(self) -> Any:
-        if self.head is None:
-            raise IndexError("pop from empty list")
-        if self.head.next is None:
-            return self.pop_head()
-        prev = self._node_at(self._size - 2)
-        assert prev.next is not None
-        data = prev.next.data
-        prev.next = None
-        self.tail = prev
-        self._size -= 1
-        return data
-
-    def remove_at(self, index: int) -> Any:
-        if index < 0 or index >= self._size:
-            raise IndexError("index out of range")
+        
+        # handle inserting a new head node
         if index == 0:
-            return self.pop_head()
-        prev = self._node_at(index - 1)
-        assert prev.next is not None
-        data = prev.next.data
-        prev.next = prev.next.next
-        if prev.next is None:
-            self.tail = prev
-        self._size -= 1
-        return data
+            self.prepend(data) # prepend if index is zero
+            return
+        
+        # get the node right before the node that we want to insert
+        prev = self._node_at(index - 1) # get node at index-1
 
-    def remove_first(self, data: Any) -> bool:
-        if self.head is None:
-            return False
-        if self.head.data == data:
-            self.pop_head()
-            return True
-        cur = self.head
-        while cur.next is not None:
-            if cur.next.data == data:
-                if cur.next is self.tail:
-                    self.tail = cur
-                cur.next = cur.next.next
-                self._size -= 1
-                return True
-            cur = cur.next
-        return False
+        # create the node and set node next pointer to the next node after prev
+        node = Node(data, next=prev.next) # create new node with next set to prev.next
 
-    def get(self, index: int) -> Any:
-        return self._node_at(index).data
+        # set prev next node to the new node to append the new node to the linked list
+        prev.next = node # set prev's next to new node
 
-    def set(self, index: int, data: Any) -> None:
-        self._node_at(index).data = data
+        # update linkedlist size
+        self.size += 1 # increment size
 
-    def index_of(self, data: Any) -> int:
-        i = 0
-        cur = self.head
-        while cur is not None:
-            if cur.data == data:
-                return i
-            cur = cur.next
-            i += 1
-        raise ValueError(f"{data!r} not in list")
+    def pop_head(self):
+        """
+        (1) case: linkedlist is empty then raise IndexError
+        (2) Handle: store current head data somewhere in memory 
+        (3) case: single node linkedlist
+        (4) case: multi node linkedlist
+        (5) update the size of the linked list
+        (6) return the data from the head node back to the caller
+        """
+        # case: linkedlist is empty
+        if self.head is None: # case: linkedlist is empty then raise IndexError
+            raise IndexError("pop from empty list") # raise error if list empty
 
-    def contains(self, data: Any) -> bool:
-        cur = self.head
-        while cur is not None:
-            if cur.data == data:
-                return True
-            cur = cur.next
-        return False
+        data = self.head.data # store current head data somewhere in memory
 
-    def clear(self) -> None:
-        self.head = self.tail = None
-        self._size = 0
+        # case: single node linkedlist
+        if self.head.next is None:
+            self.head = None # set head to None
+            self.tail = None # set tail to None
+        # case: multi node linkedlist
+        else:
+            self.head = self.head.next # set new head node
+        
+        # case: update size
+        self.size -= 1 # update the size of the linked list
 
-    def copy(self) -> SinglyLinkedList:
-        out = SinglyLinkedList()
-        for item in self:
-            out.append(item)
-        return out
+        # return the data from the head node back to the caller
+        return data # return the data from the head node back to the caller
 
-    def reverse(self) -> None:
-        prev: Node | None = None
-        cur = self.head
-        self.tail = self.head
-        while cur is not None:
-            nxt = cur.next
-            cur.next = prev
-            prev = cur
-            cur = nxt
-        self.head = prev
+    def pop_tail(self):
+        """
+        (1) case: empty linkedlist
+        (2) case: single node linkedlist
+        (3) case: multinode linkedlist
+        (4) update the size of the linked list
+        (5) return the data from the tail node back to the caller
+        """
+        # case: empty linkedlist
+        if self.head is None: # case: linkedlist is empty then raise IndexError
+            raise IndexError("pop from empty list") # raise error if linkedlist is empty
+        
+        # case: single node linkedlist
+        if self.head.next == None: # case: single node linkedlist then pop head node
+            return self.pop_head() # pop head node and return the data from the head node back to the caller
 
-    def extend(self, items: Iterable[Any]) -> None:
-        for item in items:
-            self.append(item)
+        # case: multinode linkedlist
+        else:
+            prev = self._node_at(self.size - 2) # get second to last node
+            data = prev.next.data # get data from last node
+            prev.next = None # set second to last node's next pointer to None
+            self.tail = prev # set new tail node
+            self.size -= 1 # decrement size of linkedlist
+            return data # return data to caller
 
-    def to_list(self) -> list[Any]:
-        return list(self)
+    def remove(self, index):
+        """
+        (1) case: empty linkedlist
+        (2) case: single node linkedlist
+        (3) case: multi node linkedlist
+        (4) update the size of the linked list
+        (5) return the data from the node that was removed back to the caller
+        """
+        # case: empty linkedlist
+        if index < 0 or index >= self.size:
+            raise IndexError("index out of range") # case: index is out of range then raise IndexError
+        
+        # case: single node linkedlist
+        if index == 0:
+            return self.pop_head() # pop head node
 
-    def _node_at(self, index: int) -> Node:
-        if index < 0 or index >= self._size:
-            raise IndexError("index out of range")
-        cur = self.head
-        for _ in range(index):
-            assert cur is not None
-            cur = cur.next
-        assert cur is not None
-        return cur
+        # case: multi node linkedlist
+        else:         
+            prev      = self._node_at(index - 1) # get the node right before the node that we want to remove
+            cur       = prev.next # get current node
+            prev.next = cur.next # remove node from list by setting prev node next node to current node next node
+
+            # case: removed tail node
+            if prev.next is None:
+                self.tail = prev # set new tail node
+        
+        self.size -= 1 # decrement size of linkedlist
+        return cur.data # return data to caller
+
+    # helpers
+    def get(self, index):
+        """
+        (1) Return the data found at a given index or raise
+        """
+        return self._node_at(index).data # get node at index and return data
+
+    def set(self, index, data):
+        """
+        (1) Set data for a given node or raise
+        """
+        self._node_at(index).data = data # set node's data at given index
+
+    # get the node at the given index
+    def _node_at(self, index):
+        """
+        (1) case: index is out of range then raise IndexError
+        (2) case: index is in range then traverse the linked list and return the node at the given index.
+        """
+        if index < 0 or index >= self.size:
+            raise IndexError("index out of range") # case: index is out of range then raise IndexError
+        cur = self.head # set starting point to head node
+        for _ in range(index): # traverse the linked list
+            cur = cur.next # set current node to next node in the linkedlist
+        return cur # return the node at the given index
+
+    def index_of(self, data):
+        """
+        (1) case: found data in linkedlist
+        (2) case: no data found in linkedlist then raise ValueError
+        """
+        
+        index = 0 # track iteration index starting at 0
+        cur = self.head # set starting point to head node
+        while cur is not None: # iterate while cur node next pointer is set
+            if cur.data == data: # check if node data is equal to parameters data
+                return index # case: is equal then is the data we need so return            
+            cur = cur.next # case is not equal then set current node to next node in the linkedlist
+            index += 1 # update index to move to next node in linkedlist
+        raise ValueError() # raise here sense the data was not found in the linkedlist
+    
+
+    def contains(self, data):
+        """
+        (1) case: found data in linkedlist
+        (2) case: no data found in linkedlist then return False
+        """
+        cur = self.head # set starting point to head node
+        while cur is not None: # iterate while cur node next pointer is set
+            if cur.data == data: # check if node data is equal to parameters data
+                return True # case: is equal then is the data we need so return            
+            cur = cur.next # case is not equal then set current node to next node in the linkedlist
+        return False # case: no data found in linkedlist then return False
+
+    def reverse(self):
+        """
+        (1) case: reverse the linkedlist
+        """
+        prev = None # set previous node to None
+        cur = self.head # set current node to head node
+        self.tail = self.head # set tail to head
+        while cur is not None: # iterate while cur node next pointer is set
+            nxt = cur.next # set next node to current node next node
+            cur.next = prev # set current node next node to previous node
+            prev = cur # set previous node to current node
+            cur = nxt # set current node to next node
+        self.head = prev # set head to previous node
+
+    def to_list(self):
+        """
+        Converts the linked list to a Python list.
+
+        (1) Iterates over the linked list using the __iter__ method, 
+            which yields each node's data in order.
+        (2) Uses the built-in list() function to collect these values into a list.
+        (3) Returns the resulting list.
+        """
+        return list(self) # convert linked list to python list and return result
+    
+    def clear(self):
+        """
+        (1) Clear the linked list by setting the head and tail to None and the size to 0.
+        """
+        self.head = None # set head to None
+        self.tail = None # set tail to None
+        self.size = 0 # set size to 0
+
+
+    def extend(self, other):
+        """
+        (1) Extend the linked list by appending all nodes from another linked list.
+        """
+        self.tail.next = other.head # set current tail's next to other head
+        self.tail = other.tail # set new tail to other tail
+        self.size += other.size # update size by adding other size
+
+    def sort(self):
+        """
+        (1) Sort the linked list using the built-in sorted function.
+        """
+        nodes = self.to_list() # convert linked list to python list
+        nodes.sort() # sort the linked list using the built-in sorted function
+        self.clear() # clear the linked list
+        for node in nodes: # iterate through the sorted nodes
+            self.append(node) # append the sorted nodes to the linked list
 ```
 
 ---
@@ -501,8 +633,7 @@ flowchart TB
   subgraph linear["O(n) — traverse"]
     get
     insert_at["insert(i)"]
-    remove_at
-    remove_first
+    remove_at["remove(i)"]
     index_of
     contains
     pop_tail
@@ -513,7 +644,7 @@ flowchart TB
 ### `is_empty()` / `len(ll)`
 
 ```python
-ll = SinglyLinkedList()
+ll = LinkedList()
 assert ll.is_empty()
 assert len(ll) == 0
 
@@ -524,7 +655,7 @@ assert len(ll) == 1
 
 | | |
 | --- | --- |
-| **Time** | O(1) when `_size` is maintained; O(n) if you walk the chain each time |
+| **Time** | O(1) when `size` is maintained; O(n) if you walk the chain each time |
 | **Space** | O(1) |
 
 ---
@@ -535,12 +666,12 @@ New node points to old head; update `head` (and `tail` if list was empty).
 
 ```python
 # Generic
-ll = SinglyLinkedList([2, 3])
+ll = LinkedList([2, 3])
 ll.prepend(1)
 assert list(ll) == [1, 2, 3]
 
 # NFL: newest correction snap at head of a working drive (rare in prod; illustrative)
-buffer = SinglyLinkedList([Snap(201, 0.2, "run"), Snap(202, -0.5, "incomplete")])
+buffer = LinkedList([Snap(201, 0.2, "run"), Snap(202, -0.5, "incomplete")])
 buffer.prepend(Snap(200, 0.0, "penalty reversed — re-snap"))
 ```
 
@@ -568,13 +699,13 @@ sequenceDiagram
 With a **tail pointer**, no traversal. Without tail, each append is O(n).
 
 ```python
-ll = SinglyLinkedList()
+ll = LinkedList()
 ll.append("a")
 ll.append("b")
 assert list(ll) == ["a", "b"]
 
 # NFL: build drive in chronological order (tail append + tail pointer)
-drive = SinglyLinkedList()
+drive = LinkedList()
 drive.append(Snap(1, 0.3, "rush"))
 drive.append(Snap(2, 1.1, "TD pass"))
 ```
@@ -606,7 +737,7 @@ flowchart LR
 Index `0` delegates to `prepend`. Otherwise find the **predecessor** at `index - 1` and splice in.
 
 ```python
-ll = SinglyLinkedList([10, 30])
+ll = LinkedList([10, 30])
 ll.insert(1, 20)
 assert list(ll) == [10, 20, 30]
 
@@ -635,7 +766,7 @@ flowchart TD
 No shortcut: walk from head.
 
 ```python
-ll = SinglyLinkedList(["a", "b", "c"])
+ll = LinkedList(["a", "b", "c"])
 assert ll.get(1) == "b"
 ll.set(1, "B")
 assert ll.get(1) == "B"
@@ -653,7 +784,7 @@ assert ll.get(1) == "B"
 ### `pop_head()` — remove first element
 
 ```python
-ll = SinglyLinkedList([1, 2, 3])
+ll = LinkedList([1, 2, 3])
 assert ll.pop_head() == 1
 assert list(ll) == [2, 3]
 ```
@@ -670,7 +801,7 @@ assert list(ll) == [2, 3]
 Singly linked list needs the **predecessor** of the tail—full scan O(n).
 
 ```python
-ll = SinglyLinkedList([1, 2, 3])
+ll = LinkedList([1, 2, 3])
 assert ll.pop_tail() == 3
 assert list(ll) == [1, 2]
 ```
@@ -684,11 +815,11 @@ For O(1) pops at both ends in Python, use `collections.deque` ([deque](../dequeu
 
 ---
 
-### `remove_at(index)` — delete by position
+### `remove(index)` — delete by position
 
 ```python
-ll = SinglyLinkedList([10, 20, 30])
-assert ll.remove_at(1) == 20
+ll = LinkedList([10, 20, 30])
+assert ll.remove(1) == 20
 assert list(ll) == [10, 30]
 ```
 
@@ -709,30 +840,12 @@ sequenceDiagram
 
 ---
 
-### `remove_first(data)` — delete first matching value
-
-Track predecessor to splice out `cur.next` when found.
-
-```python
-ll = SinglyLinkedList([1, 2, 3, 2])
-assert ll.remove_first(2) is True
-assert list(ll) == [1, 3, 2]
-assert ll.remove_first(99) is False
-```
-
-| | |
-| --- | --- |
-| **Time** | O(n) |
-| **Space** | O(1) |
-
----
-
 ### `index_of(data)` / `contains(data)`
 
 Linear search.
 
 ```python
-ll = SinglyLinkedList(["x", "y", "z"])
+ll = LinkedList(["x", "y", "z"])
 assert ll.index_of("y") == 1
 assert ll.contains("z")
 assert not ll.contains("w")
@@ -751,7 +864,7 @@ assert not ll.contains("w")
 Drop `head` (and `tail`); let garbage collection reclaim nodes.
 
 ```python
-ll = SinglyLinkedList([1, 2, 3])
+ll = LinkedList([1, 2, 3])
 ll.clear()
 assert ll.is_empty() and len(ll) == 0
 ```
@@ -763,30 +876,12 @@ assert ll.is_empty() and len(ll) == 0
 
 ---
 
-### `copy()` — shallow duplicate structure
-
-New list, same `data` objects (not deep-copied).
-
-```python
-original = SinglyLinkedList([[1]])
-duplicate = original.copy()
-duplicate.get(0).append(2)
-assert original.get(0) == [1, 2]  # shared inner list
-```
-
-| | |
-| --- | --- |
-| **Time** | O(n) |
-| **Space** | O(n) for new nodes |
-
----
-
 ### `reverse()` — in-place reverse
 
 Iterative three-pointer walk (`prev`, `cur`, `nxt`); update `head` and `tail`.
 
 ```python
-ll = SinglyLinkedList([1, 2, 3])
+ll = LinkedList([1, 2, 3])
 ll.reverse()
 assert list(ll) == [3, 2, 1]
 ```
@@ -808,7 +903,7 @@ flowchart LR
 Recursive reverse (educational):
 
 ```python
-def reverse_recursive(head: Node | None) -> Node | None:
+def reverse_recursive(head):
     if head is None or head.next is None:
         return head
     new_head = reverse_recursive(head.next)
@@ -824,30 +919,51 @@ def reverse_recursive(head: Node | None) -> Node | None:
 
 ---
 
-### `extend(iterable)` / `to_list()`
+### `extend(other)` / `to_list()`
+
+`extend` splices another `LinkedList` onto the tail in O(1) pointer steps (no new nodes). The constructor `LinkedList(values)` builds from an iterable by calling `append` for each item.
 
 ```python
-ll = SinglyLinkedList([1])
-ll.extend([2, 3])
-assert ll.to_list() == [1, 2, 3]
+ll = LinkedList([1, 2, 3])
+tail = LinkedList([4, 5])
+ll.extend(tail)
+assert ll.to_list() == [1, 2, 3, 4, 5]
+assert tail.to_list() == [4, 5]  # nodes are shared, not copied
 ```
 
 | Operation | Time | Space |
 | --- | --- | --- |
-| `extend` | O(k) for *k* new items | O(1) aux per append |
+| `extend` | O(1) pointer splice | O(1) — reuses `other`'s nodes |
 | `to_list` | O(n) | O(n) new Python `list` |
+
+---
+
+### `sort()` — in-place sort via materialize
+
+Converts to a Python `list`, sorts in place, clears the chain, and rebuilds with `append`. Simple and correct; not an in-node pointer sort.
+
+```python
+ll = LinkedList([3, 1, 4, 2])
+ll.sort()
+assert ll.to_list() == [1, 2, 3, 4]
+```
+
+| | |
+| --- | --- |
+| **Time** | O(n log n) — dominated by Python's Timsort |
+| **Space** | O(n) for the temporary `list` |
 
 ---
 
 ### Iteration: `for x in ll` / `__iter__`
 
 ```python
-ll = SinglyLinkedList([10, 20, 30])
+ll = LinkedList([10, 20, 30])
 total = sum(x for x in ll)
 assert total == 60
 
 # NFL: one pass over a drive chain — O(n) in snaps on this drive
-drive = SinglyLinkedList([Snap(1, 0.5, "a"), Snap(2, -0.3, "b"), Snap(3, 0.2, "c")])
+drive = LinkedList([Snap(1, 0.5, "a"), Snap(2, -0.3, "b"), Snap(3, 0.2, "c")])
 drive_epa = sum(s.epa for s in drive)
 ```
 
@@ -861,7 +977,7 @@ This is the right pattern for **aggregate on a chain** (sum EPA, count sacks). F
 Manual walk (no wrapper class):
 
 ```python
-def walk(head: Node | None) -> None:
+def walk(head):
     cur = head
     while cur is not None:
         print(cur.data)
@@ -879,7 +995,7 @@ Useful in interviews and for understanding splice logic.
 You already hold reference `node`; no search.
 
 ```python
-def insert_after(node: Node, data: Any) -> None:
+def insert_after(node, data):
     node.next = Node(data, next=node.next)
 ```
 
@@ -897,7 +1013,7 @@ def insert_after(node: Node, data: Any) -> None:
 Simplifies “delete head” and “insert before head” in one uniform loop.
 
 ```python
-def remove_all_greater_than(head: Node | None, limit: int) -> Node | None:
+def remove_all_greater_than(head, limit):
     dummy = Node(0, next=head)
     prev = dummy
     while prev.next is not None:
@@ -936,16 +1052,15 @@ Let **n** = `len(ll)`, **i** = index. For NFL work, map **n** to the chain you a
 | `get` / `set` at `i` | O(i) ≤ O(n) | O(1) | |
 | `pop_head` | O(1) | O(1) | |
 | `pop_tail` | O(n) | O(1) | singly linked |
-| `remove_at(i)` | O(n) | O(1) | |
-| `remove_first(value)` | O(n) | O(1) | |
+| `remove(i)` | O(n) | O(1) | |
 | `index_of` / `contains` | O(n) | O(1) | |
 | `len` (cached) | O(1) | O(1) | |
 | `len` (walk) | O(n) | O(1) | |
 | `clear` | O(1) | O(1) | drop head |
-| `copy` | O(n) | O(n) | |
 | `reverse` iterative | O(n) | O(1) | |
 | `reverse` recursive | O(n) | O(n) stack | |
-| `extend` | O(k) | O(1) per item | |
+| `extend` (splice `LinkedList`) | O(1) | O(1) | reuses nodes from `other` |
+| `sort` | O(n log n) | O(n) | materialize + Timsort + rebuild |
 | `to_list` | O(n) | O(n) | |
 | Traverse all | O(n) | O(1) | sum EPA on one drive chain |
 
@@ -959,10 +1074,10 @@ These patterns appear in structure-heavy interview questions; they also describe
 
 ### Two pointers: find middle
 
-Slow moves 1 step, fast moves 2; when fast hits end, slow is middle. On a drive chain, that is the middle **snap node** without knowing length ahead of time (still O(n); `_size` on the class makes it O(1) if you trust cached length).
+Slow moves 1 step, fast moves 2; when fast hits end, slow is middle. On a drive chain, that is the middle **snap node** without knowing length ahead of time (still O(n); `size` on the class makes it O(1) if you trust cached length).
 
 ```python
-def middle_node(head: Node | None) -> Node | None:
+def middle_node(head):
     slow = fast = head
     while fast is not None and fast.next is not None:
         slow = slow.next
@@ -980,7 +1095,7 @@ def middle_node(head: Node | None) -> Node | None:
 If fast meets slow inside a cycle, loop exists.
 
 ```python
-def has_cycle(head: Node | None) -> bool:
+def has_cycle(head):
     slow = fast = head
     while fast is not None and fast.next is not None:
         slow = slow.next
@@ -1000,7 +1115,7 @@ def has_cycle(head: Node | None) -> bool:
 **NFL use:** Two chains sorted by `play_id` (e.g. first-half and second-half plays already sorted) can be merged into one chronological chain in O(n + m) pointer steps—no array shifts. Production merges usually sort keys in pandas/SQL; the linked version teaches the combine step.
 
 ```python
-def merge_sorted(a: Node | None, b: Node | None) -> Node | None:
+def merge_sorted(a, b):
     dummy = Node(0)
     tail = dummy
     while a is not None and b is not None:
@@ -1043,14 +1158,14 @@ sequenceDiagram
 | Queue / stack at both ends | `collections.deque` | O(1) `append` / `pop` both ends—live play queue, rolling window |
 | Player lookup by id | `dict` | O(1) average after index build—not a linked list |
 | Ordered mapping | `dict` (3.7+ insertion order) | Roster order sketches; not pointer chains |
-| Learning / interviews | `Node` + `SinglyLinkedList` | Pointer discipline |
+| Learning / interviews | `Node` + `LinkedList` (this page) | Pointer discipline |
 | Merge / reverse on **nodes** | Custom linked list or algorithm on `Node` | Teaches merge-sort chain step |
 
 ```python
 from collections import deque
 
 # Rolling last-k play_ids from a live feed (O(1) ends)
-recent: deque[int] = deque(maxlen=10)
+recent = deque(maxlen=10)
 recent.append(9021)
 recent.appendleft(9020)  # optional: treat as newest at left
 ```
@@ -1093,7 +1208,7 @@ flowchart TD
 | No `tail` but frequent `append` | O(n²) builds | Keep `tail` pointer |
 | `pop_tail` on singly linked list | Must scan to predecessor | Doubly linked list or `deque` |
 | `remove(node)` without predecessor | Cannot rewire in O(1) | Pass predecessor or use dummy head |
-| Deep copy expected from `copy()` | Only new nodes; shared `data` | `copy.deepcopy` on values if needed |
+| `extend` shares nodes with `other` | Mutating one list affects both | Copy data with `to_list()` + rebuild if isolation matters |
 | Using linked list for `xs[i]` hot paths | O(n) per access | `list` or array |
 | Storing full season as nodes | Huge overhead, slow scans | Parquet/CSV → pandas; index players with `dict` |
 | `get(i)` for every snap in every drive | O(drives × snaps²) if nested wrong | Store drive as `list` or one traverse per drive |
@@ -1119,8 +1234,8 @@ Official Python sequences tutorial (arrays, not linked lists): [Data Structures 
 
 ```python
 # node + empty list
-head: Node | None = None
-ll = SinglyLinkedList([1, 2, 3])
+head = None
+ll = LinkedList([1, 2, 3])
 
 # O(1) at head — e.g. prepend correction snap
 ll.prepend(0)
@@ -1132,9 +1247,10 @@ ll.append(4)
 # O(n) — search / index / tail pop (avoid in season-wide loops)
 ll.get(i)
 ll.insert(i, x)
-ll.remove_at(i)
-ll.remove_first(value)
+ll.remove(i)
 ll.pop_tail()
+ll.extend(other_ll)
+ll.sort()
 
 # O(n) once per drive — sum EPA, export to list
 for snap in ll:
