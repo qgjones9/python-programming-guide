@@ -14,7 +14,9 @@ class LinkedList:
         if values is not None:
             for value in values:
                 self.append(value)
-   
+    
+
+
     # print the linked list
     def __str__(self):
         """
@@ -27,7 +29,14 @@ class LinkedList:
             out.append(repr(current.data)) # append string representation of node data
             current = current.next # set current node to next node
         return f"LinkedList([{', '.join(out)}])" # return formatted string
-   
+
+    def __getitem__(self, index):
+        """
+        Allows bracket access, e.g. ll[2], by delegating to self.get(index).
+        Raises IndexError if the index is out of bounds.
+        """
+        return self.get(index)
+
     # represent the linked list
     def __repr__(self):
         return self.__str__() # call __str__ to return string representation

@@ -16,6 +16,16 @@ def make_linked_list(values):
     return ll
 
 # dunder methods
+def test_getitem():
+    """
+    (1) Create a linked list.
+    (2) Append 5 nodes to the linked list.
+    (3) Get the node at the given index.
+    (4) Assert the data from the node is the expected value.
+    """
+    ll = make_linked_list([0,1,2,3,4])
+    assert ll[0] == 0
+
 def test_str_representation():
     """
     (1) Create an empty linked list.

@@ -1015,26 +1015,26 @@ nav:
     - Recursion: dsa/recursion/index.md
     - Data structures:
       - Data structures: dsa/data-structures/index.md
-      - 2-3-4 tree: dsa/data-structures/2-3-4-tree/index.md
-      - Array-based lists: dsa/data-structures/array-based-lists/index.md
-      - AVL tree: dsa/data-structures/avl-tree/index.md
-      - Binary search tree: dsa/data-structures/binary-search-tree/index.md
-      - Circularly linked list: dsa/data-structures/circularly-linked-list/index.md
-      - Dequeue (deque): dsa/data-structures/dequeue-deque/index.md
-      - Doubly linked list: dsa/data-structures/doubly-linked-list/index.md
-      - Graphs: dsa/data-structures/graphs/index.md
-      - Hash table: dsa/data-structures/hash-table/index.md
-      - Heap sort: dsa/data-structures/heap-sort/index.md
-      - Honorable mention ADT: dsa/data-structures/honorable-mention-adt/index.md
       - Linked list: dsa/data-structures/linked-list/index.md
+      - Doubly linked list: dsa/data-structures/doubly-linked-list/index.md
+      - Circularly linked list: dsa/data-structures/circularly-linked-list/index.md
+      - Array-based lists: dsa/data-structures/array-based-lists/index.md
+      - Stacks: dsa/data-structures/stacks/index.md
+      - Queue: dsa/data-structures/queue/index.md
+      - Dequeue (deque): dsa/data-structures/dequeue-deque/index.md
+      - Hash table: dsa/data-structures/hash-table/index.md
+      - Tries: dsa/data-structures/tries/index.md
+      - Binary search tree: dsa/data-structures/binary-search-tree/index.md
+      - AVL tree: dsa/data-structures/avl-tree/index.md
+      - Red–black tree: dsa/data-structures/red-black-tree/index.md
       - Max heap: dsa/data-structures/max-heap/index.md
       - Priority queue: dsa/data-structures/priority-queue/index.md
-      - Queue: dsa/data-structures/queue/index.md
-      - Red–black tree: dsa/data-structures/red-black-tree/index.md
-      - Sets: dsa/data-structures/sets/index.md
-      - Stacks: dsa/data-structures/stacks/index.md
+      - Heap sort: dsa/data-structures/heap-sort/index.md
       - Treaps: dsa/data-structures/treaps/index.md
-      - Tries: dsa/data-structures/tries/index.md
+      - Sets: dsa/data-structures/sets/index.md
+      - Graphs: dsa/data-structures/graphs/index.md
+      - 2-3-4 tree: dsa/data-structures/2-3-4-tree/index.md
+      - Honorable mention ADT: dsa/data-structures/honorable-mention-adt/index.md
     - Algorithms:
       - Algorithms: dsa/algorithms/index.md
       - Bubble sort: dsa/algorithms/bubble-sort/index.md

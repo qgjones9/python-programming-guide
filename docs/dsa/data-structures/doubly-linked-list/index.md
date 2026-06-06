@@ -5,44 +5,38 @@ A linear collection where **each node** points to both the **next** and **previo
 | | |
 | --- | --- |
 | **What it is** | Nodes in a chain: each holds data, a `next` link, and a `prev` link. `head` and `tail` bound the sequence. |
-| **Core operations** | O(1) insert/delete at head or tail when you hold the list object; O(1) delete when you already hold a reference to the node (after O(n) search if you only have the value). |
+| **Core operations** | O(1) insert/delete at head or tail when you hold the list object; O(1) rewire when you already hold a node reference (manual pointer update). |
 | **When to use** | Frequent adds/removes at **both** ends, bidirectional traversal, or algorithms that need the predecessor without a separate scan. |
 | **Trade-off** | Two pointers per node (more memory than singly linked); still no O(1) random access by index. |
 
-In **NFL data analysis**, a doubly linked list is a strong mental model for **bidirectional timelines**: scrubbing a drive snap-by-snap forward and backward, maintaining a **recent-plays window** with fast trim from either end, or building a **play navigator** where “previous snap” and “next snap” are O(1) once you are on a node. You will still store season-scale play-by-play in **pandas** or Python **`list`**—this structure is for **ordered chains** where both directions and both ends matter.
+This page is your **ready reference**: structure, a complete Python implementation, every way to create it, every method with daily weather data examples, and **time and space complexity** on each operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
-This page is your **ready reference**: structure, a complete Python implementation, every way to create it, every method with NFL-flavored examples, and **time and space complexity** on each operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+## How a doubly linked list fits daily weather analysis
 
-[Parent: Data structures](../index.md)
-
----
-
-## How a doubly linked list fits NFL-shaped problems
-
-| NFL idea | Doubly linked view | Why `prev` helps |
+| Weather analysis idea | Doubly linked view | Why `prev` helps |
 | --- | --- | --- |
-| **Drive snap chain** | Head = first snap of drive; tail = last | Walk backward from a sack to see the previous down |
-| **Film-room scrubber** | Current node = snap on screen; `next` / `prev` = step forward/back | No full rescan from head for “previous play” |
-| **Recent plays buffer** | Fixed window of last *k* plays; drop oldest from head while appending newest at tail | O(1) at both ends |
-| **Merge two sorted play streams** | Two chains sorted by `(game_id, play_id)` | Same merge as singly linked; doubly linked helps if you splice mid-chain |
-| **Undo stack on drive builder** | Remove “current” play and restore neighbor links | O(1) removal with node reference |
+| **Daily observation chain** | Head = oldest day in window; tail = latest | Walk backward from an unusual or sudden change in data (such as a temperature jump) to see the prior day’s reading |
+| **Timeline scrubber** | Current node = day on chart; `next` / `prev` = step forward/back | No full rescan from head for “previous day” |
+| **Recent readings buffer** | Fixed window of last *k* days; drop oldest from head while appending newest at tail | O(1) at both ends |
+| **Merge two sorted station streams** | You have two lists of weather data, each sorted by station and reading. | As you join them into one list, you can insert pieces in the middle (not just the ends) more easily, because each node links to both its next and previous neighbors. This makes reorganizing parts of the list quicker than with a singly linked list.
+| **Undo stack on forecast editor** | Remove “current” edit and restore neighbor links | O(1) removal with node reference |
 
-**Use a Python `list` or DataFrame** when you filter 50,000 plays, compute season EPA leaders, or need `plays[i]` in a tight loop. **Use a doubly linked list (or `collections.deque`)** when the problem is a **mutable ordered chain** with heavy **both-end** or **bidirectional** traffic on a **small** *n* (one drive, one game chunk, one UI session).
+**Use a Python `list` or DataFrame** when you filter 50,000 daily rows, compute multi-year climate aggregates, or need `readings[i]` in a tight loop. **Use a doubly linked list (or `collections.deque`)** when the problem is a **mutable ordered chain** with heavy **both-end** or **bidirectional** traffic on a **small** *n* (one month window, one station chunk, one dashboard session).
 
 ```mermaid
 flowchart LR
-  subgraph dll["Doubly linked drive snaps"]
-    NIL1["None"] <--> H["Snap 1"]
-    H <--> N2["Snap 2"]
-    N2 <--> N3["Snap 3"]
-    N3 <--> T["Snap 4"]
+  subgraph dll["Doubly linked daily readings"]
+    NIL1["None"] <--> H["Day 1"]
+    H <--> N2["Day 2"]
+    N2 <--> N3["Day 3"]
+    N3 <--> T["Day 4"]
     T <--> NIL2["None"]
   end
   head["head"] --> H
   tail["tail"] --> T
 ```
 
-Throughout this page, **n** is the number of nodes (e.g. snaps in one drive). **i** is a zero-based index.
+Throughout this page, **n** is the number of nodes (e.g. days in one analysis window). **i** is a zero-based index.
 
 ---
 
@@ -51,19 +45,19 @@ Throughout this page, **n** is the number of nodes (e.g. snaps in one drive). **
 | | **Doubly linked** | [Singly linked](../linked-list/index.md) | [Python `list`](../array-based-lists/index.md) |
 | --- | --- | --- | --- |
 | **Pointers per node** | `next` + `prev` | `next` only | None (array of refs) |
-| **`pop_tail`** | O(1) with `tail` | O(n) — must find predecessor | O(1) amortized |
+| **`pop()` (tail)** | O(1) with `tail` | O(n) — must find predecessor | O(1) amortized |
 | **Delete node you hold** | O(1) rewire | O(n) unless copy-value hack | O(n) shift |
-| **Access by index `i`** | O(n) forward or backward from nearer end | O(n) from head only | O(1) |
+| **Access by index `i`** | O(n) forward walk from head | O(n) from head only | O(1) |
 | **Memory** | Highest per element | Medium | Compact + cache-friendly |
-| **NFL fit** | Bidirectional drive UI, both-end window | Head-heavy live buffer, merge drills | Full play-by-play table |
+| **Weather fit** | Bidirectional timeline UI, both-end window | Head-heavy live ingest, merge drills | Full daily observation table |
 
 ```mermaid
 sequenceDiagram
   participant Analyst
-  participant DLL as doubly linked drive
-  Analyst->>DLL: go to current snap (node ref)
-  DLL-->>Analyst: prev — previous snap O(1)
-  DLL-->>Analyst: next — next snap O(1)
+  participant DLL as doubly linked series
+  Analyst->>DLL: go to current day (node ref)
+  DLL-->>Analyst: prev — previous reading O(1)
+  DLL-->>Analyst: next — next reading O(1)
   Note over Analyst,DLL: Singly linked "prev" would cost O(n) from head
 ```
 
@@ -71,30 +65,27 @@ sequenceDiagram
 
 ## Node definition
 
-Every node stores **data** (e.g. a snap record), **next**, and **prev**.
+Every node stores **data** (e.g. a daily weather row), **next**, and **prev**.
 
 ```python
-from __future__ import annotations
-
 from dataclasses import dataclass
-from typing import Any
 
 
 @dataclass
-class Snap:
-    """Minimal snap for examples on this page."""
-    play_id: int
-    quarter: int
-    epa: float
-    description: str
+class DailyReading:
+    """Minimal daily weather row for examples on this page."""
+    reading_id: int
+    month: int
+    temp_anomaly: float
+    summary: str
 
 
-@dataclass
-class DNode:
+class Node:
     """Doubly linked node."""
-    data: Any
-    prev: DNode | None = None
-    next: DNode | None = None
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+        self.prev = None
 ```
 
 | | |
@@ -104,8 +95,8 @@ class DNode:
 
 ```mermaid
 flowchart TB
-  subgraph node["DNode"]
-    D["data: Snap"]
+  subgraph node["Node"]
+    D["data: DailyReading"]
     P["prev"]
     N["next"]
   end
@@ -120,8 +111,8 @@ flowchart TB
 ### 1. Empty list — `head` and `tail` are `None`
 
 ```python
-head: DNode | None = None
-tail: DNode | None = None
+head = None
+tail = None
 ```
 
 | | |
@@ -133,13 +124,13 @@ tail: DNode | None = None
 
 ```python
 class DoublyLinkedList:
-    def __init__(self) -> None:
-        self.head: DNode | None = None
-        self.tail: DNode | None = None
-        self._size = 0
+    def __init__(self):
+        self.head = None
+        self.tail = None
+        self.size = 0
 
-drive = DoublyLinkedList()
-assert drive.is_empty()
+series = DoublyLinkedList()
+assert series.is_empty()
 ```
 
 | | |
@@ -150,7 +141,7 @@ assert drive.is_empty()
 ### 3. Single-node list
 
 ```python
-node = DNode(Snap(101, 2, 0.4, "1st & 10 pass complete"))
+node = Node(DailyReading(101, 2, 0.4, "partly cloudy"))
 head = tail = node
 ```
 
@@ -159,15 +150,15 @@ head = tail = node
 | **Time** | O(1) |
 | **Space** | O(1) one node |
 
-### 4. Build from iterable — append at tail (chronological drive order)
+### 4. Build from iterable — append at tail (chronological day order)
 
-Preserves CSV / API order: play 101 → 102 → 103.
+Preserves CSV / API order: day 101 → 102 → 103.
 
 ```python
-def from_iterable_tail(items) -> tuple[DNode | None, DNode | None]:
+def from_iterable_tail(items):
     head = tail = None
     for item in items:
-        node = DNode(item)
+        node = Node(item)
         if head is None:
             head = tail = node
         else:
@@ -177,28 +168,29 @@ def from_iterable_tail(items) -> tuple[DNode | None, DNode | None]:
             tail = node
     return head, tail
 
-snaps = [
-    Snap(101, 2, 0.4, "pass"),
-    Snap(102, 2, -1.2, "sack"),
-    Snap(103, 2, 0.1, "checkdown"),
+readings = [
+    DailyReading(101, 2, 0.4, "partly cloudy"),
+    DailyReading(102, 2, -1.2, "cold front"),
+    DailyReading(103, 2, 0.1, "light rain"),
 ]
-head, tail = from_iterable_tail(snaps)
+head, tail = from_iterable_tail(readings)
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(k) for *k* snaps |
+| **Time** | O(k) for *k* readings |
 | **Space** | O(k) nodes |
 
-### 5. Build from iterable — prepend at head (reversed order)
+### 5. Build from iterable — push at head (reversed order)
 
 Useful when data arrives **newest-first** (live feed) and you want oldest at head after a later `reverse`, or when you intentionally want reverse chronological storage.
 
 ```python
-def from_iterable_head(items) -> DNode | None:
+def from_iterable_head(items):
     head = None
     for item in items:
-        node = DNode(item, next=head)
+        node = Node(item)
+        node.next = head
         if head is not None:
             head.prev = node
         head = node
@@ -210,13 +202,15 @@ def from_iterable_head(items) -> DNode | None:
 | **Time** | O(k) |
 | **Space** | O(k) |
 
-### 6. Constructor with iterable (recommended)
+### 6. Build with `append` (recommended)
 
 ```python
-drive = DoublyLinkedList([
-    Snap(101, 2, 0.4, "pass"),
-    Snap(102, 2, -1.2, "sack"),
-])
+series = DoublyLinkedList()
+for reading in [
+    DailyReading(101, 2, 0.4, "partly cloudy"),
+    DailyReading(102, 2, -1.2, "cold front"),
+]:
+    series.append(reading)
 ```
 
 | | |
@@ -227,9 +221,9 @@ drive = DoublyLinkedList([
 ### 7. Manual wiring (tests, diagrams, interviews)
 
 ```python
-n1 = DNode(Snap(101, 2, 0.4, "pass"))
-n2 = DNode(Snap(102, 2, -1.2, "sack"))
-n3 = DNode(Snap(103, 2, 0.1, "checkdown"))
+n1 = Node(DailyReading(101, 2, 0.4, "partly cloudy"))
+n2 = Node(DailyReading(102, 2, -1.2, "cold front"))
+n3 = Node(DailyReading(103, 2, 0.1, "light rain"))
 n1.next = n2
 n2.prev = n1
 n2.next = n3
@@ -242,14 +236,15 @@ head, tail = n1, n3
 | **Time** | O(k) |
 | **Space** | O(k) |
 
-### 8. From an existing Python `list` of snaps
+### 8. From an existing Python `list` of daily readings
 
 ```python
-plays_list = [
-    Snap(201, 1, 0.2, "rush"),
-    Snap(202, 1, 1.1, "TD pass"),
+readings_list = [
+    DailyReading(201, 1, 0.2, "overcast"),
+    DailyReading(202, 1, 1.1, "warm spell"),
 ]
-drive = DoublyLinkedList(plays_list)
+series = DoublyLinkedList()
+series.extend(readings_list)
 ```
 
 | | |
@@ -261,12 +256,12 @@ drive = DoublyLinkedList(plays_list)
 
 ```mermaid
 flowchart TD
-  Start([Building a drive chain?])
+  Start([Building a daily reading chain?])
   Start --> Empty{Empty?}
   Empty -->|yes| E["DoublyLinkedList()"]
   Empty -->|no| Order{Order matters?}
-  Order -->|chronological| Tail["append each snap — O(1) per snap"]
-  Order -->|newest-first ingest| Head["prepend each — then maybe reverse"]
+  Order -->|chronological| Tail["append each reading — O(1) per day"]
+  Order -->|newest-first ingest| Head["push each — then maybe reverse"]
   Order -->|3–5 nodes in test| Manual["wire prev/next by hand"]
   E --> Done([ready])
   Tail --> Done
@@ -278,286 +273,323 @@ flowchart TD
 
 ## Reference implementation
 
-All method sections below use this class. It keeps **`head`**, **`tail`**, and **`_size`** so `len`, both-end ops, and “which direction to walk” stay cheap to reason about.
+All method sections below use this class. It keeps **`head`**, **`tail`**, and **`size`** so `len`, both-end ops, and index walks stay cheap to reason about.
 
 ```python
-from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import Any, Iterable, Iterator
-
-
-@dataclass
-class Snap:
-    play_id: int
-    quarter: int
-    epa: float
-    description: str
-
-
-@dataclass
-class DNode:
-    data: Any
-    prev: DNode | None = None
-    next: DNode | None = None
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+        self.prev = None
 
 
 class DoublyLinkedList:
-    """Doubly linked list with head, tail, and cached length."""
+    def __init__(self):
+        self.head = None
+        self.tail = None
+        self.size = 0
 
-    def __init__(self, items: Iterable[Any] | None = None) -> None:
-        self.head: DNode | None = None
-        self.tail: DNode | None = None
-        self._size = 0
-        if items is not None:
-            for item in items:
-                self.append(item)
+    def __str__(self):
+        return f"DoublyLinkedList({self.to_list()})"
 
-    def __len__(self) -> int:
-        return self._size
+    def __repr__(self):
+        return f"DoublyLinkedList({self.to_list()})"
 
-    def __iter__(self) -> Iterator[Any]:
-        cur = self.head
-        while cur is not None:
-            yield cur.data
-            cur = cur.next
+    def __len__(self):
+        return self.size
 
-    def __reversed__(self) -> Iterator[Any]:
-        cur = self.tail
-        while cur is not None:
-            yield cur.data
-            cur = cur.prev
+    def __getitem__(self, index):
+        return self.get(index)
 
-    def __repr__(self) -> str:
-        return f"DoublyLinkedList({list(self)})"
+    def __iter__(self):
+        current = self.head
+        while current is not None:
+            yield current.data
+            current = current.next
 
-    def is_empty(self) -> bool:
-        return self._size == 0
+    def is_empty(self):
+        return self.head is None
 
-    def _link_before_tail(self, node: DNode) -> None:
-        """Attach node just before current tail (tail must exist)."""
-        assert self.tail is not None
-        node.prev = self.tail.prev
-        node.next = self.tail
-        if self.tail.prev is not None:
-            self.tail.prev.next = node
-        else:
+    def push(self, data):
+        node = Node(data)
+        if self.is_empty():
             self.head = node
-        self.tail.prev = node
-
-    def prepend(self, data: Any) -> DNode:
-        node = DNode(data, next=self.head)
-        if self.head is not None:
-            self.head.prev = node
-        else:
             self.tail = node
-        self.head = node
-        self._size += 1
-        return node
-
-    def append(self, data: Any) -> DNode:
-        node = DNode(data, prev=self.tail)
-        if self.tail is not None:
-            self.tail.next = node
         else:
+            node.next = self.head
+            self.head.prev = node
             self.head = node
-        self.tail = node
-        self._size += 1
-        return node
+        self.size += 1
+        return self
 
-    def insert(self, index: int, data: Any) -> DNode:
-        if index < 0 or index > self._size:
-            raise IndexError("index out of range")
-        if index == 0:
-            return self.prepend(data)
-        if index == self._size:
-            return self.append(data)
-        anchor = self._node_at(index)
-        node = DNode(data, prev=anchor.prev, next=anchor)
-        assert anchor.prev is not None
-        anchor.prev.next = node
-        anchor.prev = node
-        self._size += 1
-        return node
-
-    def pop_head(self) -> Any:
-        if self.head is None:
-            raise IndexError("pop from empty list")
-        data = self.head.data
-        self.head = self.head.next
-        if self.head is not None:
-            self.head.prev = None
+    def append(self, data):
+        node = Node(data)
+        if self.is_empty():
+            self.head = node
+            self.tail = node
         else:
-            self.tail = None
-        self._size -= 1
-        return data
+            node.prev = self.tail
+            self.tail.next = node
+            self.tail = node
+        self.size += 1
 
-    def pop_tail(self) -> Any:
-        if self.tail is None:
+    def insert(self, index, data):
+        if index < 0 or index > self.size:
+            raise IndexError("index out of bounds")
+        if index == 0:
+            self.push(data)
+            return self
+        node = Node(data)
+        prev = self._node_at(index - 1)
+        node.next = prev.next
+        prev.next.prev = node
+        node.prev = prev
+        prev.next = node
+        self.size += 1
+        return self
+
+    def pop(self):
+        if self.is_empty():
             raise IndexError("pop from empty list")
         data = self.tail.data
-        self.tail = self.tail.prev
-        if self.tail is not None:
-            self.tail.next = None
-        else:
+        if self.head.next is None:
             self.head = None
-        self._size -= 1
+            self.tail = None
+        else:
+            self.tail = self.tail.prev
+            self.tail.next = None
+        self.size -= 1
         return data
 
-    def remove_node(self, node: DNode) -> Any:
-        """O(1) removal when you already hold the node reference."""
-        if node.prev is not None:
-            node.prev.next = node.next
+    def _pop_head(self):
+        if self.is_empty():
+            raise IndexError("pop from empty list")
+        data = self.head.data
+        if self.head.next is None:
+            self.head = None
+            self.tail = None
         else:
-            self.head = node.next
-        if node.next is not None:
-            node.next.prev = node.prev
-        else:
-            self.tail = node.prev
-        self._size -= 1
-        return node.data
+            self.head = self.head.next
+            self.head.prev = None
+        self.size -= 1
+        return data
 
-    def remove_at(self, index: int) -> Any:
-        return self.remove_node(self._node_at(index))
+    def remove(self, index):
+        if index < 0 or index >= self.size:
+            raise IndexError("index out of bounds")
+        if index == 0:
+            return self._pop_head()
+        if index == self.size - 1:
+            return self.pop()
+        prev = self._node_at(index - 1)
+        cur = prev.next
+        prev.next = cur.next
+        cur.next.prev = prev
+        self.size -= 1
+        return cur.data
 
-    def remove_first(self, data: Any) -> bool:
-        cur = self.head
-        while cur is not None:
-            if cur.data == data:
-                self.remove_node(cur)
-                return True
-            cur = cur.next
-        return False
-
-    def get(self, index: int) -> Any:
+    def get(self, index):
         return self._node_at(index).data
 
-    def set(self, index: int, data: Any) -> None:
+    def set(self, index, data):
         self._node_at(index).data = data
+        return self
 
-    def index_of(self, data: Any) -> int:
-        i = 0
-        cur = self.head
-        while cur is not None:
-            if cur.data == data:
+    def _node_at(self, index):
+        if index < 0 or index >= self.size:
+            raise IndexError("index out of bounds")
+        current = self.head
+        for _ in range(index):
+            current = current.next
+        return current
+
+    def index_of(self, data):
+        current = self.head
+        for i in range(self.size):
+            if current.data == data:
                 return i
-            cur = cur.next
-            i += 1
-        raise ValueError(f"{data!r} not in list")
+            current = current.next
+        return -1
 
-    def contains(self, data: Any) -> bool:
-        cur = self.head
-        while cur is not None:
-            if cur.data == data:
-                return True
-            cur = cur.next
-        return False
+    def contains(self, data):
+        return self.index_of(data) != -1
 
-    def find_play(self, play_id: int) -> DNode | None:
-        """NFL helper: first snap with matching play_id."""
-        cur = self.head
-        while cur is not None:
-            if isinstance(cur.data, Snap) and cur.data.play_id == play_id:
-                return cur
-            cur = cur.next
+    def find_reading(self, reading_id):
+        current = self.head
+        while current is not None:
+            data = current.data
+            if hasattr(data, "reading_id"):
+                if data.reading_id == reading_id:
+                    return data
+            elif data == reading_id:
+                return data
+            current = current.next
         return None
 
-    def clear(self) -> None:
-        self.head = self.tail = None
-        self._size = 0
+    def reverse(self):
+        if self.is_empty():
+            raise IndexError("reverse empty list")
+        current = self.head
+        while current is not None:
+            current.next, current.prev = current.prev, current.next
+            current = current.prev
+        self.head, self.tail = self.tail, self.head
+        return self
 
-    def copy(self) -> DoublyLinkedList:
+    def to_list(self):
+        if self.is_empty():
+            return []
+        current = self.head
+        out = []
+        while current is not None:
+            out.append(current.data)
+            current = current.next
+        return out
+
+    def clear(self):
+        self.head = None
+        self.tail = None
+        self.size = 0
+        return self
+
+    def extend(self, items):
+        if isinstance(items, DoublyLinkedList):
+            if items.is_empty():
+                return self
+            if self.is_empty():
+                self.head = items.head
+                self.tail = items.tail
+                self.size = items.size
+            else:
+                self.tail.next = items.head
+                items.head.prev = self.tail
+                self.tail = items.tail
+                self.size += items.size
+            return self
+        for item in items:
+            self.append(item)
+        return self
+
+    def sort(self):
+        if self.size < 2:
+            return self
+        values = self.to_list()
+        values.sort()
+        self.clear()
+        for value in values:
+            self.append(value)
+        return self
+
+    def copy(self):
         out = DoublyLinkedList()
         for item in self:
             out.append(item)
         return out
 
-    def reverse(self) -> None:
-        cur = self.head
-        while cur is not None:
-            cur.prev, cur.next = cur.next, cur.prev
-            cur = cur.prev  # old next; after swap, prev holds forward link
-        self.head, self.tail = self.tail, self.head
+    def trim_front(self, count):
+        for _ in range(count):
+            if self.is_empty():
+                break
+            self.remove(0)
+        return self
 
-    def extend(self, items: Iterable[Any]) -> None:
-        for item in items:
-            self.append(item)
+    def trim_back(self, keep):
+        while self.size > keep:
+            self.pop()
+        return self
 
-    def to_list(self) -> list[Any]:
-        return list(self)
+    def latest(self):
+        if self.is_empty():
+            return None
+        return self.tail.data
 
-    def trim_front(self, keep: int) -> None:
-        """Keep only the last `keep` snaps (recent-plays window)."""
-        while self._size > keep:
-            self.pop_head()
+    def oldest_in_window(self):
+        if self.is_empty():
+            return None
+        return self.head.data
 
-    def _node_at(self, index: int) -> DNode:
-        if index < 0 or index >= self._size:
-            raise IndexError("index out of range")
-        if index <= self._size // 2:
-            cur = self.head
-            for _ in range(index):
-                assert cur is not None
-                cur = cur.next
-        else:
-            cur = self.tail
-            for _ in range(self._size - 1 - index):
-                assert cur is not None
-                cur = cur.prev
-        assert cur is not None
-        return cur
+    def current(self):
+        if self.is_empty():
+            return None
+        return self.head.data
+
+    def walk_forward_from(self, node):
+        if node is None:
+            return []
+        out = []
+        current = node
+        while current is not None:
+            out.append(current.data)
+            current = current.next
+        return out
+
+    def walk_backward_from(self, node):
+        if node is None:
+            return []
+        out = []
+        current = node
+        while current is not None:
+            out.append(current.data)
+            current = current.prev
+        return out
 ```
 
 ---
 
-## All operations (NFL examples + complexity)
+## All operations (weather examples + complexity)
 
 ```mermaid
 flowchart TB
   subgraph ends["O(1) at ends"]
-    prepend
+    push
     append
-    pop_head
-    pop_tail
-  end
-  subgraph node_ref["O(1) with node reference"]
-    remove_node
+    remove0["remove(0)"]
+    pop
   end
   subgraph scan["O(n) scan"]
-    find_play
+    find_reading
     index_of
     get_at["_node_at(i)"]
   end
 ```
 
-### `is_empty()` / `len(drive)`
+Helper used in several examples:
 
 ```python
-drive = DoublyLinkedList()
-assert drive.is_empty()
-assert len(drive) == 0
+def make_series(readings):
+    series = DoublyLinkedList()
+    for reading in readings:
+        series.append(reading)
+    return series
+```
 
-drive.append(Snap(101, 2, 0.4, "pass"))
-assert len(drive) == 1
+### `is_empty()` / `len(series)` / `series[i]`
+
+```python
+series = DoublyLinkedList()
+assert series.is_empty()
+assert len(series) == 0
+
+series.append(DailyReading(101, 2, 0.4, "partly cloudy"))
+assert len(series) == 1
+assert series[0].reading_id == 101
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(1) with cached `_size` |
+| **Time** | O(1) with cached `size` |
 | **Space** | O(1) |
 
 ---
 
-### `prepend(data)` — new snap before the opening play
+### `push(data)` — new reading before the oldest day
 
-Example: prepend a **penalty snap** reclassified as the first event in a corrected drive chain.
+Example: push a **backfilled observation** reclassified as the first row in a corrected daily chain.
 
 ```python
-drive = DoublyLinkedList([
-    Snap(102, 2, -1.2, "sack"),
-])
-drive.prepend(Snap(101, 2, 0.4, "pass"))
-assert drive.get(0).play_id == 101
+series = make_series([DailyReading(102, 2, -1.2, "cold front")])
+series.push(DailyReading(101, 2, 0.4, "partly cloudy"))
+assert series.get(0).reading_id == 101
 ```
 
 | | |
@@ -567,8 +599,8 @@ assert drive.get(0).play_id == 101
 
 ```mermaid
 sequenceDiagram
-  participant D as drive
-  participant New as new snap node
+  participant D as series
+  participant New as new reading node
   participant Old as old head
   D->>New: create node; New.next = head
   New->>Old: Old.prev = New
@@ -577,13 +609,13 @@ sequenceDiagram
 
 ---
 
-### `append(data)` — next snap in the drive
+### `append(data)` — next day in the series
 
 ```python
-drive = DoublyLinkedList()
-drive.append(Snap(101, 2, 0.4, "pass"))
-drive.append(Snap(102, 2, -1.2, "sack"))
-assert list(drive)[-1].description == "sack"
+series = DoublyLinkedList()
+series.append(DailyReading(101, 2, 0.4, "partly cloudy"))
+series.append(DailyReading(102, 2, -1.2, "cold front"))
+assert list(series)[-1].summary == "cold front"
 ```
 
 | | |
@@ -593,18 +625,18 @@ assert list(drive)[-1].description == "sack"
 
 ---
 
-### `insert(index, data)` — insert a snap mid-drive
+### `insert(index, data)` — insert a reading mid-series
 
-Insert **onside kick recovery** before the snap currently at index 2.
+Insert a **corrected sensor spike** before the row currently at index 2.
 
 ```python
-drive = DoublyLinkedList([
-    Snap(101, 2, 0.4, "pass"),
-    Snap(102, 2, -1.2, "sack"),
-    Snap(104, 2, 0.1, "checkdown"),
+series = make_series([
+    DailyReading(101, 2, 0.4, "partly cloudy"),
+    DailyReading(102, 2, -1.2, "cold front"),
+    DailyReading(104, 2, 0.1, "overcast"),
 ])
-drive.insert(2, Snap(103, 2, 2.1, "fumble recovery"))
-ids = [s.play_id for s in drive]
+series.insert(2, DailyReading(103, 2, 2.1, "sensor correction"))
+ids = [s.reading_id for s in series]
 assert ids == [101, 102, 103, 104]
 ```
 
@@ -615,9 +647,9 @@ assert ids == [101, 102, 103, 104]
 
 ```mermaid
 flowchart LR
-  A["snap A"] <--> B["snap B"]
-  B <--> C["snap C"]
-  B <--> NEW["new snap"]
+  A["day A"] <--> B["day B"]
+  B <--> C["day C"]
+  B <--> NEW["new reading"]
   NEW <--> C
 ```
 
@@ -625,35 +657,37 @@ flowchart LR
 
 ### `get(index)` / `set(index, data)` — access by position
 
-Index access is still a walk—but from the **nearer end** (implementation uses `_node_at`).
+Index access walks forward from the head via `_node_at`.
 
 ```python
-drive = DoublyLinkedList([Snap(i, 1, 0.0, f"p{i}") for i in range(10)])
-assert drive.get(0).play_id == 0
-assert drive.get(9).play_id == 9
-drive.set(5, Snap(99, 1, 0.0, "replaced"))
-assert drive.get(5).play_id == 99
+series = make_series([DailyReading(i, 1, 0.0, f"day {i}") for i in range(10)])
+assert series.get(0).reading_id == 0
+assert series.get(9).reading_id == 9
+series.set(5, DailyReading(99, 1, 0.0, "replaced"))
+assert series.get(5).reading_id == 99
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(min(i, n − 1 − i)) ≤ O(n) |
+| **Time** | O(i) ≤ O(n) |
 | **Space** | O(1) |
 
-For thousands of plays, store an index in a **`dict[play_id, Snap]`** beside the chain—not `get(i)` in a hot loop.
+For thousands of daily rows, store an index in a **`dict[reading_id, DailyReading]`** beside the chain—not `get(i)` in a hot loop.
 
 ---
 
-### `pop_head()` — drop the opening snap from the window
+### `remove(0)` — drop the oldest day from the window
+
+Head removal is handled by `remove(0)` (internally `_pop_head`).
 
 ```python
-drive = DoublyLinkedList([
-    Snap(101, 2, 0.4, "pass"),
-    Snap(102, 2, -1.2, "sack"),
+series = make_series([
+    DailyReading(101, 2, 0.4, "partly cloudy"),
+    DailyReading(102, 2, -1.2, "cold front"),
 ])
-old_first = drive.pop_head()
-assert old_first.play_id == 101
-assert drive.get(0).play_id == 102
+old_first = series.remove(0)
+assert old_first.reading_id == 101
+assert series.get(0).reading_id == 102
 ```
 
 | | |
@@ -663,18 +697,18 @@ assert drive.get(0).play_id == 102
 
 ---
 
-### `pop_tail()` — remove the last snap (e.g. undo last tag)
+### `pop()` — remove the latest reading (e.g. undo last annotation)
 
 Singly linked lists need an O(n) scan for the predecessor; **doubly linked does not**.
 
 ```python
-drive = DoublyLinkedList([
-    Snap(101, 2, 0.4, "pass"),
-    Snap(102, 2, -1.2, "sack"),
+series = make_series([
+    DailyReading(101, 2, 0.4, "partly cloudy"),
+    DailyReading(102, 2, -1.2, "cold front"),
 ])
-last = drive.pop_tail()
-assert last.play_id == 102
-assert len(drive) == 1
+last = series.pop()
+assert last.reading_id == 102
+assert len(series) == 1
 ```
 
 | | |
@@ -684,7 +718,7 @@ assert len(drive) == 1
 
 ```mermaid
 sequenceDiagram
-  participant D as drive
+  participant D as series
   D->>D: read tail.data
   D->>D: tail = tail.prev; tail.next = None
   Note over D: Singly linked would walk n-1 steps
@@ -692,62 +726,39 @@ sequenceDiagram
 
 ---
 
-### `remove_node(node)` — O(1) delete when you have the node
-
-You already found the snap node (e.g. from `find_play`). Remove it without scanning for the predecessor.
+### `remove(index)` — delete by position
 
 ```python
-drive = DoublyLinkedList([
-    Snap(101, 2, 0.4, "pass"),
-    Snap(102, 2, -1.2, "sack"),
-    Snap(103, 2, 0.1, "checkdown"),
+series = make_series([
+    DailyReading(101, 2, 0.4, "partly cloudy"),
+    DailyReading(102, 2, -1.2, "cold front"),
+    DailyReading(103, 2, 0.1, "light rain"),
 ])
-node = drive.find_play(102)
-assert node is not None
-drive.remove_node(node)
-assert [s.play_id for s in drive] == [101, 103]
+assert series.remove(1).reading_id == 102
+assert [s.reading_id for s in series] == [101, 103]
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(1) for removal; O(n) if you still need `find_play` first |
+| **Time** | O(n) — walk to index, then O(1) rewire |
 | **Space** | O(1) |
 
-This is the main reason doubly linked lists exist in textbooks and film-room UI sketches.
-
 ---
 
-### `remove_at(index)` / `remove_first(data)`
+### `find_reading(reading_id)` / `index_of` / `contains`
+
+`find_reading` returns the **data** (not the node). It matches objects with a `reading_id` attribute or raw values.
 
 ```python
-drive = DoublyLinkedList([
-    Snap(101, 2, 0.4, "pass"),
-    Snap(102, 2, -1.2, "sack"),
+series = make_series([
+    DailyReading(101, 2, 0.4, "partly cloudy"),
+    DailyReading(102, 2, -1.2, "cold front"),
 ])
-drive.remove_at(0)
-assert drive.get(0).play_id == 102
-
-drive2 = DoublyLinkedList([Snap(101, 2, 0.4, "a"), Snap(101, 2, 0.0, "b")])
-drive2.remove_first(Snap(101, 2, 0.4, "a"))  # uses == on dataclass fields
-```
-
-| Operation | Time | Space |
-| --- | --- | --- |
-| `remove_at(i)` | O(n) | O(1) |
-| `remove_first(value)` | O(n) | O(1) |
-
----
-
-### `find_play(play_id)` / `index_of` / `contains`
-
-```python
-drive = DoublyLinkedList([
-    Snap(101, 2, 0.4, "pass"),
-    Snap(102, 2, -1.2, "sack"),
-])
-node = drive.find_play(102)
-assert node is not None and node.data.description == "sack"
-assert drive.contains(Snap(101, 2, 0.4, "pass"))
+reading = series.find_reading(102)
+assert reading is not None and reading.summary == "cold front"
+assert series.contains(DailyReading(101, 2, 0.4, "partly cloudy"))
+assert series.index_of(DailyReading(102, 2, -1.2, "cold front")) == 1
+assert series.index_of(DailyReading(999, 1, 0.0, "missing")) == -1
 ```
 
 | | |
@@ -757,19 +768,21 @@ assert drive.contains(Snap(101, 2, 0.4, "pass"))
 
 ---
 
-### Bidirectional iteration — `for` forward and `reversed(drive)`
+### Bidirectional iteration — `for` forward and `walk_backward_from`
+
+Forward iteration uses `__iter__`. Backward walks use `walk_backward_from` on a node reference (e.g. `series.tail`).
 
 ```python
-drive = DoublyLinkedList([
-    Snap(101, 2, 0.4, "pass"),
-    Snap(102, 2, -1.2, "sack"),
-    Snap(103, 2, 0.1, "checkdown"),
+series = make_series([
+    DailyReading(101, 2, 0.4, "partly cloudy"),
+    DailyReading(102, 2, -1.2, "cold front"),
+    DailyReading(103, 2, 0.1, "light rain"),
 ])
 
-forward_epa = [s.epa for s in drive]
-backward_epa = [s.epa for s in reversed(drive)]
-assert forward_epa == [0.4, -1.2, 0.1]
-assert backward_epa == [0.1, -1.2, 0.4]
+forward_anomaly = [s.temp_anomaly for s in series]
+backward_anomaly = [s.temp_anomaly for s in series.walk_backward_from(series.tail)]
+assert forward_anomaly == [0.4, -1.2, 0.1]
+assert backward_anomaly == [0.1, -1.2, 0.4]
 ```
 
 | | |
@@ -777,31 +790,19 @@ assert backward_epa == [0.1, -1.2, 0.4]
 | **Time** | O(n) |
 | **Space** | O(1) auxiliary (not counting result lists) |
 
-Walk backward from a **known node** without `reversed()`:
-
-```python
-def walk_backward_from(node: DNode | None) -> list[Snap]:
-    out = []
-    cur = node
-    while cur is not None:
-        out.append(cur.data)
-        cur = cur.prev
-    return out
-```
-
 | | |
 | --- | --- |
-| **Time** | O(k) for *k* steps backward |
-| **Space** | O(k) if materialized |
+| **`walk_forward_from(node)`** | O(k) forward from a known node |
+| **`walk_backward_from(node)`** | O(k) backward from a known node |
 
 ---
 
-### `clear()` — reset drive builder
+### `clear()` — reset forecast editor
 
 ```python
-drive = DoublyLinkedList([Snap(101, 2, 0.4, "pass")])
-drive.clear()
-assert drive.is_empty()
+series = make_series([DailyReading(101, 2, 0.4, "partly cloudy")])
+series.clear()
+assert series.is_empty()
 ```
 
 | | |
@@ -811,15 +812,16 @@ assert drive.is_empty()
 
 ---
 
-### `copy()` — duplicate chain for what-if branch
+### `copy()` — duplicate chain for forecast scenario
 
-Shallow copy: new nodes, **same** `Snap` objects.
+Shallow copy: new nodes, **same** `DailyReading` objects.
 
 ```python
-original = DoublyLinkedList([Snap(101, 2, 0.4, "pass")])
+original = make_series([DailyReading(101, 2, 0.4, "partly cloudy")])
 branch = original.copy()
-branch.append(Snap(999, 2, 0.0, "hypothetical"))
+branch.append(DailyReading(999, 2, 0.0, "forecast scenario"))
 assert len(original) == 1 and len(branch) == 2
+assert branch.head is not original.head
 ```
 
 | | |
@@ -829,16 +831,16 @@ assert len(original) == 1 and len(branch) == 2
 
 ---
 
-### `reverse()` — flip drive order in place
+### `reverse()` — flip chronological order in place
 
-Useful after **prepend-heavy** ingest to get chronological order.
+Useful after **push-heavy** ingest to get chronological order.
 
 ```python
-drive = DoublyLinkedList()
+series = DoublyLinkedList()
 for pid in [103, 102, 101]:  # newest first
-    drive.prepend(Snap(pid, 2, 0.0, "x"))
-drive.reverse()
-assert [s.play_id for s in drive] == [101, 102, 103]
+    series.push(DailyReading(pid, 2, 0.0, "x"))
+series.reverse()
+assert [s.reading_id for s in series] == [101, 102, 103]
 ```
 
 | | |
@@ -848,12 +850,33 @@ assert [s.play_id for s in drive] == [101, 102, 103]
 
 ---
 
-### `extend(iterable)` / `to_list()`
+### `sort()` — order readings by comparable data
 
 ```python
-drive = DoublyLinkedList([Snap(101, 2, 0.4, "pass")])
-drive.extend([Snap(102, 2, -1.2, "sack"), Snap(103, 2, 0.1, "checkdown")])
-rows = drive.to_list()  # export to pandas: pd.DataFrame([s.__dict__ for s in rows])
+series = make_series([
+    DailyReading(103, 2, 0.0, "c"),
+    DailyReading(101, 2, 0.0, "a"),
+    DailyReading(102, 2, 0.0, "b"),
+])
+series.sort()
+assert [s.reading_id for s in series] == [101, 102, 103]
+```
+
+| | |
+| --- | --- |
+| **Time** | O(n log n) — Python `list.sort` on exported values |
+| **Space** | O(n) temporary list |
+
+---
+
+### `extend(iterable)` / `to_list()`
+
+`extend` accepts another `DoublyLinkedList` (O(1) splice) or any iterable.
+
+```python
+series = make_series([DailyReading(101, 2, 0.4, "partly cloudy")])
+series.extend([DailyReading(102, 2, -1.2, "cold front"), DailyReading(103, 2, 0.1, "light rain")])
+rows = series.to_list()  # export to pandas: pd.DataFrame([s.__dict__ for s in rows])
 assert len(rows) == 3
 ```
 
@@ -864,117 +887,123 @@ assert len(rows) == 3
 
 ---
 
-### `trim_front(keep)` — recent-plays window
+### `trim_front(count)` / `trim_back(keep)` — window helpers
 
-Keep only the last **5** snaps in a live dashboard buffer.
-
-```python
-drive = DoublyLinkedList(Snap(i, 1, 0.0, f"p{i}") for i in range(10))
-drive.trim_front(5)
-assert len(drive) == 5
-assert drive.get(0).play_id == 5
-assert drive.get(4).play_id == 9
-```
-
-| | |
-| --- | --- |
-| **Time** | O(n) worst case when shrinking from many to `keep` |
-| **Space** | O(1) |
-
-```mermaid
-flowchart LR
-  subgraph before["10 snaps"]
-    direction LR
-    s0 --> s1 --> sdots["..."] --> s9
-  end
-  subgraph after["keep=5"]
-    direction LR
-    s5 --> s6 --> s7 --> s8 --> s9
-  end
-  before -->|"repeat pop_head"| after
-```
-
----
-
-## NFL application: recent plays buffer
+`trim_front(count)` removes **count** nodes from the head. `trim_back(keep)` keeps only the first **keep** nodes.
 
 ```python
-class RecentPlays:
-    """Last k snaps using a doubly linked list."""
+series = make_series([DailyReading(i, 1, 0.0, f"day {i}") for i in range(10)])
+series.trim_front(5)  # drop days 0–4
+assert len(series) == 5
+assert series.get(0).reading_id == 5
 
-    def __init__(self, max_snaps: int = 5) -> None:
-        self._chain = DoublyLinkedList()
-        self._max = max_snaps
-
-    def push(self, snap: Snap) -> None:
-        self._chain.append(snap)
-        self._chain.trim_front(self._max)
-
-    def latest(self) -> Snap | None:
-        if self._chain.is_empty():
-            return None
-        return self._chain.get(len(self._chain) - 1)
-
-    def oldest_in_window(self) -> Snap | None:
-        if self._chain.is_empty():
-            return None
-        return self._chain.get(0)
-
-
-feed = RecentPlays(max_snaps=3)
-for pid in range(10):
-    feed.push(Snap(pid, 1, 0.0, f"play {pid}"))
-assert feed.latest().play_id == 9
-assert feed.oldest_in_window().play_id == 7
+series2 = make_series([DailyReading(i, 1, 0.0, f"day {i}") for i in range(10)])
+series2.trim_back(5)  # keep days 0–4
+assert len(series2) == 5
+assert series2.get(4).reading_id == 4
 ```
 
 | Operation | Time | Space |
 | --- | --- | --- |
-| `push` | O(1) append + O(1) amortized trim per excess | O(k) stored |
+| `trim_front(count)` | O(count) | O(1) |
+| `trim_back(keep)` | O(n − keep) | O(1) |
 
 ---
 
-## NFL application: snap navigator (prev / next)
+### `latest()` / `oldest_in_window()` / `current()`
+
+Convenience accessors for the tail, head, and current read position.
 
 ```python
-class SnapNavigator:
-    """Bidirectional scrubber over one drive chain."""
+series = make_series([DailyReading(101, 2, 0.4, "a"), DailyReading(102, 2, -1.2, "b")])
+assert series.latest().reading_id == 102
+assert series.oldest_in_window().reading_id == 101
+assert series.current().reading_id == 101
+```
 
-    def __init__(self, drive: DoublyLinkedList) -> None:
-        self._drive = drive
-        self._current: DNode | None = drive.head
+| | |
+| --- | --- |
+| **Time** | O(1) |
+| **Space** | O(1) |
 
-    def current(self) -> Snap | None:
+---
+
+## Weather application: recent readings buffer
+
+```python
+class RecentReadings:
+    """Last k daily rows using a doubly linked list."""
+
+    def __init__(self, max_readings=5):
+        self._chain = DoublyLinkedList()
+        self._max = max_readings
+
+    def push(self, reading):
+        self._chain.append(reading)
+        while self._chain.size > self._max:
+            self._chain.remove(0)
+
+    def latest(self):
+        return self._chain.latest()
+
+    def oldest_in_window(self):
+        return self._chain.oldest_in_window()
+
+
+feed = RecentReadings(max_readings=3)
+for rid in range(10):
+    feed.push(DailyReading(rid, 1, 0.0, f"day {rid}"))
+assert feed.latest().reading_id == 9
+assert feed.oldest_in_window().reading_id == 7
+```
+
+| Operation | Time | Space |
+| --- | --- | --- |
+| `push` | O(1) append + O(1) per excess head removal | O(k) stored |
+
+---
+
+## Weather application: reading navigator (prev / next)
+
+```python
+class ReadingNavigator:
+    """Bidirectional scrubber over one daily reading chain."""
+
+    def __init__(self, series):
+        self._series = series
+        self._current = series.head
+
+    def current(self):
         return None if self._current is None else self._current.data
 
-    def next_snap(self) -> Snap | None:
+    def next_reading(self):
         if self._current is None or self._current.next is None:
             return None
         self._current = self._current.next
         return self._current.data
 
-    def prev_snap(self) -> Snap | None:
+    def prev_reading(self):
         if self._current is None or self._current.prev is None:
             return None
         self._current = self._current.prev
         return self._current.data
 
 
-drive = DoublyLinkedList([
-    Snap(101, 2, 0.4, "pass"),
-    Snap(102, 2, -1.2, "sack"),
-    Snap(103, 2, 0.1, "checkdown"),
+series = make_series([
+    DailyReading(101, 2, 0.4, "partly cloudy"),
+    DailyReading(102, 2, -1.2, "cold front"),
+    DailyReading(103, 2, 0.1, "light rain"),
 ])
-nav = SnapNavigator(drive)
-assert nav.current().play_id == 101
-assert nav.next_snap().play_id == 102
-assert nav.prev_snap().play_id == 101
+nav = ReadingNavigator(series)
+assert nav.current().reading_id == 101
+assert nav.next_reading().reading_id == 102
+assert nav.prev_reading().reading_id == 101
 ```
 
 | Step | Time | Space |
 | --- | --- | --- |
-| `next_snap` / `prev_snap` | O(1) | O(1) |
-| Jump to arbitrary `play_id` | O(n) search first | O(1) after found |
+| `next_reading` / `prev_reading` | O(1) | O(1) |
+| Jump to arbitrary `reading_id` | O(n) search first | O(1) after found |
 
 ---
 
@@ -985,14 +1014,14 @@ assert nav.prev_snap().play_id == 101
 Simplify deletion near ends when you do not keep a full `DoublyLinkedList` class.
 
 ```python
-def remove_snaps_with_negative_epa(head: DNode | None) -> DNode | None:
-    dummy = DNode(Snap(0, 0, 0.0, "sentinel"))
+def remove_readings_with_negative_anomaly(head):
+    dummy = Node(DailyReading(0, 0, 0.0, "sentinel"))
     dummy.next = head
     if head is not None:
         head.prev = dummy
     cur = dummy
     while cur.next is not None:
-        if cur.next.data.epa < 0:
+        if cur.next.data.temp_anomaly < 0:
             nxt = cur.next.next
             if nxt is not None:
                 nxt.prev = cur
@@ -1010,16 +1039,16 @@ def remove_snaps_with_negative_epa(head: DNode | None) -> DNode | None:
 | **Time** | O(n) |
 | **Space** | O(1) extra for dummy |
 
-### Merge two sorted drive chains by `play_id`
+### Merge two sorted station chains by `reading_id`
 
 Same pointer technique as singly linked merge; doubly linked lets you splice without rebuilding `prev` if you assign both links.
 
 ```python
-def merge_by_play_id(a: DNode | None, b: DNode | None) -> DNode | None:
-    dummy = DNode(Snap(0, 0, 0.0, ""))
+def merge_by_reading_id(a, b):
+    dummy = Node(DailyReading(0, 0, 0.0, ""))
     tail = dummy
     while a is not None and b is not None:
-        if a.data.play_id <= b.data.play_id:
+        if a.data.reading_id <= b.data.reading_id:
             tail.next = a
             a.prev = tail
             a = a.next
@@ -1045,11 +1074,11 @@ def merge_by_play_id(a: DNode | None, b: DNode | None) -> DNode | None:
 
 ```mermaid
 sequenceDiagram
-  participant A as Chiefs chain
-  participant B as Bills chain
+  participant A as Station A chain
+  participant B as Station B chain
   participant M as merged chain
   loop while both non-empty
-    M->>A: compare play_id at heads
+    M->>A: compare reading_id at heads
     M->>M: attach smaller node, fix prev/next
   end
   M->>M: attach remainder
@@ -1059,77 +1088,78 @@ sequenceDiagram
 
 ## Python stdlib: `collections.deque`
 
-CPython’s `deque` is implemented as a **block doubly linked list** at C level—not the same as your `DNode` class, but the same **complexity story** for ends.
+CPython's `deque` is implemented as a **block doubly linked list** at C level—not the same as your `Node` class, but the same **complexity story** for ends.
 
 ```python
 from collections import deque
 
-recent: deque[Snap] = deque(maxlen=5)
-recent.append(Snap(101, 2, 0.4, "pass"))
-recent.appendleft(Snap(100, 2, 0.0, "penalty"))
+recent = deque(maxlen=5)
+recent.append(DailyReading(101, 2, 0.4, "partly cloudy"))
+recent.appendleft(DailyReading(100, 2, 0.0, "backfill"))
 assert len(recent) <= 5
 ```
 
 | Operation | `deque` (amortized) | Your `DoublyLinkedList` |
 | --- | --- | --- |
-| `append` / `appendleft` | O(1) | O(1) |
-| `pop` / `popleft` | O(1) | O(1) |
-| Indexing `dq[i]` | O(n) | O(n) |
-| Custom `Snap` nodes + `find_play` | Use your class | Use your class |
+| `append` / `appendleft` | O(1) | `append` / `push` O(1) |
+| `pop` / `popleft` | O(1) | `pop` / `remove(0)` O(1) |
+| Indexing `dq[i]` | O(n) | O(n) via `get` / `__getitem__` |
+| Custom `DailyReading` + `find_reading` | Use your class | Use your class |
 
-**Rule of thumb:** ship **`deque`** in production NFL tools; implement **`DoublyLinkedList`** to learn and to pass interviews.
+**Rule of thumb:** ship **`deque`** in production weather dashboards; implement **`DoublyLinkedList`** to learn and to pass interviews.
 
 ---
 
 ## Master complexity table
 
-Let **n** = `len(drive)`, **i** = index.
+Let **n** = `len(series)`, **i** = index.
 
 | Operation | Time | Space (auxiliary) | Notes |
 | --- | --- | --- | --- |
 | Create empty | O(1) | O(1) | |
 | Build from *k* items | O(k) | O(k) nodes | tail `append` |
-| `prepend` / `append` | O(1) | O(1) | |
+| `push` / `append` | O(1) | O(1) | |
 | `insert(i)` | O(n) | O(1) | find + splice |
-| `get` / `set` at *i* | O(min(i, n−1−i)) | O(1) | two-ended walk |
-| `pop_head` / `pop_tail` | O(1) | O(1) | |
-| `remove_node` | O(1) | O(1) | need node ref |
-| `remove_at` / `remove_first` | O(n) | O(1) | |
-| `find_play` / `contains` | O(n) | O(1) | |
+| `get` / `set` at *i* | O(i) | O(1) | forward walk from head |
+| `remove(0)` / `pop()` | O(1) | O(1) | |
+| `remove(i)` mid-list | O(n) | O(1) | |
+| `find_reading` / `contains` | O(n) | O(1) | |
 | `len` (cached) | O(1) | O(1) | |
-| Forward / reverse iter | O(n) | O(1) | |
+| Forward iter / `walk_*_from` | O(n) | O(1) | |
 | `clear` | O(1) | O(1) | |
 | `copy` | O(n) | O(n) | |
 | `reverse` in place | O(n) | O(1) | |
-| `extend` | O(k) | O(1) per item | |
+| `sort` | O(n log n) | O(n) | export, sort, rebuild |
+| `extend` | O(k) | O(1) per item | O(1) splice for another DLL |
 | `to_list` | O(n) | O(n) | |
-| `trim_front(keep)` | O(n − keep) | O(1) | repeated `pop_head` |
+| `trim_front(count)` | O(count) | O(1) | repeated `remove(0)` |
+| `trim_back(keep)` | O(n − keep) | O(1) | repeated `pop()` |
 
 **Total storage:** Θ(n) nodes, each with `data`, `prev`, `next`.
 
 ---
 
-## When to pick which structure (NFL context)
+## When to pick which structure (weather context)
 
 ```mermaid
 flowchart TD
   Q([What is the job?])
-  Q --> S{Season / table analytics?}
+  Q --> S{Multi-year / table analytics?}
   S -->|yes| DF["pandas DataFrame or list of dicts"]
-  S -->|no| B{Need prev/next from current snap?}
-  B -->|yes| DLL["Doubly linked or SnapNavigator"]
+  S -->|no| B{Need prev/next from current day?}
+  B -->|yes| DLL["Doubly linked or ReadingNavigator"]
   B -->|no| E{Only head inserts?}
   E -->|yes| SLL["Singly linked or deque"]
-  E -->|no| L["Python list — index plays[i]"]
+  E -->|no| L["Python list — index readings[i]"]
 ```
 
 | Scenario | Best tool |
 | --- | --- |
-| Season EPA leaderboard | pandas, not linked list |
-| One drive, film-room prev/next | Doubly linked or `deque` + index |
-| Live “last 5 plays” ticker | `deque(maxlen=5)` or `trim_front` |
-| Merge sorted play-id streams (exercise) | Doubly or singly linked merge |
-| Random access `plays[412]` in loop | `list` |
+| Multi-year climate aggregates | pandas, not linked list |
+| One month window, timeline prev/next | Doubly linked or `deque` + index |
+| Live "last 5 days" ticker | `deque(maxlen=5)` or `remove(0)` loop |
+| Merge sorted reading-id streams (exercise) | Doubly or singly linked merge |
+| Random access `readings[412]` in loop | `list` |
 
 ---
 
@@ -1139,10 +1169,10 @@ flowchart TD
 | --- | --- | --- |
 | Forgetting to update `prev` on splice | Broken backward walk | Always set both `prev` and `next` |
 | Losing `head` / `tail` after delete | Orphan chain | Branch on whether node is head or tail |
-| Storing season in DLL | O(n) lookups, huge memory | DataFrame + optional small DLL per drive |
-| `remove_node` without owning node | Must search O(n) first | Return node from `find_play` |
-| Shallow copy shares `Snap` | Mutate one branch, affects other | `copy.deepcopy` if needed |
-| Using DLL for `plays[i]` hot loop | O(n) per access | `list` or columnar store |
+| Storing full archive in DLL | O(n) lookups, huge memory | DataFrame + optional small DLL per window |
+| Expecting `find_reading` to return a node | API returns data | Use `series.head` / `_node_at` when you need the node |
+| Shallow copy shares `DailyReading` | Mutate one branch, affects other | `copy.deepcopy` if needed |
+| Using DLL for `readings[i]` hot loop | O(n) per access | `list` or columnar store |
 
 ---
 
@@ -1152,7 +1182,7 @@ flowchart TD
 | --- | --- |
 | [Singly linked list](../linked-list/index.md) | One pointer; O(n) `pop_tail` |
 | [Circularly linked list](../circularly-linked-list/index.md) | Ring of nodes; round-robin |
-| [Array-based lists](../array-based-lists/index.md) | Python `list` for play tables |
+| [Array-based lists](../array-based-lists/index.md) | Python `list` for observation tables |
 | [Deque](../dequeue-deque/index.md) | Production O(1) both ends |
 | [Complexity analysis](../../complexity/index.md) | Big-O reference |
 
@@ -1162,31 +1192,32 @@ flowchart TD
 
 ```python
 # create
-drive = DoublyLinkedList()
-drive = DoublyLinkedList([snap1, snap2])
+series = DoublyLinkedList()
+for r in [reading1, reading2]:
+    series.append(r)
 
 # O(1) ends
-drive.prepend(snap)
-drive.append(snap)
-drive.pop_head()
-drive.pop_tail()          # doubly linked: O(1); singly: O(n)
-
-# O(1) with node from find_play
-node = drive.find_play(102)
-if node:
-    drive.remove_node(node)
+series.push(reading)
+series.append(reading)
+series.remove(0)
+series.pop()               # doubly linked: O(1); singly: O(n) for tail
 
 # O(n) index / search
-drive.get(i)
-drive.insert(i, snap)
-drive.find_play(play_id)
+series.get(i)
+series[i]
+series.insert(i, reading)
+series.remove(i)
+series.find_reading(reading_id)
 
 # both directions
-for s in drive: ...
-for s in reversed(drive): ...
+for r in series: ...
+series.walk_backward_from(series.tail)
 
-# window
-drive.trim_front(5)
+# window helpers
+series.trim_front(3)
+series.trim_back(5)
+series.latest()
+series.oldest_in_window()
 ```
 
-Use a **doubly linked list** when the problem is an **ordered chain** and you need **both ends** or **backward steps** without rescanning from the head—then reach for **`deque`** when you ship real NFL tooling.
+Use a **doubly linked list** when the problem is an **ordered chain** and you need **both ends** or **backward steps** without rescanning from the head—then reach for **`deque`** when you ship real weather analysis tooling.

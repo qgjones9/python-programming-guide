@@ -1,15 +1,15 @@
 # Linked list
 
-A linear collection stored as **nodes** that point to the next item—unlike a contiguous array, there is no index-based address arithmetic. You reach the *i*-th element only by following links from the **head**. In **NFL data analysis**, that shape shows up when you model a **sequence in order** (snaps in a drive, plays in a drive chain, events in a live feed) and care about **prepend/append at the ends** or **pointer-style merges** more than random access by index.
+A linear collection stored as **nodes** that point to the next item—unlike a contiguous array, there is no index-based address arithmetic. You reach the *i*-th element only by following links from the **head**. In **daily weather data analysis**, that shape shows up when you model a **sequence in order** (days in a window, readings in a station chain, events in a live ingest feed) and care about **prepend/append at the ends** or **pointer-style merges** more than random access by index.
 
 | | |
 | --- | --- |
-| **What it is** | Nodes in a chain: each holds a value (e.g. one snap dict or play id) and a link to the *next* node. The *head* is the entry to the list. |
+| **What it is** | Nodes in a chain: each holds a value (e.g. one daily reading dict or `reading_id`) and a link to the *next* node. The *head* is the entry to the list. |
 | **Core operations** | Insert or delete at the head in O(1); traverse from the head for everything else. |
-| **When to use** | Frequent insert/delete at the front (new snap arrives “at the top” of a working buffer), unknown or changing length, or algorithms defined as **rewiring** (reverse a drive chain, merge two sorted play streams). |
-| **Trade-off** | Random access by index is O(n)—painful if you keep calling `get(i)` on thousands of plays; extra memory per node for `next`. Season tables and indexed lookups usually belong on a Python `list` or `dict`. |
+| **When to use** | Frequent insert/delete at the front (newest reading arrives “at the top” of a working buffer), unknown or changing length, or algorithms defined as **rewiring** (reverse a daily chain, merge two sorted station streams). |
+| **Trade-off** | Random access by index is O(n)—painful if you keep calling `get(i)` on thousands of daily rows; extra memory per node for `next`. Multi-year archives and indexed lookups usually belong on a Python `list` or `dict`. |
 
-Python has **no built-in singly linked list type**. You either implement nodes yourself (the best way to learn the ADT) or reach for tools that solve similar problems—`collections.deque` for a live play queue, or a `list` when you need `plays[i]` and vectorized pandas work. This page is your **ready reference** for singly linked lists in Python: structure, a complete implementation, every operation with examples, and **time and space complexity** on each. For Big-O notation and NFL-scale *n*, see [Complexity analysis](../../complexity/index.md).
+Python has **no built-in singly linked list type**. You either implement nodes yourself (the best way to learn the ADT) or reach for tools that solve similar problems—`collections.deque` for a live reading queue, or a `list` when you need `readings[i]` and vectorized pandas work. This page is your **ready reference** for singly linked lists in Python: structure, a complete implementation, every operation with examples, and **time and space complexity** on each. For Big-O notation and weather-scale *n*, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
@@ -25,9 +25,9 @@ Python has **no built-in singly linked list type**. You either implement nodes y
 | **Insert at tail** | O(1) with tail pointer; O(n) without | Amortized O(1) `append` |
 | **Insert in middle** | O(n) to find position; O(1) pointer rewiring once there | O(n) shift |
 | **Cache behavior** | Poor (nodes may be far apart in memory) | Good (sequential slots) |
-| **NFL-style workload** | One drive chain | Full play-by-play column, `plays[i]`, `groupby`, export to parquet |
+| **Weather-style workload** | One station window chain | Full daily observation table, `readings[i]`, `groupby`, export to parquet |
 
-In CPython, `list` is always a dynamic array. A “linked list” in Python is **your own classes**, not a language primitive. Your week-7 CSV belongs in a **`list` of dicts or a DataFrame**; a linked list is for **ordered chains** where pointer costs are the lesson or the algorithm (merge two sorted play-id chains without array shifts).
+In CPython, `list` is always a dynamic array. A “linked list” in Python is **your own classes**, not a language primitive. Your multi-year CSV belongs in a **`list` of dicts or a DataFrame**; a linked list is for **ordered chains** where pointer costs are the lesson or the algorithm (merge two sorted reading-id chains without array shifts).
 
 ```mermaid
 flowchart LR
@@ -44,40 +44,59 @@ flowchart LR
   end
 ```
 
-Throughout this page, **n** means the number of nodes in the list (e.g. snaps in one drive). **i** means a zero-based index. In production NFL pipelines, **n** per list is often small (one drive) while total plays in a season live in tables—do not confuse “linked list of one drive” with “50k-row play-by-play DataFrame.”
+Throughout this page, **n** means the number of nodes in the list (e.g. days in one analysis window). **i** means a zero-based index. In production weather pipelines, **n** per list is often small (one month window) while total daily rows in an archive live in tables—do not confuse “linked list of one window” with “50k-row observation DataFrame.”
 
 ---
 
-## NFL data analysis: what a linked list models
+## Singly linked vs doubly linked vs Python `list`
+
+| | **Singly linked** | [Doubly linked](../doubly-linked-list/index.md) | [Python `list`](../array-based-lists/index.md) |
+| --- | --- | --- | --- |
+| **Pointers per node** | `next` only | `next` + `prev` | None (array of refs) |
+| **`pop_tail`** | O(n) — must find predecessor | O(1) with `tail` | O(1) amortized |
+| **Delete when you hold a node reference** | O(n) to find predecessor; **copy-value hack** is an O(1) workaround with caveats | O(1) rewire `prev` and `next` | O(n) shift after removal |
+| **Access by index `i`** | O(n) from head only | O(n) from nearer end | O(1) |
+| **Memory** | Medium | Highest per element | Compact + cache-friendly |
+| **Weather fit** | Head-heavy live ingest, merge drills | Bidirectional timeline UI, both-end window | Full daily observation table |
+
+The **copy-value hack** (detailed below) is the main singly linked workaround when you hold a node reference but not its predecessor. A [doubly linked list](../doubly-linked-list/index.md) avoids the hack entirely with a `prev` pointer.
+
+---
+
+## Daily weather analysis: what a linked list models
 
 You will rarely store a full season in a hand-rolled `LinkedList`. The structure still matters because the **same costs** appear in custom code, interviews, and pointer-based algorithms you might use on **chunks** of data.
 
-| NFL idea | Linked-list view | Typical *n* |
+| Weather analysis idea | Linked-list view | Typical *n* |
 | --- | --- | --- |
-| **Snaps in one drive** | Head = first snap; `next` = next snap in drive order | ~3–15 |
+| **Days in one window** | Head = oldest day; `next` = next day in chronological order | ~7–31 |
 | **Live ingest buffer** | `prepend` newest tick; trim from tail when window exceeds *k* | window size *k* |
-| **Merge two sorted streams** | Each stream is a chain sorted by `(game_id, play_id)`; merge without shifting a whole array | *n* + *m* |
-| **Walk the chain** | Sum EPA, find first sack, detect cycle in bad test data | O(n) traverse |
+| **Merge two sorted streams** | Each stream is a chain sorted by `(station_id, reading_id)`; merge without shifting a whole array | *n* + *m* |
+| **Walk the chain** | Sum temp anomaly, find first cold front, detect cycle in bad test data | O(n) traverse |
 
-**Reach for a Python `list` or pandas** when you filter 50,000 plays by team, sort receivers by yards, or need `plays[i]` in a loop. **Reach for a linked list (or `deque`)** when the problem is inherently **sequential** and **end-heavy**: stack of undo edits on a drive builder, merge sorted linked chains in a streaming join sketch, or learning how `insert(0)` on a `list` differs from O(1) `prepend`.
+**Reach for a Python `list` or pandas** when you filter 50,000 daily rows by station, sort months by precipitation, or need `readings[i]` in a loop. **Reach for a linked list (or `deque`)** when the problem is inherently **sequential** and **end-heavy**: stack of undo edits on a forecast editor, merge sorted linked chains in a streaming join sketch, or learning how `insert(0)` on a `list` differs from O(1) `prepend`.
 
 ```python
-class Snap:
-    """Minimal snap record for examples on this page."""
-    def __init__(self, play_id, epa, description):
-        self.play_id = play_id
-        self.epa = epa
-        self.description = description
+from dataclasses import dataclass
+
+
+@dataclass
+class DailyReading:
+    """Minimal daily weather row for examples on this page."""
+    reading_id: int
+    month: int
+    temp_anomaly: float
+    summary: str
 
 # After LinkedList is defined (see Reference implementation):
-# drive = LinkedList([
-#     Snap(101, 0.4, "1st & 10 pass"),
-#     Snap(102, -1.2, "sack"),
-#     Snap(103, 0.1, "3rd & long checkdown"),
+# series = LinkedList([
+#     DailyReading(101, 2, 0.4, "partly cloudy"),
+#     DailyReading(102, 2, -1.2, "cold front"),
+#     DailyReading(103, 2, 0.1, "light rain"),
 # ])
 ```
 
-Each node’s `data` can be a `Snap`, a `play_id`, or a row dict. `LinkedList` is defined in [Reference implementation](#reference-implementation) below; later sections use `Snap` in operation examples.
+Each node’s `data` can be a `DailyReading`, a `reading_id`, or a row dict. `LinkedList` is defined in [Reference implementation](#reference-implementation) below; later sections use `DailyReading` in operation examples.
 
 ---
 
@@ -107,11 +126,11 @@ sequenceDiagram
 
 **Three kinds of cost** (mirror the array-based list page):
 
-| Kind | What you pay for | Linked list examples | NFL-flavored example |
+| Kind | What you pay for | Linked list examples | Weather-flavored example |
 | --- | --- | --- | --- |
-| **Head change** | Rewire one or two pointers | `prepend`, `pop_head` | New live snap pushed to front of a scratch buffer |
-| **Find position** | Walk up to *n* nodes | `get(i)`, `insert(i)`, `remove(value)` | “Third snap in this drive”—must walk from head |
-| **Rewire after find** | Constant pointer updates | splice after predecessor | Insert penalty flag node after snap 2 without shifting a whole array |
+| **Head change** | Rewire one or two pointers | `prepend`, `pop_head` | New live reading pushed to front of a scratch buffer |
+| **Find position** | Walk up to *n* nodes | `get(i)`, `insert(i)`, `remove(value)` | “Third day in this window”—must walk from head |
+| **Rewire after find** | Constant pointer updates | splice after predecessor | Insert corrected sensor row after day 2 without shifting a whole array |
 
 ---
 
@@ -206,13 +225,13 @@ def from_iterable(items):
             tail = node
     return head
 
-play_ids = [401, 402, 403]  # one drive, chronological
-chain = from_iterable(play_ids)
+reading_ids = [401, 402, 403]  # one window, chronological
+chain = from_iterable(reading_ids)
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(k) for *k* items (e.g. *k* snaps in a drive) |
+| **Time** | O(k) for *k* items (e.g. *k* days in a window) |
 | **Space** | O(k) nodes |
 
 ### 5. Build from an iterable — prepend at head (reversed order)
@@ -620,7 +639,7 @@ class LinkedList:
 
 ## All operations (with examples and complexity)
 
-Examples below use small integers or strings where the focus is pointer mechanics. In an NFL script, the same methods apply when `data` is a `Snap`, a `play_id`, or a row dict—costs depend on **chain length**, not on whether `data` is a float or a dict.
+Examples below use small integers or strings where the focus is pointer mechanics. In a weather script, the same methods apply when `data` is a `DailyReading`, a `reading_id`, or a row dict—costs depend on **chain length**, not on whether `data` is a float or a dict.
 
 ```mermaid
 flowchart TB
@@ -670,9 +689,12 @@ ll = LinkedList([2, 3])
 ll.prepend(1)
 assert list(ll) == [1, 2, 3]
 
-# NFL: newest correction snap at head of a working drive (rare in prod; illustrative)
-buffer = LinkedList([Snap(201, 0.2, "run"), Snap(202, -0.5, "incomplete")])
-buffer.prepend(Snap(200, 0.0, "penalty reversed — re-snap"))
+# Weather: newest backfilled reading at head of a working window (rare in prod; illustrative)
+buffer = LinkedList([
+    DailyReading(201, 3, 0.2, "overcast"),
+    DailyReading(202, 3, -0.5, "windy"),
+])
+buffer.prepend(DailyReading(200, 3, 0.0, "sensor backfill"))
 ```
 
 | | |
@@ -680,7 +702,7 @@ buffer.prepend(Snap(200, 0.0, "penalty reversed — re-snap"))
 | **Time** | O(1) |
 | **Space** | O(1) auxiliary (one new node) |
 
-**NFL note:** Prepending every play of a season would still be Θ(n) nodes total; you are choosing O(1) **per prepend**, not O(1) for the whole dataset.
+**Weather note:** Prepending every day in a multi-year archive would still be Θ(n) nodes total; you are choosing O(1) **per prepend**, not O(1) for the whole dataset.
 
 ```mermaid
 sequenceDiagram
@@ -704,10 +726,10 @@ ll.append("a")
 ll.append("b")
 assert list(ll) == ["a", "b"]
 
-# NFL: build drive in chronological order (tail append + tail pointer)
-drive = LinkedList()
-drive.append(Snap(1, 0.3, "rush"))
-drive.append(Snap(2, 1.1, "TD pass"))
+# Weather: build series in chronological order (tail append + tail pointer)
+series = LinkedList()
+series.append(DailyReading(1, 1, 0.3, "mild"))
+series.append(DailyReading(2, 1, 1.1, "warm spell"))
 ```
 
 | | |
@@ -715,7 +737,7 @@ drive.append(Snap(2, 1.1, "TD pass"))
 | **Time** | O(1) with `tail`; O(n) if only `head` |
 | **Space** | O(1) auxiliary per append |
 
-**NFL note:** Appending each snap as a drive is parsed matches live ingest: O(1) amortized per snap **if** you keep `tail`, same idea as [array-based list](../array-based-lists/index.md) `append` on a growing table.
+**Weather note:** Appending each daily row as a window grows matches live ingest: O(1) amortized per reading **if** you keep `tail`, same idea as [array-based list](../array-based-lists/index.md) `append` on a growing table.
 
 ```mermaid
 flowchart LR
@@ -777,7 +799,7 @@ assert ll.get(1) == "B"
 | **Time** | O(n) worst case (index near end); O(i) for index `i` |
 | **Space** | O(1) |
 
-**NFL note:** “Give me snap index 7 in this drive” without a `list` backing store is O(i) pointer hops. If you need random snap access repeatedly, materialize `drive.to_list()` once or keep a Python `list` for that drive.
+**Weather note:** “Give me reading index 7 in this window” without a `list` backing store is O(i) pointer hops. If you need random day access repeatedly, materialize `series.to_list()` once or keep a Python `list` for that window.
 
 ---
 
@@ -837,6 +859,8 @@ sequenceDiagram
   Prev->>Target: cur.next
   Note over Prev,Target: prev.next = target.next — O(1) rewire
 ```
+
+If you hold a **node reference** but not its index or predecessor, see [copy-value hack](#delete-node-when-you-only-have-the-node-singly-linked) below—or use a [doubly linked list](../doubly-linked-list/index.md).
 
 ---
 
@@ -962,9 +986,13 @@ ll = LinkedList([10, 20, 30])
 total = sum(x for x in ll)
 assert total == 60
 
-# NFL: one pass over a drive chain — O(n) in snaps on this drive
-drive = LinkedList([Snap(1, 0.5, "a"), Snap(2, -0.3, "b"), Snap(3, 0.2, "c")])
-drive_epa = sum(s.epa for s in drive)
+# Weather: one pass over a daily chain — O(n) in readings on this window
+series = LinkedList([
+    DailyReading(1, 1, 0.5, "a"),
+    DailyReading(2, 1, -0.3, "b"),
+    DailyReading(3, 1, 0.2, "c"),
+])
+series_anomaly = sum(r.temp_anomaly for r in series)
 ```
 
 | | |
@@ -972,7 +1000,7 @@ drive_epa = sum(s.epa for s in drive)
 | **Time** | O(n) full traversal |
 | **Space** | O(1) auxiliary |
 
-This is the right pattern for **aggregate on a chain** (sum EPA, count sacks). For **aggregate on a full season**, traverse a table or column once—still O(n), but *n* is all plays and the structure should be a `list`/DataFrame, not a linked list of 50k nodes.
+This is the right pattern for **aggregate on a chain** (sum temp anomaly, count cold fronts). For **aggregate on a full archive**, traverse a table or column once—still O(n), but *n* is all daily rows and the structure should be a `list`/DataFrame, not a linked list of 50k nodes.
 
 Manual walk (no wrapper class):
 
@@ -1006,7 +1034,58 @@ def insert_after(node, data):
 
 ### Delete `node` when you only have the node (singly linked)
 
-**Cannot** delete an arbitrary node in O(1) without the predecessor—unless you copy next node’s data into current (hack used only when mutation of values is allowed).
+On a singly linked list, normal deletion needs the **predecessor** to set `predecessor.next = node.next`. If you only hold a reference to `node` itself, finding that predecessor costs **O(n)**.
+
+The **copy-value hack** avoids the predecessor scan when you may **mutate** `node.data`:
+
+1. Copy `node.next.data` into `node.data`.
+2. Delete `node.next` instead — O(1) when you hold `node`, because `node` is the predecessor of `node.next`.
+
+```python
+def delete_node_copy_hack(node: Node) -> None:
+    """Remove node from chain by copying the next value in — O(1) if node.next exists."""
+    if node.next is None:
+        raise ValueError("cannot delete tail with copy-value hack")
+    node.data = node.next.data
+    node.next = node.next.next
+```
+
+Weather example: a timeline holds a `Node` for “Day 102 — cold front”. You want to drop that day without scanning from the head; copy Day 103’s data into Day 102’s node, then unlink Day 103.
+
+```python
+# n1 -> n2 -> n3  (three daily readings)
+n3 = Node(DailyReading(103, 2, 0.1, "light rain"))
+n2 = Node(DailyReading(102, 2, -1.2, "cold front"), next=n3)
+n1 = Node(DailyReading(101, 2, 0.4, "partly cloudy"), next=n2)
+
+delete_node_copy_hack(n2)  # O(1); chain is now n1 -> (103's data) -> None
+
+assert n1.next.data.reading_id == 103
+assert n1.next.next is None
+```
+
+| | |
+| --- | --- |
+| **Time** | O(1) when `node.next` is not `None` |
+| **Space** | O(1) |
+
+| Caveat | Why it matters |
+| --- | --- |
+| **Tail node** | No `node.next` — hack fails; scan for predecessor or use a [doubly linked list](../doubly-linked-list/index.md) |
+| **Mutates data in place** | The node at that address keeps its identity but holds a different day’s readings |
+| **Stale references** | After unlinking `node.next`, other pointers to that detached node are invalid |
+| **Production dashboards** | Prefer doubly linked `remove_node` or pass the predecessor explicitly |
+
+```mermaid
+sequenceDiagram
+  participant N as node (Day 102)
+  participant Nxt as node.next (Day 103)
+  N->>N: data = Nxt.data
+  N->>N: next = Nxt.next
+  Note over N: Day 102 slot now holds Day 103 data; Day 103 node dropped
+```
+
+For contrast, a [doubly linked list](../doubly-linked-list/index.md) rewires `prev` and `next` in true O(1) without copying values.
 
 ### Dummy head sentinel
 
@@ -1038,7 +1117,7 @@ flowchart LR
 
 ## Master complexity table
 
-Let **n** = `len(ll)`, **i** = index. For NFL work, map **n** to the chain you are holding (snaps in one drive, nodes in a merge sketch)—not season row count unless you mistakenly built one giant linked list.
+Let **n** = `len(ll)`, **i** = index. For weather work, map **n** to the chain you are holding (days in one window, nodes in a merge sketch)—not archive row count unless you mistakenly built one giant linked list.
 
 | Operation | Time | Space (auxiliary) | Notes |
 | --- | --- | --- | --- |
@@ -1062,19 +1141,20 @@ Let **n** = `len(ll)`, **i** = index. For NFL work, map **n** to the chain you a
 | `extend` (splice `LinkedList`) | O(1) | O(1) | reuses nodes from `other` |
 | `sort` | O(n log n) | O(n) | materialize + Timsort + rebuild |
 | `to_list` | O(n) | O(n) | |
-| Traverse all | O(n) | O(1) | sum EPA on one drive chain |
+| Traverse all | O(n) | O(1) | sum temp anomaly on one window chain |
+| Delete with node ref (copy-value hack) | O(1) | O(1) | fails on tail; mutates `node.data` |
 
-**Storage for the whole structure:** Θ(n) nodes, each O(1) extra for `next` (and object headers in CPython). Storing a full season as nodes costs Θ(season plays) memory with poor locality—use tabular storage instead.
+**Storage for the whole structure:** Θ(n) nodes, each O(1) extra for `next` (and object headers in CPython). Storing a full multi-year archive as nodes costs Θ(all daily rows) memory with poor locality—use tabular storage instead.
 
 ---
 
 ## Classic patterns (with complexity)
 
-These patterns appear in structure-heavy interview questions; they also describe **one-pass** logic you might apply to a **short** NFL chain (one drive, two merged game logs) before you reach for pandas.
+These patterns appear in structure-heavy interview questions; they also describe **one-pass** logic you might apply to a **short** weather chain (one month window, two merged station logs) before you reach for pandas.
 
 ### Two pointers: find middle
 
-Slow moves 1 step, fast moves 2; when fast hits end, slow is middle. On a drive chain, that is the middle **snap node** without knowing length ahead of time (still O(n); `size` on the class makes it O(1) if you trust cached length).
+Slow moves 1 step, fast moves 2; when fast hits end, slow is middle. On a daily chain, that is the middle **reading node** without knowing length ahead of time (still O(n); `size` on the class makes it O(1) if you trust cached length).
 
 ```python
 def middle_node(head):
@@ -1112,7 +1192,7 @@ def has_cycle(head):
 
 ### Merge two sorted lists
 
-**NFL use:** Two chains sorted by `play_id` (e.g. first-half and second-half plays already sorted) can be merged into one chronological chain in O(n + m) pointer steps—no array shifts. Production merges usually sort keys in pandas/SQL; the linked version teaches the combine step.
+**Weather use:** Two chains sorted by `reading_id` (e.g. January and February rows already sorted) can be merged into one chronological chain in O(n + m) pointer steps—no array shifts. Production merges usually sort keys in pandas/SQL; the linked version teaches the combine step.
 
 ```python
 def merge_sorted(a, b):
@@ -1154,23 +1234,23 @@ sequenceDiagram
 | Need | Prefer | Why |
 | --- | --- | --- |
 | Fast indexing, slicing | `list` | O(1) index; cache-friendly |
-| Full play-by-play season | `list` / **pandas** / parquet | Random access, vectorized stats, joins by `player_id` |
-| Queue / stack at both ends | `collections.deque` | O(1) `append` / `pop` both ends—live play queue, rolling window |
-| Player lookup by id | `dict` | O(1) average after index build—not a linked list |
-| Ordered mapping | `dict` (3.7+ insertion order) | Roster order sketches; not pointer chains |
+| Full daily observation archive | `list` / **pandas** / parquet | Random access, vectorized stats, joins by `station_id` |
+| Queue / stack at both ends | `collections.deque` | O(1) `append` / `pop` both ends—live reading queue, rolling window |
+| Station lookup by id | `dict` | O(1) average after index build—not a linked list |
+| Ordered mapping | `dict` (3.7+ insertion order) | Station order sketches; not pointer chains |
 | Learning / interviews | `Node` + `LinkedList` (this page) | Pointer discipline |
 | Merge / reverse on **nodes** | Custom linked list or algorithm on `Node` | Teaches merge-sort chain step |
 
 ```python
 from collections import deque
 
-# Rolling last-k play_ids from a live feed (O(1) ends)
+# Rolling last-k reading_ids from a live feed (O(1) ends)
 recent = deque(maxlen=10)
 recent.append(9021)
 recent.appendleft(9020)  # optional: treat as newest at left
 ```
 
-`deque` is **not** a singly linked list you implement in Python—it is a C-level block deque. Treat it as the practical NFL tool when the *reason* you wanted a linked list was O(1) push/pop at both ends of a **small** buffer.
+`deque` is **not** a singly linked list you implement in Python—it is a C-level block deque. Treat it as the practical weather tool when the *reason* you wanted a linked list was O(1) push/pop at both ends of a **small** buffer.
 
 ---
 
@@ -1195,8 +1275,8 @@ flowchart TD
 | Prepend in a tight loop | O(1) each | O(n) per `insert(0)` |
 | Memory per element | Value + `next` + object overhead | One reference in array |
 | Merge sort on sequence | Natural for linked nodes | [Merge sort](../../algorithms/merge-sort/index.md) often uses arrays in Python |
-| Season play-by-play analytics | Wrong default structure | `DataFrame` / `list` of rows + `dict` indexes |
-| One drive, algorithm homework | Clear teaching model | Still fine to use `list` in prod for one drive |
+| Multi-year climate aggregates | Wrong default structure | `DataFrame` / `list` of rows + `dict` indexes |
+| One month window, algorithm homework | Clear teaching model | Still fine to use `list` in prod for one window |
 
 ---
 
@@ -1207,12 +1287,13 @@ flowchart TD
 | Losing `head` reference | Rest of chain unreachable | Always assign to `self.head` or return new head |
 | No `tail` but frequent `append` | O(n²) builds | Keep `tail` pointer |
 | `pop_tail` on singly linked list | Must scan to predecessor | Doubly linked list or `deque` |
-| `remove(node)` without predecessor | Cannot rewire in O(1) | Pass predecessor or use dummy head |
+| `remove(node)` without predecessor | Cannot rewire in O(1) | Pass predecessor, use copy-value hack (with caveats), or use [doubly linked list](../doubly-linked-list/index.md) |
+| Copy-value hack on tail node | No `node.next` to copy from | Scan for predecessor or use doubly linked list |
 | `extend` shares nodes with `other` | Mutating one list affects both | Copy data with `to_list()` + rebuild if isolation matters |
 | Using linked list for `xs[i]` hot paths | O(n) per access | `list` or array |
-| Storing full season as nodes | Huge overhead, slow scans | Parquet/CSV → pandas; index players with `dict` |
-| `get(i)` for every snap in every drive | O(drives × snaps²) if nested wrong | Store drive as `list` or one traverse per drive |
-| Confusing chain *n* with table *n* | Mis-estimate Big-O | Name *n*: snaps in **this** list only |
+| Storing full archive as nodes | Huge overhead, slow scans | Parquet/CSV → pandas; index stations with `dict` |
+| `get(i)` for every day in every window | O(windows × days²) if nested wrong | Store window as `list` or one traverse per window |
+| Confusing chain *n* with table *n* | Mis-estimate Big-O | Name *n*: days in **this** list only |
 
 ---
 
@@ -1221,7 +1302,7 @@ flowchart TD
 | Structure | Difference |
 | --- | --- |
 | [Array-based lists](../array-based-lists/index.md) | Contiguous dynamic array; Python `list` |
-| [Doubly linked list](../doubly-linked-list/index.md) | `prev` pointer; O(1) delete with node reference |
+| [Doubly linked list](../doubly-linked-list/index.md) | `prev` pointer; O(1) delete with node reference (no copy-value hack) |
 | [Circularly linked list](../circularly-linked-list/index.md) | Last `next` points to head; round-robin |
 | [Stacks](../stacks/index.md) | LIFO—often `list.append` / `pop` or linked head |
 | [Queue](../queue/index.md) | FIFO—`deque` over singly linked `pop(0)` |
@@ -1237,14 +1318,14 @@ Official Python sequences tutorial (arrays, not linked lists): [Data Structures 
 head = None
 ll = LinkedList([1, 2, 3])
 
-# O(1) at head — e.g. prepend correction snap
+# O(1) at head — e.g. prepend backfilled reading
 ll.prepend(0)
 x = ll.pop_head()
 
-# O(1) at tail (with tail pointer) — e.g. append next snap in drive
+# O(1) at tail (with tail pointer) — e.g. append next day in window
 ll.append(4)
 
-# O(n) — search / index / tail pop (avoid in season-wide loops)
+# O(n) — search / index / tail pop (avoid in archive-wide loops)
 ll.get(i)
 ll.insert(i, x)
 ll.remove(i)
@@ -1252,16 +1333,17 @@ ll.pop_tail()
 ll.extend(other_ll)
 ll.sort()
 
-# O(n) once per drive — sum EPA, export to list
-for snap in ll:
+# O(n) once per window — sum temp anomaly, export to list
+for reading in ll:
     ...
 ```
 
-Use a singly linked list when the **algorithm** is defined in terms of pointer rewiring (merge, reverse, cycle detection) or when inserts at the **head** dominate—often on **small** NFL chains (one drive, two sorted streams). Use Python’s `list`, **pandas**, or `deque` when the **machine and library** should carry season-scale load.
+Use a singly linked list when the **algorithm** is defined in terms of pointer rewiring (merge, reverse, cycle detection) or when inserts at the **head** dominate—often on **small** weather chains (one month window, two sorted streams). Use Python’s `list`, **pandas**, or `deque` when the **machine and library** should carry archive-scale load.
 
-**NFL pipeline checklist**
+**Weather pipeline checklist**
 
-1. **Default** — Play-by-play table in pandas/`list`; player index in `dict`.
+1. **Default** — Daily observation table in pandas/`list`; station index in `dict`.
 2. **Chain** — Use linked list (or `deque`) only when order and O(1) ends matter for a **bounded** buffer or exercise.
-3. **Count *n*** — Snaps in this drive, not rows in the season file.
-4. **Hot loop** — Never `get(i)` inside `for each play in season`; walk the chain once or vectorize.
+3. **Count *n*** — Days in this window, not rows in the full archive file.
+4. **Hot loop** — Never `get(i)` inside `for each day in archive`; walk the chain once or vectorize.
+5. **Delete with node ref** — Use copy-value hack only when mutation is OK; prefer doubly linked list in production timelines.
