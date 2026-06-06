@@ -7,32 +7,32 @@ A **graph** is a set of **vertices** (nodes) and **edges** (links). Edges may be
 | **What it is** | G = (V, E); vertices are entities, edges are connections with optional weight. |
 | **Representations** | Adjacency list (sparse), adjacency matrix (dense), edge list (compact storage). |
 | **Core algorithms** | BFS, DFS, topological sort, shortest paths, minimum spanning tree, connected components. |
-| **When to use** | Team networks, schedule graphs, play-drive state machines, coaching trees, travel between cities. |
+| **When to use** | Station networks, pipeline dependencies, travel between observatories, forecast state transitions. |
 
-In **NFL data analysis**, graphs appear as **team relationship networks** (who played whom), **division connectivity**, **coach reporting lines**, and **drive state transitions** (down/distance nodes). You will still aggregate stats in **pandas**—graphs excel when the question is **reachability**, **shortest path**, or **connectivity**.
+In **daily weather data analysis**, graphs appear as **station relationship networks** (who shares a mesonet link), **climate-region connectivity**, **office reporting lines**, and **pipeline state transitions** (raw → QC → derived). You will still aggregate stats in **pandas**—graphs excel when the question is **reachability**, **shortest path**, or **connectivity**.
 
-This page is your **ready reference**: representations, a complete Python adjacency-list implementation, traversals with Mermaid, every common operation with NFL examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: representations, a complete Python adjacency-list implementation, traversals with Mermaid, every common operation with daily weather examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How graphs fit NFL-shaped problems
+## How graphs fit daily weather analysis
 
-| NFL idea | Graph model | Typical algorithm |
+| Weather idea | Graph model | Typical algorithm |
 | --- | --- | --- |
-| **Season schedule** | Vertices = teams; edge = game played | Degree count, neighbor lists |
-| **Coach hierarchy** | Directed tree | DFS, topological order |
-| **Travel: KC → BUF** | Weighted cities | Dijkstra / A* |
-| **Play similarity chain** | Directed edges “next likely play” | BFS layers |
-| **Conference connectivity** | Undirected teams in same conference component | Union-Find / DFS |
-| **Rivalry pairs** | Undirected unweighted | Set of edges |
+| **Mesonet links** | Vertices = stations; edge = shared data feed | Degree count, neighbor lists |
+| **Office hierarchy** | Directed tree | DFS, topological order |
+| **Travel: SEA → PDX** | Weighted cities | Dijkstra / A* |
+| **Pattern similarity chain** | Directed edges “next likely regime” | BFS layers |
+| **Climate-region connectivity** | Undirected stations in same region component | Union-Find / DFS |
+| **Correlated station pairs** | Undirected unweighted | Set of edges |
 
 ```mermaid
 flowchart LR
-  KC["KC"] --- BUF["BUF"]
-  KC --- DEN["DEN"]
-  BUF --- NE["NE"]
+  SEA["SEA"] --- PDX["PDX"]
+  SEA --- SFO["SFO"]
+  PDX --- BOI["BOI"]
 ```
 
 Throughout: **V** = \|vertices\|, **E** = \|edges\|, **deg(v)** = degree of vertex v.
@@ -41,14 +41,14 @@ Throughout: **V** = \|vertices\|, **E** = \|edges\|, **deg(v)** = degree of vert
 
 ## Graph types
 
-| Type | Edge direction | Weight | NFL example |
+| Type | Edge direction | Weight | Weather example |
 | --- | --- | --- | --- |
-| Undirected | Both ways | Optional | Mutual opponent link |
-| Directed | One way | Optional | Coach → coordinator |
-| Weighted | Either | On edge | Miles between stadiums |
-| Unweighted | Either | 1 | Played in same week |
-| Acyclic DAG | Directed, no cycles | — | Play prerequisite tree |
-| Bipartite | Two partitions | — | Teams vs games |
+| Undirected | Both ways | Optional | Mutual mesonet neighbor |
+| Directed | One way | Optional | Office → field station |
+| Weighted | Either | On edge | Miles between observatories |
+| Unweighted | Either | 1 | Linked in same ingest batch |
+| Acyclic DAG | Directed, no cycles | — | Pipeline prerequisite tree |
+| Bipartite | Two partitions | — | Stations vs observation events |
 
 ---
 
@@ -56,17 +56,17 @@ Throughout: **V** = \|vertices\|, **E** = \|edges\|, **deg(v)** = degree of vert
 
 | Representation | Space | Edge query (u,v)? | Neighbors of u | Best when |
 | --- | --- | --- | --- | --- |
-| **Adjacency list** | O(V + E) | O(deg(u)) scan | O(deg(u)) | Sparse NFL schedules |
-| **Adjacency matrix** | O(V²) | O(1) | O(V) | Dense tiny V (32 teams max still OK) |
+| **Adjacency list** | O(V + E) | O(deg(u)) scan | O(deg(u)) | Sparse station networks |
+| **Adjacency matrix** | O(V²) | O(1) | O(V) | Dense tiny V (regional mesh still OK) |
 | **Edge list** | O(E) | O(E) | O(E) | Kruskal MST, storage |
 
 ```mermaid
 flowchart TB
-  subgraph list["Adjacency list for KC"]
-    KC2["KC → BUF, DEN, LAC"]
+  subgraph list["Adjacency list for SEA"]
+    SEA2["SEA → PDX, SFO, BOI"]
   end
   subgraph matrix["Matrix snippet"]
-    M["M[KC][BUF] = 1"]
+    M["M[SEA][PDX] = 1"]
   end
 ```
 
@@ -77,25 +77,25 @@ flowchart TB
 ### 1. Empty adjacency-list graph
 
 ```python
-graph: dict[str, list[str]] = {}
+graph = {}
 ```
 
 ### 2. Empty `Graph` class
 
 ```python
 class Graph:
-    def __init__(self, directed: bool = False) -> None:
+    def __init__(self, directed=False):
         self.directed = directed
-        self.adj: dict[str, list[str]] = {}
+        self.adj = {}
 ```
 
-### 3. From edge list — season games
+### 3. From edge list — mesonet links
 
 ```python
 edges = [
-    ("KC", "BAL"),
-    ("BUF", "MIA"),
-    ("KC", "BUF"),
+    ("SEA", "PDX"),
+    ("PDX", "BOI"),
+    ("SEA", "SFO"),
 ]
 g = Graph.from_edges(edges, directed=False)
 ```
@@ -109,9 +109,9 @@ g = Graph.from_edges(edges, directed=False)
 
 ```python
 g = Graph.from_adjacency({
-    "KC": ["BAL", "BUF"],
-    "BAL": ["KC"],
-    "BUF": ["KC"],
+    "SEA": ["PDX", "SFO"],
+    "PDX": ["SEA"],
+    "SFO": ["SEA"],
 })
 ```
 
@@ -119,7 +119,7 @@ g = Graph.from_adjacency({
 
 ```python
 wg = WeightedGraph()
-wg.add_edge("KC", "BUF", weight=1100)  # miles, teaching
+wg.add_edge("SEA", "PDX", weight=175)
 ```
 
 ---
@@ -127,43 +127,43 @@ wg.add_edge("KC", "BUF", weight=1100)  # miles, teaching
 ## Reference implementation (adjacency list)
 
 ```python
-from __future__ import annotations
-
 from collections import deque
 from dataclasses import dataclass
-from typing import Callable, Hashable, Iterable, Iterator
-
-
-Vertex = Hashable
 
 
 @dataclass
 class Edge:
-    u: Vertex
-    v: Vertex
+    u: str
+    v: str
     weight: float = 1.0
 
 
 class Graph:
-    """Undirected or directed graph via adjacency lists."""
-
-    def __init__(self, directed: bool = False) -> None:
+    def __init__(self, directed=False):
         self.directed = directed
-        self.adj: dict[Vertex, list[Vertex]] = {}
+        self.adj = {}
 
     @classmethod
-    def from_edges(
-        cls, edges: Iterable[tuple[Vertex, Vertex]], directed: bool = False
-    ) -> Graph:
+    def from_edges(cls, edges, directed=False):
         g = cls(directed=directed)
         for u, v in edges:
             g.add_edge(u, v)
         return g
 
-    def add_vertex(self, v: Vertex) -> None:
+    @classmethod
+    def from_adjacency(cls, adj, directed=False):
+        g = cls(directed=directed)
+        g.adj = {u: list(neighbors) for u, neighbors in adj.items()}
+        for u in adj:
+            g.adj.setdefault(u, [])
+            for v in adj[u]:
+                g.adj.setdefault(v, [])
+        return g
+
+    def add_vertex(self, v):
         self.adj.setdefault(v, [])
 
-    def add_edge(self, u: Vertex, v: Vertex) -> None:
+    def add_edge(self, u, v):
         self.add_vertex(u)
         self.add_vertex(v)
         self.adj[u].append(v)
@@ -172,22 +172,21 @@ class Graph:
         else:
             self.adj.setdefault(v, [])
 
-    def neighbors(self, v: Vertex) -> list[Vertex]:
+    def neighbors(self, v):
         return self.adj.get(v, [])
 
-    def vertices(self) -> list[Vertex]:
+    def vertices(self):
         return list(self.adj.keys())
 
-    def edges_undirected_count(self) -> int:
+    def edges_undirected_count(self):
         return sum(len(nbs) for nbs in self.adj.values()) // (
             1 if self.directed else 2
         )
 
-    def bfs(self, start: Vertex) -> list[Vertex]:
-        """Breadth-first order from start."""
-        order: list[Vertex] = []
+    def bfs(self, start):
+        order = []
         seen = {start}
-        q: deque[Vertex] = deque([start])
+        q = deque([start])
         while q:
             v = q.popleft()
             order.append(v)
@@ -197,12 +196,11 @@ class Graph:
                     q.append(w)
         return order
 
-    def dfs(self, start: Vertex) -> list[Vertex]:
-        """Depth-first preorder from start."""
-        order: list[Vertex] = []
-        seen: set[Vertex] = set()
+    def dfs(self, start):
+        order = []
+        seen = set()
 
-        def visit(v: Vertex) -> None:
+        def visit(v):
             seen.add(v)
             order.append(v)
             for w in self.neighbors(v):
@@ -212,10 +210,9 @@ class Graph:
         visit(start)
         return order
 
-    def connected_components(self) -> list[list[Vertex]]:
-        """Undirected components; treats as undirected if directed flag set."""
-        seen: set[Vertex] = set()
-        comps: list[list[Vertex]] = []
+    def connected_components(self):
+        seen = set()
+        comps = []
         for v in self.vertices():
             if v in seen:
                 continue
@@ -224,27 +221,27 @@ class Graph:
             seen.update(comp)
         return comps
 
-    def has_path(self, src: Vertex, dst: Vertex) -> bool:
+    def has_path(self, src, dst):
         return dst in set(self.bfs(src))
 
 
 class WeightedGraph:
-    def __init__(self, directed: bool = False) -> None:
+    def __init__(self, directed=False):
         self.directed = directed
-        self.adj: dict[Vertex, list[tuple[Vertex, float]]] = {}
+        self.adj = {}
 
-    def add_edge(self, u: Vertex, v: Vertex, weight: float = 1.0) -> None:
+    def add_edge(self, u, v, weight=1.0):
         self.adj.setdefault(u, []).append((v, weight))
         if not self.directed:
             self.adj.setdefault(v, []).append((u, weight))
         else:
             self.adj.setdefault(v, [])
 
-    def dijkstra(self, src: Vertex) -> dict[Vertex, float]:
+    def dijkstra(self, src):
         import heapq
 
-        dist: dict[Vertex, float] = {src: 0.0}
-        pq: list[tuple[float, Vertex]] = [(0.0, src)]
+        dist = {src: 0.0}
+        pq = [(0.0, src)]
         while pq:
             d, u = heapq.heappop(pq)
             if d > dist.get(u, float("inf")):
@@ -265,17 +262,17 @@ class WeightedGraph:
 
 ## BFS — breadth-first search
 
-**Idea:** Explore layer by layer—first all opponents one game away, then two, etc.
+**Idea:** Explore layer by layer—first all neighbors one hop away, then two, etc.
 
 ```mermaid
 flowchart TB
-  S["Start KC"] --> L1["BAL, DEN"]
-  L1 --> L2["BUF via BAL"]
+  S["Start SEA"] --> L1["PDX, SFO"]
+  L1 --> L2["BOI via PDX"]
 ```
 
 ```python
-schedule = Graph.from_edges([("KC", "BAL"), ("BAL", "BUF"), ("KC", "DEN")])
-order = schedule.bfs("KC")  # ['KC', 'BAL', 'DEN', 'BUF'] order depends on adj order
+network = Graph.from_edges([("SEA", "PDX"), ("PDX", "BOI"), ("SEA", "SFO")])
+order = network.bfs("SEA")
 ```
 
 | | |
@@ -283,25 +280,25 @@ order = schedule.bfs("KC")  # ['KC', 'BAL', 'DEN', 'BUF'] order depends on adj o
 | **Time** | O(V + E) |
 | **Space** | O(V) queue + seen |
 
-**NFL use:** fewest **hops** in schedule graph; broadcast “teams within 2 degrees of KC.”
+**Weather use:** fewest **hops** in a mesonet graph; dashboard “stations within 2 degrees of SEA.”
 
 ---
 
 ## DFS — depth-first search
 
-**Idea:** Go deep along one rivalry chain before backtracking.
+**Idea:** Go deep along one branch before backtracking.
 
 ```mermaid
 flowchart TB
-  KC --> BAL --> BUF --> NE
-  KC --> DEN
+  HQ --> REGION --> FIELD --> SENSOR
+  HQ --> OTHER
 ```
 
 ```python
-coach_tree = Graph(directed=True)
-coach_tree.add_edge("HC", "OC")
-coach_tree.add_edge("OC", "QB_coach")
-order = coach_tree.dfs("HC")
+org_tree = Graph(directed=True)
+org_tree.add_edge("HQ", "REGION")
+org_tree.add_edge("REGION", "FIELD")
+order = org_tree.dfs("HQ")
 ```
 
 | | |
@@ -309,7 +306,7 @@ order = coach_tree.dfs("HC")
 | **Time** | O(V + E) |
 | **Space** | O(V) stack (recursion or explicit) |
 
-**NFL use:** detect cycles in dependency graph; enumerate coaching subtree.
+**Weather use:** detect cycles in dependency graph; enumerate office subtree.
 
 ---
 
@@ -320,28 +317,28 @@ order = coach_tree.dfs("HC")
 | **Structure** | Queue | Stack / recursion |
 | **Shortest unweighted path** | Yes | No |
 | **Memory on wide graph** | Can be large frontier | Linear path depth |
-| **NFL metaphor** | Ripple through schedule | Drill into one branch |
+| **Weather metaphor** | Ripple through mesonet | Drill into one branch |
 
 ```mermaid
 sequenceDiagram
   participant Analyst
-  participant G as schedule graph
-  Analyst->>G: BFS from KC
-  G-->>Analyst: layer 1 opponents
-  G-->>Analyst: layer 2 opponents
-  Analyst->>G: DFS from HC
-  G-->>Analyst: deep coaching chain first
+  participant G as station network
+  Analyst->>G: BFS from SEA
+  G-->>Analyst: layer 1 neighbors
+  G-->>Analyst: layer 2 neighbors
+  Analyst->>G: DFS from HQ
+  G-->>Analyst: deep org chain first
 ```
 
 ---
 
-## All operations (NFL examples + complexity)
+## All operations (weather examples + complexity)
 
 ### `add_vertex` / `add_edge`
 
 ```python
 g = Graph()
-g.add_edge("KC", "BAL")  # regular-season game
+g.add_edge("SEA", "PDX")
 ```
 
 | | |
@@ -349,7 +346,7 @@ g.add_edge("KC", "BAL")  # regular-season game
 | **Time** | O(1) amortized append |
 | **Space** | O(1) new edge storage |
 
-### `neighbors(v)` — opponents of KC
+### `neighbors(v)` — neighbors of SEA
 
 | | |
 | --- | --- |
@@ -360,11 +357,10 @@ g.add_edge("KC", "BAL")  # regular-season game
 
 See above.
 
-### `connected_components` — isolated schedule islands
+### `connected_components` — isolated network islands
 
 ```python
-comps = schedule.connected_components()
-# preseason split graphs, etc.
+comps = network.connected_components()
 ```
 
 | | |
@@ -372,7 +368,7 @@ comps = schedule.connected_components()
 | **Time** | O(V + E) |
 | **Space** | O(V) |
 
-### `has_path` — can we reach BUF from KC?
+### `has_path` — can we reach PDX from SEA?
 
 | | |
 | --- | --- |
@@ -382,8 +378,8 @@ comps = schedule.connected_components()
 ### Dijkstra — weighted travel
 
 ```python
-dist = wg.dijkstra("KC")
-miles_to_buf = dist.get("BUF", float("inf"))
+dist = wg.dijkstra("SEA")
+miles_to_pdx = dist.get("PDX", float("inf"))
 ```
 
 | | |
@@ -393,54 +389,53 @@ miles_to_buf = dist.get("BUF", float("inf"))
 
 ---
 
-## NFL application: team relationship graph
+## Weather application: station relationship graph
 
-Vertices = teams; undirected edge if they played in the season.
+Vertices = stations; undirected edge if they share a mesonet link in the catalog.
 
 ```python
-def build_season_graph(games: list[dict]) -> Graph:
+def build_network_graph(links):
     g = Graph(directed=False)
-    for row in games:
-        g.add_edge(row["home"], row["away"])
+    for row in links:
+        g.add_edge(row["station_a"], row["station_b"])
     return g
 
-g = build_season_graph(schedule_rows)
-kc_opponents = g.neighbors("KC")
+g = build_network_graph(mesonet_rows)
+sea_neighbors = g.neighbors("SEA")
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(games) |
+| **Time** | O(links) |
 | **Space** | O(V + E) |
 
 ---
 
-## NFL application: drive state machine (directed)
+## Weather application: pipeline state machine (directed)
 
-Vertices = `(down, yards_to_go_bucket)`; edge = play outcome.
+Vertices = `(stage, bucket)`; edge = allowed transition after QC step.
 
 ```python
-drive_g = Graph(directed=True)
-drive_g.add_edge((1, 10), (2, 7))
-drive_g.add_edge((2, 7), (1, 10))
-path_exists = drive_g.has_path((1, 10), (4, 1))
+pipeline = Graph(directed=True)
+pipeline.add_edge(("raw", "ok"), ("qc", "pending"))
+pipeline.add_edge(("qc", "pending"), ("derived", "ready"))
+path_exists = pipeline.has_path(("raw", "ok"), ("derived", "ready"))
 ```
 
 ---
 
-## Topological sort (DAG) — prerequisite plays drill
+## Topological sort (DAG) — prerequisite pipeline drill
 
-When edges mean “concept A before concept B” in a teaching DAG:
+When edges mean “stage A before stage B” in a teaching DAG:
 
 ```python
-def topological_sort(g: Graph) -> list[Vertex]:
-    """g must be a DAG (directed, acyclic)."""
+def topological_sort(g):
     indeg = {v: 0 for v in g.vertices()}
     for u in g.vertices():
         for w in g.neighbors(u):
             indeg[w] = indeg.get(w, 0) + 1
     q = deque([v for v, d in indeg.items() if d == 0])
-    order: list[Vertex] = []
+    order = []
     while q:
         v = q.popleft()
         order.append(v)
@@ -470,15 +465,14 @@ def topological_sort(g: Graph) -> list[Vertex]:
 | **networkx** (optional) | `pip install networkx` — production graph algos |
 
 ```python
-# Optional: networkx for advanced metrics
 import networkx as nx
 
 G = nx.Graph()
-G.add_edge("KC", "BAL")
-nx.shortest_path(G, "KC", "BUF")
+G.add_edge("SEA", "PDX")
+nx.shortest_path(G, "SEA", "BOI")
 ```
 
-**Rule of thumb:** learn with **`Graph` class** above; use **networkx** for centrality, community detection, and large NFL network studies.
+**Rule of thumb:** learn with **`Graph` class** above; use **networkx** for centrality, community detection, and large weather-network studies.
 
 ---
 
@@ -497,14 +491,14 @@ nx.shortest_path(G, "KC", "BUF")
 
 ---
 
-## When to pick which representation (NFL context)
+## When to pick which representation (weather context)
 
 ```mermaid
 flowchart TD
   Q([Relationship query?])
-  Q --> S{Sparse E vs 32 teams?}
+  Q --> S{Sparse E vs regional mesh?}
   S -->|sparse| AL["Adjacency list"]
-  S -->|need all-pairs| AM["Matrix 32×32"]
+  S -->|need all-pairs| AM["Matrix V×V"]
   Q --> P{Shortest path weighted?}
   P -->|yes| D["WeightedGraph + Dijkstra"]
   P -->|no| B["BFS unweighted"]
@@ -512,10 +506,10 @@ flowchart TD
 
 | Scenario | Best tool |
 | --- | --- |
-| 272 games season edges | Adjacency list |
-| All-pairs 32 teams | 32×32 matrix OK |
-| Coach tree | Directed DFS |
-| Stadium miles | Weighted + Dijkstra |
+| Regional mesonet edges | Adjacency list |
+| All-pairs small region | V×V matrix OK |
+| Office tree | Directed DFS |
+| Observatory miles | Weighted + Dijkstra |
 
 ---
 
@@ -547,7 +541,7 @@ flowchart TD
 
 ```python
 g = Graph()
-g = Graph.from_edges([("KC", "BAL")], directed=False)
+g = Graph.from_edges([("SEA", "PDX")], directed=False)
 
 g.add_edge(u, v)
 g.neighbors(v)
@@ -561,4 +555,12 @@ wg.add_edge(u, v, weight=1.0)
 wg.dijkstra(src)
 ```
 
-Use a **graph** when NFL questions are about **connections and paths**, not column means—use **pandas** for aggregations, **graphs** for topology.
+Use a **graph** when weather questions are about **connections and paths**, not column means—use **pandas** for aggregations, **graphs** for topology.
+
+**Weather pipeline checklist**
+
+1. **Default** — Tabular readings in pandas; aggregates via `groupby`.
+2. **Reachability / hops** — Adjacency list + BFS on station mesh.
+3. **Weighted routes** — `WeightedGraph` + Dijkstra for miles or latency.
+4. **Pipeline order** — DAG + topological sort for stage dependencies.
+5. **Large networks** — Learn with `Graph` class; ship **networkx** for production metrics.

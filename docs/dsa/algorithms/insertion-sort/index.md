@@ -1,6 +1,6 @@
 # Insertion sort
 
-A **comparison sort** that builds a **sorted prefix** at the left of the array. Each new element is **inserted** into its correct position among the already-sorted items—like sorting a handful of fantasy cards in your hand as you pull them from a pile.
+A **comparison sort** that builds a **sorted prefix** at the left of the array. Each new element is **inserted** into its correct position among the already-sorted items—like ordering a handful of daily station cards as you pull them from an ingest pile.
 
 | | |
 | --- | --- |
@@ -11,19 +11,19 @@ A **comparison sort** that builds a **sorted prefix** at the left of the array. 
 | **In-place** | **Yes**. |
 | **When to use** | Very small *n*, nearly sorted slices, or as the base case inside better hybrids (e.g. Timsort). |
 
-For **NFL analytics**, insertion sort mirrors how you might manually order five **red-zone targets** by share: pick the next receiver, slide down anyone with lower share. At season scale (thousands of rows), use **`sort_values`**; insertion sort shines when *n* &lt; ~20 or data are **already almost sorted** (e.g. plays mostly ordered by `play_id` with a few corrections).
+For **daily weather data analysis**, insertion sort mirrors how you might manually order five **station readings** by `temp_anomaly`: pick the next `DailyReading`, slide down anyone with a lower anomaly. At archive scale (thousands of rows), use **`sort_values`**; insertion sort shines when *n* &lt; ~20 or data are **already almost sorted** (e.g. readings mostly ordered by `reading_id` with a few corrections).
 
 [Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
 
 ---
 
-## NFL-shaped use cases
+## Weather-shaped use cases
 
 | Task | Why insertion sort fits mentally | Production choice |
 | --- | --- | --- |
-| Sort 8 players on a single-game leaderboard | O(n²) is tiny | `sorted(..., key=ppr)` |
-| Fix a nearly sorted play list after one edit | O(n) best case | `sort_values` or insert in order |
-| Teach “growing sorted region” | Clear invariant | This page |
+| Sort 8 days in one station window | O(n²) is tiny | `sorted(..., key=lambda r: r.temp_anomaly)` |
+| Fix a nearly sorted ingest batch after one edit | O(n) best case | `sort_values` or insert in order |
+| Teach "growing sorted region" | Clear invariant | This page |
 | Hybrid sort inner loop | Timsort uses insertion for runs | CPython internals |
 
 ---
@@ -34,7 +34,7 @@ For **NFL analytics**, insertion sort mirrors how you might manually order five 
 | --- | --- |
 | **Best time** | O(n) — inner while never runs |
 | **Average time** | Θ(n²) |
-| **Worst time** | Θ(n²) — reverse PPR order |
+| **Worst time** | Θ(n²) — reverse anomaly order |
 | **Space** | O(1) |
 | **Stable** | Yes |
 | **In-place** | Yes |
@@ -100,21 +100,24 @@ def insertion_sort(nums: list[float]) -> None:
 
 
 @dataclass(frozen=True, slots=True)
-class Player:
-    name: str
-    ppr: float
-    jersey: int
+class DailyReading:
+    reading_id: int
+    station_id: str
+    temp_anomaly: float
+    summary: str
 
 
-def insertion_sort_players(players: list[Player], *, key=lambda p: p.ppr) -> None:
-    for i in range(1, len(players)):
-        current = players[i]
+def insertion_sort_readings(
+    readings: list[DailyReading], *, key=lambda r: r.temp_anomaly
+) -> None:
+    for i in range(1, len(readings)):
+        current = readings[i]
         k = key(current)
         j = i - 1
-        while j >= 0 and key(players[j]) > k:
-            players[j + 1] = players[j]
+        while j >= 0 and key(readings[j]) > k:
+            readings[j + 1] = readings[j]
             j -= 1
-        players[j + 1] = current
+        readings[j + 1] = current
 ```
 
 | | |
@@ -124,33 +127,33 @@ def insertion_sort_players(players: list[Player], *, key=lambda p: p.ppr) -> Non
 
 ---
 
-## Trace: jersey numbers on a practice squad
+## Trace: reading IDs in one station window
 
-Sort ascending by **jersey** (stable on equal jerseys if we use strict `>`).
+Sort ascending by **`reading_id`** (stable on equal IDs if we use strict `>`).
 
-Start: `[89, 12, 12, 45]` (two TEs with jersey 12)
+Start: `[405, 101, 101, 203]` (two rows share `reading_id` 101)
 
 | i | key | Shifts | Result |
 | ---: | ---: | --- | --- |
-| 1 | 12 | 89→right | `[12, 89, 12, 45]` |
-| 2 | 12 | none (89>12) | `[12, 12, 89, 45]` |
-| 3 | 45 | none | `[12, 12, 45, 89]` |
+| 1 | 101 | 405→right | `[101, 405, 101, 203]` |
+| 2 | 101 | none (405>101) | `[101, 101, 405, 203]` |
+| 3 | 203 | none | `[101, 101, 405, 203]` |
 
-Equal jerseys **12** stayed in original relative order → **stable**.
+Equal `reading_id` **101** stayed in original relative order → **stable**.
 
 ---
 
 ## Versus `list.sort()` / `sorted()` / `heapq`
 
-- **`list.sort`**: Timsort combines merge + insertion on **runs**; O(n log n) worst, often faster on real NFL CSV order.
-- **`heapq`**: Not a full sort—use for top-*k* receivers, not inserting into a prefix.
-- **Insertion sort**: Best didactic match for “one card at a time”; same Θ(n²) class as bubble/selection but **fewer writes** on average and **O(n)** on sorted play_id streams.
+| Tool | When it wins | vs insertion sort |
+| --- | --- | --- |
+| `list.sort` | Timsort combines merge + insertion on **runs**; O(n log n) worst, often faster on real ingest order | Production default |
+| `heapq` | Top-*k* warmest days, not full prefix sort | Different problem |
+| Insertion sort | Best didactic match for "one reading at a time"; same Θ(n²) class as bubble/selection but **fewer writes** on average and **O(n)** on sorted `reading_id` streams | Pedagogy and tiny *n* |
 
 ```python
-# Nearly sorted play_ids — insertion-style thinking:
-def one_pass_fix(plays: list[int]) -> bool:
-    """True if already non-decreasing."""
-    return all(plays[i] <= plays[i + 1] for i in range(len(plays) - 1))
+def one_pass_fix(reading_ids: list[int]) -> bool:
+    return all(reading_ids[i] <= reading_ids[i + 1] for i in range(len(reading_ids) - 1))
 ```
 
 ---
@@ -159,12 +162,14 @@ def one_pass_fix(plays: list[int]) -> bool:
 
 | Use | Avoid |
 | --- | --- |
-| *n* &lt; 15 in a notebook demo | Full season player table |
-| Educational “sorted prefix” | Latency-critical APIs |
-| Custom tiny embedded lists | pandas groupby + sort |
+| *n* &lt; 15 in a notebook demo | Full multi-year station archive |
+| Educational "sorted prefix" | Latency-critical APIs |
+| Custom tiny embedded lists | pandas `groupby` + `sort_values` |
 
 ```python
-df = weekly_stats.sort_values(["week", "ppr"], ascending=[True, False])
+import pandas as pd
+
+df = daily_stats.sort_values(["month", "temp_anomaly"], ascending=[True, False])
 ```
 
 ---
@@ -203,9 +208,9 @@ df = weekly_stats.sort_values(["week", "ppr"], ascending=[True, False])
 ## Quick reference
 
 ```python
-insertion_sort(ppr)              # in-place
-insertion_sort_players(roster)   # stable by PPR
-roster.sort(key=lambda p: p.ppr) # production
+insertion_sort(anomalies)
+insertion_sort_readings(window)
+window.sort(key=lambda r: r.temp_anomaly)
 ```
 
-**Insertion sort:** stable, in-place, adaptive—ideal for **small or nearly sorted** NFL slices, not season warehouses.
+**Insertion sort:** stable, in-place, adaptive—ideal for **small or nearly sorted** weather slices, not multi-year archives.

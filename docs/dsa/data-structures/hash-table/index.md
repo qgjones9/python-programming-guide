@@ -1,17 +1,17 @@
 # Hash table
 
-A **key → value** map implemented by hashing keys into **bucket indices**, with a **collision policy** when two keys land in the same slot. Average-case lookup, insert, and delete are **O(1)**; Python’s `dict` and `set` are highly optimized hash tables in C.
+A **key → value** map implemented by hashing keys into **bucket indices**, with a **collision policy** when two keys land in the same slot. Average-case lookup, insert, and delete are **O(1)**; Python's `dict` and `set` are highly optimized hash tables in C.
 
 | | |
 | --- | --- |
 | **What it is** | `hash(key) % buckets` picks a slot; collisions resolved by open addressing or chaining (CPython dict uses open addressing). |
 | **Core operations** | `get`, `set`, `delete`, membership; iteration over keys (insertion-ordered in dict 3.7+). |
-| **When to use** | Play lookups by `play_id`, player rosters, counting stats, caches, deduplication, grouping. |
-| **Trade-off** | Keys must be hashable; worst-case O(n) if all keys collide; no cheap “sorted by key” without extra structure. |
+| **When to use** | Reading lookups by `reading_id`, station metadata, counting conditions, caches, deduplication, grouping. |
+| **Trade-off** | Keys must be hashable; worst-case O(n) if all keys collide; no cheap "sorted by key" without extra structure. |
 
-In **NFL data analysis**, hash tables are the **default index layer**: map **`play_id` → row dict**, **`player_id` → name**, team abbreviations, weekly **`Counter`** of formations, and **`defaultdict`** aggregations. You rarely implement a hash table from scratch in production—you **use `dict` / `set` / `Counter` / `defaultdict`** and understand collisions, load factor, and hashability so debug sessions make sense.
+In **daily weather data analysis**, hash tables are the **default index layer**: map **`reading_id` → row dict**, **`station_id` → name**, climate-zone abbreviations, monthly **`Counter`** of conditions, and **`defaultdict`** aggregations. You rarely implement a hash table from scratch in production—you **use `dict` / `set` / `Counter` / `defaultdict`** and understand collisions, load factor, and hashability so debug sessions make sense.
 
-This page is your **ready reference**: Python built-ins, a teaching implementation, collision concepts, every common operation with NFL examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: Python built-ins, a teaching implementation, collision concepts, every common operation with weather examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
@@ -24,29 +24,29 @@ This page is your **ready reference**: Python built-ins, a teaching implementati
 | **Find by key** | O(1) average | O(n) | O(log n) |
 | **Insert** | O(1) average | O(1) append; find O(n) | O(log n) |
 | **Ordered by key** | Insertion order only (dict) | Index order | Sorted order |
-| **NFL** | `plays[play_id]` | scan all plays | season leaders tree |
+| **Weather** | `readings[reading_id]` | scan all readings | seasonal leaders tree |
 
 ```mermaid
 flowchart LR
-  K["key: play_id 4021"] --> H["hash()"]
+  K["key: reading_id 4021"] --> H["hash()"]
   H --> I["index in bucket array"]
-  I --> V["value: Play row"]
+  I --> V["value: DailyReading row"]
 ```
 
 Throughout this page, **n** is the number of entries; **m** is bucket count (implementation detail in CPython).
 
 ---
 
-## NFL data analysis: what a hash table models
+## Daily weather analysis: what a hash table models
 
-| NFL idea | Map type | Example key |
+| Weather idea | Map type | Example key |
 | --- | --- | --- |
-| **Play by id** | `dict[int, Play]` | `play_id` |
-| **Player name by gsis_id** | `dict[str, str]` | `00-0031234` |
-| **Team colors / meta** | `dict[str, dict]` | `"KC"` |
-| **Unique players seen** | `set[str]` | `player_id` |
-| **Count snaps by formation** | `Counter[str]` | `"11"` personnel |
-| **EPA sum per receiver** | `defaultdict(float)` | `player_id` |
+| **Reading by id** | `dict[int, DailyReading]` | `reading_id` |
+| **Station name by id** | `dict[str, str]` | `"SEA-01"` |
+| **Station meta / elevation** | `dict[str, dict]` | `"DEN"` |
+| **Unique stations seen** | `set[str]` | `station_id` |
+| **Count days by condition** | `Counter[str]` | `"partly cloudy"` |
+| **Anomaly sum per station** | `defaultdict(float)` | `station_id` |
 
 ```python
 from collections import Counter, defaultdict
@@ -54,19 +54,19 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Play:
-    play_id: int
-    game_id: str
-    posteam: str
-    epa: float
-    passer_id: str | None
+class DailyReading:
+    reading_id: int
+    month: int
+    station_id: str
+    temp_anomaly: float
+    summary: str
 
 
 @dataclass(frozen=True)
-class Player:
-    player_id: str
+class Station:
+    station_id: str
     name: str
-    position: str
+    climate_zone: str
 ```
 
 ---
@@ -81,15 +81,15 @@ class Player:
 sequenceDiagram
   participant Code
   participant Dict as dict
-  Code->>Dict: d[play_id] = play
-  Dict->>Dict: hash(play_id)
+  Code->>Dict: d[reading_id] = reading
+  Dict->>Dict: hash(reading_id)
   Dict->>Dict: find slot / probe
   Dict-->>Code: stored
-  Code->>Dict: d[play_id]
-  Dict-->>Code: play O(1) avg
+  Code->>Dict: d[reading_id]
+  Dict-->>Code: reading O(1) avg
 ```
 
-| Concept | Meaning | NFL impact |
+| Concept | Meaning | Weather impact |
 | --- | --- | --- |
 | **Hashable key** | Immutable or defines `__hash__` | Use `int`, `str`, `tuple` of immutables |
 | **Load factor** | n/m; resize when too full | CPython resizes dict automatically |
@@ -102,7 +102,7 @@ sequenceDiagram
 ### 1. Empty `dict`
 
 ```python
-plays_by_id: dict[int, Play] = {}
+readings_by_id: dict[int, DailyReading] = {}
 ```
 
 | | |
@@ -113,24 +113,24 @@ plays_by_id: dict[int, Play] = {}
 ### 2. Dict literal / comprehension
 
 ```python
-team_abbr = {"KC": "Chiefs", "BUF": "Bills", "SF": "49ers"}
+station_abbr = {"SEA": "Seattle", "DEN": "Denver", "PHX": "Phoenix"}
 
-plays = {
-    p.play_id: p
-    for p in load_plays_from_csv("week1.csv")
+readings = {
+    r.reading_id: r
+    for r in load_readings_from_csv("january.csv")
 }
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(n) for n plays |
+| **Time** | O(n) for n readings |
 | **Space** | O(n) |
 
 ### 3. `dict()` constructor
 
 ```python
-d = dict([("KC", 3), ("BUF", 2)])
-d2 = dict(zip(team_ids, team_names))
+d = dict([("SEA", 3), ("DEN", 2)])
+d2 = dict(zip(station_ids, station_names))
 ```
 
 | | |
@@ -141,7 +141,7 @@ d2 = dict(zip(team_ids, team_names))
 ### 4. Empty `set`
 
 ```python
-seen_players: set[str] = set()
+seen_stations: set[str] = set()
 ```
 
 | | |
@@ -152,8 +152,8 @@ seen_players: set[str] = set()
 ### 5. `defaultdict` — missing keys get default
 
 ```python
-epa_by_receiver: defaultdict[float] = defaultdict(float)
-epa_by_receiver["00-0031234"] += 1.2
+anomaly_by_station: defaultdict[float] = defaultdict(float)
+anomaly_by_station["SEA-01"] += 1.2
 ```
 
 | | |
@@ -164,8 +164,8 @@ epa_by_receiver["00-0031234"] += 1.2
 ### 6. `Counter` — multiset counts
 
 ```python
-formation_counts = Counter(["11", "11", "12", "21", "11"])
-assert formation_counts["11"] == 3
+condition_counts = Counter(["rain", "rain", "snow", "clear", "rain"])
+assert condition_counts["rain"] == 3
 ```
 
 | | |
@@ -176,8 +176,8 @@ assert formation_counts["11"] == 3
 ### 7. Build index from list of rows (manual)
 
 ```python
-def index_plays(rows: list[dict]) -> dict[int, dict]:
-    return {row["play_id"]: row for row in rows}
+def index_readings(rows: list[dict]) -> dict[int, dict]:
+    return {row["reading_id"]: row for row in rows}
 ```
 
 | | |
@@ -208,15 +208,10 @@ flowchart TD
 | `tuple` of hashables | mutable custom objects unless `__hash__` defined |
 | `frozenset` | `bytearray` |
 
-**NFL:** Use `play_id: int` or `(game_id, play_id)` tuple as key—not a mutable row `dict` as key.
+**Weather:** Use `reading_id: int` or `(station_id, reading_id)` tuple as key—not a mutable row `dict` as key.
 
 ```python
-# Bad
-# row = {"play_id": 1}
-# keys[row] = ...  # TypeError: unhashable type: 'dict'
-
-# Good
-key = (row["game_id"], row["play_id"])
+key = (row["station_id"], row["reading_id"])
 index[key] = row
 ```
 
@@ -229,7 +224,6 @@ index[key] = row
 **Open addressing:** on collision, probe `i+1`, `i+2`, … (CPython dict uses a variant).
 
 ```python
-# Toy: two keys might share bucket in tiny table — still works via probing/chain
 def toy_hash(key: str, m: int) -> int:
     return sum(ord(c) for c in key) % m
 ```
@@ -239,7 +233,7 @@ def toy_hash(key: str, m: int) -> int:
 | Average insert/lookup | O(1) |
 | Worst all collide | O(n) |
 
-You will not tune CPython’s table in NFL ETL; trust `dict` unless profiling shows pathological keys.
+You will not tune CPython's table in weather ETL; trust `dict` unless profiling shows pathological keys.
 
 ---
 
@@ -254,8 +248,6 @@ from typing import Any, Hashable, Iterator
 
 
 class SeparateChainingHashTable:
-    """Hash table with separate chaining. Keys must be hashable."""
-
     def __init__(self, capacity: int = 8) -> None:
         self._capacity = max(4, capacity)
         self._buckets: list[list[tuple[Hashable, Any]]] = [[] for _ in range(self._capacity)]
@@ -320,15 +312,15 @@ class SeparateChainingHashTable:
 
 ---
 
-## `dict` operations (with NFL examples and complexity)
+## `dict` operations (with weather examples and complexity)
 
 ### `d[key] = value` / `setdefault`
 
 ```python
-plays: dict[int, Play] = {}
-plays[4021] = Play(4021, "2024_01_KC", "KC", 0.5, "00-001")
+readings: dict[int, DailyReading] = {}
+readings[4021] = DailyReading(4021, 1, "SEA-01", 0.5, "partly cloudy")
 
-meta = plays.setdefault(4021, default_play)  # insert only if missing
+meta = readings.setdefault(4021, default_reading)
 ```
 
 | | |
@@ -341,9 +333,9 @@ meta = plays.setdefault(4021, default_play)  # insert only if missing
 ### `d[key]` / `get`
 
 ```python
-p = plays[4021]
-p2 = plays.get(9999)  # None
-p3 = plays.get(9999, default_play)
+r = readings[4021]
+r2 = readings.get(9999)
+r3 = readings.get(9999, default_reading)
 ```
 
 | | |
@@ -356,8 +348,8 @@ p3 = plays.get(9999, default_play)
 ### `del d[key]` / `pop`
 
 ```python
-del plays[4021]
-removed = plays.pop(4022, None)
+del readings[4021]
+removed = readings.pop(4022, None)
 ```
 
 | | |
@@ -370,7 +362,7 @@ removed = plays.pop(4022, None)
 ### `key in d` / `len(d)`
 
 ```python
-if 4021 in plays:
+if 4021 in readings:
     ...
 ```
 
@@ -384,8 +376,8 @@ if 4021 in plays:
 ### Iteration: `keys`, `values`, `items`
 
 ```python
-for play_id, play in plays.items():
-    total_epa += play.epa
+for reading_id, reading in readings.items():
+    total_anomaly += reading.temp_anomaly
 ```
 
 | | |
@@ -393,15 +385,15 @@ for play_id, play in plays.items():
 | **Time** | O(n) full scan |
 | **Space** | O(1) iterator |
 
-**NFL:** Full scan is fine for **one game’s plays**; for season scale use **pandas** vectorization, not Python loops over giant dicts if avoidable.
+**Weather:** Full scan is fine for **one month's readings**; for multi-year scale use **pandas** vectorization, not Python loops over giant dicts if avoidable.
 
 ---
 
 ### `update`, merge `|` (3.9+)
 
 ```python
-plays.update({5001: play_a, 5002: play_b})
-merged = plays_a | plays_b
+readings.update({5001: reading_a, 5002: reading_b})
+merged = readings_a | readings_b
 ```
 
 | | |
@@ -414,7 +406,7 @@ merged = plays_a | plays_b
 ### `dict comprehension` — rebuild index
 
 ```python
-kc_only = {pid: p for pid, p in plays.items() if p.posteam == "KC"}
+sea_only = {rid: r for rid, r in readings.items() if r.station_id == "SEA-01"}
 ```
 
 | | |
@@ -428,8 +420,8 @@ kc_only = {pid: p for pid, p in plays.items() if p.posteam == "KC"}
 
 ```python
 seen: set[str] = set()
-seen.add("00-0031234")
-if "00-0035678" in seen:
+seen.add("SEA-01")
+if "DEN-02" in seen:
     ...
 union = seen | other
 ```
@@ -439,43 +431,43 @@ union = seen | other
 | `add` / `remove` / `in` | O(1) |
 | `union` / `intersection` | O(len) |
 
-**NFL:** Unique receivers who targeted in a game.
+**Weather:** Unique stations that reported precipitation in a month.
 
 ---
 
 ## `Counter` and `defaultdict` patterns
 
-### Formation frequency
+### Condition frequency
 
 ```python
-formations = Counter(row["personnel"] for row in pbp_rows)
-top3 = formations.most_common(3)
+conditions = Counter(row["summary"] for row in reading_rows)
+top3 = conditions.most_common(3)
 ```
 
 | | |
 | --- | --- |
 | **Time** | O(n) over rows |
-| **Space** | O(unique formations) |
+| **Space** | O(unique conditions) |
 
-### EPA by team without KeyError
+### Anomaly by station without KeyError
 
 ```python
-team_epa: defaultdict[float] = defaultdict(float)
-for play in plays.values():
-    team_epa[play.posteam] += play.epa
+station_anomaly: defaultdict[float] = defaultdict(float)
+for reading in readings.values():
+    station_anomaly[reading.station_id] += reading.temp_anomaly
 ```
 
 | | |
 | --- | --- |
 | **Time** | O(n) |
-| **Space** | O(teams) |
+| **Space** | O(stations) |
 
 ### `Counter` arithmetic
 
 ```python
-home = Counter({"rush": 20, "pass": 30})
-away = Counter({"rush": 18, "pass": 35})
-diff = home - away
+january = Counter({"rain": 20, "clear": 30})
+february = Counter({"rain": 18, "clear": 35})
+diff = january - february
 ```
 
 | | |
@@ -487,26 +479,25 @@ diff = home - away
 sequenceDiagram
   participant ETL
   participant C as Counter
-  ETL->>C: update from each play row
-  C-->>ETL: most_common(5) formations
+  ETL->>C: update from each reading row
+  C-->>ETL: most_common(5) conditions
 ```
 
 ---
 
-## Building NFL indexes from CSV
+## Building weather indexes from CSV
 
 ```python
 import csv
 
-def load_play_index(path: str) -> dict[int, dict]:
+def load_reading_index(path: str) -> dict[int, dict]:
     index: dict[int, dict] = {}
     with open(path, newline="") as f:
         for row in csv.DictReader(f):
-            pid = int(row["play_id"])
-            index[pid] = row
+            rid = int(row["reading_id"])
+            index[rid] = row
     return index
 
-# O(1) lookup during drive replay
 row = index[4021]
 ```
 
@@ -542,14 +533,14 @@ row = index[4021]
 | Counting | `Counter` |
 | Group then aggregate | `defaultdict(list)` + append |
 | Ordered by sorted key | `sorted(d)` keys or BST — not hash |
-| Disk-scale season | **pandas** + index, or parquet |
+| Disk-scale archive | **pandas** + index, or parquet |
 
 ```python
 import pandas as pd
 
-pbp = pd.read_parquet("plays.parquet")
-pbp.set_index("play_id", inplace=True)
-row = pbp.loc[4021]  # hash index inside DataFrame
+observations = pd.read_parquet("readings.parquet")
+observations.set_index("reading_id", inplace=True)
+row = observations.loc[4021]
 ```
 
 ---
@@ -558,10 +549,10 @@ row = pbp.loc[4021]  # hash index inside DataFrame
 
 ```mermaid
 flowchart TD
-  Q([Lookup by play_id?])
+  Q([Lookup by reading_id?])
   Q -->|many random| DICT["dict / DataFrame index"]
   Q -->|scan all| DF["pandas filter"]
-  Q -->|persistent team| DB["SQL with index"]
+  Q -->|persistent archive| DB["SQL with index"]
 ```
 
 | Pitfall | Fix |
@@ -570,28 +561,28 @@ flowchart TD
 | Assuming sorted keys | `sorted(d)` explicitly |
 | Giant dict in tight loop | Vectorize with numpy/pandas |
 | `defaultdict` memory | `dict.get` if sparse |
-| Rebuilding index every play | Build once per game load |
+| Rebuilding index every row | Build once per file load |
 
 ---
 
 ## `frozenset` — hashable set keys
 
-Use when you need a **set as dict key** (e.g. grouping lineups):
+Use when you need a **set as dict key** (e.g. grouping station clusters):
 
 ```python
-skill_group = frozenset({"Mahomes", "Kelce", "Rice"})
-lineup_epa: dict[frozenset[str], float] = {}
-lineup_epa[skill_group] = 12.4
+cluster = frozenset({"SEA-01", "SEA-02", "SEA-03"})
+cluster_anomaly: dict[frozenset[str], float] = {}
+cluster_anomaly[cluster] = 12.4
 ```
 
 | | |
 | --- | --- |
 | **Time** | O(1) average lookup |
-| **Space** | O(n) for frozenset of n names |
+| **Space** | O(n) for frozenset of n station ids |
 
 ---
 
-## `functools.lru_cache` — memoize expensive NFL queries
+## `functools.lru_cache` — memoize expensive weather queries
 
 Hash table caches **function arguments** → return values:
 
@@ -599,9 +590,8 @@ Hash table caches **function arguments** → return values:
 from functools import lru_cache
 
 @lru_cache(maxsize=4096)
-def epa_for_player_season(player_id: str, season: int) -> float:
-    # expensive parquet scan once per key
-    return load_and_sum(player_id, season)
+def anomaly_for_station_year(station_id: str, year: int) -> float:
+    return load_and_sum(station_id, year)
 ```
 
 | | |
@@ -613,12 +603,12 @@ Keys must be **hashable**—use `str`, `int`, not mutable `dict`.
 
 ---
 
-## `defaultdict(list)` — group plays by drive
+## `defaultdict(list)` — group readings by month
 
 ```python
-by_drive: defaultdict[list[dict]] = defaultdict(list)
-for row in pbp_rows:
-    by_drive[row["drive"]].append(row)
+by_month: defaultdict[list[dict]] = defaultdict(list)
+for row in reading_rows:
+    by_month[row["month"]].append(row)
 ```
 
 | | |
@@ -632,25 +622,25 @@ Same pattern as `pandas.groupby` on a smaller scale in pure Python.
 
 ## `dict` methods reference (extended)
 
-| Method | Time avg | NFL example |
+| Method | Time avg | Weather example |
 | --- | --- | --- |
-| `keys()` | O(1) view | iterate play ids |
-| `values()` | O(1) view | all Play objects |
-| `items()` | O(1) view | id + play pairs |
-| `get(k, default)` | O(1) | safe lookup missing play |
-| `setdefault(k, v)` | O(1) | init team bucket |
+| `keys()` | O(1) view | iterate reading ids |
+| `values()` | O(1) view | all DailyReading objects |
+| `items()` | O(1) view | id + reading pairs |
+| `get(k, default)` | O(1) | safe lookup missing reading |
+| `setdefault(k, v)` | O(1) | init station bucket |
 | `pop(k)` | O(1) | remove stale cache |
 | `popitem()` | O(1) | LIFO eviction policy |
-| `clear()` | O(1) | reset game cache |
+| `clear()` | O(1) | reset month cache |
 | `copy()` | O(n) | shallow fork index |
-| `fromkeys(keys, v)` | O(n) | init all teams to 0 |
+| `fromkeys(keys, v)` | O(n) | init all stations to 0 |
 | `dict \| dict` (3.9+) | O(n) | merge indexes |
 
 ```mermaid
 flowchart TD
-  CSV["CSV rows"] --> B["build dict play_id → row"]
+  CSV["CSV rows"] --> B["build dict reading_id → row"]
   B --> L["O(1) lookup in analysis loop"]
-  L --> OUT["charts / EPA"]
+  L --> OUT["charts / anomaly sums"]
 ```
 
 ---
@@ -662,7 +652,7 @@ flowchart TD
 | **Separate chaining** | Bucket → list of pairs | Teaching `SeparateChainingHashTable` |
 | **Open addressing** | Probe on collision | CPython `dict` (perturbed probing) |
 
-You cannot switch CPython’s policy; understanding collisions explains rare worst-case slowdowns when many keys share hash patterns.
+You cannot switch CPython's policy; understanding collisions explains rare worst-case slowdowns when many keys share hash patterns.
 
 ---
 
@@ -670,12 +660,12 @@ You cannot switch CPython’s policy; understanding collisions explains rare wor
 
 ```python
 @dataclass(frozen=True)
-class PlayKey:
-    game_id: str
-    play_id: int
+class ReadingKey:
+    station_id: str
+    reading_id: int
 
-index: dict[PlayKey, Play] = {}
-index[PlayKey("2024_01_KC", 4021)] = play
+index: dict[ReadingKey, DailyReading] = {}
+index[ReadingKey("SEA-01", 4021)] = reading
 ```
 
 | | |
@@ -687,20 +677,19 @@ Frozen dataclasses generate `__hash__` automatically when `eq=True`.
 
 ---
 
-## `Counter` — advanced NFL stats
+## `Counter` — advanced weather stats
 
 ```python
 from collections import Counter
 
-down_dist = Counter(
-    (row["down"], row["ydstogo"])
-    for row in pbp_rows
+month_condition = Counter(
+    (row["month"], row["summary"])
+    for row in reading_rows
 )
 
-# Weighted EPA: not built-in — combine with manual loop or numpy
-epa_weights = Counter()
-for row in pbp_rows:
-    epa_weights[row["play_type"]] += float(row["epa"])
+anomaly_weights = Counter()
+for row in reading_rows:
+    anomaly_weights[row["summary"]] += float(row["temp_anomaly"])
 ```
 
 | Operation | Time |
@@ -716,66 +705,62 @@ for row in pbp_rows:
 | n (rows) | Recommendation |
 | --- | --- |
 | < 10⁴ in memory script | `dict` index fine |
-| 10⁵–10⁶ season | `DataFrame` + `set_index` |
+| 10⁵–10⁶ archive | `DataFrame` + `set_index` |
 | Repeated SQL filters | database with B-tree index |
 
 ```python
-# dict: one game
-game_plays = {int(r["play_id"]): r for r in rows}
+month_readings = {int(r["reading_id"]): r for r in rows}
 
-# pandas: season
 import pandas as pd
-season = pd.read_parquet("pbp.parquet")
-play = season.loc[4021]
+archive = pd.read_parquet("readings.parquet")
+reading = archive.loc[4021]
 ```
 
 ---
 
-## Set algebra for roster logic
+## Set algebra for station logic
 
 ```python
-kc_roster = {"00-a", "00-b", "00-c"}
-buf_roster = {"00-b", "00-d", "00-e"}
+pacific_stations = {"SEA-01", "SEA-02", "PDX-01"}
+mountain_stations = {"SEA-02", "DEN-01", "DEN-02"}
 
-both_teams = kc_roster & buf_roster   # intersection
-either = kc_roster | buf_roster       # union
-kc_only = kc_roster - buf_roster      # difference
-symmetric = kc_roster ^ buf_roster    # in one but not both
+both_regions = pacific_stations & mountain_stations
+either = pacific_stations | mountain_stations
+pacific_only = pacific_stations - mountain_stations
+symmetric = pacific_stations ^ mountain_stations
 ```
 
 | Operation | Time avg |
 | --- | --- |
-| `&` `|` `-` `^` | O(len(smaller)) roughly |
+| `&` `\|` `-` `^` | O(len(smaller)) roughly |
 
-**NFL:** Players who appear on multiple fantasy rosters, or unique to one team.
+**Weather:** Stations that appear in multiple climate-zone groupings, or unique to one region.
 
 ---
 
-## Inverting index: player → list of play_ids
+## Inverting index: station → list of reading_ids
 
 ```python
-receiver_plays: defaultdict[list[int]] = defaultdict(list)
-for pid, play in plays_by_id.items():
-    if play.passer_id:
-        receiver_plays[play.passer_id].append(pid)
+station_readings: defaultdict[list[int]] = defaultdict(list)
+for rid, reading in readings_by_id.items():
+    station_readings[reading.station_id].append(rid)
 ```
 
-| Build | Lookup plays for player |
+| Build | Lookup readings for station |
 | --- | --- |
-| O(n) | O(1) get list + O(k) scan k plays |
+| O(n) | O(1) get list + O(k) scan k readings |
 
-Pair with [Tries](../tries/index.md) when the UI searches **names**; use **dict** when the key is already `player_id`.
+Pair with [Tries](../tries/index.md) when the UI searches **station names**; use **dict** when the key is already `station_id`.
 
 ---
 
 ## Load factor and resize (intuition)
 
-When a CPython `dict` grows past ~2/3 full, it **resizes** to a larger table—occasional O(n) rehash, **amortized O(1)** insert. You see a one-time hitch when a dict jumps from thousands to millions of play keys; pre-size with comprehension from known CSV row count if profiling shows resize spikes.
+When a CPython `dict` grows past ~2/3 full, it **resizes** to a larger table—occasional O(n) rehash, **amortized O(1)** insert. You see a one-time hitch when a dict jumps from thousands to millions of reading keys; pre-size with comprehension from known CSV row count if profiling shows resize spikes.
 
 ```python
-# If you know n before building
-n_plays = 180
-plays_by_id = {int(r["play_id"]): r for r in rows}  # one resize pattern
+n_readings = 365
+readings_by_id = {int(r["reading_id"]): r for r in rows}
 ```
 
 ---
@@ -796,28 +781,24 @@ plays_by_id = {int(r["play_id"]): r for r in rows}  # one resize pattern
 ```python
 from collections import Counter, defaultdict
 
-# Index plays
-plays: dict[int, Play] = {p.play_id: p for p in load()}
-p = plays[4021]
+readings: dict[int, DailyReading] = {r.reading_id: r for r in load()}
+r = readings[4021]
 
-# Unique players
 seen: set[str] = set()
-seen.add(player_id)
+seen.add(station_id)
 
-# Count formations
-cnt = Counter(row["personnel"] for row in rows)
+cnt = Counter(row["summary"] for row in rows)
 
-# Sum EPA by team
-team_epa: defaultdict[float] = defaultdict(float)
-team_epa[team] += epa
+station_anomaly: defaultdict[float] = defaultdict(float)
+station_anomaly[station_id] += temp_anomaly
 ```
 
-Use **`dict` / `set` / `Counter` / `defaultdict`** for virtually all NFL hash-table needs in Python. Implement chaining only to **learn** collisions; ship production code with **`dict`** and **pandas indexes**.
+Use **`dict` / `set` / `Counter` / `defaultdict`** for virtually all weather hash-table needs in Python. Implement chaining only to **learn** collisions; ship production code with **`dict`** and **pandas indexes**.
 
-**NFL pipeline checklist**
+**Weather pipeline checklist**
 
-1. **Load once** — Build `play_id → row` map per game or season file.
-2. **Keys** — `int`, `str`, `(game_id, play_id)` tuples.
-3. **Counts** — `Counter` on categorical columns (formation, play_type).
-4. **Aggregates** — `defaultdict` or `groupby` for EPA sums.
+1. **Load once** — Build `reading_id → row` map per month or archive file.
+2. **Keys** — `int`, `str`, `(station_id, reading_id)` tuples.
+3. **Counts** — `Counter` on categorical columns (summary, condition).
+4. **Aggregates** — `defaultdict` or `groupby` for anomaly sums.
 5. **Scale** — Move heavy loops to pandas when n > ~10⁵ in pure Python.

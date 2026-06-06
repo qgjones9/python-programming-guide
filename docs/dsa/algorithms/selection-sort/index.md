@@ -4,14 +4,14 @@ A **comparison sort** that divides the array into a **sorted prefix** and an **u
 
 | | |
 | --- | --- |
-| **What it is** | Repeatedly pick the smallest remaining PPR (or yards) and exchange it to the front of the unsorted region. |
+| **What it is** | Repeatedly pick the smallest remaining temp anomaly (or reading_id) and exchange it to the front of the unsorted region. |
 | **Time** | **Best, average, worst** all Θ(n²)—always scans the full unsorted tail. |
 | **Space** | O(1) auxiliary. |
 | **Stability** | **Not stable** with swap-based exchange (long jumps over equal keys). |
 | **In-place** | **Yes**. |
 | **When to use** | Minimizing **writes** (at most n swaps); teaching “sorted vs unsorted regions.” |
 
-In NFL terms, selection sort is like building a **draft board** left-to-right: each round you scan every remaining prospect and pull the best remaining **40-yard dash** time to the next slot. You always do Θ(n²) work even if the list started sorted—unlike insertion sort’s O(n) best case.
+In **daily weather data analysis**, selection sort is like building a **station priority list** left-to-right: each round you scan every remaining daily reading and pull the lowest **temp anomaly** to the next slot. You always do Θ(n²) work even if the list started sorted—unlike insertion sort’s O(n) best case. For multi-year archives (tens of thousands of rows), use **`sort_values`** or **`list.sort`**; selection sort teaches the min-scan invariant on small windows.
 
 [Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
 
@@ -75,12 +75,10 @@ SELECTION_SORT(A):
 ## Python implementation
 
 ```python
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 
-def selection_sort(nums: list[float]) -> None:
+def selection_sort(nums):
     n = len(nums)
     for i in range(n - 1):
         min_idx = i
@@ -91,31 +89,29 @@ def selection_sort(nums: list[float]) -> None:
             nums[i], nums[min_idx] = nums[min_idx], nums[i]
 
 
-@dataclass(frozen=True, slots=True)
-class Player:
-    name: str
-    draft_pick: int  # lower = earlier pick
-    ppr: float
+@dataclass
+class DailyReading:
+    station: str
+    reading_id: int  # lower = earlier in ingest order
+    temp_anomaly: float
 
 
-def selection_sort_players(
-    players: list[Player], *, key=lambda p: p.draft_pick
-) -> None:
-    n = len(players)
+def selection_sort_readings(readings, *, key=lambda r: r.reading_id):
+    n = len(readings)
     for i in range(n - 1):
         min_idx = i
         for j in range(i + 1, n):
-            if key(players[j]) < key(players[min_idx]):
+            if key(readings[j]) < key(readings[min_idx]):
                 min_idx = j
         if min_idx != i:
-            players[i], players[min_idx] = players[min_idx], players[i]
+            readings[i], readings[min_idx] = readings[min_idx], readings[i]
 ```
 
 ---
 
-## Trace: draft pick rank (ascending)
+## Trace: reading_id rank (ascending)
 
-Lower `draft_pick` = earlier selection. Data: picks `[32, 5, 5, 12]` for four rookies (two tied at 5).
+Lower `reading_id` = earlier observation in the ingest log. Data: ids `[32, 5, 5, 12]` for four days in one window (two tied at 5).
 
 | i | Scan finds min | After swap | Prefix sorted |
 | ---: | --- | --- | --- |
@@ -123,7 +119,7 @@ Lower `draft_pick` = earlier selection. Data: picks `[32, 5, 5, 12]` for four ro
 | 1 | min at index 2 (5) | swap 1↔2 → `[5, 5, 32, 12]` | `[5,5,…]` |
 | 2 | min at index 3 (12) | swap → `[5, 5, 12, 32]` | all |
 
-**Stability note:** the two players with pick **5** may have swapped relative order when the first `5` moved from index 1 to 0—selection sort is **not stable**.
+**Stability note:** the two readings with id **5** may have swapped relative order when the first `5` moved from index 1 to 0—selection sort is **not stable**.
 
 ---
 
@@ -134,9 +130,9 @@ Lower `draft_pick` = earlier selection. Data: picks `[32, 5, 5, 12]` for four ro
 | Comparisons | Always Θ(n²) | O(n log n) |
 | Swaps | O(n) | More on average |
 | Stability | No | Yes (Python 3) |
-| NFL tables | Never | Always |
+| Weather tables | Never | Always |
 
-`heapq.nsmallest(k, players, key=...)` finds the next *k* draft values without fully sorting—O(n log k).
+`heapq.nsmallest(k, readings, key=...)` finds the next *k* anomaly values without fully sorting—O(n log k).
 
 ---
 
@@ -144,12 +140,12 @@ Lower `draft_pick` = earlier selection. Data: picks `[32, 5, 5, 12]` for four ro
 
 | Use | Avoid |
 | --- | --- |
-| Flash drives / EEPROM with costly writes | Fantasy leaderboards |
-| Explaining min-scan | Stable tie-breaking on equal PPR |
+| Flash drives / EEPROM with costly writes | Multi-year climate aggregates |
+| Explaining min-scan | Stable tie-breaking on equal temp anomaly |
 | Interview “implement selection” | pandas pipelines |
 
 ```python
-rookies.sort(key=lambda p: (p.draft_pick, p.name))  # stable tie-break in production
+readings.sort(key=lambda r: (r.reading_id, r.station))  # stable tie-break in production
 ```
 
 ---
@@ -168,7 +164,7 @@ rookies.sort(key=lambda p: (p.draft_pick, p.name))  # stable tie-break in produc
 | Pitfall | Fix |
 | --- | --- |
 | Expecting O(n) on sorted data | Use insertion sort or `sort` |
-| Need stable equal-PPR order | Merge sort or `sort` |
+| Need stable equal-anomaly order | Merge sort or `sort` |
 | Re-scanning for max and min each pass | Bidirectional selection still Θ(n²) |
 
 ---
@@ -187,9 +183,9 @@ rookies.sort(key=lambda p: (p.draft_pick, p.name))  # stable tie-break in produc
 ## Quick reference
 
 ```python
-selection_sort(nums)                    # Θ(n²), unstable
-selection_sort_players(roster, key=...) # by draft_pick
-roster.sort(key=lambda p: p.draft_pick) # production
+selection_sort(nums)                         # Θ(n²), unstable
+selection_sort_readings(window, key=...)     # by reading_id
+window.sort(key=lambda r: r.reading_id)      # production
 ```
 
 **Selection sort:** in-place, few swaps, **always Θ(n²)**, **not stable**—teach the min-scan idea, then move on.

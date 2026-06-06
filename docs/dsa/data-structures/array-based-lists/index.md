@@ -97,7 +97,7 @@ assert xs == []
 
 ```python
 colors = ["red", "green", "blue"]
-matrix = [[1, 2], [3, 4]]  # list of lists — inner lists are separate objects
+matrix = [[1, 2], [3, 4]]
 ```
 
 | | |
@@ -124,14 +124,14 @@ assert xs == []
 Materializes every element into a new mutable sequence.
 
 ```python
-from_chars = list("hi")           # ['h', 'i']
-from_tuple = list((1, 2, 3))       # [1, 2, 3]
-from_range = list(range(4))       # [0, 1, 2, 3]
-from_set = list({3, 1, 2})        # order undefined until sorted
-from_dict = list({"a": 1, "b": 2})  # keys only: ['a', 'b']
+from_chars = list("hi")
+from_tuple = list((1, 2, 3))
+from_range = list(range(4))
+from_set = list({3, 1, 2})
+from_dict = list({"a": 1, "b": 2})
 from_keys = list({"a": 1}.keys())
 from_values = list({"a": 1}.values())
-from_items = list({"a": 1}.items())  # [('a', 1)]
+from_items = list({"a": 1}.items())
 ```
 
 | | |
@@ -159,7 +159,6 @@ Nested comprehensions read **left to right** like nested `for` loops:
 ```python
 matrix = [[1, 2, 3], [4, 5, 6]]
 flat = [cell for row in matrix for cell in row]
-# same as:
 flat_alt = []
 for row in matrix:
     for cell in row:
@@ -171,7 +170,7 @@ for row in matrix:
 Lazy generator evaluated only when `list()` consumes it.
 
 ```python
-big = list(x * x for x in range(1_000_000))  # builds full list in memory
+big = list(x * x for x in range(1_000_000))
 ```
 
 | | |
@@ -182,8 +181,8 @@ big = list(x * x for x in range(1_000_000))  # builds full list in memory
 ### 7. Replication (`*`)
 
 ```python
-zeros = [0] * 5          # [0, 0, 0, 0, 0]
-rows = [[0] * 3] * 2     # caution: two rows share the SAME inner list object
+zeros = [0] * 5
+rows = [[0] * 3] * 2
 ```
 
 | | |
@@ -194,7 +193,7 @@ rows = [[0] * 3] * 2     # caution: two rows share the SAME inner list object
 **Safe 2D grid:**
 
 ```python
-grid = [[0] * 3 for _ in range(2)]  # independent inner lists
+grid = [[0] * 3 for _ in range(2)]
 grid[0][0] = 1
 assert grid[1][0] == 0
 ```
@@ -203,7 +202,7 @@ assert grid[1][0] == 0
 
 ```python
 head, *middle, tail = [1, 2, 3, 4, 5]
-rest = [*range(3), *"ab", 99]  # [0, 1, 2, 'a', 'b', 99]
+rest = [*range(3), *"ab", 99]
 ```
 
 | | |
@@ -232,10 +231,10 @@ assert ys == [1, 3, 4] and xs == [3, 1, 4]
 import copy
 
 original = [[1], [2]]
-shallow = copy.copy(original)       # new outer list, same inner lists
-deep = copy.deepcopy(original)     # fully independent graph
+shallow = copy.copy(original)
+deep = copy.deepcopy(original)
 
-reversed_list = list(reversed([1, 2, 3]))  # [3, 2, 1]
+reversed_list = list(reversed([1, 2, 3]))
 ```
 
 | Operation | Time | Space |
@@ -308,13 +307,13 @@ Can grow or shrink the list; may shift tail elements.
 
 ```python
 xs = [1, 2, 3, 4, 5]
-xs[1:4] = [20, 30]      # replace three slots with two
+xs[1:4] = [20, 30]
 assert xs == [1, 20, 30, 5]
 
-xs[1:1] = [9, 8]        # insert without removing
+xs[1:1] = [9, 8]
 assert xs == [1, 9, 8, 20, 30, 5]
 
-del xs[2:4]             # delete slice
+del xs[2:4]
 assert xs == [1, 9, 30, 5]
 ```
 
@@ -397,7 +396,7 @@ xs = [1, 2]
 xs.append(3)
 assert xs == [1, 2, 3]
 
-xs.append([4, 5])  # adds ONE element (a list object)
+xs.append([4, 5])
 assert xs == [1, 2, 3, [4, 5]]
 ```
 
@@ -428,7 +427,7 @@ Like repeated `append`, but implemented in C for speed.
 xs = [1, 2]
 xs.extend([3, 4])
 xs.extend((5, 6))
-xs.extend("ab")  # iterates characters
+xs.extend("ab")
 assert xs == [1, 2, 3, 4, 5, 6, "a", "b"]
 ```
 
@@ -441,9 +440,9 @@ assert xs == [1, 2, 3, 4, 5, 6, "a", "b"]
 
 ```python
 a = [1, 2]
-a.append([3, 4])    # [1, 2, [3, 4]]
+a.append([3, 4])
 b = [1, 2]
-b.extend([3, 4])    # [1, 2, 3, 4]
+b.extend([3, 4])
 ```
 
 ### `insert(i, x)` — insert before index `i`
@@ -452,9 +451,9 @@ Negative `i` counts from the end; out-of-range `i` clamps to ends.
 
 ```python
 xs = [10, 30]
-xs.insert(1, 20)      # [10, 20, 30]
-xs.insert(0, 5)       # [5, 10, 20, 30]
-xs.insert(len(xs), 99)  # same effect as append at end
+xs.insert(1, 20)
+xs.insert(0, 5)
+xs.insert(len(xs), 99)
 ```
 
 | | |
@@ -486,7 +485,6 @@ Uses equality (`==`), not identity. Raises `ValueError` if missing.
 xs = [1, 2, 3, 2]
 xs.remove(2)
 assert xs == [1, 3, 2]
-# xs.remove(99)  # ValueError
 ```
 
 | | |
@@ -535,7 +533,6 @@ Raises `ValueError` if not found in the searched range.
 xs = [10, 20, 30, 20]
 assert xs.index(20) == 1
 assert xs.index(20, 2) == 3
-# xs.index(99)  # ValueError
 ```
 
 | | |
@@ -617,9 +614,9 @@ xs = [1, [2, 3]]
 ys = xs.copy()
 assert ys == xs
 ys.append(4)
-assert xs == [1, [2, 3]]      # outer list not shared
+assert xs == [1, [2, 3]]
 ys[1].append(99)
-assert xs[1] == [2, 3, 99]    # inner list IS shared
+assert xs[1] == [2, 3, 99]
 ```
 
 | | |
@@ -637,9 +634,9 @@ Slice `xs[:]` or `list(xs)` behave similarly for shallow copies.
 
 ```python
 xs = [0, 1, 2, 3, 4, 5]
-del xs[0]       # remove index 0 — O(n) shift
-del xs[2:4]     # remove slice — O(n)
-del xs[:]       # clear all elements — O(n); xs still exists as []
+del xs[0]
+del xs[2:4]
+del xs[:]
 ```
 
 | Operation | Time | Space |
@@ -675,7 +672,7 @@ assert any(x > 4 for x in nums)
 assert all(x > 0 for x in nums)
 
 for i, value in enumerate(["a", "b"]):
-  pass  # (0, 'a'), (1, 'b')
+  pass
 ```
 
 ---
@@ -717,11 +714,10 @@ sequenceDiagram
 **Enqueue** at end with `append` is fine. **Dequeue** from front with `pop(0)` is **O(n)** because every remaining element shifts down.
 
 ```python
-# Works for small queues or teaching — not for hot paths
 q: list[int] = []
 q.append(1)
 q.append(2)
-front = q.pop(0)  # O(n) — avoid at scale
+front = q.pop(0)
 ```
 
 For production FIFO queues, use `collections.deque` (O(1) at both ends). See [Dequeue (deque)](../dequeue-deque/index.md).
@@ -777,13 +773,11 @@ Let **n** = `len(xs)`, **k** = length of another iterable, **i** = index.
 ### Build a list in a loop vs comprehension
 
 ```python
-# loop — clear when logic is multi-step
 result = []
 for x in range(5):
     if x % 2 == 0:
         result.append(x * 10)
 
-# comprehension — concise when the transformation is one expression
 result2 = [x * 10 for x in range(5) if x % 2 == 0]
 assert result == result2 == [0, 20, 40]
 ```
@@ -793,7 +787,6 @@ assert result == result2 == [0, 20, 40]
 ```python
 nums = [1, 2, 3, 4, 5]
 evens = [x for x in nums if x % 2 == 0]
-# in-place filter (mutates):
 nums[:] = [x for x in nums if x % 2 == 0]
 ```
 
@@ -828,7 +821,7 @@ Lists do not stay sorted unless you sort them. After `sort()` or if you know ord
 import bisect
 
 xs = [1, 3, 5, 7]
-i = bisect.bisect_left(xs, 5)  # O(log n) comparisons
+i = bisect.bisect_left(xs, 5)
 assert i == 2
 ```
 
@@ -841,7 +834,7 @@ assert i == 2
 
 ## Common pitfalls (and what to do instead)
 
-| Pitfall | Why it hurts | Better approach |
+| Pitfall | Why it hurts | Better atemp_anomalyoach |
 | --- | --- | --- |
 | `xs = xs.sort()` | `sort` returns `None` | `xs.sort()` alone, or `xs = sorted(xs)` |
 | `[[0]*n]*m` | shared inner lists | `[[0]*n for _ in range(m)]` |
@@ -866,26 +859,20 @@ Official reference: [Built-in Types — list](https://docs.python.org/3/library/
 ## Quick reference card
 
 ```python
-# create
 xs: list = []
 xs = list(iterable)
 xs = [f(x) for x in iterable if cond]
 
-# end operations (fast)
 xs.append(x); xs.extend(it); xs.pop()
 
-# middle (slow at scale)
 xs.insert(i, x); xs.remove(x); del xs[i]
 
-# order
 xs.sort(key=None, reverse=False); xs.reverse()
 ys = sorted(xs)
 
-# search
 i = xs.index(x); c = xs.count(x)
 
-# copy
-ys = xs.copy()  # shallow
+ys = xs.copy()
 ```
 
 Keep this page open when you implement algorithms: choose operations that match the complexity you can afford, and reach for `deque`, `set`, or `bisect` when the list alone is the wrong tool.

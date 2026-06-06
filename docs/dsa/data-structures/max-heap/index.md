@@ -6,35 +6,35 @@ A **complete binary tree** stored in an array where each **parent’s key is ≥
 | --- | --- |
 | **What it is** | A binary tree with no gaps in the last level, usually represented as a Python `list` with index formulas instead of child pointers. |
 | **Core operations** | `insert`, `extract_max`, `peek_max`, `heapify`—each touches at most tree height O(log n). |
-| **When to use** | Top-k EPA plays, scheduling by priority, building blocks for [heap sort](../heap-sort/index.md) and [priority queues](../priority-queue/index.md). |
+| **When to use** | Top-k temp anomalies, scheduling by priority, building blocks for [heap sort](../heap-sort/index.md) and [priority queues](../priority-queue/index.md). |
 | **Trade-off** | No sorted order across the whole array—only the root is guaranteed maximal; `heapq` in Python is a **min-heap** by default. |
 
-In **NFL data analysis**, a max heap is the right mental model for **“always pull the highest-priority item next”**: the **best red-zone EPA snap** in a batch review queue, the **highest projected fantasy score** among remaining waiver targets, or the **largest remaining cap hit** when trimming a roster simulation. You will still rank full season tables with **pandas** `sort_values` or **`heapq.nlargest`** in production scripts—implement **`MaxHeap`** here to learn the structure and to pass interviews.
+In **daily weather data analysis**, a max heap is the right mental model for **“always pull the highest-priority item next”**: the **largest temp anomaly** in a batch review queue, the **highest projected anomaly** among remaining station alerts, or the **largest precipitation deficit** when trimming a forecast simulation window. You will still rank full season tables with **pandas** `sort_values` or **`heapq.nlargest`** in production scripts—implement **`MaxHeap`** here to learn the structure and to pass interviews.
 
-This page is your **ready reference**: array indexing, a complete Python `MaxHeap` class, every way to create a heap, every operation with NFL-flavored examples, and **time and space complexity** on each. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: array indexing, a complete Python `MaxHeap` class, every way to create a heap, every operation with daily weather examples, and **time and space complexity** on each. For Big-O notation and weather-scale *n*, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How a max heap fits NFL-shaped problems
+## How a max heap fits daily weather analysis
 
-| NFL idea | Heap view | Why max at root |
+| Weather analysis idea | Heap view | Why max at root |
 | --- | --- | --- |
-| **Top EPA play in a batch** | Root = highest EPA among queued snaps | O(1) peek, O(log n) extract |
-| **Injury report urgency** | Priority = severity × snap count | Always process worst case first |
-| **Cap-cut simulation** | Key = dead money saved | Repeatedly extract max savings |
-| **Live “best play so far”** | Single-element peek while streaming | Compare new play vs root in O(1) |
+| **Top anomaly in a batch** | Root = highest temp anomaly among queued readings | O(1) peek, O(log n) extract |
+| **Alert desk urgency** | Priority = severity × station coverage | Always process worst case first |
+| **Forecast trim simulation** | Key = precipitation deficit | Repeatedly extract max deficit |
+| **Live “most extreme so far”** | Single-element peek while streaming | Compare new reading vs root in O(1) |
 | **Heap sort warm-up** | Same array + `sift_down` | [Heap sort](../heap-sort/index.md) drains max to sorted suffix |
 
-**Use `heapq.nlargest` or pandas** when you need top-k from a million-row play table once. **Use a max heap** when you **interleave inserts and extracts** on a **moderate** in-memory set (simulation, game chunk, teaching).
+**Use `heapq.nlargest` or pandas** when you need top-k from a million-row daily table once. **Use a max heap** when you **interleave inserts and extracts** on a **moderate** in-memory set (simulation, one-month window, teaching).
 
 ```mermaid
 flowchart TB
   subgraph heap["Max heap as array A"]
-    R["A[0] = 31.0 EPA max"]
-    R --> L["A[1] = 25.6"]
-    R --> RC["A[2] = 22.1"]
+    R["A[0] = 3.1 °C anomaly max"]
+    R --> L["A[1] = 2.5"]
+    R --> RC["A[2] = 2.2"]
     L --> LL["A[3]"]
     L --> LR["A[4]"]
     RC --> RL["A[5]"]
@@ -42,7 +42,7 @@ flowchart TB
   end
 ```
 
-Throughout this page, **n** is the number of elements in the heap. **h** = ⌊log₂ n⌋ is tree height.
+Throughout this page, **n** is the number of elements in the heap (e.g. readings in one review batch). **h** = ⌊log₂ n⌋ is tree height. In production weather pipelines, **n** per heap is often moderate while multi-year archives live in tables.
 
 ---
 
@@ -55,16 +55,16 @@ Throughout this page, **n** is the number of elements in the heap. **h** = ⌊lo
 | **`extract_best`** | O(log n) max | O(log n) min | O(1) pop end; O(n) pop front | O(log n) min |
 | **`peek`** | O(1) max | O(1) min | O(1) either end | O(1) min |
 | **Full order visible** | No | No | Yes | No |
-| **NFL default in Python** | Teach / custom | Dijkstra, schedules | Leaderboards export | `nlargest` via negated keys |
+| **Weather default in Python** | Teach / custom | Dijkstra, schedules | Climatology export | `nlargest` via negated keys |
 
 ```mermaid
 sequenceDiagram
   participant Analyst
   participant H as max heap
-  Analyst->>H: insert(EPA 18.2)
-  Analyst->>H: insert(EPA 31.0)
-  Analyst->>H: peek_max → 31.0 O(1)
-  Analyst->>H: extract_max → 31.0 O(log n)
+  Analyst->>H: insert(anomaly 1.8)
+  Analyst->>H: insert(anomaly 3.1)
+  Analyst->>H: peek_max → 3.1 O(1)
+  Analyst->>H: extract_max → 3.1 O(log n)
   H-->>Analyst: root now next-largest
 ```
 
@@ -87,11 +87,11 @@ A **complete** binary tree fills levels left to right—no gaps until the last r
 flowchart LR
   subgraph indices["Array indices"]
     direction TB
-    I0["0: 31"]
-    I1["1: 25"]
-    I2["2: 22"]
-    I3["3: 18"]
-    I4["4: 20"]
+    I0["0: 3.1"]
+    I1["1: 2.5"]
+    I2["2: 2.2"]
+    I3["3: 1.8"]
+    I4["4: 2.0"]
   end
   I0 --> I1
   I0 --> I2
@@ -106,7 +106,7 @@ flowchart LR
 
 ---
 
-## NFL data types for examples
+## Daily weather data types for examples
 
 ```python
 from __future__ import annotations
@@ -115,26 +115,25 @@ from dataclasses import dataclass, field
 
 
 @dataclass(order=True, slots=True)
-class PrioritizedSnap:
-    """Lower priority field sorts first in dataclass order; we negate EPA for max-heap demos."""
-    neg_epa: float  # store -epa when using min-heap; max-heap uses epa directly
-    play_id: int = field(compare=False)
-    description: str = field(compare=False, default="")
+class PrioritizedReading:
+    neg_anomaly: float
+    reading_id: int = field(compare=False)
+    summary: str = field(compare=False, default="")
 
 
 @dataclass(frozen=True, slots=True)
-class Snap:
-    play_id: int
-    quarter: int
-    epa: float
-    description: str
+class DailyReading:
+    reading_id: int
+    month: int
+    temp_anomaly: float
+    summary: str
 
 
 @dataclass(frozen=True, slots=True)
-class Player:
+class Station:
     name: str
-    ppr: float
-    team: str
+    mean_anomaly: float
+    region: str
 ```
 
 ---
@@ -159,8 +158,8 @@ Each `insert` sift-up—O(log n) per item → **O(n log n)** total for n inserts
 
 ```python
 h = MaxHeap()
-for snap in drive_snaps:
-    h.insert(snap.epa, snap)
+for reading in window_readings:
+    h.insert(reading.temp_anomaly, reading)
 ```
 
 | | |
@@ -173,8 +172,8 @@ for snap in drive_snaps:
 Floyd’s method: sift-down from last parent to root—**O(n)**.
 
 ```python
-epas = [18.2, 31.0, 22.1, 25.6, 20.0]
-h = MaxHeap.from_iterable(epas)
+anomalies = [1.8, 3.1, 2.2, 2.5, 2.0]
+h = MaxHeap.from_iterable(anomalies)
 ```
 
 | | |
@@ -185,7 +184,7 @@ h = MaxHeap.from_iterable(epas)
 ### 4. Build from list literal inside wrapper
 
 ```python
-h = MaxHeap([31.0, 25.6, 22.1, 18.2])
+h = MaxHeap([3.1, 2.5, 2.2, 1.8])
 ```
 
 | | |
@@ -211,8 +210,8 @@ Python stdlib has **min-heap** only; negate scores for “max” behavior.
 ```python
 import heapq
 
-min_heap: list[tuple[float, Snap]] = []
-heapq.heappush(min_heap, (-snap.epa, snap))
+min_heap: list[tuple[float, DailyReading]] = []
+heapq.heappush(min_heap, (-reading.temp_anomaly, reading))
 best = heapq.heappop(min_heap)[1]
 ```
 
@@ -236,13 +235,13 @@ flowchart TD
 
 ## Reference implementation: `MaxHeap`
 
-Generic max heap over comparable keys with optional satellite data (e.g. attach `Snap` at each EPA).
+Generic max heap over comparable keys with optional satellite data (e.g. attach `DailyReading` at each anomaly).
 
 ```python
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Generic, Iterable, Iterator, TypeVar
+from typing import Generic, Iterable, Iterator, TypeVar
 
 K = TypeVar("K")
 V = TypeVar("V")
@@ -255,8 +254,6 @@ class _Entry(Generic[K, V]):
 
 
 class MaxHeap(Generic[K, V]):
-    """Binary max-heap in a dynamic array."""
-
     def __init__(self, items: Iterable[K] | None = None) -> None:
         self._data: list[_Entry[K, V]] = []
         if items is not None:
@@ -317,10 +314,9 @@ class MaxHeap(Generic[K, V]):
         return root.key, root.value
 
     def replace_max(self, key: K, value: V | None = None) -> K:
-        """Pop max and push new key in one sift path (efficient for streaming max)."""
         if not self._data:
             self.insert(key, value)
-            return key  # no old max
+            return key
         old = self._data[0].key
         self._data[0] = _Entry(key, value)
         self._sift_down(0)
@@ -328,7 +324,6 @@ class MaxHeap(Generic[K, V]):
         return old
 
     def increase_key_at(self, index: int, new_key: K) -> None:
-        """Assume new_key >= old key at index (max-heap increase)."""
         if not (0 <= index < len(self._data)):
             raise IndexError(index)
         if new_key < self._data[index].key:
@@ -402,11 +397,10 @@ class MaxHeap(Generic[K, V]):
 Bubble node at `i` toward root while it is larger than its parent.
 
 ```python
-# Called automatically by insert after append at index n-1
 h = MaxHeap()
-h.insert(18.2)
-h.insert(31.0)  # sift_up restores max-heap property
-assert h.peek_max() == 31.0
+h.insert(1.8)
+h.insert(3.1)
+assert h.peek_max() == 3.1
 ```
 
 | | |
@@ -417,9 +411,9 @@ assert h.peek_max() == 31.0
 ```mermaid
 sequenceDiagram
   participant A as array
-  Note over A: new 31 at leaf
+  Note over A: new 3.1 at leaf
   A->>A: compare with parent, swap up
-  A->>A: repeat until parent >= 31
+  A->>A: repeat until parent >= 3.1
 ```
 
 ---
@@ -429,8 +423,8 @@ sequenceDiagram
 Push node at `i` down by swapping with larger child until both children ≤ it.
 
 ```python
-h = MaxHeap([31.0, 25.6, 22.1, 18.2])
-h.extract_max()  # 22.1 moved to root, then sift_down
+h = MaxHeap([3.1, 2.5, 2.2, 1.8])
+h.extract_max()
 ```
 
 | | |
@@ -443,8 +437,8 @@ h.extract_max()  # 22.1 moved to root, then sift_down
 ### `heapify()` — O(n) build
 
 ```python
-epas = [0.4, -1.2, 0.8, 0.1, 0.9, -0.3]
-h = MaxHeap(epas)
+anomalies = [0.4, -1.2, 0.8, 0.1, 0.9, -0.3]
+h = MaxHeap(anomalies)
 assert h.validate()
 ```
 
@@ -482,8 +476,8 @@ flowchart TB
 
 ```python
 review = MaxHeap.from_pairs([])
-review.insert(0.42, Snap(101, 2, 0.42, "deep shot"))
-review.insert(0.91, Snap(102, 2, 0.91, "TD pass"))
+review.insert(0.42, DailyReading(101, 2, 0.42, "partly cloudy"))
+review.insert(0.91, DailyReading(102, 2, 0.91, "cold front"))
 ```
 
 | | |
@@ -491,15 +485,15 @@ review.insert(0.91, Snap(102, 2, 0.91, "TD pass"))
 | **Time** | O(log n) |
 | **Space** | O(1) aux; O(1) amortized array growth |
 
-**NFL:** Stream plays into a “best so far” structure during a live drive recap.
+Stream readings into a “most extreme so far” structure during a live anomaly recap.
 
 ---
 
 ### `peek_max()` / `peek_entry()`
 
 ```python
-best_epa = review.peek_max()
-key, snap = review.peek_entry()
+best_anomaly = review.peek_max()
+key, reading = review.peek_entry()
 ```
 
 | | |
@@ -515,8 +509,8 @@ Does not remove—safe to inspect before committing extract in a UI.
 
 ```python
 while not review.is_empty():
-    epa, snap = review.extract_entry()
-    print(snap.description, epa)
+    anomaly, reading = review.extract_entry()
+    print(reading.summary, anomaly)
 ```
 
 | | |
@@ -524,7 +518,7 @@ while not review.is_empty():
 | **Time** | O(log n) |
 | **Space** | O(1) |
 
-**NFL:** Drain queue from highest EPA downward—same order as repeated max selection without full sort O(n log n) if you extract all n (actually still O(n log n) total for n extracts).
+Drain queue from highest anomaly downward—same order as repeated max selection; n extracts total O(n log n).
 
 ---
 
@@ -534,7 +528,7 @@ Pop-max + push combined—one sift-up and sift-down path from root.
 
 ```python
 stream = MaxHeap([0.5])
-old = stream.replace_max(0.9, Snap(1, 1, 0.9, "bomb"))
+old = stream.replace_max(0.9, DailyReading(1, 1, 0.9, "heat spike"))
 ```
 
 | | |
@@ -562,8 +556,8 @@ Production heaps often store **`(key, id)`** with a **`id → index`** map for a
 ### `heapify()` / `MaxHeap(iterable)`
 
 ```python
-week_epas = [0.12, 0.44, 0.31, 0.08, 0.55]
-h = MaxHeap(week_epas)
+week_anomalies = [0.12, 0.44, 0.31, 0.08, 0.55]
+h = MaxHeap(week_anomalies)
 ```
 
 | | |
@@ -604,32 +598,30 @@ Array is **not** sorted; only root is max.
 
 ---
 
-## NFL patterns with max heaps
+## Daily weather patterns with max heaps
 
-### Top-k EPA plays without full sort
+### Top-k temp anomalies without full sort
 
 ```python
 import heapq
 
 
-def top_k_epa(snaps: list[Snap], k: int) -> list[Snap]:
-    """Return k highest-EPA snaps. Uses min-heap of size k — stdlib idiom."""
-    heap: list[tuple[float, Snap]] = []
-    for s in snaps:
+def top_k_anomalies(readings: list[DailyReading], k: int) -> list[DailyReading]:
+    heap: list[tuple[float, DailyReading]] = []
+    for r in readings:
         if len(heap) < k:
-            heapq.heappush(heap, (s.epa, s))
-        elif s.epa > heap[0][0]:
-            heapq.heapreplace(heap, (s.epa, s))
-    return [s for _, s in sorted(heap, reverse=True)]
+            heapq.heappush(heap, (r.temp_anomaly, r))
+        elif r.temp_anomaly > heap[0][0]:
+            heapq.heapreplace(heap, (r.temp_anomaly, r))
+    return [r for _, r in sorted(heap, reverse=True)]
 
 
-def top_k_maxheap(snaps: list[Snap], k: int) -> list[Snap]:
-    """Teaching version: max-heap all, extract k times."""
-    h = MaxHeap.from_pairs((s.epa, s) for s in snaps)
-    out: list[Snap] = []
+def top_k_maxheap(readings: list[DailyReading], k: int) -> list[DailyReading]:
+    h = MaxHeap.from_pairs((r.temp_anomaly, r) for r in readings)
+    out: list[DailyReading] = []
     for _ in range(min(k, len(h))):
-        _, snap = h.extract_entry()
-        out.append(snap)
+        _, reading = h.extract_entry()
+        out.append(reading)
     return out
 ```
 
@@ -637,19 +629,19 @@ def top_k_maxheap(snaps: list[Snap], k: int) -> list[Snap]:
 | --- | --- | --- |
 | **`heapq` size-k min-heap** | O(n log k) | O(k) |
 | **Extract k from max heap** | O(n + k log n) | O(n) |
-| **`nlargest(k, snaps, key=lambda s: s.epa)`** | O(n log k) | O(k) |
+| **`nlargest(k, readings, key=lambda r: r.temp_anomaly)`** | O(n log k) | O(k) |
 
 For large *n*, prefer **`nlargest`**. For streaming with unknown length, size-k heap wins.
 
 ---
 
-### Merge two sorted weekly score lists (heap merge)
+### Merge two sorted monthly anomaly lists (heap merge)
 
 When merging many sorted streams, a min-heap of stream heads is classic—max-heap if you want descending merge.
 
 ```python
 def merge_desc(list_a: list[float], list_b: list[float]) -> list[float]:
-    h = MaxHeap(list_a + list_b)  # simplified; real k-way uses indexed heads
+    h = MaxHeap(list_a + list_b)
     out: list[float] = []
     while not h.is_empty():
         out.append(h.extract_max())
@@ -663,16 +655,15 @@ def merge_desc(list_a: list[float], list_b: list[float]) -> list[float]:
 
 ---
 
-### Running cap-cut priority
+### Running station-priority simulation
 
 ```python
-def simulate_cuts(players: list[Player], cuts_needed: int) -> list[Player]:
-    """Extract highest PPR players as 'keepers'; cut from low end separately."""
-    h = MaxHeap.from_pairs((p.ppr, p) for p in players)
-    kept: list[Player] = []
-    for _ in range(len(players) - cuts_needed):
-        _, p = h.extract_entry()
-        kept.append(p)
+def select_top_stations(stations: list[Station], keep: int) -> list[Station]:
+    h = MaxHeap.from_pairs((s.mean_anomaly, s) for s in stations)
+    kept: list[Station] = []
+    for _ in range(min(keep, len(h))):
+        _, station = h.extract_entry()
+        kept.append(station)
     return kept
 ```
 
@@ -691,7 +682,7 @@ def simulate_cuts(players: list[Player], cuts_needed: int) -> list[Player]:
 | **Index math** | Required | Follow pointers |
 | **Cache** | Better locality | Pointer chasing |
 | **Interview / CLRS** | Default | Rare |
-| **NFL scripts** | `heapq` uses array | Custom tree almost never |
+| **Weather scripts** | `heapq` uses array | Custom tree almost never |
 
 ```mermaid
 flowchart LR
@@ -711,22 +702,21 @@ flowchart LR
 | Need | API |
 | --- | --- |
 | K smallest times | `heapq.nsmallest(k, xs)` |
-| K largest EPA | `heapq.nlargest(k, snaps, key=lambda s: s.epa)` |
-| Max via min-heap | Push `(-epa, snap)` |
+| K largest anomalies | `heapq.nlargest(k, readings, key=lambda r: r.temp_anomaly)` |
+| Max via min-heap | Push `(-anomaly, reading)` |
 | In-place min-heapify | `heapq.heapify(lst)` |
 | Push / pop | `heappush`, `heappop` |
 
 ```python
 import heapq
 
-# Max-EPA with negation
-h: list[tuple[float, Snap]] = []
-heapq.heappush(h, (-snap.epa, snap))
-neg_epa, best = heapq.heappop(h)
-actual_epa = -neg_epa
+h: list[tuple[float, DailyReading]] = []
+heapq.heappush(h, (-reading.temp_anomaly, reading))
+neg_anomaly, best = heapq.heappop(h)
+actual_anomaly = -neg_anomaly
 ```
 
-**Rule of thumb:** ship **`heapq`** in production NFL notebooks; implement **`MaxHeap`** to learn and debug heap property.
+**Rule of thumb:** ship **`heapq`** in production weather notebooks; implement **`MaxHeap`** to learn and debug heap property.
 
 ---
 
@@ -753,7 +743,7 @@ Let **n** = heap size, **k** = number of extracts.
 
 ---
 
-## When to pick which tool (NFL context)
+## When to pick which tool (weather context)
 
 ```mermaid
 flowchart TD
@@ -769,8 +759,8 @@ flowchart TD
 
 | Scenario | Best tool |
 | --- | --- |
-| Season EPA leaderboard CSV | pandas sort |
-| Top 10 plays one game | `nlargest(10, ...)` |
+| Season anomaly leaderboard CSV | pandas sort |
+| Top 10 readings one month | `nlargest(10, ...)` |
 | Interactive priority queue | [Priority queue](../priority-queue/index.md) |
 | Guaranteed in-place O(n log n) sort | [Heap sort](../heap-sort/index.md) |
 | Learn heap property | `MaxHeap` on this page |
@@ -796,6 +786,8 @@ flowchart TD
 | Page | Relationship |
 | --- | --- |
 | [Priority queue](../priority-queue/index.md) | ADT backed by heap |
+| [Linked list](../linked-list/index.md) | Pointer structures vs array heap |
+| [Circularly linked list](../circularly-linked-list/index.md) | Ring buffers vs heap priority |
 | [Heap sort (data structures)](../heap-sort/index.md) | Sort via heap |
 | [Heap sort (algorithms)](../../algorithms/heap-sort/index.md) | Algorithm-focused page |
 | [Treaps](../treaps/index.md) | BST + heap priority |
@@ -807,30 +799,25 @@ flowchart TD
 ## Quick reference card
 
 ```python
-# create
 h = MaxHeap()
-h = MaxHeap([31.0, 25.6, 22.1])
-h = MaxHeap.from_pairs((s.epa, s) for s in snaps)
+h = MaxHeap([3.1, 2.5, 2.2])
+h = MaxHeap.from_pairs((r.temp_anomaly, r) for r in readings)
 
-# O(log n)
-h.insert(0.91, snap)
-epa = h.extract_max()
-_, snap = h.extract_entry()
+h.insert(0.91, reading)
+anomaly = h.extract_max()
+_, reading = h.extract_entry()
 
-# O(1)
 best = h.peek_max()
 
-# O(n) batch build
 h.heapify()
 
-# production
 import heapq
-heapq.nlargest(10, snaps, key=lambda s: s.epa)
+heapq.nlargest(10, readings, key=lambda r: r.temp_anomaly)
 ```
 
-Use a **max heap** when you need **repeated access to the current maximum** with **interleaved inserts**—EPA review queues, simulation priorities, and the foundation of **heap sort**. Reach for **`heapq.nlargest`** and **pandas** when the job is **one-shot analytics** on big tables.
+Use a **max heap** when you need **repeated access to the current maximum** with **interleaved inserts**—anomaly review queues, simulation priorities, and the foundation of **heap sort**. Reach for **`heapq.nlargest`** and **pandas** when the job is **one-shot analytics** on big tables.
 
-**NFL pipeline checklist**
+**Weather pipeline checklist**
 
 1. **One-shot top-k** — `heapq.nlargest` or `df.nlargest`.
 2. **Streaming priority** — max heap or [priority queue](../priority-queue/index.md).

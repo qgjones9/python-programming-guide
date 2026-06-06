@@ -1,6 +1,6 @@
 # Binary search tree
 
-A **binary tree** where, for every node, all keys in the **left** subtree are **strictly smaller** and all keys in the **right** subtree are **strictly greater**. That ordering lets you **search**, **insert**, and **delete** by walking one branch at each level—like a filing cabinet sorted by player name or week number.
+A **binary tree** where, for every node, all keys in the **left** subtree are **strictly smaller** and all keys in the **right** subtree are **strictly greater**. That ordering lets you **search**, **insert**, and **delete** by walking one branch at each level—like a filing cabinet sorted by station id or day number.
 
 | | |
 | --- | --- |
@@ -10,38 +10,38 @@ A **binary tree** where, for every node, all keys in the **left** subtree are **
 | **When to use** | Ordered lookup, range queries, and sorted iteration when you control shape or will upgrade to AVL/red–black. |
 | **Trade-off** | Simple and teachable; **unbalanced** input degrades to linked-list speed. |
 
-In **NFL data analysis**, a BST is the right mental model for **ranking and range queries on ordered stats**: store `(season_yards, player_id)` pairs, walk left/right to find a yardage threshold, or run **inorder traversal** to print the receiving leaderboard in ascending order. For a full season table you will still use **pandas** or **`sorted()`**—implement a BST to learn the invariant, to support **range scans** (all WRs between 800–1200 yards), and as the foundation for [AVL](../avl-tree/index.md) and [red–black](../red-black-tree/index.md) trees.
+In **daily weather data analysis**, a BST is the right mental model for **ranking and range queries on ordered readings**: store `(temp_anomaly, station_id)` pairs, walk left/right to find an anomaly threshold, or run **inorder traversal** to print the station leaderboard in ascending order. For a full multi-year archive you will still use **pandas** or **`sorted()`**—implement a BST to learn the invariant, to support **range scans** (all stations between +0.5°C and +1.2°C anomaly), and as the foundation for [AVL](../avl-tree/index.md) and [red–black](../red-black-tree/index.md) trees.
 
-This page is your **ready reference**: structure, a complete Python implementation, every way to create it, every method with NFL-flavored examples, and **time and space complexity** on each operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: structure, a complete Python implementation, every way to create it, every method with daily weather data examples, and **time and space complexity** on each operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How a BST fits NFL-shaped problems
+## How a BST fits daily weather analysis
 
-| NFL idea | BST view | Why ordering helps |
+| Weather analysis idea | BST view | Why ordering helps |
 | --- | --- | --- |
-| **Receiving yards leaderboard** | Key = `(yards, player_id)`; inorder = ascending rank | O(n) sorted walk without separate sort step |
-| **Find player at yardage cutoff** | Search for `(900, ?)` or nearest neighbor | O(h) descent vs O(n) linear scan |
-| **Week schedule lookup** | Key = `(week, game_id)` | Range query: all games in weeks 5–8 |
-| **Fantasy points threshold** | Insert weekly scores; query “who beat 20?” | Left = below, right = above |
-| **Play-by-play time index** | Key = `(game_clock_seconds, play_id)` | Ordered replay scrubber on one drive |
+| **Anomaly leaderboard** | Key = `(temp_anomaly, station_id)`; inorder = ascending rank | O(n) sorted walk without separate sort step |
+| **Find station at anomaly cutoff** | Search for `(0.9, ?)` or nearest neighbor | O(h) descent vs O(n) linear scan |
+| **Day-of-year schedule lookup** | Key = `(day_of_year, reading_id)` | Range query: all readings in days 120–150 |
+| **Heat-threshold filter** | Insert daily anomalies; query "who exceeded +2°C?" | Left = below, right = above |
+| **Hourly observation index** | Key = `(hour_utc, reading_id)` | Ordered replay scrubber on one storm event |
 
-**Use pandas / `dict` / `sorted()`** when you load 20,000 rows once and filter in vectorized code. **Use a BST** when the problem is **incremental ordered inserts**, **online** nearest/range queries on a **moderate** *n*, or when you are **learning balancing** on top of this base.
+**Use pandas / `dict` / `sorted()`** when you load 20,000 daily rows once and filter in vectorized code. **Use a BST** when the problem is **incremental ordered inserts**, **online** nearest/range queries on a **moderate** *n*, or when you are **learning balancing** on top of this base.
 
 ```mermaid
 flowchart TB
-  subgraph bst["BST keyed by season receiving yards"]
-    R["(1200, WR_A)"]
-    L["(800, WR_B)"]
-    RR["(1500, WR_C)"]
-    RL["(1300, WR_D)"]
+  subgraph bst["BST keyed by temp anomaly"]
+    R["(+1.2, STN_A)"]
+    L["(+0.8, STN_B)"]
+    RR["(+1.5, STN_C)"]
+    RL["(+1.3, STN_D)"]
     R --> L
     R --> RR
     RR --> RL
   end
-  note["inorder: WR_B → WR_A → WR_D → WR_C"]
+  note["inorder: STN_B → STN_A → STN_D → STN_C"]
 ```
 
 Throughout this page, **n** is the number of nodes. **h** is tree height.
@@ -56,7 +56,7 @@ Throughout this page, **n** is the number of nodes. **h** is tree height.
 | **Insert** | O(h) | O(log n) + rotations | O(log n) + recolor/rotate | O(1) avg | O(n) resort or O(log n) bisect insert |
 | **Sorted iteration** | O(n) inorder | O(n) inorder | O(n) inorder | O(n) arbitrary order | O(n) already sorted |
 | **Ordering** | Total order on keys | Same | Same | Keys hashable; **not** sorted | Sort any column |
-| **NFL fit** | Teach ordered search | Guaranteed log for live feed | Library map theory | `player_id → stats` lookup | Season tables, EPA ranks |
+| **Weather fit** | Teach ordered search | Guaranteed log for live feed | Library map theory | `station_id → reading` lookup | Multi-year tables, climatology ranks |
 
 !!! note "Python `dict` is not a BST"
     CPython **`dict`** and **`set`** use **hash tables**, not binary search trees. Average O(1) lookup by key; **no** in-order traversal of keys by value order unless you sort separately. Ordered **insertion** since 3.7 is by **insertion order**, not by key comparison.
@@ -64,10 +64,10 @@ Throughout this page, **n** is the number of nodes. **h** is tree height.
 ```mermaid
 sequenceDiagram
   participant Analyst
-  participant BST as yards BST
-  Analyst->>BST: search (1100, ?)
-  BST->>BST: compare at root 1200 — go left
-  BST->>BST: compare at 800 — go right
+  participant BST as anomaly BST
+  Analyst->>BST: search (+1.1, ?)
+  BST->>BST: compare at root +1.2 — go left
+  BST->>BST: compare at +0.8 — go right
   BST-->>Analyst: found or nearest O(h)
 ```
 
@@ -85,11 +85,10 @@ from typing import Any, Iterator
 
 
 @dataclass(frozen=True, order=True)
-class PlayerSeason:
-    """Sort key: yards first, then player_id tie-break."""
-    yards: int
-    player_id: str
-    name: str = ""
+class StationReading:
+    temp_anomaly: float
+    station_id: str
+    summary: str = ""
 
 
 @dataclass
@@ -97,7 +96,6 @@ class BSTNode:
     key: Any
     left: BSTNode | None = None
     right: BSTNode | None = None
-    # Optional payload separate from sort key
     payload: Any = None
 ```
 
@@ -109,7 +107,7 @@ class BSTNode:
 ```mermaid
 flowchart TB
   subgraph node["BSTNode"]
-    K["key: PlayerSeason"]
+    K["key: StationReading"]
     L["left"]
     R["right"]
   end
@@ -152,7 +150,7 @@ assert tree.is_empty()
 ### 3. Single-node tree
 
 ```python
-root = BSTNode(PlayerSeason(1200, "WR01", "Alpha"))
+root = BSTNode(StationReading(1.2, "STN01", "warm spell"))
 ```
 
 | | |
@@ -174,14 +172,14 @@ def insert_bst(root: BSTNode | None, key: Any) -> BSTNode:
         root.right = insert_bst(root.right, key)
     return root
 
-players = [
-    PlayerSeason(1200, "WR01"),
-    PlayerSeason(800, "WR02"),
-    PlayerSeason(1500, "WR03"),
+readings = [
+    StationReading(1.2, "STN01"),
+    StationReading(0.8, "STN02"),
+    StationReading(1.5, "STN03"),
 ]
 root = None
-for p in players:
-    root = insert_bst(root, p)
+for r in readings:
+    root = insert_bst(root, r)
 ```
 
 | | |
@@ -191,14 +189,13 @@ for p in players:
 
 ### 5. Build from **sorted** list — degenerates to a chain
 
-Inserting strictly increasing `(yards, id)` mimics **sorted season CSV** row-by-row: every insert goes right → **h = n**.
+Inserting strictly increasing `(temp_anomaly, id)` mimics **sorted daily CSV** row-by-row: every insert goes right → **h = n**.
 
 ```python
-sorted_yards = [PlayerSeason(y, f"P{y}") for y in range(100, 2000, 100)]
+sorted_anomalies = [StationReading(a / 10, f"S{a}") for a in range(10, 200, 10)]
 root = None
-for p in sorted_yards:
-    root = insert_bst(root, p)
-# height ≈ n — why we balance in AVL / red–black
+for r in sorted_anomalies:
+    root = insert_bst(root, r)
 ```
 
 | | |
@@ -211,11 +208,11 @@ for p in sorted_yards:
 ```python
 import random
 
-shuffled = players[:]
+shuffled = readings[:]
 random.shuffle(shuffled)
 root = None
-for p in shuffled:
-    root = insert_bst(root, p)
+for r in shuffled:
+    root = insert_bst(root, r)
 ```
 
 | | |
@@ -227,7 +224,7 @@ for p in shuffled:
 
 ## Full implementation: `BinarySearchTree`
 
-The class below implements **search**, **insert**, **delete**, **min/max**, **inorder/preorder/postorder**, **size**, **height**, and **range query**—enough for NFL leaderboard drills and interview follow-ups.
+The class below implements **search**, **insert**, **delete**, **min/max**, **inorder/preorder/postorder**, **size**, **height**, and **range query**—enough for weather anomaly drills and interview follow-ups.
 
 ```python
 class BinarySearchTree:
@@ -241,8 +238,6 @@ class BinarySearchTree:
     def __len__(self) -> int:
         return self._size
 
-    # --- search ---
-
     def search(self, key: Any) -> BSTNode | None:
         cur = self.root
         while cur is not None:
@@ -253,8 +248,6 @@ class BinarySearchTree:
 
     def contains(self, key: Any) -> bool:
         return self.search(key) is not None
-
-    # --- insert ---
 
     def insert(self, key: Any, payload: Any = None) -> None:
         if self.root is None:
@@ -276,10 +269,8 @@ class BinarySearchTree:
                     return
                 cur = cur.right
             else:
-                cur.payload = payload  # update duplicate key
+                cur.payload = payload
                 return
-
-    # --- delete ---
 
     def delete(self, key: Any) -> bool:
         self.root, deleted = self._delete_rec(self.root, key)
@@ -298,12 +289,10 @@ class BinarySearchTree:
         if key > node.key:
             node.right, deleted = self._delete_rec(node.right, key)
             return node, deleted
-        # found node
         if node.left is None:
             return node.right, True
         if node.right is None:
             return node.left, True
-        # two children: inorder successor (min in right subtree)
         succ = self._min_node(node.right)
         node.key = succ.key
         node.payload = succ.payload
@@ -314,8 +303,6 @@ class BinarySearchTree:
         while node.left is not None:
             node = node.left
         return node
-
-    # --- min / max ---
 
     def minimum(self) -> Any | None:
         if self.root is None:
@@ -329,8 +316,6 @@ class BinarySearchTree:
         while cur.right is not None:
             cur = cur.right
         return cur.key
-
-    # --- traversals ---
 
     def inorder(self) -> list[Any]:
         out: list[Any] = []
@@ -379,8 +364,6 @@ class BinarySearchTree:
         self._postorder_rec(node.right, out)
         out.append(node.key)
 
-    # --- metrics ---
-
     def height(self) -> int:
         return self._height_rec(self.root)
 
@@ -388,8 +371,6 @@ class BinarySearchTree:
         if node is None:
             return -1
         return 1 + max(self._height_rec(node.left), self._height_rec(node.right))
-
-    # --- range query [lo, hi] inclusive on keys ---
 
     def range_query(self, lo: Any, hi: Any) -> list[Any]:
         out: list[Any] = []
@@ -416,18 +397,18 @@ class BinarySearchTree:
 
 ---
 
-## Operations reference (with NFL examples)
+## Operations reference (with weather examples)
 
-### `search` / `contains` — find a player by `(yards, id)`
+### `search` / `contains` — find a station by `(temp_anomaly, id)`
 
 ```python
 tree = BinarySearchTree()
-tree.insert(PlayerSeason(1200, "WR01", "Alpha"))
-tree.insert(PlayerSeason(800, "WR02", "Beta"))
+tree.insert(StationReading(1.2, "STN01", "warm spell"))
+tree.insert(StationReading(0.8, "STN02", "cold front"))
 
-node = tree.search(PlayerSeason(800, "WR02"))
-assert node is not None and node.key.name == "Beta"
-assert tree.contains(PlayerSeason(999, "X")) is False
+node = tree.search(StationReading(0.8, "STN02"))
+assert node is not None and node.key.summary == "cold front"
+assert tree.contains(StationReading(9.9, "X")) is False
 ```
 
 | | |
@@ -449,12 +430,12 @@ flowchart TD
 
 ---
 
-### `insert` — add weekly stat line
+### `insert` — add daily reading
 
 ```python
 tree = BinarySearchTree()
-for yards, pid, name in [(1100, "WR01", "A"), (950, "WR02", "B"), (1300, "WR03", "C")]:
-    tree.insert(PlayerSeason(yards, pid, name))
+for anomaly, sid, summary in [(1.1, "STN01", "A"), (0.95, "STN02", "B"), (1.3, "STN03", "C")]:
+    tree.insert(StationReading(anomaly, sid, summary))
 assert len(tree) == 3
 ```
 
@@ -465,22 +446,22 @@ assert len(tree) == 3
 
 ---
 
-### `delete` — remove traded player from active roster tree
+### `delete` — remove decommissioned station from active index
 
 Three cases: **no left child**, **no right child**, **two children** (replace with inorder successor from right subtree).
 
 ```python
 tree = BinarySearchTree()
-for p in [
-    PlayerSeason(1200, "WR01"),
-    PlayerSeason(800, "WR02"),
-    PlayerSeason(1500, "WR03"),
-    PlayerSeason(1300, "WR04"),
+for r in [
+    StationReading(1.2, "STN01"),
+    StationReading(0.8, "STN02"),
+    StationReading(1.5, "STN03"),
+    StationReading(1.3, "STN04"),
 ]:
-    tree.insert(p)
+    tree.insert(r)
 
-tree.delete(PlayerSeason(1200, "WR01"))  # two-child case at root
-assert tree.search(PlayerSeason(1200, "WR01")) is None
+tree.delete(StationReading(1.2, "STN01"))
+assert tree.search(StationReading(1.2, "STN01")) is None
 assert len(tree) == 3
 ordered = tree.inorder()
 assert ordered == sorted(ordered)
@@ -510,18 +491,18 @@ flowchart TD
 
 ---
 
-### `inorder` — sorted receiving leaderboard
+### `inorder` — sorted anomaly leaderboard
 
-**Inorder** (left → node → right) visits keys in **ascending** order—the BST’s superpower for “print everyone sorted by yards.”
+**Inorder** (left → node → right) visits keys in **ascending** order—the BST's superpower for "print every station sorted by anomaly."
 
 ```python
 tree = BinarySearchTree()
-stats = [(1050, "WR01"), (890, "WR02"), (1400, "WR03"), (1100, "WR04")]
-for y, pid in stats:
-    tree.insert(PlayerSeason(y, pid))
+stats = [(1.05, "STN01"), (0.89, "STN02"), (1.4, "STN03"), (1.1, "STN04")]
+for anomaly, sid in stats:
+    tree.insert(StationReading(anomaly, sid))
 
-leaderboard = [k.yards for k in tree.inorder()]
-assert leaderboard == [890, 1050, 1100, 1400]
+leaderboard = [k.temp_anomaly for k in tree.inorder()]
+assert leaderboard == [0.89, 1.05, 1.1, 1.4]
 ```
 
 | | |
@@ -532,19 +513,19 @@ assert leaderboard == [890, 1050, 1100, 1400]
 ```mermaid
 flowchart LR
   L["left subtree sorted"] --> N["node"] --> R["right subtree sorted"]
-  N --> OUT["full inorder = ascending yards"]
+  N --> OUT["full inorder = ascending anomaly"]
 ```
 
 ---
 
-### `minimum` / `maximum` — floor / ceiling of yardage
+### `minimum` / `maximum` — floor / ceiling of anomaly
 
 ```python
 tree = BinarySearchTree()
-for y in [900, 1200, 1500]:
-    tree.insert(PlayerSeason(y, f"P{y}"))
-assert tree.minimum().yards == 900
-assert tree.maximum().yards == 1500
+for a in [0.9, 1.2, 1.5]:
+    tree.insert(StationReading(a, f"S{a}"))
+assert tree.minimum().temp_anomaly == 0.9
+assert tree.maximum().temp_anomaly == 1.5
 ```
 
 | | |
@@ -554,16 +535,16 @@ assert tree.maximum().yards == 1500
 
 ---
 
-### `range_query` — WRs with 900–1200 yards
+### `range_query` — stations with +0.9°C to +1.2°C anomaly
 
 ```python
 tree = BinarySearchTree()
-for y, pid in [(800, "a"), (950, "b"), (1100, "c"), (1300, "d")]:
-    tree.insert(PlayerSeason(y, pid))
+for anomaly, sid in [(0.8, "a"), (0.95, "b"), (1.1, "c"), (1.3, "d")]:
+    tree.insert(StationReading(anomaly, sid))
 
-band = tree.range_query(PlayerSeason(900, ""), PlayerSeason(1200, "zzz"))
-yards = [k.yards for k in band]
-assert yards == [950, 1100]
+band = tree.range_query(StationReading(0.9, ""), StationReading(1.2, "zzz"))
+anomalies = [k.temp_anomaly for k in band]
+assert anomalies == [0.95, 1.1]
 ```
 
 | | |
@@ -573,13 +554,13 @@ assert yards == [950, 1100]
 
 ---
 
-### `height` — detect degenerate “sorted insert” chain
+### `height` — detect degenerate "sorted insert" chain
 
 ```python
 tree = BinarySearchTree()
-for y in range(10):
-    tree.insert(PlayerSeason(y, f"P{y}"))
-assert tree.height() == 9  # chain — need AVL/RB
+for i in range(10):
+    tree.insert(StationReading(i / 10, f"S{i}"))
+assert tree.height() == 9
 ```
 
 | | |
@@ -589,76 +570,74 @@ assert tree.height() == 9  # chain — need AVL/RB
 
 ---
 
-## NFL application: live receiving leaderboard
+## Weather application: live anomaly leaderboard
 
 ```python
-class ReceivingLeaderboard:
-    """Incremental BST of season receiving yards."""
-
+class AnomalyLeaderboard:
     def __init__(self) -> None:
         self._tree = BinarySearchTree()
 
-    def add_game(self, player_id: str, name: str, game_yards: int) -> None:
-        node = self._tree.search(PlayerSeason(0, player_id))
+    def add_reading(self, station_id: str, summary: str, anomaly: float) -> None:
+        node = self._tree.search(StationReading(0.0, station_id))
         if node is None:
-            self._tree.insert(PlayerSeason(game_yards, player_id, name))
+            self._tree.insert(StationReading(anomaly, station_id, summary))
         else:
             old = node.key
             self._tree.delete(old)
             self._tree.insert(
-                PlayerSeason(old.yards + game_yards, player_id, name or old.name)
+                StationReading(old.temp_anomaly + anomaly, station_id, summary or old.summary)
             )
 
-    def top_report(self, min_yards: int, max_yards: int) -> list[PlayerSeason]:
+    def top_report(self, min_anomaly: float, max_anomaly: float) -> list[StationReading]:
         return self._tree.range_query(
-            PlayerSeason(min_yards, ""),
-            PlayerSeason(max_yards, "\uffff"),
+            StationReading(min_anomaly, ""),
+            StationReading(max_anomaly, "\uffff"),
         )
 
     def print_standings(self) -> None:
         for key in self._tree.inorder_iter():
-            print(f"{key.player_id}: {key.yards} yds — {key.name}")
+            print(f"{key.station_id}: {key.temp_anomaly:+.1f}°C — {key.summary}")
 
 
-board = ReceivingLeaderboard()
-board.add_game("WR01", "Alpha", 85)
-board.add_game("WR02", "Beta", 120)
-board.add_game("WR01", "Alpha", 40)
-mid = board.top_report(100, 200)
+board = AnomalyLeaderboard()
+board.add_reading("STN01", "warm spell", 0.85)
+board.add_reading("STN02", "cold front", 1.2)
+board.add_reading("STN01", "warm spell", 0.4)
+mid = board.top_report(1.0, 2.0)
 assert len(mid) == 2
 ```
 
 | Operation | Time | Space |
 | --- | --- | --- |
-| `add_game` | O(h) search + delete + insert | O(1) aux |
+| `add_reading` | O(h) search + delete + insert | O(1) aux |
 | `top_report` | O(n) worst; O(log n + k) balanced | O(k) |
 | `print_standings` | O(n) | O(h) stack |
 
 ---
 
-## NFL application: schedule by `(week, game_id)`
+## Weather application: schedule by `(day_of_year, reading_id)`
 
 ```python
 @dataclass(frozen=True, order=True)
-class GameSlot:
-    week: int
-    game_id: str
-    matchup: str = ""
+class ObservationSlot:
+    day_of_year: int
+    reading_id: str
+    summary: str = ""
 
 
 schedule = BinarySearchTree()
-schedule.insert(GameSlot(1, "G001", "KC @ BAL"))
-schedule.insert(GameSlot(1, "G002", "SF @ PIT"))
-schedule.insert(GameSlot(5, "G041", "BUF @ NYJ"))
+schedule.insert(ObservationSlot(120, "R001", "spring warm-up"))
+schedule.insert(ObservationSlot(120, "R002", "coastal fog"))
+schedule.insert(ObservationSlot(150, "R041", "heat wave onset"))
 
-week1 = schedule.range_query(GameSlot(1, ""), GameSlot(1, "\uffff"))
-assert len(week1) == 2
+day120 = schedule.range_query(ObservationSlot(120, ""), ObservationSlot(120, "\uffff"))
+assert len(day120) == 2
 ```
 
 | Operation | Time | Notes |
 | --- | --- | --- |
-| Insert game | O(h) | |
-| Games in week *w* | O(log n + k) balanced | k = games that week |
+| Insert reading | O(h) | |
+| Readings on day *d* | O(log n + k) balanced | k = readings that day |
 
 ---
 
@@ -666,20 +645,19 @@ assert len(week1) == 2
 
 | Need | Stdlib / ecosystem | vs hand-rolled BST |
 | --- | --- | --- |
-| Key → stats lookup | `dict[str, dict]` | O(1) avg; no sorted walk |
-| Sort once, query many | `sorted(rows, key=...)` + bisect | Simpler for static season CSV |
+| Key → reading lookup | `dict[str, dict]` | O(1) avg; no sorted walk |
+| Sort once, query many | `sorted(rows, key=...)` + bisect | Simpler for static daily CSV |
 | Ordered multiset | `sortedcontainers.SortedList` (third party) | Production-grade balanced structure |
 | Unique sorted keys | `set` + `sorted()` | Not incremental O(log n) unless bisect on list |
 
 ```python
-# Typical NFL notebook — not a BST, but what you ship
 import pandas as pd
 
-df = pd.read_csv("receiving_2024.csv")
-top = df[(df["yards"] >= 900) & (df["yards"] <= 1200)].sort_values("yards")
+df = pd.read_csv("daily_anomalies_2024.csv")
+top = df[(df["temp_anomaly"] >= 0.9) & (df["temp_anomaly"] <= 1.2)].sort_values("temp_anomaly")
 ```
 
-**Rule of thumb:** implement **`BinarySearchTree`** to learn and interview; use **pandas / dict / sorted list** for real season pipelines unless you need **online** ordered structure semantics.
+**Rule of thumb:** implement **`BinarySearchTree`** to learn and interview; use **pandas / dict / sorted list** for real multi-year pipelines unless you need **online** ordered structure semantics.
 
 ---
 
@@ -704,12 +682,12 @@ Let **n** = `len(tree)`, **h** = height.
 
 ---
 
-## When to pick which structure (NFL context)
+## When to pick which structure (weather context)
 
 ```mermaid
 flowchart TD
   Q([Ordered data problem?])
-  Q --> S{Static season CSV?}
+  Q --> S{Static multi-year CSV?}
   S -->|yes| P["pandas sort / dict lookup"]
   S -->|no| I{Need guaranteed log n?}
   I -->|yes| B["AVL or red–black"]
@@ -721,11 +699,11 @@ flowchart TD
 
 | Scenario | Best tool |
 | --- | --- |
-| One-time EPA leaderboard | pandas `sort_values` |
-| Live incremental yards + sorted walk | BST → upgrade to AVL |
-| Player ID → game log | `dict`, not BST |
-| Week range on schedule | BST range query or SQL `WHERE week BETWEEN` |
-| Interview “implement map” | BST / red–black discussion |
+| One-time climatology rank | pandas `sort_values` |
+| Live incremental anomaly + sorted walk | BST → upgrade to AVL |
+| Station ID → daily log | `dict`, not BST |
+| Day range on observation schedule | BST range query or SQL `WHERE day BETWEEN` |
+| Interview "implement map" | BST / red–black discussion |
 
 ---
 
@@ -734,7 +712,7 @@ flowchart TD
 | Pitfall | Why it hurts | Fix |
 | --- | --- | --- |
 | Sorted insert order | O(n) height, O(n) search | Shuffle, AVL, or sort-then-build |
-| Duplicate keys undefined | Second insert may noop or overwrite | Document policy; use `(yards, player_id)` tuple |
+| Duplicate keys undefined | Second insert may noop or overwrite | Document policy; use `(temp_anomaly, station_id)` tuple |
 | Confusing `dict` with BST | Expect sorted keys from `{}` | Sort keys explicitly or use BST/SortedList |
 | Delete two-child bug | Orphan subtree or broken order | Copy **successor** from right, not predecessor only |
 | Range query wrong bounds | Miss edge keys | Use inclusive `lo <= key <= hi` and prune correctly |
@@ -748,7 +726,7 @@ flowchart TD
 | --- | --- |
 | [AVL tree](../avl-tree/index.md) | Strict balance; rotations on insert/delete |
 | [Red–black tree](../red-black-tree/index.md) | Relaxed balance; C++ `map` model |
-| [Max heap](../max-heap/index.md) | Partial order for “top k” only |
+| [Max heap](../max-heap/index.md) | Partial order for "top k" only |
 | [Array-based lists](../array-based-lists/index.md) | Sorted list + bisect alternative |
 | [Complexity analysis](../../complexity/index.md) | Big-O reference |
 | [Data structures hub](../index.md) | All structures |
@@ -758,27 +736,22 @@ flowchart TD
 ## Quick reference card
 
 ```python
-# create
 tree = BinarySearchTree()
-tree.insert(PlayerSeason(1200, "WR01", "Alpha"))
+tree.insert(StationReading(1.2, "STN01", "warm spell"))
 
-# O(h) lookup / mutate
-tree.search(PlayerSeason(1200, "WR01"))
+tree.search(StationReading(1.2, "STN01"))
 tree.contains(key)
 tree.delete(key)
 tree.insert(key)
 
-# O(n) sorted walk
 list(tree.inorder_iter())
 tree.minimum()
 tree.maximum()
 
-# range: yards in [900, 1200]
-tree.range_query(PlayerSeason(900, ""), PlayerSeason(1200, "\uffff"))
+tree.range_query(StationReading(0.9, ""), StationReading(1.2, "\uffff"))
 
-# metrics
 len(tree)
-tree.height()  # watch for n-1 chain on sorted input
+tree.height()
 ```
 
-Use a **binary search tree** when you need **ordered keys** with **search, insert, delete, and inorder iteration**—then move to **[AVL](../avl-tree/index.md)** or **[red–black](../red-black-tree/index.md)** when **worst-case O(log n)** must be guaranteed for live NFL feeds and large *n*.
+Use a **binary search tree** when you need **ordered keys** with **search, insert, delete, and inorder iteration**—then move to **[AVL](../avl-tree/index.md)** or **[red–black](../red-black-tree/index.md)** when **worst-case O(log n)** must be guaranteed for live weather feeds and large *n*.

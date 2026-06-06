@@ -11,9 +11,9 @@ A **comparison sort** built on a **binary heap**: place the array in **heap orde
 | **In-place** | **Yes**. |
 | **When to use** | Guaranteed O(n log n) without merge buffer; understanding [max-heap](../../data-structures/max-heap/index.md) structure. |
 
-**NFL lens:** imagine a **priority queue of pending red-zone plays** by EPA—heap sort is the batch version that drains the max repeatedly to rank plays worst-to-best in-place. For “top 5 plays only,” use **`heapq.nlargest`** instead of full heap sort.
+In **daily weather data analysis**, imagine a **priority queue of pending anomaly alerts** ranked by magnitude—heap sort is the batch version that drains the max repeatedly to rank readings worst-to-best in-place. For “top 5 hottest days only,” use **`heapq.nlargest`** instead of full heap sort.
 
-**Data-structure deep dive:** heap property, `sift_up` / `sift_down`, and array indexing are covered on [Heap sort (data structures)](../../data-structures/heap-sort/index.md). **This page** focuses on **sorting** players, snaps, and numeric columns.
+**Data-structure deep dive:** heap property, `sift_up` / `sift_down`, and array indexing are covered on [Heap sort (data structures)](../../data-structures/heap-sort/index.md). **This page** focuses on **sorting** readings, stations, and numeric columns.
 
 [Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
 
@@ -113,23 +113,22 @@ def heap_sort(nums: list[float]) -> None:
 
 
 @dataclass(frozen=True, slots=True)
-class Player:
-    name: str
-    rush_yds: int
+class DailyReading:
+    station_id: str
+    temp_anomaly: float
 
 
-def heap_sort_players(players: list[Player], *, key=lambda p: p.rush_yds) -> None:
-    """Sort ascending by key using heap sort on indices (stable not guaranteed)."""
-    n = len(players)
+def heap_sort_readings(readings: list[DailyReading], *, key=lambda r: r.temp_anomaly) -> None:
+    n = len(readings)
     idx = list(range(n))
 
     def sift_idx(i: int, size: int) -> None:
         while True:
             largest = i
             l, r = 2 * i + 1, 2 * i + 2
-            if l < size and key(players[idx[l]]) > key(players[idx[largest]]):
+            if l < size and key(readings[idx[l]]) > key(readings[idx[largest]]):
                 largest = l
-            if r < size and key(players[idx[r]]) > key(players[idx[largest]]):
+            if r < size and key(readings[idx[r]]) > key(readings[idx[largest]]):
                 largest = r
             if largest == i:
                 break
@@ -141,7 +140,7 @@ def heap_sort_players(players: list[Player], *, key=lambda p: p.rush_yds) -> Non
     for end in range(n - 1, 0, -1):
         idx[0], idx[end] = idx[end], idx[0]
         sift_idx(0, end)
-    players[:] = [players[i] for i in idx]
+    readings[:] = [readings[i] for i in idx]
 ```
 
 | | |
@@ -151,16 +150,16 @@ def heap_sort_players(players: list[Player], *, key=lambda p: p.rush_yds) -> Non
 
 ---
 
-## Trace: three rush yards values
+## Trace: three temperature anomalies
 
-`[45, 120, 88]` → build heap → repeatedly swap max to end.
+`[0.4, 2.1, 1.2]` → build heap → repeatedly swap max to end.
 
-After `build_max_heap`: max 120 at root (array representation may be `[120, 45, 88]`).
+After `build_max_heap`: max 2.1 at root (array representation may be `[2.1, 0.4, 1.2]`).
 
 | step | swap root/end | after sift | sorted suffix |
 | --- | --- | --- | --- |
-| 1 | 120 ↔ 88 | heap on `[88,45]` | `[..., 120]` |
-| 2 | 88 ↔ 45 | — | `[45, 88, 120]` |
+| 1 | 2.1 ↔ 1.2 | heap on `[1.2, 0.4]` | `[..., 2.1]` |
+| 2 | 1.2 ↔ 0.4 | — | `[0.4, 1.2, 2.1]` |
 
 ---
 
@@ -169,15 +168,15 @@ After `build_max_heap`: max 120 at root (array representation may be `[120, 45, 
 | API | Role |
 | --- | --- |
 | `heapq.heapify` + repeated `heappop` | Same idea as heap sort; Python uses a min-heap |
-| `heapq.nlargest(k, players, key=...)` | Top *k* rushers—**O(n log k)** |
+| `heapq.nlargest(k, readings, key=...)` | Top *k* hottest days—**O(n log k)** |
 | `list.sort` | Timsort—faster constants, stable |
 | **Heap sort** | In-place **worst-case** Θ(n log n) guarantee |
 
 ```python
 import heapq
 
-top_rushers = heapq.nlargest(10, roster, key=lambda p: p.rush_yds)
-full_sorted = sorted(roster, key=lambda p: p.rush_yds)
+top_anomalies = heapq.nlargest(10, window, key=lambda r: r.temp_anomaly)
+full_sorted = sorted(window, key=lambda r: r.temp_anomaly)
 ```
 
 ---
@@ -186,12 +185,12 @@ full_sorted = sorted(roster, key=lambda p: p.rush_yds)
 
 | Use | Avoid |
 | --- | --- |
-| Teaching heap + guaranteed worst case | Need stable PPR ties |
-| Embedded / memory-tight in-place | pandas-scale tables |
+| Teaching heap + guaranteed worst case | Need stable ties on equal anomalies |
+| Embedded / memory-tight in-place | pandas-scale climatology tables |
 | Introsort fallback in other languages | When `sort_values` is one line |
 
 ```python
-df.sort_values("rush_yds", ascending=True)
+df.sort_values("temp_anomaly", ascending=True)
 ```
 
 ---
@@ -232,10 +231,10 @@ df.sort_values("rush_yds", ascending=True)
 ## Quick reference
 
 ```python
-heap_sort(yards_list)           # in-place ascending
-heap_sort_players(roster)       # by rush_yds
-heapq.nlargest(5, roster, key=...)  # top 5 only
-roster.sort(key=lambda p: p.rush_yds)
+heap_sort(anomaly_list)
+heap_sort_readings(window)
+heapq.nlargest(5, window, key=lambda r: r.temp_anomaly)
+window.sort(key=lambda r: r.temp_anomaly)
 ```
 
-**Heap sort:** in-place, **Θ(n log n) worst**, **unstable**—pair with [max-heap](../../data-structures/max-heap/index.md); use **`heapq`** for partial ranks in NFL apps.
+**Heap sort:** in-place, **Θ(n log n) worst**, **unstable**—pair with [max-heap](../../data-structures/max-heap/index.md); use **`heapq`** for partial ranks in weather dashboards.

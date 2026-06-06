@@ -11,7 +11,7 @@ A **divide-and-conquer** comparison sort: choose a **pivot**, **partition** so k
 | **In-place** | **Yes** (array partition). |
 | **When to use** | General in-memory sort when stability not required; foundation for [Quickselect](../quickselect/index.md). |
 
-**NFL lens:** quicksort is “split the roster around a pivot QB’s PPR—everyone better to the left, everyone worse to the right—then sort each side.” CPython uses **Timsort** for `list.sort`, not pure quicksort, but quicksort still appears in libraries and interviews and powers **order statistics** via partitioning.
+**Daily weather lens:** quicksort is “split the month around a pivot day’s **temp anomaly**—cooler or equal readings to the left, warmer to the right—then sort each side.” CPython uses **Timsort** for `list.sort`, not pure quicksort, but quicksort still appears in libraries and interviews and powers **order statistics** via partitioning.
 
 [Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
 
@@ -53,7 +53,7 @@ flowchart TD
 ```mermaid
 sequenceDiagram
   participant A as array
-  Note over A: pivot = last PPR
+  Note over A: pivot = last temp_anomaly
   loop j from lo to hi-1
     A->>A: if A[j] <= pivot, expand <= region
   end
@@ -88,8 +88,6 @@ PARTITION(A, lo, hi):
 ## Python implementation
 
 ```python
-from __future__ import annotations
-
 import random
 from dataclasses import dataclass
 
@@ -116,37 +114,42 @@ def _partition(nums: list[float], lo: int, hi: int) -> int:
 
 
 def quicksort_randomized(nums: list[float]) -> None:
-    """Shuffle before sort to avoid Θ(n²) on sorted play_id input."""
     random.shuffle(nums)
     quicksort(nums)
 
 
 @dataclass(frozen=True, slots=True)
-class Player:
-    name: str
-    ppr: float
+class DailyReading:
+    reading_id: int
+    month: int
+    temp_anomaly: float
+    summary: str
 
 
-def quicksort_players(
-    players: list[Player], lo: int = 0, hi: int | None = None, *, key=lambda p: p.ppr
+def quicksort_readings(
+    readings: list[DailyReading],
+    lo: int = 0,
+    hi: int | None = None,
+    *,
+    key=lambda r: r.temp_anomaly,
 ) -> None:
     if hi is None:
-        hi = len(players) - 1
+        hi = len(readings) - 1
     if lo >= hi:
         return
-    p = _partition_players(players, lo, hi, key=key)
-    quicksort_players(players, lo, p - 1, key=key)
-    quicksort_players(players, p + 1, hi, key=key)
+    p = _partition_readings(readings, lo, hi, key=key)
+    quicksort_readings(readings, lo, p - 1, key=key)
+    quicksort_readings(readings, p + 1, hi, key=key)
 
 
-def _partition_players(players, lo, hi, *, key):
-    pivot = key(players[hi])
+def _partition_readings(readings, lo, hi, *, key):
+    pivot = key(readings[hi])
     i = lo - 1
     for j in range(lo, hi):
-        if key(players[j]) <= pivot:
+        if key(readings[j]) <= pivot:
             i += 1
-            players[i], players[j] = players[j], players[i]
-    players[i + 1], players[hi] = players[hi], players[i + 1]
+            readings[i], readings[j] = readings[j], readings[i]
+    readings[i + 1], readings[hi] = readings[hi], readings[i + 1]
     return i + 1
 ```
 
@@ -159,19 +162,19 @@ def _partition_players(players, lo, hi, *, key):
 
 ---
 
-## Trace: partition four PPR values
+## Trace: partition four temp anomalies
 
-`[28.4, 22.1, 31.0, 25.6]`, pivot = `25.6` (last)
+`[0.4, -1.2, 1.0, 0.1]`, pivot = `0.1` (last)
 
 | j | action | array (conceptual) |
 | ---: | --- | --- |
-| — | pivot 25.6 | `[28.4, 22.1, 31.0, 25.6]` |
-| 0 | 28.4 &gt; pivot | no swap |
-| 1 | 22.1 ≤ pivot | swap → `[22.1, 28.4, 31.0, 25.6]` |
-| 2 | 31.0 &gt; pivot | no swap |
-| end | place pivot | `[22.1, 25.6, 31.0, 28.4]` |
+| — | pivot 0.1 | `[0.4, -1.2, 1.0, 0.1]` |
+| 0 | 0.4 &gt; pivot | no swap |
+| 1 | -1.2 ≤ pivot | swap → `[-1.2, 0.4, 1.0, 0.1]` |
+| 2 | 1.0 &gt; pivot | no swap |
+| end | place pivot | `[-1.2, 0.1, 1.0, 0.4]` |
 
-Recurse left `[22.1]`, right sort `[31.0, 28.4]` → full ascending order.
+Recurse left `[-1.2]`, right sort `[1.0, 0.4]` → full ascending order.
 
 ---
 
@@ -185,11 +188,10 @@ Recurse left `[22.1]`, right sort `[31.0, 28.4]` → full ascending order.
 | Cache | Good locality on arrays | Excellent on real data |
 
 ```python
-# Production
-stats.sort(key=lambda r: r["rush_yds"], reverse=True)
+readings.sort(key=lambda r: r["precip_mm"], reverse=True)
 ```
 
-Use **`heapq.nlargest`** when you only need top 10 rushers, not full order.
+Use **`heapq.nlargest`** when you only need the top 10 wettest days, not full order.
 
 ---
 
@@ -197,7 +199,7 @@ Use **`heapq.nlargest`** when you only need top 10 rushers, not full order.
 
 | Use | Avoid |
 | --- | --- |
-| Learning partition logic | Stable fantasy ties |
+| Learning partition logic | Stable ties on equal anomalies |
 | Quickselect foundation | Adversarial inputs without randomization |
 | In-memory when library sort unavailable | Large pandas tables—`sort_values` |
 
@@ -216,7 +218,7 @@ Use **`heapq.nlargest`** when you only need top 10 rushers, not full order.
 
 | Pitfall | Fix |
 | --- | --- |
-| Sorted `play_id` + last pivot | Random or median-of-three |
+| Sorted `reading_id` + last pivot | Random or median-of-three |
 | Deep recursion | Iterative stack or introsort |
 | Need stable sort | Merge sort / `sort` |
 | Equal keys clustered with `>` test | `<=` on left partition for balance |
@@ -237,10 +239,10 @@ Use **`heapq.nlargest`** when you only need top 10 rushers, not full order.
 ## Quick reference
 
 ```python
-quicksort(ppr_list)
-quicksort_randomized(ppr_list)   # avoid sorted worst case
-quicksort_players(roster)
-roster.sort(key=lambda p: p.ppr) # production
+quicksort(anomalies)
+quicksort_randomized(anomalies)
+quicksort_readings(window)
+window.sort(key=lambda r: r.temp_anomaly)
 ```
 
-**Quicksort:** in-place, fast on average, **unstable**, **Θ(n²) worst**—master partition; ship **Timsort/pandas** for NFL tables.
+**Quicksort:** in-place, fast on average, **unstable**, **Θ(n²) worst**—master partition; ship **Timsort/pandas** for daily weather tables.

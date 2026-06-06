@@ -1,6 +1,6 @@
 # Honorable mention ADT
 
-Classic **abstract data types** that appear in DSA courses, interviews, and production systems but do not have a dedicated subpage in this guide’s main table. This page collects **mini ready-references**—each with NFL-flavored use, Python code, complexity, and pitfalls.
+Classic **abstract data types** that appear in DSA courses, interviews, and production systems but do not have a dedicated subpage in this guide’s main table. This page collects **mini ready-references**—each with weather-data analysis use, Python code, complexity, and pitfalls.
 
 | | |
 | --- | --- |
@@ -32,12 +32,12 @@ For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 | | |
 | --- | --- |
 | **What it is** | Each element has a parent pointer; `find(x)` returns set representative; `union(a,b)` merges sets. |
-| **When to use** | Dynamic **connectivity**, Kruskal MST, “same conference component?” |
-| **NFL fit** | Teams in the **same connected schedule component**; merge divisions; detect if two franchises are in the same playoff cluster after merges. |
+| **When to use** | Dynamic **connectivity**, Kruskal MST, “same climate region component?” |
+| **Weather fit** | Stations in the **same connected sensor network**; merge regional groupings; detect if two sites share a data-pipeline cluster after merges. |
 
-### NFL application: conference connectivity
+### Weather application: regional connectivity
 
-Vertices = teams; union teams when they share a game edge (or same conference tag).
+Vertices = weather stations; union stations when they share a telemetry link (or same climate-zone tag).
 
 ```python
 class UnionFind:
@@ -47,7 +47,7 @@ class UnionFind:
 
     def find(self, x: str) -> str:
         while self.parent[x] != x:
-            self.parent[x] = self.parent[self.parent[x]]  # path halving
+            self.parent[x] = self.parent[self.parent[x]]
             x = self.parent[x]
         return x
 
@@ -66,23 +66,23 @@ class UnionFind:
         return self.find(a) == self.find(b)
 
 
-uf = UnionFind(["KC", "BAL", "BUF", "MIA"])
-uf.union("KC", "BAL")   # played
-uf.union("BUF", "MIA")
-assert uf.connected("KC", "BAL")
-assert not uf.connected("KC", "MIA")
+uf = UnionFind(["SEA", "PDX", "SFO", "LAX"])
+uf.union("SEA", "PDX")
+uf.union("SFO", "LAX")
+assert uf.connected("SEA", "PDX")
+assert not uf.connected("SEA", "LAX")
 ```
 
 ```mermaid
 flowchart TB
-  subgraph before["Before union KC–BAL"]
-    A["{KC}"]
-    B["{BAL}"]
-    C["{BUF,MIA}"]
+  subgraph before["Before union SEA–PDX"]
+    A["{SEA}"]
+    B["{PDX}"]
+    C["{SFO,LAX}"]
   end
   subgraph after["After union"]
-    D["{KC,BAL}"]
-    E["{BUF,MIA}"]
+    D["{SEA,PDX}"]
+    E["{SFO,LAX}"]
   end
   before --> after
 ```
@@ -93,7 +93,7 @@ flowchart TB
 | `union` | O(α(n)) | O(1) |
 | Build from E edges | O(E α(V)) | O(V) |
 
-**α(n)** is so slow-growing it is effectively a small constant for any realistic NFL **V ≤ 32** or league-wide **V ≤ 10⁴**.
+**α(n)** is so slow-growing it is effectively a small constant for any realistic weather network **V ≤ 10³** or national archive **V ≤ 10⁴**.
 
 ### Pitfalls (Union-Find)
 
@@ -116,10 +116,10 @@ A **Bloom filter** is a **compact** bit array plus **k** hash functions. It supp
 | | |
 | --- | --- |
 | **What it is** | Approximate set membership in O(k) bit ops; cannot delete without variants. |
-| **When to use** | “Probably seen this `play_id` before” with tiny RAM; pre-filter before disk. |
-| **NFL fit** | Stream millions of plays: skip disk lookup if filter says **definitely not** indexed. |
+| **When to use** | “Probably seen this `reading_id` before” with tiny RAM; pre-filter before disk. |
+| **Weather fit** | Stream millions of hourly observations: skip disk lookup if filter says **definitely not** indexed. |
 
-### NFL application: play-id prefilter
+### Weather application: reading-id prefilter
 
 ```python
 import hashlib
@@ -150,16 +150,16 @@ class BloomFilter:
 
 
 seen = BloomFilter()
-seen.add("play_9001")
-if seen.might_contain("play_9001"):
-    maybe_load_from_db("play_9001")
-if not seen.might_contain("play_9999"):
-    pass  # definitely not inserted
+seen.add("reading_9001")
+if seen.might_contain("reading_9001"):
+    maybe_load_from_db("reading_9001")
+if not seen.might_contain("reading_9999"):
+    pass
 ```
 
 ```mermaid
 flowchart LR
-  PID["play_id"] --> H["k hashes"]
+  RID["reading_id"] --> H["k hashes"]
   H --> B["bit array"]
   B --> Y["might_contain → maybe"]
   B --> N["all bits 0 → definitely not"]
@@ -194,7 +194,7 @@ A **skip list** is a **sorted** linked structure with **express lanes**: level 0
 | --- | --- |
 | **What it is** | Tower of forward pointers per node; random level on insert. |
 | **When to use** | Ordered map in RAM when treap/RB feels heavy; Redis sorted-set internals (related ideas). |
-| **NFL fit** | Live **ADP-sorted** draft list with fast `search` and `delete` by player key. |
+| **Weather fit** | Live **timestamp-sorted** station leaderboard with fast `search` and `delete` by station key. |
 
 ### Structure (concept)
 
@@ -264,13 +264,13 @@ class SkipList:
 
 ## Multiset (bag) — brief
 
-Counts **how many** of each element—useful for **snap counts per formation** or **penalty frequency**.
+Counts **how many** of each element—useful for **readings per sky condition** or **alert frequency by severity**.
 
 ```python
 from collections import Counter
 
-snaps_by_personnel = Counter(row["personnel"] for row in plays)
-assert snaps_by_personnel["11"] >= 1
+readings_by_condition = Counter(row["sky_code"] for row in observations)
+assert readings_by_condition["CLR"] >= 1
 ```
 
 | Operation | Time | Space |
@@ -282,34 +282,34 @@ assert snaps_by_personnel["11"] >= 1
 
 ## Bitset — brief
 
-Fixed-universe **set** as bits—see [Sets](../sets/index.md) bitset note for 32-team masks.
+Fixed-universe **set** as bits—see [Sets](../sets/index.md) bitset note for station-id masks.
 
 ---
 
 ## Segment tree / Fenwick tree — pointer only
 
-For **range queries** on arrays (e.g. cumulative EPA over play index ranges), use:
+For **range queries** on arrays (e.g. cumulative temperature anomaly over day-index ranges), use:
 
 - **Fenwick (BIT):** O(log n) prefix sum update/query, O(n) space
 - **Segment tree:** O(log n) range query/updates, O(n) space
 
-Not expanded here; NFL season analytics often use **pandas rolling** or **prefix sums** on sorted arrays instead.
+Not expanded here; weather season analytics often use **pandas rolling** or **prefix sums** on sorted arrays instead.
 
 ---
 
 ## Master comparison (honorable ADTs)
 
-| ADT | Ordered? | Exact membership? | NFL example |
+| ADT | Ordered? | Exact membership? | Weather example |
 | --- | --- | --- | --- |
-| Union-Find | No | Same component | Schedule connectivity |
-| Bloom filter | No | Approximate | Play-id stream prefilter |
-| Skip list | Yes | Exact | Draft board order |
-| Counter (multiset) | No | Exact counts | Personnel usage |
-| Bitset | No | Exact (small V) | 32-team bitmask |
+| Union-Find | No | Same component | Sensor-network connectivity |
+| Bloom filter | No | Approximate | Reading-id stream prefilter |
+| Skip list | Yes | Exact | Timestamp-sorted station board |
+| Counter (multiset) | No | Exact counts | Sky-condition frequency |
+| Bitset | No | Exact (small V) | Station-id bitmask |
 
 ---
 
-## When to pick which (NFL context)
+## When to pick which (weather context)
 
 ```mermaid
 flowchart TD
@@ -324,10 +324,10 @@ flowchart TD
 
 | Scenario | ADT |
 | --- | --- |
-| Same playoff cluster after hypothetical merges | Union-Find |
-| Billions of play_ids, RAM tight | Bloom then DB |
-| Sorted mutable draft | Skip list or treap |
-| Count plays per formation | `Counter` |
+| Same regional cluster after hypothetical merges | Union-Find |
+| Billions of reading_ids, RAM tight | Bloom then DB |
+| Sorted mutable station leaderboard | Skip list or treap |
+| Count observations per sky code | `Counter` |
 
 ---
 
@@ -336,7 +336,7 @@ flowchart TD
 | Pitfall | ADT | Fix |
 | --- | --- | --- |
 | Using Bloom when false positive costly | Bloom | Exact `set` after filter |
-| Union-Find without initializing all teams | UF | `parent` for every vertex |
+| Union-Find without initializing all stations | UF | `parent` for every vertex |
 | Skip list without cap on level | Skip list | `max_level = 32` typical |
 | Reimplementing deque | Deque | [deque page](../dequeue-deque/index.md) |
 
@@ -357,21 +357,17 @@ flowchart TD
 ## Quick reference card
 
 ```python
-# Union-Find
-uf = UnionFind(teams)
-uf.union("KC", "BAL")
-uf.connected("KC", "BAL")
+uf = UnionFind(stations)
+uf.union("SEA", "PDX")
+uf.connected("SEA", "PDX")
 
-# Bloom filter
 bf = BloomFilter()
-bf.add(play_id)
-bf.might_contain(play_id)  # False → definitely not; True → maybe
+bf.add(reading_id)
+bf.might_contain(reading_id)
 
-# Skip list — ordered search
-sl.search(adp_rank)
+sl.search(timestamp_rank)
 
-# Multiset
-Counter(personnel_strings)
+Counter(sky_codes)
 ```
 
-These **honorable mention** ADTs fill gaps next to the main structure pages—use **Union-Find** for **merging NFL connectivity**, **Bloom filters** for **cheap play-id screens**, and **skip lists** when you want **sorted order** without red–black code.
+These **honorable mention** ADTs fill gaps next to the main structure pages—use **Union-Find** for **merging sensor-network connectivity**, **Bloom filters** for **cheap reading-id screens**, and **skip lists** when you want **sorted order** without red–black code.

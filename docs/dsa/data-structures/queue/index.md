@@ -6,10 +6,10 @@ A **first-in, first-out (FIFO)** collection: the **oldest** enqueued item is the
 | --- | --- |
 | **What it is** | Enqueue at the **rear**, dequeue from the **front**; optional peek at front. |
 | **Core operations** | `enqueue`, `dequeue`, `front` / `peek`. |
-| **When to use** | Play ingest pipelines, BFS on graphs, job workers, buffering streams, level-order tree walks. |
+| **When to use** | Reading ingest pipelines, BFS on graphs, job workers, buffering streams, level-order tree walks. |
 | **Trade-off** | No LIFO at one end only; `list.pop(0)` is O(n)—use `deque` or a proper queue. |
 
-In **NFL data analysis**, queues model **arrival order**: plays from a live feed hit the **back** and analysts or workers take them from the **front**; BFS layers **weeks or drives** when exploring a graph of games; a **job queue** exports charts for each team without starving early requests. Season tables are not a queue—they are random-access storage ([Array-based lists](../array-based-lists/index.md)).
+In **daily weather data analysis**, queues model **arrival order**: readings from a live feed hit the **back** and analysts or workers take them from the **front**; BFS layers **months or station hops** when exploring a graph of observation sites; a **job queue** exports charts for each station without starving early requests. Multi-year archive tables are not a queue—they are random-access storage ([Array-based lists](../array-based-lists/index.md)).
 
 This page is your **ready reference**: every way to build a FIFO queue in Python, list vs linked vs `deque`, full implementations, operation-level complexity, and why **`list.pop(0)` fails** at scale. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
@@ -24,14 +24,14 @@ This page is your **ready reference**: every way to build a FIFO queue in Python
 | **Remove** | Oldest (front) | Newest (top) | Either end O(1) |
 | **Insert for FIFO** | Rear | Top | `append` rear, `appendleft` if reversing |
 | **Python default** | `deque` or `Queue` | `list` | `collections.deque` |
-| **NFL** | Play processing order | Undo tags | Sliding EPA window + FIFO |
+| **Weather** | Reading processing order | Undo labels | Sliding anomaly window + FIFO |
 
 ```mermaid
 flowchart LR
   ENQ["enqueue rear"] --> R["rear"]
   F["front"] --> DEQ["dequeue front"]
   subgraph order["Order preserved"]
-    P1["Play 101"] --> P2["Play 102"] --> P3["Play 103"]
+    P1["Reading 101"] --> P2["Reading 102"] --> P3["Reading 103"]
   end
   F --- P1
   R --- P3
@@ -41,14 +41,14 @@ Throughout this page, **n** is the queue length.
 
 ---
 
-## NFL data analysis: what a queue models
+## Daily weather analysis: what a queue models
 
-| NFL idea | Queue view | Notes |
+| Weather idea | Queue view | Notes |
 | --- | --- | --- |
-| **Live play feed** | Producer `enqueue`; consumer `dequeue` | Preserves kickoff → whistle order |
-| **BFS on games graph** | Queue of `(team, depth)` | Shortest path in unweighted graph |
-| **Export jobs** | “Render team X chart” tasks | Fair worker pool |
-| **Drive replay line** | Plays watched in broadcast order | Not the same as stack undo |
+| **Live reading feed** | Producer `enqueue`; consumer `dequeue` | Preserves midnight → midnight order |
+| **BFS on station graph** | Queue of `(station, depth)` | Shortest path in unweighted graph |
+| **Export jobs** | “Render station X chart” tasks | Fair worker pool |
+| **Timeline replay line** | Readings watched in broadcast order | Not the same as stack undo |
 | **Level-order tree** | Schedule tree nodes by depth | Queue + children |
 
 ```python
@@ -56,18 +56,18 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Play:
-    play_id: int
-    game_id: str
-    quarter: int
-    description: str
-    epa: float
+class DailyReading:
+    reading_id: int
+    station_id: str
+    month: int
+    summary: str
+    temp_anomaly: float
 
 
 @dataclass(frozen=True)
 class ExportJob:
-    team_abbr: str
-    season: int
+    station_id: str
+    year: int
     chart: str
 ```
 
@@ -80,18 +80,18 @@ class ExportJob:
 ```mermaid
 sequenceDiagram
   participant Feed as live feed
-  participant Q as play queue
-  participant Worker as EPA worker
-  Feed->>Q: enqueue(Play 901)
-  Feed->>Q: enqueue(Play 902)
+  participant Q as reading queue
+  participant Worker as anomaly worker
+  Feed->>Q: enqueue(Reading 901)
+  Feed->>Q: enqueue(Reading 902)
   Worker->>Q: dequeue() → 901
   Worker->>Q: dequeue() → 902
 ```
 
-| Operation | FIFO meaning | NFL example |
+| Operation | FIFO meaning | Weather example |
 | --- | --- | --- |
-| `enqueue` | Join the line at rear | New play arrives from API |
-| `dequeue` | Serve front | Worker computes EPA for oldest pending |
+| `enqueue` | Join the line at rear | New reading arrives from API |
+| `dequeue` | Serve front | Worker computes anomaly for oldest pending |
 | `peek` | Look at front, keep queue | Check next without removing |
 
 ---
@@ -103,9 +103,9 @@ sequenceDiagram
 ```python
 from collections import deque
 
-play_queue: deque[Play] = deque()
-play_queue.append(new_play)      # enqueue at rear
-nxt = play_queue.popleft()       # dequeue from front O(1)
+reading_queue: deque[DailyReading] = deque()
+reading_queue.append(new_reading)
+nxt = reading_queue.popleft()
 ```
 
 | | |
@@ -118,8 +118,8 @@ nxt = play_queue.popleft()       # dequeue from front O(1)
 ```python
 from queue import Queue
 
-q: Queue[Play] = Queue()
-q.put(play)
+q: Queue[DailyReading] = Queue()
+q.put(reading)
 p = q.get()
 ```
 
@@ -134,7 +134,7 @@ p = q.get()
 from queue import SimpleQueue
 
 sq: SimpleQueue[ExportJob] = SimpleQueue()
-sq.put(ExportJob("KC", 2024, "epa_bar"))
+sq.put(ExportJob("STN01", 2024, "temp_anomaly_bar"))
 job = sq.get()
 ```
 
@@ -146,9 +146,9 @@ job = sq.get()
 ### 4. Python `list` — enqueue `append`, dequeue `pop(0)` ⚠️
 
 ```python
-q: list[Play] = []
-q.append(play)
-p = q.pop(0)  # O(n) — shifts entire array
+q: list[DailyReading] = []
+q.append(reading)
+p = q.pop(0)
 ```
 
 | | |
@@ -156,7 +156,7 @@ p = q.pop(0)  # O(n) — shifts entire array
 | **Time** | O(1) enqueue; **O(n) dequeue** |
 | **Space** | O(n) |
 
-**Do not** use `pop(0)` in a hot loop over thousands of plays per game.
+**Do not** use `pop(0)` in a hot loop over thousands of readings per month.
 
 ### 5. `ListQueue` wrapper (deque inside)
 
@@ -177,8 +177,8 @@ See [Reference implementation](#reference-implementation-linkedqueue) below.
 import asyncio
 
 async def main() -> None:
-    aq: asyncio.Queue[Play] = asyncio.Queue()
-    await aq.put(Play(1, "2024_01_KC", 1, "kick", 0.0))
+    aq: asyncio.Queue[DailyReading] = asyncio.Queue()
+    await aq.put(DailyReading(1, "STN01", 1, "clear", 0.0))
     p = await aq.get()
 ```
 
@@ -208,21 +208,19 @@ CPython `list` is a **dynamic array**. Index `0` is the front. Removing it **shi
 | 100 | O(100) | O(1) |
 | 10,000 | O(10,000) | O(1) |
 
-Processing **every play** in a game with `list.pop(0)` costs **O(n²)** over the game. `deque` uses a **block chain** in C: pops from the left without shifting the whole sequence.
+Processing **every reading** in a month with `list.pop(0)` costs **O(n²)** over the month. `deque` uses a **block chain** in C: pops from the left without shifting the whole sequence.
 
 ```python
-# Bad — shifts O(n) per play
-plays: list[Play] = []
-plays.append(incoming)
-while plays:
-    process(plays.pop(0))
+readings: list[DailyReading] = []
+readings.append(incoming)
+while readings:
+    process(readings.pop(0))
 
-# Good
 from collections import deque
-plays_q: deque[Play] = deque()
-plays_q.append(incoming)
-while plays_q:
-    process(plays_q.popleft())
+readings_q: deque[DailyReading] = deque()
+readings_q.append(incoming)
+while readings_q:
+    process(readings_q.popleft())
 ```
 
 ```mermaid
@@ -249,8 +247,6 @@ from typing import Any, Iterable, Iterator
 
 
 class DequeQueue:
-    """FIFO queue backed by collections.deque."""
-
     def __init__(self, items: Iterable[Any] | None = None) -> None:
         self._items: deque[Any] = deque(items) if items is not None else deque()
 
@@ -291,7 +287,6 @@ class DequeQueue:
         self._items.extend(items)
 
     def __iter__(self) -> Iterator[Any]:
-        """Front to rear."""
         yield from self._items
 ```
 
@@ -379,8 +374,8 @@ flowchart TB
 
 ```python
 q = DequeQueue()
-q.enqueue(Play(101, "2024_01", 1, "rush", 0.2))
-q.enqueue(Play(102, "2024_01", 1, "pass", 1.1))
+q.enqueue(DailyReading(101, "STN01", 1, "light rain", 0.2))
+q.enqueue(DailyReading(102, "STN01", 1, "cold front", 1.1))
 ```
 
 | | |
@@ -394,7 +389,7 @@ q.enqueue(Play(102, "2024_01", 1, "pass", 1.1))
 
 ```python
 first = q.dequeue()
-assert first.play_id == 101
+assert first.reading_id == 101
 ```
 
 | | |
@@ -402,7 +397,7 @@ assert first.play_id == 101
 | **Time** | O(1) `deque` / linked; **O(n)** `list.pop(0)` |
 | **Space** | O(1) |
 
-**NFL:** Worker always processes the **oldest unprocessed** play in the buffer.
+**Weather:** Worker always processes the **oldest unprocessed** reading in the buffer.
 
 ---
 
@@ -410,7 +405,6 @@ assert first.play_id == 101
 
 ```python
 nxt = q.front()
-# process only if EPA model ready
 ```
 
 | | |
@@ -441,8 +435,8 @@ nxt = q.front()
 ### `clear()` / `extend_enqueue` / iteration
 
 ```python
-for play in q:
-    print(play.play_id)  # front → rear
+for reading in q:
+    print(reading.reading_id)
 ```
 
 | | |
@@ -452,17 +446,17 @@ for play in q:
 
 ---
 
-## NFL patterns with queues
+## Weather patterns with queues
 
-### Live play processor
+### Live reading processor
 
 ```python
-def drain_plays(q: DequeQueue, max_batch: int = 50) -> list[float]:
-    epas: list[float] = []
+def drain_readings(q: DequeQueue, max_batch: int = 50) -> list[float]:
+    anomalies: list[float] = []
     for _ in range(min(max_batch, len(q))):
-        play = q.dequeue()
-        epas.append(play.epa)
-    return epas
+        reading = q.dequeue()
+        anomalies.append(reading.temp_anomaly)
+    return anomalies
 ```
 
 | | |
@@ -470,7 +464,7 @@ def drain_plays(q: DequeQueue, max_batch: int = 50) -> list[float]:
 | **Time** | O(batch) |
 | **Space** | O(batch) |
 
-### BFS — shortest path on unweighted game graph
+### BFS — shortest path on unweighted station graph
 
 ```python
 def bfs(start: str, adj: dict[str, list[str]]) -> dict[str, int]:
@@ -490,9 +484,9 @@ def bfs(start: str, adj: dict[str, list[str]]) -> dict[str, int]:
 | **Time** | O(V + E) |
 | **Space** | O(V) |
 
-**NFL:** Nodes might be teams; edges scheduled games—BFS gives minimum **number of games** in a path sketch (not geographic distance).
+**Weather:** Nodes might be stations; edges shared basins or transfer paths—BFS gives minimum **number of hops** in a path sketch (not geographic distance).
 
-### Level-order traversal of play category tree
+### Level-order traversal of reading category tree
 
 ```python
 def level_order(root: QNode | None) -> list[Any]:
@@ -503,7 +497,7 @@ def level_order(root: QNode | None) -> list[Any]:
     while q:
         node = q.popleft()
         out.append(node.data)
-        if node.next:  # if children modeled as linked list of children nodes
+        if node.next:
             q.append(node.next)
     return out
 ```
@@ -576,7 +570,7 @@ For variable size in Python, prefer `deque` over manual rings unless you are imp
 | Multi-thread workers | `queue.Queue` |
 | Async consumers | `asyncio.Queue` |
 | Process pools | `multiprocessing.Queue` |
-| Priority by week | [Priority queue](../priority-queue/index.md) — not FIFO |
+| Priority by month | [Priority queue](../priority-queue/index.md) — not FIFO |
 
 ---
 
@@ -594,10 +588,10 @@ flowchart TD
 
 | Scenario | Queue | Alternative |
 | --- | --- | --- |
-| Play ingest | `deque` FIFO | — |
+| Reading ingest | `deque` FIFO | — |
 | Undo edits | Stack | — |
-| Last-k EPA window | `deque(maxlen=k)` | [Deque page](../dequeue-deque/index.md) |
-| Sort season by EPA | Not queue | `sorted` / pandas |
+| Last-k anomaly window | `deque(maxlen=k)` | [Deque page](../dequeue-deque/index.md) |
+| Sort archive by anomaly | Not queue | `sorted` / pandas |
 
 ---
 
@@ -605,7 +599,7 @@ flowchart TD
 
 | Pitfall | Why it hurts | Fix |
 | --- | --- | --- |
-| `list.pop(0)` in hot path | O(n²) per game | `deque.popleft()` |
+| `list.pop(0)` in hot path | O(n²) per month | `deque.popleft()` |
 | `deque.pop()` instead of `popleft` | LIFO not FIFO | `popleft` = dequeue |
 | Unbounded queue on fast feed | Memory exhaustion | `maxlen` or drop policy |
 | `Queue.get` without timeout | Blocks forever | `get(timeout=...)` |
@@ -620,9 +614,9 @@ flowchart TD
 
 ```python
 lq = LinkedQueue()
-lq.enqueue(Play(1, "g", 1, "a", 0.0))
-lq.enqueue(Play(2, "g", 1, "b", 0.1))
-assert lq.rear().play_id == 2
+lq.enqueue(DailyReading(1, "STN01", 1, "clear", 0.0))
+lq.enqueue(DailyReading(2, "STN01", 1, "overcast", 0.1))
+assert lq.rear().reading_id == 2
 ```
 
 | | |
@@ -635,9 +629,9 @@ assert lq.rear().play_id == 2
 ### `extend_enqueue` — bulk append at rear
 
 ```python
-batch = [Play(i, "g", 1, "x", 0.0) for i in range(100, 110)]
-for p in batch:
-    lq.enqueue(p)
+batch = [DailyReading(i, "STN01", 1, "overcast", 0.0) for i in range(100, 110)]
+for r in batch:
+    lq.enqueue(r)
 ```
 
 | | |
@@ -656,7 +650,7 @@ for p in batch:
 
 ---
 
-## Threading and async queues (NFL workers)
+## Threading and async queues (weather workers)
 
 ### `queue.Queue` — blocking producer/consumer
 
@@ -664,20 +658,19 @@ for p in batch:
 from queue import Queue
 from threading import Thread
 
-def producer(q: Queue[Play], plays: list[Play]) -> None:
-    for p in plays:
-        q.put(p)
+def producer(q: Queue[DailyReading], readings: list[DailyReading]) -> None:
+    for r in readings:
+        q.put(r)
 
-def consumer(q: Queue[Play]) -> None:
+def consumer(q: Queue[DailyReading]) -> None:
     while True:
-        p = q.get()
-        if p is None:  # sentinel shutdown
+        r = q.get()
+        if r is None:
             break
-        # compute EPA model
         q.task_done()
 
-q: Queue[Play] = Queue(maxsize=1000)
-Thread(target=producer, args=(q, plays)).start()
+q: Queue[DailyReading] = Queue(maxsize=1000)
+Thread(target=producer, args=(q, readings)).start()
 ```
 
 | | |
@@ -685,7 +678,7 @@ Thread(target=producer, args=(q, plays)).start()
 | **Time** | O(1) put/get typical |
 | **Space** | Bounded by `maxsize` |
 
-**NFL:** Back-pressure when live feed outpaces worker—`maxsize` prevents unbounded RAM.
+**Weather:** Back-pressure when live feed outpaces worker—`maxsize` prevents unbounded RAM.
 
 ---
 
@@ -697,13 +690,13 @@ import asyncio
 async def worker(q: asyncio.Queue[ExportJob]) -> None:
     while True:
         job = await q.get()
-        await render_chart(job)
+        await generate_chart(job)
         q.task_done()
 
 async def main() -> None:
     q: asyncio.Queue[ExportJob] = asyncio.Queue()
     asyncio.create_task(worker(q))
-    await q.put(ExportJob("KC", 2024, "epa"))
+    await q.put(ExportJob("STN01", 2024, "temp_anomaly"))
     await q.join()
 ```
 
@@ -723,7 +716,7 @@ For **n = 10,000** dequeues from a growing-then-shrinking queue:
 | `list.pop(0)` | Sum of 1..n → **O(n²)** |
 | `deque.popleft()` | **O(n)** total |
 
-You do not need to benchmark every script—if the queue is **per-game** (hundreds of plays), `list.pop(0)` might “feel fine.” If the queue is **season-long** or **multi-game streaming**, use `deque`.
+You do not need to benchmark every script—if the queue is **per-month** (hundreds of readings), `list.pop(0)` might “feel fine.” If the queue is **year-long** or **multi-station streaming**, use `deque`.
 
 ```mermaid
 flowchart LR
@@ -767,14 +760,14 @@ def zero_one_bfs(start: int, adj: dict[int, list[tuple[int, int]]]) -> dict[int,
 
 ## `DequeQueue` method checklist
 
-| Method | Time | NFL use |
+| Method | Time | Weather use |
 | --- | --- | --- |
-| `enqueue` | O(1) | New play arrives |
+| `enqueue` | O(1) | New reading arrives |
 | `dequeue` | O(1) | Worker takes oldest |
 | `front` / `try_front` | O(1) | Preview next |
 | `rear` | O(1) | Newest in buffer |
-| `extend_enqueue` | O(k) | Bulk load quarter |
-| `clear` | O(1) | Reset on turnover |
+| `extend_enqueue` | O(k) | Bulk load month |
+| `clear` | O(1) | Reset on sensor swap |
 | `contains` | O(n) | Rare sanity check |
 
 ---
@@ -795,22 +788,21 @@ def zero_one_bfs(start: int, adj: dict[int, list[tuple[int, int]]]) -> dict[int,
 ```python
 from collections import deque
 
-q: deque[Play] = deque()
-q.append(play)           # enqueue O(1)
-nxt = q[0]             # peek front O(1)
-p = q.popleft()        # dequeue O(1)
+q: deque[DailyReading] = deque()
+q.append(reading)
+nxt = q[0]
+p = q.popleft()
 
-# Wrapper
 fq = DequeQueue()
-fq.enqueue(ExportJob("BUF", 2024, "success_rate"))
+fq.enqueue(ExportJob("STN02", 2024, "precip_rate"))
 job = fq.dequeue()
 ```
 
-Use a **queue** when **first in, first out** fairness matters—live plays, BFS, job pipes. In Python, **`collections.deque`** is the default implementation; never dequeue with **`list.pop(0)`** at scale.
+Use a **queue** when **first in, first out** fairness matters—live readings, BFS, job pipes. In Python, **`collections.deque`** is the default implementation; never dequeue with **`list.pop(0)`** at scale.
 
-**NFL pipeline checklist**
+**Weather pipeline checklist**
 
 1. **Live feed** — `deque` or `Queue`; producer `append`, worker `popleft`.
 2. **Measure** — if dequeue feels slow, check you are not using `pop(0)`.
-3. **BFS** — `deque` of visited frontier on graph of teams/games.
-4. **Not for** — season sorting, random play access, undo stacks.
+3. **BFS** — `deque` of visited frontier on graph of stations.
+4. **Not for** — archive sorting, random reading access, undo stacks.

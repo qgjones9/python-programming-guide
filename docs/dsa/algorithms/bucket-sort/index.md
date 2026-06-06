@@ -9,25 +9,25 @@ A **distribution sort** that maps each key into one of **m buckets** (usually by
 | **When to use** | Uniform floats in `[0, 1)`, fixed-width bins on normalized metrics, external sort chunks. |
 | **Trade-off** | Needs **extra space** O(n + m); not in-place; worst case Θ(n²) without many buckets. |
 
-In **NFL data analysis**, bucket sort fits **“sort plays by time within a drive”** when snap timestamps spread evenly—you map `t` to bucket `⌊m · (t − t_min) / (t_max − t_min)⌋`. If every play happened in the **same second** (one fat bucket), you fall back to Θ(n²) inner sort. For **season-scale tables**, use **pandas** `sort_values`; bucket sort teaches **distribution** thinking alongside [Radix sort](../radix-sort/index.md).
+In **daily weather data analysis**, bucket sort fits **“sort readings by day-of-year within a month window”** when timestamps spread evenly—you map `t` to bucket `⌊m · (t − t_min) / (t_max − t_min)⌋`. If every reading shares the **same day** (one fat bucket), you fall back to Θ(n²) inner sort. For **archive-scale tables**, use **pandas** `sort_values`; bucket sort teaches **distribution** thinking alongside [Radix sort](../radix-sort/index.md).
 
-This page is your **ready reference**: scatter/gather mechanics, full Python implementations (floats, integers, snaps, players), every creation variant, traces, complexity tables, pitfalls, and NFL patterns. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: scatter/gather mechanics, full Python implementations (floats, integers, readings, stations), every creation variant, traces, complexity tables, pitfalls, and weather patterns. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Algorithms](../index.md)
 
 ---
 
-## How bucket sort fits NFL-shaped problems
+## How bucket sort fits daily weather analysis
 
-| NFL idea | Bucket key | Uniform when |
+| Weather analysis idea | Bucket key | Uniform when |
 | --- | --- | --- |
-| **Snap clock within drive** | Seconds from snap 1 | Spread across quarters |
-| **Normalized air yards** | `yards / max_air` in [0,1) | Many distinct depths |
-| **EPA per play (bounded clip)** | Clip to [-7, 7] then bin | Roughly flat histogram |
-| **Jersey number bins** | 0–99 → 10 buckets | Depends on roster |
+| **Day-of-year within month** | Ordinal day 1..31 | Spread across the month |
+| **Normalized precipitation** | `precip / max_precip` in [0,1) | Many distinct amounts |
+| **Temp anomaly (bounded clip)** | Clip to [-7, 7] then bin | Roughly flat histogram |
+| **Station ID bins** | 0–99 → 10 buckets | Depends on network |
 | **Percentile buckets** | Pre-scaled rank / n | By construction uniform |
 
-**Use `sort_values` or `sorted`** for million-row play tables. **Use bucket sort** when keys are **uniform in a known range** or you are **chunking external sort** on disk.
+**Use `sort_values` or `sorted`** for million-row observation tables. **Use bucket sort** when keys are **uniform in a known range** or you are **chunking external sort** on disk.
 
 ```mermaid
 flowchart TD
@@ -57,7 +57,7 @@ Throughout this page, **n** = number of keys, **m** = number of buckets, **k** =
 | **Space** | O(n + m) | O(log n) stack | O(n + σ) | O(n) |
 | **Stable** | Yes* | No | Yes | Yes |
 | **Range needed** | Often yes | No | Fixed digit alphabet | No |
-| **NFL fit** | Normalized timing | General | Fixed-width ints | Default |
+| **Weather fit** | Normalized timing | General | Fixed-width ints | Default |
 
 *Stable if scatter is FIFO append and inner sort is stable.
 
@@ -69,7 +69,7 @@ sequenceDiagram
   loop each bucket
     B->>B: sort small bucket
   end
-  B-->>Analyst: gather in bucket order
+  B-->>Meteorologist: gather in bucket order
 ```
 
 ---
@@ -103,28 +103,26 @@ flowchart LR
 
 ---
 
-## NFL data types for examples
+## Weather data types for examples
 
 ```python
 from __future__ import annotations
 
 from dataclasses import dataclass
 
+@dataclass(frozen=True, slots=True)
+class DailyReading:
+    reading_id: int
+    month: int
+    day_of_year: float
+    temp_anomaly: float
+    summary: str
 
 @dataclass(frozen=True, slots=True)
-class Snap:
-    play_id: int
-    quarter: int
-    seconds_from_kickoff: float
-    epa: float
-    description: str
-
-
-@dataclass(frozen=True, slots=True)
-class Player:
+class Station:
     name: str
-    jersey: int
-    rush_yds: int
+    station_id: int
+    precip_mm: int
 ```
 
 ---
@@ -158,8 +156,8 @@ bucket_sort_range(times, m=8)
 ### 3. Integer keys 0..max_val with m buckets
 
 ```python
-jerseys = [12, 87, 12, 45, 9]
-bucket_sort_integers(jerseys, max_val=99, m=10)
+station_ids = [12, 87, 12, 45, 9]
+bucket_sort_integers(station_ids, max_val=99, m=10)
 ```
 
 | | |
@@ -167,10 +165,10 @@ bucket_sort_integers(jerseys, max_val=99, m=10)
 | **Time** | Θ(n + m) average |
 | **Space** | O(n + m) |
 
-### 4. Objects with key function (snaps by time)
+### 4. Objects with key function (readings by time)
 
 ```python
-sorted_drive = bucket_sort_snaps_by_time(drive_snaps, m=8)
+sorted_month = bucket_sort_readings_by_day(month_readings, m=8)
 ```
 
 | | |
@@ -222,9 +220,7 @@ from typing import Callable, TypeVar
 
 T = TypeVar("T")
 
-
 def bucket_index(value: float, lo: float, hi: float, m: int) -> int:
-    """Map value in [lo, hi] to bucket in [0, m-1]."""
     span = hi - lo
     if span == 0:
         return 0
@@ -236,9 +232,7 @@ def bucket_index(value: float, lo: float, hi: float, m: int) -> int:
         idx = 0
     return idx
 
-
 def bucket_sort_unit_interval(nums: list[float], m: int | None = None) -> list[float]:
-    """Sort values assumed in [0, 1). Returns new list."""
     if not nums:
         return []
     if m is None:
@@ -255,9 +249,7 @@ def bucket_sort_unit_interval(nums: list[float], m: int | None = None) -> list[f
         out.extend(b)
     return out
 
-
 def bucket_sort_range_inplace(nums: list[float], m: int) -> None:
-    """Sort nums in-place via bucket scatter + gather."""
     if len(nums) <= 1:
         return
     lo, hi = min(nums), max(nums)
@@ -266,9 +258,7 @@ def bucket_sort_range_inplace(nums: list[float], m: int) -> None:
         buckets[bucket_index(x, lo, hi, m)].append(x)
     nums[:] = [x for b in buckets for x in sorted(b)]
 
-
 def bucket_sort_stable(nums: list[float], m: int) -> list[float]:
-    """Stable: FIFO buckets via deque + stable inner sort."""
     if not nums:
         return []
     lo, hi = min(nums), max(nums)
@@ -277,13 +267,11 @@ def bucket_sort_stable(nums: list[float], m: int) -> list[float]:
         buckets[bucket_index(x, lo, hi, m)].append(x)
     out: list[float] = []
     for b in buckets:
-        sorted_chunk = sorted(b)  # stable for equal floats
+        sorted_chunk = sorted(b)
         out.extend(sorted_chunk)
     return out
 
-
 def bucket_sort_integers(nums: list[int], max_val: int, m: int) -> list[int]:
-    """Integers in [0, max_val] into m buckets by range."""
     if not nums:
         return []
     buckets: list[list[int]] = [[] for _ in range(m)]
@@ -292,9 +280,7 @@ def bucket_sort_integers(nums: list[int], max_val: int, m: int) -> list[int]:
         buckets[idx].append(x)
     return [x for b in buckets for x in sorted(b)]
 
-
 def bucket_sort_by_key(items: list[T], m: int, key: Callable[[T], float]) -> list[T]:
-    """Generic bucket sort on key(items[i]) in [min, max]."""
     if not items:
         return []
     keys = [key(x) for x in items]
@@ -308,22 +294,18 @@ def bucket_sort_by_key(items: list[T], m: int, key: Callable[[T], float]) -> lis
         out.extend(b)
     return out
 
-
 @dataclass(frozen=True, slots=True)
-class Snap:
-    play_id: int
-    quarter: int
-    seconds_from_kickoff: float
-    epa: float
-    description: str = ""
+class DailyReading:
+    reading_id: int
+    month: int
+    day_of_year: float
+    temp_anomaly: float
+    summary: str = ""
 
-
-def bucket_sort_snaps_by_time(snaps: list[Snap], m: int) -> list[Snap]:
-    return bucket_sort_by_key(snaps, m, key=lambda s: s.seconds_from_kickoff)
-
+def bucket_sort_readings_by_day(readings: list[DailyReading], m: int) -> list[DailyReading]:
+    return bucket_sort_by_key(readings, m, key=lambda s: s.day_of_year)
 
 def bucket_sort_insertion_inner(nums: list[float], m: int) -> list[float]:
-    """Teaching variant: insertion sort inside each bucket."""
 
     def insertion_sort(arr: list[float]) -> None:
         for i in range(1, len(arr)):
@@ -376,7 +358,6 @@ buckets: list[list[float]] = [[] for _ in range(m)]
 for x in [0.12, 0.91, 0.15, 0.88]:
     idx = min(int(x * m), m - 1)
     buckets[idx].append(x)
-# bucket 0: [0.12, 0.15]; bucket 3: [0.91, 0.88]
 ```
 
 | | |
@@ -399,7 +380,7 @@ sequenceDiagram
 
 ```python
 for b in buckets:
-    b.sort()  # O(k log k) comparison sort
+    b.sort()
 ```
 
 | | |
@@ -430,7 +411,6 @@ for b in buckets:
 
 ```python
 sorted_norm = bucket_sort_unit_interval([0.12, 0.91, 0.15, 0.88], m=4)
-# [0.12, 0.15, 0.88, 0.91]
 ```
 
 | | |
@@ -438,7 +418,7 @@ sorted_norm = bucket_sort_unit_interval([0.12, 0.91, 0.15, 0.88], m=4)
 | **Time** | Θ(n) average uniform |
 | **Space** | O(n + m) |
 
-**NFL:** Normalized **time within drive** after dividing by drive length.
+**Weather:** Normalized **day-of-year within month** after dividing by window length.
 
 ---
 
@@ -461,19 +441,19 @@ Mutates `nums` via reassignment `nums[:] = ...`.
 | **Space** | O(n + m) |
 | **Stability** | Yes — FIFO deque + stable sort |
 
-Use when equal timestamps must keep **play_id** submission order (sort objects with tie key).
+Use when equal timestamps must keep **reading_id** submission order (sort objects with tie key).
 
 ---
 
-### `bucket_sort_snaps_by_time(snaps, m)`
+### `bucket_sort_readings_by_day(readings, m)`
 
 ```python
-drive = [
-    Snap(1, 1, 120.0, 0.1),
-    Snap(2, 1, 3600.0, 0.5),
-    Snap(3, 1, 900.0, -0.2),
+month_window = [
+    DailyReading(1, 1, 120.0, 0.1, "clear"),
+    DailyReading(2, 1, 3600.0, 0.5, "rain"),
+    DailyReading(3, 1, 900.0, -0.2, "overcast"),
 ]
-ordered = bucket_sort_snaps_by_time(drive, m=4)
+ordered = bucket_sort_readings_by_day(month_window, m=4)
 ```
 
 | | |
@@ -485,7 +465,7 @@ ordered = bucket_sort_snaps_by_time(drive, m=4)
 
 ### `bucket_sort_by_key(items, m, key=...)`
 
-Generic pattern for **Player** by `rush_yds`, **Snap** by `epa`, etc.
+Generic pattern for **Station** by `precip_mm`, **DailyReading** by `temp_anomaly`, etc.
 
 | | |
 | --- | --- |
@@ -494,7 +474,7 @@ Generic pattern for **Player** by `rush_yds`, **Snap** by `epa`, etc.
 
 ---
 
-## Trace: four normalized clock times
+## Trace: four normalized day fractions
 
 Keys in `[0, 1)`: `[0.12, 0.91, 0.15, 0.88]`, `m = 4`
 
@@ -522,15 +502,13 @@ flowchart LR
 
 ---
 
-## Trace: clustered NFL timestamps (worst case)
+## Trace: clustered same-day readings (worst case)
 
-All snaps within 0.1 seconds—**one bucket** gets all n items.
+All readings within 0.1 day units—**one bucket** gets all n items.
 
 ```python
 clustered = [100.0, 100.01, 100.02, 100.03, 100.04]
 bucket_sort_range_inplace(clustered, m=8)
-# inner sort on bucket of size 5 → O(5 log 5), OK
-# if m=1 → O(n log n); insertion inner → O(n²)
 ```
 
 | | |
@@ -540,16 +518,16 @@ bucket_sort_range_inplace(clustered, m=8)
 
 ---
 
-## NFL patterns with bucket sort
+## Weather patterns with bucket sort
 
-### Sort one drive by game clock
+### Sort one month window by day-of-year
 
 ```python
-def order_drive(snaps: list[Snap]) -> list[Snap]:
-    if len(snaps) <= 1:
-        return snaps[:]
-    m = max(len(snaps), 4)
-    return bucket_sort_snaps_by_time(snaps, m=m)
+def order_month_window(readings: list[DailyReading]) -> list[DailyReading]:
+    if len(readings) <= 1:
+        return readings[:]
+    m = max(len(readings), 4)
+    return bucket_sort_readings_by_day(readings, m=m)
 ```
 
 | | |
@@ -557,19 +535,19 @@ def order_drive(snaps: list[Snap]) -> list[Snap]:
 | **Time** | Θ(n) average uniform times |
 | **Space** | O(n + m) |
 
-For **single drives** (n < 20), **`sorted(snaps, key=...)`** is simpler—bucket sort illustrates **distribution**.
+For **single month windows** (n < 31), **`sorted(readings, key=...)`** is simpler—bucket sort illustrates **distribution**.
 
 ---
 
-### Histogram-equalized EPA bins (analytics prep)
+### Histogram-equalized anomaly bins (analytics prep)
 
 ```python
-def epa_bins(epas: list[float], m: int = 10) -> list[list[float]]:
-    lo, hi = min(epas), max(epas)
+def anomaly_bins(anomalies: list[float], m: int = 10) -> list[list[float]]:
+    lo, hi = min(anomalies), max(anomalies)
     buckets: list[list[float]] = [[] for _ in range(m)]
-    for x in epas:
+    for x in anomalies:
         buckets[bucket_index(x, lo, hi, m)].append(x)
-    return buckets  # analyze per-bin counts without full sort
+    return buckets
 ```
 
 | | |
@@ -581,11 +559,11 @@ Related to **`pd.cut`** / **`pd.qcut`**—bucket sort is the algorithmic scatter
 
 ---
 
-### Jersey number roster sort (integers 0–99)
+### Station ID station list sort (integers 0–99)
 
 ```python
-jerseys = [12, 87, 12, 45, 9, 99]
-sorted_j = bucket_sort_integers(jerseys, max_val=99, m=10)
+station_ids = [12, 87, 12, 45, 9, 99]
+sorted_ids = bucket_sort_integers(station_ids, max_val=99, m=10)
 ```
 
 | | |
@@ -595,18 +573,18 @@ sorted_j = bucket_sort_integers(jerseys, max_val=99, m=10)
 
 ---
 
-### Stable sort with play_id tie-break
+### Stable sort with reading_id tie-break
 
 ```python
-def stable_snap_sort(snaps: list[Snap], m: int) -> list[Snap]:
+def stable_reading_sort(readings: list[DailyReading], m: int) -> list[DailyReading]:
     return bucket_sort_by_key(
-        snaps,
+        readings,
         m,
-        key=lambda s: (s.seconds_from_kickoff, s.play_id),  # tuple key
+        key=lambda s: (s.day_of_year, s.reading_id),
     )
 ```
 
-Use tuple keys so inner `sort` orders ties by `play_id`.
+Use tuple keys so inner `sort` orders ties by `reading_id`.
 
 | | |
 | --- | --- |
@@ -651,7 +629,7 @@ def hybrid_bucket_sort(nums: list[float], m: int, threshold: int = 32) -> list[f
     out: list[float] = []
     for b in buckets:
         if len(b) > threshold:
-            from quicksort import quicksort  # noqa — illustrative
+            from quicksort import quicksort
             quicksort(b)
         else:
             b.sort()
@@ -670,17 +648,17 @@ def hybrid_bucket_sort(nums: list[float], m: int, threshold: int = 32) -> list[f
 
 | Task | Tool |
 | --- | --- |
-| Full season sort | `df.sort_values("seconds_from_kickoff")` |
+| Full archive sort | `df.sort_values("day_of_year")` |
 | Uniform unit floats teaching | `bucket_sort_unit_interval` |
-| Top-k EPA | `heapq.nlargest` — not bucket sort |
+| Top-k anomaly | `heapq.nlargest` — not bucket sort |
 | Integer digits | [Radix sort](../radix-sort/index.md) |
 | General comparison | `sorted()` |
 
 ```python
 import pandas as pd
 
-df.sort_values(["game_id", "play_id"])
-df["epa_bin"] = pd.cut(df["epa"], bins=10)
+df.sort_values(["station_id", "reading_id"])
+df["anomaly_bin"] = pd.cut(df["temp_anomaly"], bins=10)
 ```
 
 **`pd.qcut`** builds **equal-frequency** buckets—analytics twin to choosing m for uniform **rank** keys.
@@ -707,7 +685,7 @@ Let **n** = keys, **m** = buckets, **k_i** = size of bucket i, **k_max** = max b
 
 ---
 
-## When to use / avoid (NFL context)
+## When to use / avoid (weather context)
 
 ```mermaid
 flowchart TD
@@ -723,10 +701,10 @@ flowchart TD
 
 | Use bucket sort | Avoid bucket sort |
 | --- | --- |
-| Normalized timing in [0,1) | Arbitrary string names |
+| Normalized day-of-year in [0,1) | Arbitrary string names |
 | Fixed histogram bins | Need worst-case Θ(n log n) guarantee alone |
-| External sort teaching | Single small drive—use `sorted` |
-| Uniform simulated metrics | Clustered red-zone timestamps without tuning m |
+| External sort teaching | Single small window—use `sorted` |
+| Uniform simulated metrics | Clustered same-hour readings without tuning m |
 
 ---
 
@@ -739,8 +717,8 @@ flowchart TD
 | Too many buckets | O(m) empty scan | Use √n or n |
 | Unstable inner sort | Tie order lost | Stable sort or deque FIFO |
 | Keys outside [0,1) assumed | Wrong bucket | Clamp or use `bucket_index` |
-| Skewed EPA tail | One fat bucket | Quantile bins, hybrid sort |
-| Sorting player names | No numeric range | Comparison sort |
+| Skewed anomaly tail | One fat bucket | Quantile bins, hybrid sort |
+| Sorting station names | No numeric range | Comparison sort |
 
 ---
 
@@ -759,30 +737,25 @@ flowchart TD
 ## Quick reference card
 
 ```python
-# unit interval floats
 sorted_norm = bucket_sort_unit_interval(normalized, m=len(normalized))
 
-# arbitrary range in-place
 times = [120.5, 3600.0, 900.2]
 bucket_sort_range_inplace(times, m=8)
 
-# snaps by clock
-ordered = bucket_sort_snaps_by_time(drive, m=8)
+ordered = bucket_sort_readings_by_day(month_window, m=8)
 
-# stable
 sorted_stable = bucket_sort_stable(values, m=16)
 
-# production
-df.sort_values("seconds_from_kickoff")
-pd.cut(df["epa"], bins=10)
+df.sort_values("day_of_year")
+pd.cut(df["temp_anomaly"], bins=10)
 ```
 
-**Bucket sort:** **scatter** → **sort buckets** → **gather**—**Θ(n) average** when keys spread evenly; watch **worst-case pile-up** on clustered NFL timestamps. Pair with [Radix sort](../radix-sort/index.md) for digit models; use **pandas** for season tables.
+**Bucket sort:** **scatter** → **sort buckets** → **gather**—**Θ(n) average** when keys spread evenly; watch **worst-case pile-up** on clustered same-day readings. Pair with [Radix sort](../radix-sort/index.md) for digit models; use **pandas** for observation tables.
 
-**NFL pipeline checklist**
+**Weather pipeline checklist**
 
-1. **Full season sort** — `sort_values`, not buckets.
-2. **Normalized drive timing** — bucket sort teaching fit.
+1. **Full archive sort** — `sort_values`, not buckets.
+2. **Normalized month timing** — bucket sort teaching fit.
 3. **Check max bucket size** — hybrid fallback if huge.
 4. **Equal-frequency bins** — `pd.qcut` in analytics.
 5. **Stability on ties** — FIFO buckets + stable inner sort.

@@ -6,12 +6,12 @@ A **double-ended queue** (“deck”): insert and remove at **both** front and b
 | --- | --- |
 | **What it is** | Push/pop at left and right; in Python, `collections.deque` is the standard realization. |
 | **Core operations** | `append`, `appendleft`, `pop`, `popleft`, plus `extend`, `rotate`, `maxlen`. |
-| **When to use** | Sliding EPA windows, palindrome checks, BFS with push-front, steal-from-both-ends algorithms, bounded live buffers. |
+| **When to use** | Sliding anomaly windows, palindrome checks, BFS with push-front, steal-from-both-ends algorithms, bounded live buffers. |
 | **Note** | Pronounced “deck.” Not the verb *dequeue* alone—that usually means remove from a [queue](../queue/index.md). |
 
-In **NFL data analysis**, `deque` is the workhorse for **bounded memory**: last *k* plays’ EPA values, rolling success-rate windows, a **queue** of export jobs at the back while high-priority replays `appendleft`, or rotating a small list of **bye-week candidates**. You get O(1) at both ends without implementing a [doubly linked list](../doubly-linked-list/index.md) in pure Python.
+In **daily weather data analysis**, `deque` is the workhorse for **bounded memory**: last *k* days’ temp anomalies, rolling precipitation windows, a **queue** of export jobs at the back while high-priority backfills `appendleft`, or rotating a small list of **station candidates** on a dashboard. You get O(1) at both ends without implementing a [doubly linked list](../doubly-linked-list/index.md) in pure Python.
 
-This page is your **ready reference**: full `collections.deque` API with NFL examples, hand-rolled deque ADT, complexity on every operation, and when deque beats `list`. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: full `collections.deque` API with weather examples, hand-rolled deque ADT, complexity on every operation, and when deque beats `list`. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
@@ -26,7 +26,7 @@ This page is your **ready reference**: full `collections.deque` API with NFL exa
 | **Index `d[i]`** | O(n) | O(1) | O(n) |
 | **Slice** | No | Yes | No |
 | **maxlen ring** | Built-in | Manual | Manual |
-| **NFL default** | Live windows, FIFO | Column access, stats | Teaching / interviews |
+| **Weather default** | Live windows, FIFO | Column access, stats | Teaching / interviews |
 
 ```mermaid
 flowchart LR
@@ -42,16 +42,16 @@ Throughout this page, **n** is `len(d)`.
 
 ---
 
-## NFL data analysis: what a deque models
+## Daily weather analysis: what a deque models
 
-| NFL idea | Deque pattern | API sketch |
+| Weather idea | Deque pattern | API sketch |
 | --- | --- | --- |
-| **Last 10 plays EPA** | `deque(maxlen=10)` | auto-drop oldest on `append` |
-| **FIFO play queue** | `append` + `popleft` | [Queue](../queue/index.md) |
+| **Last 10 days anomaly** | `deque(maxlen=10)` | auto-drop oldest on `append` |
+| **FIFO reading queue** | `append` + `popleft` | [Queue](../queue/index.md) |
 | **Undo at stack end** | `append` + `pop` | [Stack](../stacks/index.md) |
-| **Insert urgent replay front** | `appendleft` | priority front without full heap |
-| **Rotate starting team list** | `rotate(1)` | bye-week UI carousel |
-| **Palindrome drive sequence** | pop both ends | `"1-2-3-2-1"` style checks |
+| **Insert urgent backfill front** | `appendleft` | priority front without full heap |
+| **Rotate station list** | `rotate(1)` | climatology UI carousel |
+| **Palindrome condition sequence** | pop both ends | `"dry-wet-wet-dry"` style checks |
 
 ```python
 from collections import deque
@@ -59,15 +59,15 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Play:
-    play_id: int
-    epa: float
-    description: str
+class DailyReading:
+    reading_id: int
+    temp_anomaly: float
+    summary: str
 
 
 @dataclass(frozen=True)
-class Team:
-    abbr: str
+class Station:
+    station_id: str
     name: str
 ```
 
@@ -80,7 +80,7 @@ class Team:
 ```python
 from collections import deque
 
-d: deque[Play] = deque()
+d: deque[DailyReading] = deque()
 ```
 
 | | |
@@ -88,12 +88,12 @@ d: deque[Play] = deque()
 | **Time** | O(1) |
 | **Space** | O(1) empty |
 
-### 2. From iterable (plays in drive order)
+### 2. From iterable (readings in chronological order)
 
 ```python
 d = deque([
-    Play(1, 0.1, "rush"),
-    Play(2, 0.8, "pass"),
+    DailyReading(1, 0.1, "light rain"),
+    DailyReading(2, 0.8, "partly cloudy"),
 ])
 ```
 
@@ -105,10 +105,9 @@ d = deque([
 ### 3. Bounded `maxlen` — ring buffer
 
 ```python
-epa_last_5: deque[float] = deque(maxlen=5)
-for epa in [0.1, -0.3, 0.9, 0.2, 1.1, 0.0]:
-    epa_last_5.append(epa)
-# keeps last 5 only: [-0.3, 0.9, 0.2, 1.1, 0.0]
+anomaly_last_5: deque[float] = deque(maxlen=5)
+for anomaly in [0.1, -0.3, 0.9, 0.2, 1.1, 0.0]:
+    anomaly_last_5.append(anomaly)
 ```
 
 | | |
@@ -151,25 +150,24 @@ Official docs: [collections.deque](https://docs.python.org/3/library/collections
 
 ### Adding elements
 
-| Method | Side | Time | NFL example |
+| Method | Side | Time | Weather example |
 | --- | --- | --- | --- |
-| `append(x)` | right | O(1) | New play enters processing queue |
-| `appendleft(x)` | left | O(1) | Urgent replay inserted at front |
-| `extend(iterable)` | right | O(k) | Bulk enqueue k plays |
+| `append(x)` | right | O(1) | New reading enters processing queue |
+| `appendleft(x)` | left | O(1) | Urgent backfill inserted at front |
+| `extend(iterable)` | right | O(k) | Bulk enqueue k readings |
 | `extendleft(iterable)` | left | O(k) | Note: reverses order of iterable |
 
 ```python
 jobs: deque[str] = deque()
-jobs.append("export_KC_epa")
-jobs.appendleft("replay_4021_now")
-jobs.extend(["export_BUF", "export_SF"])
+jobs.append("export_STN01_anomaly")
+jobs.appendleft("backfill_4021_now")
+jobs.extend(["export_STN02", "export_STN03"])
 ```
 
 ```python
-# extendleft reverses — [1,2,3] ends up as 3,2,1 on the left
 d = deque()
 d.extendleft([1, 2, 3])
-list(d)  # [3, 2, 1]
+list(d)
 ```
 
 | `extendleft` | **Time** | **Space** |
@@ -187,7 +185,7 @@ list(d)  # [3, 2, 1]
 | `clear()` | all | O(n) | — |
 
 ```python
-play = jobs.popleft()
+reading = jobs.popleft()
 last = jobs.pop()
 ```
 
@@ -201,9 +199,9 @@ last = jobs.pop()
 ### Inspecting without removal
 
 ```python
-d = deque([Play(1, 0.0, "a"), Play(2, 0.1, "b")])
-assert d[0].play_id == 1
-assert d[-1].play_id == 2
+d = deque([DailyReading(1, 0.0, "clear"), DailyReading(2, 0.1, "overcast")])
+assert d[0].reading_id == 1
+assert d[-1].reading_id == 2
 len(d)
 ```
 
@@ -218,20 +216,20 @@ Use `d[0]` and `d[-1]` for peek front/rear in O(1) in practice for ends.
 ### Rotation
 
 ```python
-teams: deque[str] = deque(["KC", "BUF", "SF", "PHI"])
-teams.rotate(1)   # PHI moves to front (right shift)
-teams.rotate(-1)  # KC moves to back (left shift)
+stations: deque[str] = deque(["STN01", "STN02", "STN03", "STN04"])
+stations.rotate(1)
+stations.rotate(-1)
 ```
 
 | `rotate(k)` | **Time** | **Space** |
 | --- | --- | --- |
 | | O(k) or O(min(k, n-k)) in CPython | O(1) |
 
-**NFL:** Rotate **featured team** in a sidebar without rebuilding the list.
+**Weather:** Rotate **featured station** in a sidebar without rebuilding the list.
 
 ```mermaid
 sequenceDiagram
-  participant D as deque teams
+  participant D as deque stations
   D->>D: rotate(1)
   Note over D: right end becomes left — carousel step
 ```
@@ -248,7 +246,7 @@ window.append(1.0)
 window.append(2.0)
 window.append(3.0)
 window.append(4.0)
-list(window)  # [2.0, 3.0, 4.0]
+list(window)
 ```
 
 | | |
@@ -256,7 +254,7 @@ list(window)  # [2.0, 3.0, 4.0]
 | **Time** | O(1) |
 | **Space** | O(maxlen) |
 
-**NFL:** Rolling **EPA** or success rate for the last *k* snaps in a drive.
+**Weather:** Rolling **temp anomaly** or precipitation rate for the last *k* days in a month window.
 
 ---
 
@@ -277,7 +275,7 @@ list(window)  # [2.0, 3.0, 4.0]
 ### Iteration and copying
 
 ```python
-for play in d:
+for reading in d:
     ...
 reversed_d = deque(reversed(d))
 d_copy = deque(d)
@@ -293,8 +291,8 @@ d_copy = deque(d)
 ### `remove(value)` and `count(value)`
 
 ```python
-d.remove(Play(2, 0.1, "b"))  # removes first match — O(n)
-d.count(Play(2, 0.1, "b"))
+d.remove(DailyReading(2, 0.1, "overcast"))
+d.count(DailyReading(2, 0.1, "overcast"))
 ```
 
 | | |
@@ -302,7 +300,7 @@ d.count(Play(2, 0.1, "b"))
 | **Time** | O(n) |
 | **Space** | O(1) |
 
-Equality must match; frozen `Play` dataclasses work if same fields.
+Equality must match; frozen `DailyReading` dataclasses work if same fields.
 
 ---
 
@@ -318,8 +316,6 @@ from typing import Any, Iterable, Iterator
 
 
 class DequeADT:
-    """Double-ended queue — wraps collections.deque."""
-
     def __init__(self, items: Iterable[Any] | None = None, maxlen: int | None = None) -> None:
         self._d: deque[Any] = deque(items, maxlen=maxlen)
 
@@ -392,15 +388,15 @@ flowchart TB
 
 ---
 
-## NFL patterns with deque
+## Weather patterns with deque
 
-### Rolling EPA window (maxlen)
+### Rolling anomaly window (maxlen)
 
 ```python
-def rolling_mean(epas: Iterable[float], k: int) -> list[float]:
+def rolling_mean(anomalies: Iterable[float], k: int) -> list[float]:
     window: deque[float] = deque(maxlen=k)
     means: list[float] = []
-    for x in epas:
+    for x in anomalies:
         window.append(x)
         means.append(sum(window) / len(window))
     return means
@@ -422,7 +418,7 @@ def bfs_zero(grid: list[list[int]], start: tuple[int, int]) -> int:
     while q:
         for _ in range(len(q)):
             r, c = q.popleft()
-            if grid[r][c] == 9:  # end zone marker
+            if grid[r][c] == 9:
                 return dist
             for dr, dc in ((0, 1), (0, -1), (1, 0), (-1, 0)):
                 nr, nc = r + dr, c + dc
@@ -438,17 +434,17 @@ def bfs_zero(grid: list[list[int]], start: tuple[int, int]) -> int:
 | **Time** | O(rows · cols) |
 | **Space** | O(frontier) |
 
-### Palindrome drive types (both ends)
+### Palindrome condition sequence (both ends)
 
 ```python
-def is_palindrome_drive(types: deque[str]) -> bool:
-    while len(types) > 1:
-        if types.popleft() != types.pop():
+def is_palindrome_conditions(conditions: deque[str]) -> bool:
+    while len(conditions) > 1:
+        if conditions.popleft() != conditions.pop():
             return False
     return True
 
-d = deque(["run", "pass", "pass", "run"])
-assert is_palindrome_drive(d)
+d = deque(["dry", "wet", "wet", "dry"])
+assert is_palindrome_conditions(d)
 ```
 
 | | |
@@ -456,20 +452,20 @@ assert is_palindrome_drive(d)
 | **Time** | O(n) |
 | **Space** | O(1) extra |
 
-### Monotonic deque — sliding window maximum EPA
+### Monotonic deque — sliding window maximum anomaly
 
 ```python
-def sliding_max(epas: list[float], k: int) -> list[float]:
-    dq: deque[int] = deque()  # indices, decreasing epas
+def sliding_max(anomalies: list[float], k: int) -> list[float]:
+    dq: deque[int] = deque()
     out: list[float] = []
-    for i, x in enumerate(epas):
-        while dq and epas[dq[-1]] <= x:
+    for i, x in enumerate(anomalies):
+        while dq and anomalies[dq[-1]] <= x:
             dq.pop()
         dq.append(i)
         if dq[0] <= i - k:
             dq.popleft()
         if i >= k - 1:
-            out.append(epas[dq[0]])
+            out.append(anomalies[dq[0]])
     return out
 ```
 
@@ -503,10 +499,10 @@ def sliding_max(epas: list[float], k: int) -> list[float]:
 
 | Need | Use |
 | --- | --- |
-| Production NFL scripts | `collections.deque` |
+| Production weather scripts | `collections.deque` |
 | Interview “implement deque” | Doubly linked nodes + head/tail |
 | Random access by index in hot loop | `list` |
-| Sorted season table | pandas |
+| Sorted archive table | pandas |
 
 ---
 
@@ -526,36 +522,36 @@ flowchart TD
 | `pop(0)` on list | `popleft` |
 | `extendleft` order surprise | Remember reversal |
 | Huge `rotate(n)` | `n %= len(d)` mentally |
-| Storing season in deque | Use DataFrame; deque for windows |
+| Storing archive in deque | Use DataFrame; deque for windows |
 
 ---
 
-## Worked example: drive replay buffer
+## Worked example: month replay buffer
 
-Model the last **20** plays of a drive with automatic eviction:
+Model the last **20** readings of a month window with automatic eviction:
 
 ```python
 from collections import deque
 
-drive_replay: deque[Play] = deque(maxlen=20)
+month_replay: deque[DailyReading] = deque(maxlen=20)
 
-def on_new_snap(play: Play) -> None:
-    drive_replay.append(play)
+def on_new_reading(reading: DailyReading) -> None:
+    month_replay.append(reading)
 
-def last_k_epa(k: int) -> list[float]:
-    return [p.epa for p in list(drive_replay)[-k:]]
+def last_k_anomaly(k: int) -> list[float]:
+    return [r.temp_anomaly for r in list(month_replay)[-k:]]
 ```
 
 | Step | `len` | Oldest retained |
 | --- | --- | --- |
-| append 21st play | 20 | 2nd play dropped |
+| append 21st reading | 20 | 2nd reading dropped |
 
 ```mermaid
 sequenceDiagram
   participant Feed
   participant D as deque maxlen=20
-  Feed->>D: append(play_21)
-  D->>D: drop play_1 from left
+  Feed->>D: append(reading_21)
+  D->>D: drop reading_1 from left
   Note over D: O(1) — no manual index
 ```
 
@@ -579,20 +575,20 @@ sequenceDiagram
 
 ## Chaining two bounded windows
 
-Success-rate window (pass vs run) plus EPA window:
+Precipitation-condition window plus anomaly window:
 
 ```python
-play_types: deque[str] = deque(maxlen=50)
-epas: deque[float] = deque(maxlen=50)
+conditions: deque[str] = deque(maxlen=50)
+anomalies: deque[float] = deque(maxlen=50)
 
-def ingest(play: Play) -> None:
-    play_types.append("pass" if "pass" in play.description.lower() else "run")
-    epas.append(play.epa)
+def ingest(reading: DailyReading) -> None:
+    conditions.append("wet" if "rain" in reading.summary.lower() else "dry")
+    anomalies.append(reading.temp_anomaly)
 
-def pass_rate() -> float:
-    if not play_types:
+def wet_rate() -> float:
+    if not conditions:
         return 0.0
-    return sum(1 for t in play_types if t == "pass") / len(play_types)
+    return sum(1 for c in conditions if c == "wet") / len(conditions)
 ```
 
 | | |
@@ -607,11 +603,10 @@ Maintain running counts if you need O(1) rate after each ingest.
 ## `extend` vs loop `append`
 
 ```python
-d: deque[Play] = deque()
-d.extend(plays_from_drive)  # O(k) one call
-# equivalent to:
-for p in plays_from_drive:
-    d.append(p)
+d: deque[DailyReading] = deque()
+d.extend(readings_from_month)
+for r in readings_from_month:
+    d.append(r)
 ```
 
 | | |
@@ -633,14 +628,23 @@ for p in plays_from_drive:
 
 ---
 
-## NFL export job deque with `maxlen` on pending
+## Weather export job deque with `maxlen` on pending
 
 Cap pending charts so a slow renderer does not exhaust RAM:
 
 ```python
+from dataclasses import dataclass
+from collections import deque
+
+
+@dataclass(frozen=True)
+class ExportJob:
+    station_id: str
+    year: int
+    chart: str
+
 pending: deque[ExportJob] = deque(maxlen=100)
-pending.append(ExportJob("DET", 2024, "rush_epa"))
-# 101st append drops oldest job — document policy for dropped jobs
+pending.append(ExportJob("STN05", 2024, "precip_anomaly"))
 ```
 
 | Policy | Behavior |
@@ -651,37 +655,36 @@ pending.append(ExportJob("DET", 2024, "rush_epa"))
 
 ---
 
-## Side-by-side: `list` vs `deque` for NFL ingest
+## Side-by-side: `list` vs `deque` for weather ingest
 
 | Action | `list` | `deque` |
 | --- | --- | --- |
-| Add newest play at end | `append` O(1) | `append` O(1) |
+| Add newest reading at end | `append` O(1) | `append` O(1) |
 | Process oldest first | `pop(0)` **O(n)** | `popleft` O(1) |
 | Insert urgent at front | `insert(0, x)` **O(n)** | `appendleft` O(1) |
-| Index `plays[i]` in loop | O(1) | O(n) at ends only fast |
-| Slice `plays[10:20]` | Yes | No slice on deque |
+| Index `readings[i]` in loop | O(1) | O(n) at ends only fast |
+| Slice `readings[10:20]` | Yes | No slice on deque |
 
 ```python
-# Same logical FIFO — different costs
-def drain_list_bad(q: list[Play]) -> None:
+def drain_list_bad(q: list[DailyReading]) -> None:
     while q:
         process(q.pop(0))
 
-def drain_deque_good(q: deque[Play]) -> None:
+def drain_deque_good(q: deque[DailyReading]) -> None:
     while q:
         process(q.popleft())
 ```
 
 ---
 
-## `rotate` and bye-week carousel (detailed)
+## `rotate` and station carousel (detailed)
 
 ```python
-bye_rotation: deque[str] = deque(
-    ["KC", "LAC", "DEN", "LV"]  # AFC West toy order
+station_rotation: deque[str] = deque(
+    ["STN01", "STN02", "STN03", "STN04"]
 )
-bye_rotation.rotate(1)   # LV now at front for display
-bye_rotation.rotate(-1)  # undo one step
+station_rotation.rotate(1)
+station_rotation.rotate(-1)
 ```
 
 | `rotate(n)` | Effect |
@@ -690,13 +693,13 @@ bye_rotation.rotate(-1)  # undo one step
 | `n < 0` | Left rotation |
 | `n == 0` | No-op |
 
-For **n** teams, `rotate(k)` is O(k); use `k %= len(d)` mentally when k can be huge.
+For **n** stations, `rotate(k)` is O(k); use `k %= len(d)` mentally when k can be huge.
 
 ```mermaid
 flowchart LR
-  A["KC"] --> B["LAC"] --> C["DEN"] --> D["LV"]
+  A["STN01"] --> B["STN02"] --> C["STN03"] --> D["STN04"]
   D --> A
-  rotate1["rotate(1)"] --> A2["LV"] --> B2["KC"] --> C2["LAC"] --> D2["DEN"]
+  rotate1["rotate(1)"] --> A2["STN04"] --> B2["STN01"] --> C2["STN02"] --> D2["STN03"]
   D2 --> A2
 ```
 
@@ -707,15 +710,13 @@ flowchart LR
 Document your convention in module docstring:
 
 ```python
-# stack_top = right end
-history: deque[TagEdit] = deque()
-history.append(edit)       # push
-history.pop()              # pop stack
+history: deque[LabelEdit] = deque()
+history.append(edit)
+history.pop()
 
-# fifo_queue: left = front, right = rear
-fifo: deque[Play] = deque()
-fifo.append(play)          # enqueue
-fifo.popleft()             # dequeue
+fifo: deque[DailyReading] = deque()
+fifo.append(reading)
+fifo.popleft()
 ```
 
 Mixing both patterns on the **same** deque without discipline causes subtle bugs.
@@ -725,11 +726,10 @@ Mixing both patterns on the **same** deque without discipline causes subtle bugs
 ## `__getitem__` and slicing limitations
 
 ```python
-d = deque([Play(i, 0.0, "x") for i in range(5)])
-assert d[0].play_id == 0
-assert d[-1].play_id == 4
-# d[1:3]  # TypeError: sequence index must be integer
-middle = list(d)[1:3]  # O(n) copy if slice needed
+d = deque([DailyReading(i, 0.0, "overcast") for i in range(5)])
+assert d[0].reading_id == 0
+assert d[-1].reading_id == 4
+middle = list(d)[1:3]
 ```
 
 | Access | Time |
@@ -738,13 +738,13 @@ middle = list(d)[1:3]  # O(n) copy if slice needed
 | `d[i]` middle | O(n) |
 | slice | Not supported — materialize `list(d)` |
 
-For NFL replay UIs that need **random access** to snap index *i* in a drive, keep a **`list`** alongside a `deque` window, or use only `list` for the drive.
+For weather replay UIs that need **random access** to reading index *i* in a month window, keep a **`list`** alongside a `deque` window, or use only `list` for the month.
 
 ---
 
 ## Official documentation
 
-Python’s deque is documented in the standard library: [collections.deque](https://docs.python.org/3/library/collections.html#collections.deque). Prefer that page for edge cases (thread safety notes, version changes) alongside this guide’s NFL-oriented patterns.
+Python’s deque is documented in the standard library: [collections.deque](https://docs.python.org/3/library/collections.html#collections.deque). Prefer that page for edge cases (thread safety notes, version changes) alongside this guide’s weather-oriented patterns.
 
 | Doc topic | Why read it |
 | --- | --- |
@@ -770,31 +770,27 @@ Python’s deque is documented in the standard library: [collections.deque](http
 ```python
 from collections import deque
 
-# Unbounded FIFO
-q: deque[Play] = deque()
-q.append(play)
+q: deque[DailyReading] = deque()
+q.append(reading)
 p = q.popleft()
 
-# Bounded EPA window
 w: deque[float] = deque(maxlen=10)
-w.append(play.epa)
+w.append(reading.temp_anomaly)
 
-# Both ends
-d = deque(["KC", "BUF"])
-d.appendleft("PHI")
+d = deque(["STN01", "STN02"])
+d.appendleft("STN03")
 d.rotate(1)
 
-# Stack at right
-st: deque[Play] = deque()
-st.append(play)
+st: deque[DailyReading] = deque()
+st.append(reading)
 st.pop()
 ```
 
-Use **`collections.deque`** whenever you need **O(1) at both ends**—queues, stacks, rolling NFL windows, rotations, and BFS. Avoid **`list.pop(0)`** and **`list.insert(0, ...)`** in performance-sensitive ingest paths.
+Use **`collections.deque`** whenever you need **O(1) at both ends**—queues, stacks, rolling weather windows, rotations, and BFS. Avoid **`list.pop(0)`** and **`list.insert(0, ...)`** in performance-sensitive ingest paths.
 
-**NFL pipeline checklist**
+**Weather pipeline checklist**
 
 1. **Rolling metrics** — `deque(maxlen=k)`.
-2. **Play queue** — `append` + `popleft`.
+2. **Reading queue** — `append` + `popleft`.
 3. **Urgent front insert** — `appendleft` once, not `list.insert(0)`.
-4. **Carousel** — `rotate` on small team deques.
+4. **Carousel** — `rotate` on small station deques.

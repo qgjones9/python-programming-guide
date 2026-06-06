@@ -9,39 +9,39 @@ A **binary search tree** ordered by **key**, where each node also carries a **ra
 | **When to use** | Teaching randomized balance, mergeable ordered sets, competitive-programming split/join, or when you want simpler code than red–black with similar expected performance. |
 | **Trade-off** | Expected—not worst-case—O(log n) height; randomness required; not in CPython’s `dict`/`set` (those use hash tables). |
 
-In **NFL data analysis**, a treap is a strong mental model for a **mutable ordered leaderboard**: players ranked by season yards with fast insert/delete as weeks update, or a **fantasy draft order** where you split “already picked” vs “still available” by ADP threshold. You will still use **pandas** for season-scale tables—treaps shine for **dynamic ordered sets** where you also want **split/merge** drills (e.g. “all QBs with rank ≤ 12” vs the rest).
+In **daily weather data analysis**, a treap is a strong mental model for a **mutable ordered leaderboard**: stations ranked by monthly anomaly with fast insert/delete as new readings arrive, or a **station priority list** where you split “above-threshold anomalies” vs “below threshold” by a cutoff value. You will still use **pandas** for multi-year tables—treaps shine for **dynamic ordered sets** where you also want **split/merge** drills (e.g. “all stations with rank ≤ 12” vs the rest).
 
-This page is your **ready reference**: structure, a complete Python implementation, every way to create it, every method with NFL-flavored examples, and **time and space complexity** on each operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: structure, a complete Python implementation, every way to create it, every method with daily weather examples, and **time and space complexity** on each operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How treaps fit NFL-shaped problems
+## How treaps fit daily weather analysis
 
-| NFL idea | Treap view | Why treap helps |
+| Weather analysis idea | Treap view | Why treap helps |
 | --- | --- | --- |
-| **Season yards leaderboard** | Keys = `(yards, player_id)`; values = row | Expected O(log n) insert as new games land |
-| **Fantasy draft board** | Keys = ADP rank; split at pick #N | Split separates taken vs available in O(log n) expected |
-| **Cap-hit sorted roster** | Keys = salary; range = “under $5M” | Walk in-order for cap planning slice |
-| **Merge two conferences’ rankings** | Two treaps sorted by wins | `merge` combines ordered sets if priorities are re-drawn |
+| **Monthly anomaly leaderboard** | Keys = `(anomaly, station_id)`; values = row | Expected O(log n) insert as new readings land |
+| **Station priority board** | Keys = rank; split at station #N | Split separates top-N vs rest in O(log n) expected |
+| **Cost-tier station index** | Keys = maintenance cost; range = “under budget” | Walk in-order for budget planning slice |
+| **Merge two regional rankings** | Two treaps sorted by anomaly | `merge` combines ordered sets if priorities are re-drawn |
 | **Randomized balance lesson** | Same keys, different random priorities → different shapes, same expected depth | Explains why “random BST” is O(log n) on average |
 
-**Use pandas or a sorted `list`** when you run one bulk sort per week and rarely insert mid-season. **Use a treap (or `sortedcontainers`, red–black tree)** when the set **changes often** and you need **order statistics** or **split** at a key boundary.
+**Use pandas or a sorted `list`** when you run one bulk sort per month and rarely insert mid-season. **Use a treap (or `sortedcontainers`, red–black tree)** when the set **changes often** and you need **order statistics** or **split** at a key boundary.
 
 ```mermaid
 flowchart TB
   subgraph treap["Treap: BST on key, max-heap on priority"]
-    R["key=24 p=90<br/>Mahomes"]
-    L["key=12 p=40<br/>Allen"]
-    RR["key=31 p=55<br/>Hurts"]
+    R["key=24 p=90<br/>KSEA"]
+    L["key=12 p=40<br/>KPDX"]
+    RR["key=31 p=55<br/>KBOI"]
     R --> L
     R --> RR
   end
   note["In-order keys ↑; parent priority ≥ children"]
 ```
 
-Throughout this page, **n** is the number of nodes (e.g. players on a treap). **h** is height; for a treap, **E[h] = O(log n)**.
+Throughout this page, **n** is the number of nodes (e.g. stations on a treap). **h** is height; for a treap, **E[h] = O(log n)**.
 
 ---
 
@@ -54,16 +54,16 @@ Throughout this page, **n** is the number of nodes (e.g. players on a treap). **
 | **Expected search** | O(log n) | O(log n) if random insert | O(log n) | O(1) average |
 | **Split / merge** | Natural teaching path | Awkward | Harder | Not ordered |
 | **Ordered iteration** | O(n) in-order | O(n) | O(n) | N/A for plain `set` |
-| **NFL fit** | Dynamic draft splits | Unbalanced if sorted insert | Library-grade maps | `player_id` membership |
+| **Weather fit** | Dynamic anomaly splits | Unbalanced if sorted insert | Library-grade maps | `station_id` membership |
 
 ```mermaid
 sequenceDiagram
-  participant GM as fantasy GM
-  participant T as draft treap
-  GM->>T: split at pick 12
-  T-->>GM: left = top 12 ADP
-  T-->>GM: right = rest of board
-  GM->>T: merge after trade
+  participant Analyst as weather analyst
+  participant T as station treap
+  Analyst->>T: split at rank 12
+  T-->>Analyst: left = top 12 stations
+  T-->>Analyst: right = rest of board
+  Analyst->>T: merge after region combine
 ```
 
 ---
@@ -84,12 +84,11 @@ V = TypeVar("V")
 
 
 @dataclass
-class PlayerRow:
-    """Minimal player record for examples."""
-    player_id: str
-    name: str
-    position: str
-    season_yards: int
+class DailyReading:
+    reading_id: str
+    station: str
+    month: int
+    temp_anomaly: float
 
 
 @dataclass
@@ -124,7 +123,7 @@ flowchart LR
 ### 1. Empty treap — root is `None`
 
 ```python
-root: TreapNode[str, PlayerRow] | None = None
+root: TreapNode[str, DailyReading] | None = None
 ```
 
 | | |
@@ -140,7 +139,7 @@ class Treap(Generic[K, V]):
         self.root: TreapNode[K, V] | None = None
         self._size = 0
 
-board = Treap[int, str]()  # ADP rank -> player name
+board = Treap[int, str]()
 assert board.is_empty()
 ```
 
@@ -154,7 +153,7 @@ assert board.is_empty()
 ```python
 root = TreapNode(
     key=1,
-    value="Patrick Mahomes",
+    value="KSEA",
     priority=random.randint(1, 10**9),
 )
 ```
@@ -175,12 +174,12 @@ def build_treap(items: list[tuple[K, V]]) -> TreapNode[K, V] | None:
         root = treap_insert(root, key, value)
     return root
 
-draft = [
-    (1, "Ja'Marr Chase"),
-    (2, "Justin Jefferson"),
-    (3, "CeeDee Lamb"),
+stations = [
+    (1, "KSEA"),
+    (2, "KPDX"),
+    (3, "KBOI"),
 ]
-root = build_treap(draft)
+root = build_treap(stations)
 ```
 
 | | |
@@ -190,13 +189,13 @@ root = build_treap(draft)
 
 ### 5. Build from sorted keys (still OK for treap)
 
-Each insert draws a **new random priority** and rotates; expected height stays logarithmic unlike a naive BST on sorted ADP.
+Each insert draws a **new random priority** and rotates; expected height stays logarithmic unlike a naive BST on sorted ranks.
 
 ```python
-sorted_by_yards = sorted(roster, key=lambda p: (-p.season_yards, p.player_id))
-treap = Treap[tuple[int, str], PlayerRow]()
-for p in sorted_by_yards:
-    treap.insert((p.season_yards, p.player_id), p)
+sorted_by_anomaly = sorted(stations, key=lambda s: (-s.temp_anomaly, s.reading_id))
+treap = Treap[tuple[int, str], DailyReading]()
+for s in sorted_by_anomaly:
+    treap.insert((s.temp_anomaly, s.reading_id), s)
 ```
 
 | | |
@@ -206,7 +205,7 @@ for p in sorted_by_yards:
 
 ### 6. Merge two treaps (same key type, all keys in left < all in right)
 
-Classic use: combine “AFC leaders” treap with “NFC leaders” treap when every AFC key is less than every NFC key (e.g. composite key with conference prefix).
+Classic use: combine “coastal region” treap with “inland region” treap when every coastal key is less than every inland key (e.g. composite key with region prefix).
 
 | | |
 | --- | --- |
@@ -348,7 +347,6 @@ def treap_split(
 def treap_merge(
     left: TreapNode[K, V] | None, right: TreapNode[K, V] | None
 ) -> TreapNode[K, V] | None:
-    """Merge when every key in left < every key in right."""
     if left is None:
         return right
     if right is None:
@@ -442,15 +440,15 @@ class Treap(Generic[K, V]):
 
 ## Split and merge (concept)
 
-**Split** at fantasy pick 12: left treap = ADP 1–11, right = 12+.
+**Split** at station rank 12: left treap = ranks 1–11, right = 12+.
 
 ```mermaid
 flowchart TB
-  T["Full draft treap"]
+  T["Full station treap"]
   T --> S{"split(12)"}
   S --> L["Left: keys < 12"]
   S --> R["Right: keys ≥ 12"]
-  L --> M["merge after trade"]
+  L --> M["merge after region combine"]
   R --> M
   M --> T2["Combined board"]
 ```
@@ -462,13 +460,13 @@ flowchart TB
 
 ---
 
-## All operations (NFL examples + complexity)
+## All operations (daily weather examples + complexity)
 
-### `search(key)` — lookup player by composite rank key
+### `search(key)` — lookup station by composite rank key
 
 ```python
-yards_key = (1523, "WR-jefferson")
-row = treap.search(yards_key)
+anomaly_key = (1523, "R-pdx")
+row = treap.search(anomaly_key)
 ```
 
 | | |
@@ -476,10 +474,10 @@ row = treap.search(yards_key)
 | **Time** | O(h) worst; **O(log n)** expected |
 | **Space** | O(1) iterative |
 
-### `insert(key, value)` — add week 5 stats
+### `insert(key, value)` — add month 5 reading
 
 ```python
-treap.insert((890, "RB-mccaffrey"), PlayerRow("RB-mccaffrey", "McCaffrey", "RB", 890))
+treap.insert((890, "R-boi"), DailyReading("R-boi", "KBOI", 5, 890))
 ```
 
 | | |
@@ -487,18 +485,18 @@ treap.insert((890, "RB-mccaffrey"), PlayerRow("RB-mccaffrey", "McCaffrey", "RB",
 | **Time** | O(log n) expected (rotations along path) |
 | **Space** | O(1) new node + O(log n) recursion if recursive |
 
-### `delete(key)` — player traded out of pool
+### `delete(key)` — station removed from active set
 
 | | |
 | --- | --- |
 | **Time** | O(log n) expected |
 | **Space** | O(log n) stack if recursive |
 
-### In-order iteration — print leaderboard
+### In-order iteration — print anomaly leaderboard
 
 ```python
-for (yards, pid), row in treap:
-    print(f"{row.name}: {yards}")
+for (anomaly, rid), row in treap:
+    print(f"{row.station}: {anomaly}")
 ```
 
 | | |
@@ -506,7 +504,7 @@ for (yards, pid), row in treap:
 | **Time** | Θ(n) |
 | **Space** | O(h) stack |
 
-### `split(pick_number)` — fantasy “top 12” vs rest
+### `split(rank)` — “top 12 stations” vs rest
 
 ```python
 top12, rest = board.split(12)
@@ -524,7 +522,7 @@ top12, rest = board.split(12)
 | **Time** | O(log n) expected |
 | **Space** | O(log n) |
 
-### `min_key` / `max_key` — worst ADP still on board
+### `min_key` / `max_key` — lowest rank still on board
 
 | | |
 | --- | --- |
@@ -533,22 +531,20 @@ top12, rest = board.split(12)
 
 ---
 
-## NFL application: randomized fantasy draft treap
+## Daily weather application: randomized station priority treap
 
-Model each drafter’s **available players** as a treap keyed by **ADP**. On pick, `delete(key)`. To show “next 5 best ADP”, walk from `min_key` in-order five steps.
+Model each analyst’s **active stations** as a treap keyed by **priority rank**. On selection, `delete(key)`. To show “next 5 highest-priority stations”, walk from `min_key` in-order five steps.
 
 ```python
 available = Treap[int, str]()
-for adp, name in load_adp_csv():
-    available.insert(adp, name)
+for rank, station in load_station_csv():
+    available.insert(rank, station)
 
-pick = 12
-available.delete(pick)
+selected = 12
+available.delete(selected)
 next_up = []
-node = available.root
-# walk to min then in-order k steps — or iterate
-for adp, name in available:
-    next_up.append(name)
+for rank, station in available:
+    next_up.append(station)
     if len(next_up) == 5:
         break
 ```
@@ -560,15 +556,15 @@ for adp, name in available:
 
 ---
 
-## NFL application: live yards leaderboard
+## Daily weather application: live anomaly leaderboard
 
-Keys `(season_yards, player_id)` keep yards primary and break ties by id. Updates each week: `delete` old key, `insert` new yards.
+Keys `(temp_anomaly, reading_id)` keep anomaly primary and break ties by id. Updates each month: `delete` old key, `insert` new anomaly.
 
 ```python
-leaders = Treap[tuple[int, str], PlayerRow]()
-def update_player(row: PlayerRow) -> None:
-    old = leaders.search((row.season_yards, row.player_id))  # if tracking old key separately
-    leaders.insert((row.season_yards, row.player_id), row)
+leaders = Treap[tuple[int, str], DailyReading]()
+def update_station(row: DailyReading) -> None:
+    old = leaders.search((row.temp_anomaly, row.reading_id))
+    leaders.insert((row.temp_anomaly, row.reading_id), row)
 ```
 
 | | |
@@ -590,14 +586,13 @@ CPython has **no treap** in the standard library. Practical mappings:
 | Interview / learning | This page’s `Treap` |
 
 ```python
-# Production: bulk sort once per week
 import pandas as pd
 
-df = pd.read_csv("receiving_yards.csv")
-top = df.sort_values("yards", ascending=False).head(10)
+df = pd.read_csv("monthly_anomalies.csv")
+top = df.sort_values("temp_anomaly", ascending=False).head(10)
 ```
 
-**Rule of thumb:** ship **pandas** for NFL season tables; implement **treap** to learn randomized BSTs and **split/merge**.
+**Rule of thumb:** ship **pandas** for weather season tables; implement **treap** to learn randomized BSTs and **split/merge**.
 
 ---
 
@@ -621,7 +616,7 @@ Let **n** = number of nodes.
 
 ---
 
-## When to pick which structure (NFL context)
+## When to pick which structure (weather context)
 
 ```mermaid
 flowchart TD
@@ -635,9 +630,9 @@ flowchart TD
 
 | Scenario | Best tool |
 | --- | --- |
-| Season CSV, one sort per week | pandas |
-| Fantasy split at pick N | Treap split |
-| Player id lookup only | `dict` |
+| Season CSV, one sort per month | pandas |
+| Split at station rank N | Treap split |
+| Station id lookup only | `dict` |
 | Guaranteed worst-case log | Red–black, not treap alone |
 
 ---
@@ -646,11 +641,11 @@ flowchart TD
 
 | Pitfall | Why it hurts | Fix |
 | --- | --- | --- |
-| Forgetting random priority on insert | Degenerates to BST on sorted ADP | Always `random.randint` per node |
+| Forgetting random priority on insert | Degenerates to BST on sorted ranks | Always `random.randint` per node |
 | Using treap for 50k-row analytics | Slower than vectorized sort | pandas |
 | Split without `<` / `≥` convention | Duplicates at wrong side | Document tie-breaking |
 | Assuming worst-case O(log n) | Adversarial priorities rare but possible | Use RB-tree if guarantee required |
-| Storing mutable list in value | Aliasing bugs | Store immutable `PlayerRow` |
+| Storing mutable list in value | Aliasing bugs | Store immutable `DailyReading` |
 
 ---
 
@@ -669,26 +664,21 @@ flowchart TD
 ## Quick reference card
 
 ```python
-# create
 t = Treap()
-t = Treap([(adp, name), ...])
+t = Treap([(rank, station), ...])
 
-# core
 t.insert(key, value)
 t.search(key)
 t.delete(key)
 
-# ordered walk
 for key, val in t:
     ...
 
-# split / merge (keys in left < keys in right)
 left, right = t.split(pivot_key)
 left.merge(right)
 
-# extrema
 t.min_key()
 t.max_key()
 ```
 
-Use a **treap** when you want **BST order** with **simple randomized balance** and **split/merge**—then reach for **pandas** when you ship full-season NFL tables.
+Use a **treap** when you want **BST order** with **simple randomized balance** and **split/merge**—then reach for **pandas** when you ship full-season weather tables.

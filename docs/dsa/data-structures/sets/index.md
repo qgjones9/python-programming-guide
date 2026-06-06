@@ -1,41 +1,41 @@
 # Sets
 
-An abstract collection of **unique** elements where **membership**, **insert**, and **remove** dominate the API. **Unordered** sets usually sit on **hash tables**; **ordered** sets sit on **balanced BSTs** (red–black in many languages). Python’s built-in `set` and `frozenset` are hash-based and unordered.
+An abstract collection of **unique** elements where **membership**, **insert**, and **remove** dominate the API. **Unordered** sets usually sit on **hash tables**; **ordered** sets sit on **balanced BSTs** (red–black in many languages). Python's built-in `set` and `frozenset` are hash-based and unordered.
 
 | | |
 | --- | --- |
 | **What it is** | No duplicate members; typical ops: `add`, `discard`, `in`, and set algebra (`|`, `&`, `-`, `^`). |
 | **Core operations** | Average O(1) hash set ops; O(log n) tree set ops; algebra on two sets of size n, m is O(n + m) with hashing. |
-| **When to use** | Deduplication, fast membership, division/team pools, roster tags, and combining player groups. |
+| **When to use** | Deduplication, fast membership, climate-zone pools, station tags, and combining station groups. |
 | **Trade-off** | Hash sets sacrifice sorted iteration; tree sets cost more per op but give order. |
 
-In **NFL data analysis**, sets model **divisions**, **active rosters**, **skill-position tags**, and **“who played in both games”** style questions without duplicate rows. You will still join large tables in **pandas**—sets excel for **small-to-medium unique collections** and **algebra** on team ids.
+In **daily weather data analysis**, sets model **climate regions**, **active station lists**, **condition tags**, and **"which stations reported rain in both months"** style questions without duplicate rows. You will still join large tables in **pandas**—sets excel for **small-to-medium unique collections** and **algebra** on station ids.
 
-This page is your **ready reference**: ADT semantics, hash vs tree implementations, full Python patterns, every operation with NFL-flavored examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: ADT semantics, hash vs tree implementations, full Python patterns, every operation with weather-flavored examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How sets fit NFL-shaped problems
+## How sets fit weather-shaped problems
 
-| NFL idea | Set view | Typical op |
+| Weather idea | Set view | Typical op |
 | --- | --- | --- |
-| **AFC North teams** | 4 franchise ids | `membership`, iterate |
-| **Players who caught TD in week 3 and 4** | Intersection of two scorer sets | `&` |
-| **All WRs minus injured reserve** | Difference | `-` |
-| **Home or away captains** | Union of two captain sets | `\|` |
-| **Unique jersey numbers on roster** | Dedup from list | `set(list)` |
-| **Frozen schedule snapshot** | Immutable set | `frozenset` |
+| **Pacific Northwest stations** | 4 station ids | `membership`, iterate |
+| **Stations with rain in Jan and Feb** | Intersection of two condition sets | `&` |
+| **All coastal minus offline** | Difference | `-` |
+| **Home or remote sensors** | Union of two sensor sets | `\|` |
+| **Unique station ids in file** | Dedup from list | `set(list)` |
+| **Frozen region snapshot** | Immutable set | `frozenset` |
 
 ```mermaid
 flowchart LR
-  subgraph ops["Set algebra on team ids"]
-    A["AFC_North"]
-    B["Playoff_2024"]
+  subgraph ops["Set algebra on station ids"]
+    A["Pacific_NW"]
+    B["High_Anomaly_2024"]
     A --> I["A & B — in both"]
     A --> U["A | B — either"]
-    A --> D["A - B — North not playoff"]
+    A --> D["A - B — NW not high anomaly"]
   end
 ```
 
@@ -51,22 +51,22 @@ Throughout this page, **n** = \|set A\|, **m** = \|set B\|, **u** = universe siz
 | **`in`** | O(1) avg hash | O(1) with Counter | O(1) avg | O(n) |
 | **Order** | Unordered (Py 3.7+ insertion order incidental) | Varies | Insertion order 3.7+ | Index order |
 | **Algebra** | Built-in | `Counter` arithmetic | Key sets only | Manual |
-| **NFL fit** | Divisions, tags | Snap counts per player | Stats per id | Play sequence |
+| **Weather fit** | Regions, tags | Reading counts per station | Stats per id | Reading sequence |
 
 ---
 
 ## ADT operations (abstract)
 
-| Operation | Meaning | NFL example |
+| Operation | Meaning | Weather example |
 | --- | --- | --- |
-| `insert(x)` | Add if absent | Add team to division |
-| `remove(x)` | Delete if present | Remove traded player id |
-| `contains(x)` | Membership test | Is `team_id` in playoffs? |
-| `size()` | Count distinct | Roster size (unique ids) |
-| `union(A,B)` | All in either | AFC \| NFC pro bowl |
-| `intersection(A,B)` | In both | Scorers ∩ 100-yard rushers |
-| `difference(A,B)` | In A not B | Roster minus IR |
-| `symmetric_difference` | In exactly one | XOR of two week lists |
+| `insert(x)` | Add if absent | Add station to region |
+| `remove(x)` | Delete if present | Remove decommissioned station id |
+| `contains(x)` | Membership test | Is `station_id` in high-anomaly set? |
+| `size()` | Count distinct | Active station count (unique ids) |
+| `union(A,B)` | All in either | Coastal \| mountain sensors |
+| `intersection(A,B)` | In both | Rain days ∩ cold-front days |
+| `difference(A,B)` | In A not B | Active minus offline |
+| `symmetric_difference` | In exactly one | XOR of two month lists |
 
 ```mermaid
 flowchart TB
@@ -84,7 +84,7 @@ flowchart TB
 ### 1. Empty set — **not** `{}` (that is a dict)
 
 ```python
-afc_north: set[str] = set()
+pacific_nw: set[str] = set()
 ```
 
 | | |
@@ -95,7 +95,7 @@ afc_north: set[str] = set()
 ### 2. Literal with members
 
 ```python
-afc_north = {"BAL", "CIN", "CLE", "PIT"}
+pacific_nw = {"SEA-01", "PDX-01", "EUG-01", "BOI-01"}
 ```
 
 | | |
@@ -103,10 +103,10 @@ afc_north = {"BAL", "CIN", "CLE", "PIT"}
 | **Time** | O(k) for k members (hash each) |
 | **Space** | O(k) |
 
-### 3. From iterable — dedup play ids
+### 3. From iterable — dedup reading ids
 
 ```python
-scorers = set(row["player_id"] for row in week3_td_rows)
+rainy_days = set(row["reading_id"] for row in january_rain_rows)
 ```
 
 | | |
@@ -117,7 +117,7 @@ scorers = set(row["player_id"] for row in week3_td_rows)
 ### 4. Set comprehension
 
 ```python
-skill = {p["player_id"] for p in roster if p["pos"] in {"WR", "TE"}}
+coastal = {s["station_id"] for s in stations if s["zone"] in {"coastal", "maritime"}}
 ```
 
 | | |
@@ -125,12 +125,11 @@ skill = {p["player_id"] for p in roster if p["pos"] in {"WR", "TE"}}
 | **Time** | O(n) |
 | **Space** | O(output) |
 
-### 5. `frozenset` — immutable division snapshot
+### 5. `frozenset` — immutable region snapshot
 
 ```python
-div_2024 = frozenset(["BAL", "CIN", "CLE", "PIT"])
-# hashable — use as dict key for "rules per division"
-rules_cache[div_2024] = tiebreaker_policy
+region_2024 = frozenset(["SEA-01", "PDX-01", "EUG-01", "BOI-01"])
+rules_cache[region_2024] = calibration_policy
 ```
 
 | | |
@@ -143,13 +142,13 @@ rules_cache[div_2024] = tiebreaker_policy
 ```python
 import pandas as pd
 
-teams = set(df["posteam"].dropna().unique())
+stations = set(df["station_id"].dropna().unique())
 ```
 
 | | |
 | --- | --- |
 | **Time** | O(n) scan |
-| **Space** | O(unique teams) |
+| **Space** | O(unique stations) |
 
 ---
 
@@ -159,10 +158,10 @@ Conceptual buckets: `hash(x) % table_size` → chain or open addressing (CPython
 
 ```python
 def demo_membership() -> None:
-    playoff = {"KC", "BUF", "BAL", "SF"}
-    assert "KC" in playoff          # O(1) average
-    playoff.add("DET")              # O(1) average
-    playoff.discard("BUF")          # O(1) average; no KeyError
+    high_anomaly = {"SEA-01", "DEN-01", "PHX-01", "MIA-01"}
+    assert "SEA-01" in high_anomaly
+    high_anomaly.add("ORD-01")
+    high_anomaly.discard("DEN-01")
 ```
 
 | Operation | Average time | Worst time | Notes |
@@ -181,12 +180,9 @@ def demo_membership() -> None:
 Used in C++ `std::set`, Java `TreeSet`—not Python stdlib. **Red–black** or similar keeps keys sorted.
 
 ```python
-# Teaching sketch only — use sortedcontainers or treap in real code
 class OrderedSet:
-    """BST-backed ordered set (insert/search/delete O(log n))."""
-
     def __init__(self) -> None:
-        self.root = None  # TreapNode or RB node
+        self.root = None
 
     def insert(self, key: str) -> None: ...
     def contains(self, key: str) -> bool: ...
@@ -198,33 +194,33 @@ class OrderedSet:
 | `insert` / `contains` / `remove` | O(log n) | O(1) |
 | In-order iterate | O(n) | O(n) output |
 
-**NFL use:** walk teams in alphabetical order for printed reports without sorting each time.
+**Weather use:** walk stations in alphabetical order for printed reports without sorting each time.
 
 ---
 
 ## Set algebra (full reference)
 
 ```python
-afc = {"BAL", "CIN", "CLE", "PIT"}
-playoff = {"BAL", "KC", "BUF", "SF"}
+pacific = {"SEA-01", "PDX-01", "EUG-01", "BOI-01"}
+high_anomaly = {"SEA-01", "DEN-01", "PHX-01", "MIA-01"}
 
-both = afc & playoff                    # {'BAL'}
-either = afc | playoff
-north_only = afc - playoff
-symmetric = afc ^ playoff               # in one, not both
+both = pacific & high_anomaly
+either = pacific | high_anomaly
+nw_only = pacific - high_anomaly
+symmetric = pacific ^ high_anomaly
 
-afc |= {"PIT"}                          # in-place union
-afc &= playoff                          # in-place intersection
+pacific |= {"BOI-01"}
+pacific &= high_anomaly
 ```
 
 ```mermaid
 flowchart LR
-  A["Set A<br/>week 3 scorers"]
-  B["Set B<br/>week 4 scorers"]
-  A --> I["A & B — scored both weeks"]
-  A --> D["A - B — only week 3"]
-  B --> D2["B - A — only week 4"]
-  A --> X["A ^ B — exactly one week"]
+  A["Set A<br/>January rain days"]
+  B["Set B<br/>February rain days"]
+  A --> I["A & B — rain both months"]
+  A --> D["A - B — only January"]
+  B --> D2["B - A — only February"]
+  A --> X["A ^ B — exactly one month"]
 ```
 
 | Operation | Operator / method | Time (hash) | Space |
@@ -238,12 +234,12 @@ flowchart LR
 
 ---
 
-## All operations (NFL examples + complexity)
+## All operations (weather examples + complexity)
 
-### `add(x)` — tag player as captain
+### `add(x)` — tag station as flagged
 
 ```python
-captains.add("player_87")
+flagged.add("SEA-01")
 ```
 
 | **Time** | O(1) average |
@@ -252,18 +248,18 @@ captains.add("player_87")
 ### `discard(x)` / `remove(x)`
 
 ```python
-captains.discard("player_99")  # silent if missing
-captains.remove("player_87")   # KeyError if missing
+flagged.discard("DEN-99")
+flagged.remove("SEA-01")
 ```
 
 | **Time** | O(1) average |
 | **Space** | O(1) |
 
-### `in` — is team in division?
+### `in` — is station in region?
 
 ```python
-if "BAL" in afc_north:
-    apply_division_tiebreaker()
+if "SEA-01" in pacific_nw:
+    apply_coastal_calibration()
 ```
 
 | **Time** | O(1) average |
@@ -272,7 +268,7 @@ if "BAL" in afc_north:
 ### Copy and freeze
 
 ```python
-live = {"KC", "BUF"}
+live = {"SEA-01", "DEN-01"}
 snapshot = live.copy()
 frozen = frozenset(live)
 ```
@@ -285,61 +281,61 @@ frozen = frozenset(live)
 ### Pop arbitrary element
 
 ```python
-team = captains.pop()  # raises KeyError if empty
+station = flagged.pop()
 ```
 
 | **Time** | O(1) average |
 
 ---
 
-## NFL application: division and conference pools
+## Weather application: climate region pools
 
 ```python
-AFC_NORTH = frozenset({"BAL", "CIN", "CLE", "PIT"})
-AFC_SOUTH = frozenset({"HOU", "IND", "JAX", "TEN"})
-AFC = AFC_NORTH | AFC_SOUTH  # extend with other divisions likewise
+PACIFIC_NW = frozenset({"SEA-01", "PDX-01", "EUG-01", "BOI-01"})
+SOUTHWEST = frozenset({"PHX-01", "LAS-01", "ABQ-01", "ELP-01"})
+WEST = PACIFIC_NW | SOUTHWEST
 
-def same_division(t1: str, t2: str) -> bool:
-    for div in (AFC_NORTH, AFC_SOUTH):
-        if t1 in div and t2 in div:
+def same_region(s1: str, s2: str) -> bool:
+    for region in (PACIFIC_NW, SOUTHWEST):
+        if s1 in region and s2 in region:
             return True
     return False
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(1) membership per div check with small frozensets |
-| **Space** | O(32) teams league-wide |
+| **Time** | O(1) membership per region check with small frozensets |
+| **Space** | O(stations in archive) |
 
 ---
 
-## NFL application: two-week scorer overlap
+## Weather application: two-month rain overlap
 
 ```python
-def player_ids_with_td(rows: list[dict]) -> set[str]:
-    return {r["player_id"] for r in rows if r["touchdown"]}
+def reading_ids_with_rain(rows: list[dict]) -> set[int]:
+    return {r["reading_id"] for r in rows if r["summary"] == "rain"}
 
-w3 = player_ids_with_td(week3_plays)
-w4 = player_ids_with_td(week4_plays)
-repeat = w3 & w4
-only_w3 = w3 - w4
+jan = reading_ids_with_rain(january_readings)
+feb = reading_ids_with_rain(february_readings)
+repeat = jan & feb
+only_jan = jan - feb
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(n3 + n4) build + O(min) intersect |
-| **Space** | O(unique players) |
+| **Time** | O(n_jan + n_feb) build + O(min) intersect |
+| **Space** | O(unique readings) |
 
 ---
 
-## NFL application: skill-position filter set
+## Weather application: condition filter set
 
 ```python
-SKILL = frozenset({"WR", "TE", "RB"})
-skill_players = {
-    p["player_id"]
-    for p in roster
-    if p["position"] in SKILL
+WINDY = frozenset({"windy", "gusty", "storm"})
+windy_stations = {
+    s["station_id"]
+    for s in stations
+    if s["dominant_condition"] in WINDY
 }
 ```
 
@@ -347,7 +343,7 @@ skill_players = {
 
 ## Bitset set (honorable implementation note)
 
-When universe is **small and fixed** (32 teams, 53-man roster index), bit vectors give O(1) word-sized ops.
+When universe is **small and fixed** (32 climate zones, 64 station index), bit vectors give O(1) word-sized ops.
 
 ```python
 def bitset_from_ids(ids: list[int], universe: int = 32) -> int:
@@ -373,19 +369,17 @@ def union_masks(a: int, b: int) -> int:
 
 | Type | Mutable | Hashable | Use |
 | --- | --- | --- | --- |
-| `set` | Yes | No | Live roster tags, weekly builds |
-| `frozenset` | No | Yes | Division constants, dict keys |
+| `set` | Yes | No | Live station tags, monthly builds |
+| `frozenset` | No | Yes | Region constants, dict keys |
 
 ```python
-# Optional ecosystem for huge graph-style sets
-# pip install networkx  — not required for basic sets
 import networkx as nx
 
 G = nx.Graph()
-G.add_edge("KC", "BUF")  # relationship graph, not a set ADT
+G.add_edge("SEA-01", "DEN-01")
 ```
 
-**networkx** models **graphs** ([graphs](../graphs/index.md)), not replacement for `set`—listed when you cross team **networks** with set **nodes**.
+**networkx** models **graphs** ([graphs](../graphs/index.md)), not replacement for `set`—listed when you cross station **networks** with set **nodes**.
 
 ---
 
@@ -404,7 +398,7 @@ G.add_edge("KC", "BUF")  # relationship graph, not a set ADT
 
 ---
 
-## When to pick which structure (NFL context)
+## When to pick which structure (weather context)
 
 ```mermaid
 flowchart TD
@@ -418,10 +412,10 @@ flowchart TD
 
 | Scenario | Best tool |
 | --- | --- |
-| 4-team division membership | `frozenset` |
-| 50k play dedup ids | `set` or pandas |
-| Ordered team report | `sorted(set)` once or tree set |
-| Fixed 32-team universe bitwise | bitset |
+| 4-station region membership | `frozenset` |
+| 50k reading dedup ids | `set` or pandas |
+| Ordered station report | `sorted(set)` once or tree set |
+| Fixed 32-zone universe bitwise | bitset |
 
 ---
 
@@ -432,7 +426,7 @@ flowchart TD
 | `s = {}` for empty set | Creates dict | `s = set()` |
 | Lists in set | Unhashable TypeError | Use ids/tuples |
 | Relying on set order for logic | Order not semantic in theory | Sort for display |
-| O(n²) `in` in loop over list | Slow roster scans | Build `set` once |
+| O(n²) `in` in loop over list | Slow station scans | Build `set` once |
 | Mutating set while iterating | RuntimeError | Iterate on `list(s)` copy |
 
 ---
@@ -452,24 +446,20 @@ flowchart TD
 ## Quick reference card
 
 ```python
-# create
-teams = set()
-teams = {"KC", "BUF"}
-div = frozenset(["BAL", "CIN", "CLE", "PIT"])
-from_list = set(player_ids)
+stations = set()
+stations = {"SEA-01", "DEN-01"}
+region = frozenset(["SEA-01", "PDX-01", "EUG-01", "BOI-01"])
+from_list = set(station_ids)
 
-# membership & mutate
-"x" in teams
-teams.add("DET")
-teams.discard("BUF")
+"x" in stations
+stations.add("ORD-01")
+stations.discard("DEN-01")
 
-# algebra
 a | b; a & b; a - b; a ^ b
 a |= b; a <= b; a.isdisjoint(b)
 
-# copy / freeze
-teams.copy()
-frozenset(teams)
+stations.copy()
+frozenset(stations)
 ```
 
-Use **`set`** for **fast unique membership and algebra** on NFL ids—use **pandas** for **column-wide** season tables.
+Use **`set`** for **fast unique membership and algebra** on weather station ids—use **pandas** for **column-wide** archive tables.

@@ -9,21 +9,21 @@ A **2-3-4 tree** is a **B-tree of order 4**: every **internal** node has **2, 3,
 | **When to use** | Pedagogy, **disk/page-oriented** indexes, understanding red–black **isomorphism**. |
 | **Trade-off** | More complex node cases than BST; excellent **cache/page** fit (many keys per node). |
 
-In **NFL data analysis**, treat a 2-3-4 tree as the conceptual model behind a **play database index**: each **page** (disk block) holds up to **3 keys** and **4 child pointers**, like looking up `play_id` in a season file without scanning every snap. You will query real data with **SQL / Parquet / pandas**—this structure explains **why indexes are shallow and wide**.
+In **daily weather data analysis**, treat a 2-3-4 tree as the conceptual model behind a **reading database index**: each **page** (disk block) holds up to **3 keys** and **4 child pointers**, like looking up `reading_id` in a multi-year archive without scanning every daily row. You will query real data with **SQL / Parquet / pandas**—this structure explains **why indexes are shallow and wide**.
 
-This page is your **ready reference**: node types, search/insert/delete, Python teaching implementation, Mermaid node diagrams, NFL **play DB** analogies, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: node types, search/insert/delete, Python teaching implementation, Mermaid node diagrams, daily weather **reading DB** examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How 2-3-4 trees fit NFL-shaped problems
+## How 2-3-4 trees fit daily weather analysis
 
-| NFL idea | 2-3-4 view | Why it maps |
+| Weather analysis idea | 2-3-4 view | Why it maps |
 | --- | --- | --- |
-| **Play-by-play index** | Keys = `play_id`; 3 keys per page | Fewer pointer hops than binary tree |
-| **Season file on SSD** | Wide nodes = one read fetches many keys | B-tree family matches storage |
-| **Leaderboard key ranges** | 3 separators partition stats buckets | Range search by branching |
+| **Daily reading index** | Keys = `reading_id`; 3 keys per page | Fewer pointer hops than binary tree |
+| **Archive file on SSD** | Wide nodes = one read fetches many keys | B-tree family matches storage |
+| **Anomaly bucket ranges** | 3 separators partition anomaly tiers | Range search by branching |
 | **Red–black mental model** | 2-3-4 node ↔ black node clusters | Interview bridge |
 | **Guaranteed balance** | All leaves same depth | No skewed “sorted insert” BST |
 
@@ -46,7 +46,7 @@ Throughout: **n** = number of keys stored, **h** = tree height = O(log₄ n) = O
 
 ## Node types (2-node, 3-node, 4-node)
 
-| Node type | Keys | Children | NFL page analogy |
+| Node type | Keys | Children | Weather page analogy |
 | --- | --- | --- | --- |
 | **2-node** | 1 | 2 | Thin page after splits |
 | **3-node** | 2 | 3 | Medium index block |
@@ -78,16 +78,16 @@ flowchart LR
 | | **2-3-4** | [BST](../binary-search-tree/index.md) | [Red–black](../red-black-tree/index.md) | B-tree (order m) |
 | --- | --- | --- | --- | --- |
 | **Keys per node** | 1–3 | 1 | 1 | up to m−1 |
-| **Balance** | Perfect leaf depth | Can skew | RB rules | Generalization |
+| **Balance** | Perfect leaf depth | Can skew | station rules | Generalization |
 | **Height** | O(log n) base 4 | O(n) worst | O(log n) | O(log_m n) |
 | **Disk fit** | Excellent pedagogy | Poor (many hops) | Used in RAM libs | Database standard |
-| **NFL play index** | Teaching model | Not used at scale | `dict`/`set` RAM | Production DB |
+| **Weather reading index** | Teaching model | Not used at scale | `dict`/`set` RAM | Production DB |
 
 ---
 
 ## Search
 
-Compare `play_id` against 1–3 keys in the node; descend the correct child; repeat until leaf or hit.
+Compare `reading_id` against 1–3 keys in the node; descend the correct child; repeat until leaf or hit.
 
 ```python
 def search_234(node, key):
@@ -159,12 +159,12 @@ class Tree234:
         self.root = None
 ```
 
-### 3. Insert keys one by one from unsorted plays
+### 3. Insert keys one by one from unsorted readings
 
 ```python
 t = Tree234()
-for play_id in [105, 42, 9001, 17, 88]:
-    t.insert(play_id)
+for reading_id in [105, 42, 9001, 17, 88]:
+    t.insert(reading_id)
 ```
 
 | | |
@@ -172,7 +172,7 @@ for play_id in [105, 42, 9001, 17, 88]:
 | **Time** | O(k log k) for k inserts |
 | **Space** | O(k) |
 
-### 4. Sorted play ids (still balanced)
+### 4. Sorted reading ids (still balanced)
 
 Unlike BST, sorted insert does **not** degenerate height—splits keep leaves level.
 
@@ -198,8 +198,6 @@ class Node234:
 
 
 class Tree234:
-    """Minimal 2-3-4 tree for integer-like keys (teaching)."""
-
     def __init__(self) -> None:
         self.root: Node234 | None = None
 
@@ -297,13 +295,13 @@ Deletion in 2-3-4 trees is **more intricate** than insert (borrow/merge from sib
 | Key in internal node | Replace with predecessor/successor from leaf | O(h) |
 | Underflow in child | Borrow or merge with sibling | O(h) |
 
-**NFL teaching note:** play DB indexes **rarely delete** historical snaps; inserts dominate—same as many append-heavy logs.
+**Weather teaching note:** reading DB indexes **rarely delete** historical daily rows; inserts dominate—same as many append-heavy logs.
 
 ---
 
-## NFL application: play database index analogy
+## Daily weather application: reading database index analogy
 
-Imagine a **season play table** keyed by `play_id`:
+Imagine a **multi-year reading table** keyed by `reading_id`:
 
 | DB concept | 2-3-4 concept |
 | --- | --- |
@@ -313,22 +311,22 @@ Imagine a **season play table** keyed by `play_id`:
 | **Range scan** | In-order leaf walk |
 
 ```python
-play_index = Tree234()
-for row in ingest_play_csv():
-    play_index.insert(row["play_id"])
+reading_index = Tree234()
+for row in ingest_readings_csv():
+    reading_index.insert(row["reading_id"])
 
-assert play_index.search(4128791)
-ordered_ids = play_index.inorder()  # sorted play_ids for merge
+assert reading_index.search(4128791)
+ordered_ids = reading_index.inorder()
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(log n) lookup per play |
+| **Time** | O(log n) lookup per reading |
 | **Space** | O(n) index entries |
 
 ```mermaid
 flowchart TB
-  DB["Play DB on disk"]
+  DB["Reading DB on disk"]
   DB --> P1["Page: keys 1000,2000,3000"]
   P1 --> P2["Child page 1000–2000"]
   P1 --> P3["Child page 2000–3000"]
@@ -362,23 +360,23 @@ Every **2-3-4 tree** corresponds to a **red–black tree** with the same keys (c
 
 ---
 
-## When to pick which structure (NFL context)
+## When to pick which structure (weather context)
 
 ```mermaid
 flowchart TD
   Q([Indexed lookups?])
   Q --> RAM{In-memory Python?}
   RAM -->|yes| D["dict / set hash"]
-  RAM -->|ordered| RB["red-black / treap"]
+  RAM -->|ordered| station["red-black / treap"]
   Q --> DISK{Disk / page oriented?}
   DISK --> B["B-tree / 2-3-4 mental model"]
 ```
 
 | Scenario | Best tool |
 | --- | --- |
-| In-memory player lookup | `dict` |
+| In-memory station lookup | `dict` |
 | Learn DB index pages | 2-3-4 tree |
-| Production SQL plays | Database B-tree (implementation detail) |
+| Production SQL readings | Database B-tree (implementation detail) |
 | Interview balance proof | 2-3-4 → red–black |
 
 ---
@@ -411,14 +409,9 @@ flowchart TD
 
 ```python
 t = Tree234()
-t.insert(play_id)
-t.search(play_id)
-t.inorder()  # sorted keys
-
-# Node invariants:
-# - 2-node: 1 key, 2 children
-# - 3-node: 2 keys, 3 children
-# - 4-node: 3 keys, 4 children — split before insert into full leaf path
+t.insert(reading_id)
+t.search(reading_id)
+t.inorder()
 ```
 
-Use a **2-3-4 tree** to understand **wide, shallow indexes** on NFL-scale play data—use **`dict`** and **real databases** when you ship queries.
+Use a **2-3-4 tree** to understand **wide, shallow indexes** on weather-scale reading data—use **`dict`** and **real databases** when you ship queries.

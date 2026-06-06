@@ -82,18 +82,10 @@ from dataclasses import dataclass
 
 @dataclass
 class DailyReading:
-    """Minimal daily weather row for examples on this page."""
     reading_id: int
     month: int
     temp_anomaly: float
     summary: str
-
-# After LinkedList is defined (see Reference implementation):
-# series = LinkedList([
-#     DailyReading(101, 2, 0.4, "partly cloudy"),
-#     DailyReading(102, 2, -1.2, "cold front"),
-#     DailyReading(103, 2, 0.1, "light rain"),
-# ])
 ```
 
 Each node’s `data` can be a `DailyReading`, a `reading_id`, or a row dict. `LinkedList` is defined in [Reference implementation](#reference-implementation) below; later sections use `DailyReading` in operation examples.
@@ -140,7 +132,6 @@ Use a small class. The list **logic** lives in a wrapper class that holds `head`
 
 ```python
 class Node:
-    """One link in the chain."""
     def __init__(self, data, next=None):
         self.data = data
         self.next = next
@@ -184,7 +175,7 @@ class LinkedList:
     def __init__(self, values=None):
         self.head = None
         self.tail = None
-        self.size = 0  # optional but useful for O(1) len
+        self.size = 0
 
 ll = LinkedList()
 assert ll.head is None
@@ -199,7 +190,7 @@ assert ll.head is None
 
 ```python
 head = Node(42)
-# or
+
 head = Node("only", next=None)
 ```
 
@@ -225,7 +216,7 @@ def from_iterable(items):
             tail = node
     return head
 
-reading_ids = [401, 402, 403]  # one window, chronological
+reading_ids = [401, 402, 403]
 chain = from_iterable(reading_ids)
 ```
 
@@ -246,7 +237,6 @@ def from_iterable_reversed(items):
     return head
 
 chain = from_iterable_reversed([10, 20, 30])
-# head -> 30 -> 20 -> 10 -> None
 ```
 
 | | |
@@ -277,7 +267,6 @@ ll = LinkedList([1, 2, 3])
 ### 7. Manual chain wiring (tests and diagrams)
 
 ```python
-# 1 -> 2 -> 3
 n3 = Node(3)
 n2 = Node(2, next=n3)
 n1 = Node(1, next=n2)
@@ -315,324 +304,232 @@ The sections below use this **complete** singly linked list (`LinkedList` class)
 ```python
 class Node:
     def __init__(self, data, next=None):
-        self.data = data # set node data to provided value
-        self.next = next # set next node
-   
+        self.data = data
+        self.next = next
+
 class LinkedList:
-    # initialize the linked list
+
     def __init__(self, values=None):
-        self.head = None # set head pointer to None
-        self.tail = None # set tail pointer to None
-        self.next = None # set next pointer to None (unused for linked list instance)
-        self.size = 0 # set initial size to 0
+        self.head = None
+        self.tail = None
+        self.next = None
+        self.size = 0
 
         if values is not None:
             for value in values:
                 self.append(value)
-   
-    # print the linked list
-    def __str__(self):
-        """
-        (1) Traverse the linked list and append the data of each node to a list.
-        (2) Return a string representation of the linked list.
-        """
-        current = self.head # set starting point to head node
-        out = [] # initialize output list
-        while current: # iterate while current node is not None
-            out.append(repr(current.data)) # append string representation of node data
-            current = current.next # set current node to next node
-        return f"LinkedList([{', '.join(out)}])" # return formatted string
-   
-    # represent the linked list
-    def __repr__(self):
-        return self.__str__() # call __str__ to return string representation
 
-    # get the size of the linked list
+
+    def __str__(self):
+        current = self.head
+        out = []
+        while current:
+            out.append(repr(current.data))
+            current = current.next
+        return f"LinkedList([{', '.join(out)}])"
+
+
+    def __repr__(self):
+        return self.__str__()
+
+
     def __len__(self):
-        return self.size # return size attribute
+        return self.size
 
     def __iter__(self):
-        """
-        (1) Iterate over the linked list and yield each node's data.
-        """
-        cur = self.head # set starting point to head node
-        while cur is not None: # iterate while cur node is not None
-            yield cur.data # yield the current node's data
-            cur = cur.next # set current node to next node
+        cur = self.head
+        while cur is not None:
+            yield cur.data
+            cur = cur.next
 
-    # check if the linked list is empty
+
     def is_empty(self):
-        """
-        (1) Return True if the linked list is empty, False otherwise.
-        """
-        # if the head is None, then the linked list is empty
-        return self.head is None # return True if head is None
 
-    # prepend a node to the linked list
+        return self.head is None
+
+
     def prepend(self, data):
-        """
-        (1) Create a new node with the given data and set its next pointer to the current head.
-        (2) Update the linked list's head pointer to the new node.
-        (3) Update the linked list's tail pointer to the new node only if the list was empty.
-        (4) Update the size of the linked list.
-        """
-        # create a new node
-        new_node = Node(data, next=self.head) # the new node's next pointer is the current head
 
-        # update the head to the new node
-        self.head = new_node # set head to new node
-        
-        # update tail only if the list was empty
+        new_node = Node(data, next=self.head)
+
+
+        self.head = new_node
+
+
         if self.tail is None:
-            self.tail = new_node # set tail to new node if list was empty
-        
-        # update the size of the linked list
-        self.size += 1 # increment size
+            self.tail = new_node
 
-    # append a node to the linked list
+
+        self.size += 1
+
+
     def append(self, data):
-        """
-        (1) Create a new node with the given data and set its next pointer to None.
-        (2) If the list is empty, set the head and tail to the new node.
-        (3) If the list is not empty
-            (a) set the next pointer of the current tail node to the new node
-            (b) update the linked list's tail pointer to the new node.
-        (4) Update the size of the linked list.
-        """
-        # create a new node
-        node = Node(data) # create new node with given data
 
-        # if the list is empty, set the head and tail to the new node
+        node = Node(data)
+
+
         if self.tail is None:
-            self.head = self.tail = node # set head and tail to the new node
+            self.head = self.tail = node
         else:
-            # set the next pointer of the current tail to the new node
-            self.tail.next = node # set current tail's next to new node
-            # update the tail to the new node
-            self.tail = node # set tail to new node
-        
-        # update the size of the linked list
-        self.size += 1 # increment size
+
+            self.tail.next = node
+
+            self.tail = node
+
+
+        self.size += 1
 
     def insert(self, index, data):
-        """
-        (1) Create a new node from data in argument
-        (2) If the list is empty, set the head and tail to the new node.
-        (3) If the list is not empty
-            (a) set the next pointer of the current tail node to the new node
-            (b) update the linked list's tail pointer to the new node.
-        (4) Update the size of the linked list.
-        """
-        # if index is larger than the size of the linked list then append to end of linked list
+
         if index >= self.size:
-            self.append(data) # append if index is out of range
+            self.append(data)
             return
-        
-        # handle inserting a new head node
+
+
         if index == 0:
-            self.prepend(data) # prepend if index is zero
+            self.prepend(data)
             return
-        
-        # get the node right before the node that we want to insert
-        prev = self._node_at(index - 1) # get node at index-1
 
-        # create the node and set node next pointer to the next node after prev
-        node = Node(data, next=prev.next) # create new node with next set to prev.next
 
-        # set prev next node to the new node to append the new node to the linked list
-        prev.next = node # set prev's next to new node
+        prev = self._node_at(index - 1)
 
-        # update linkedlist size
-        self.size += 1 # increment size
+
+        node = Node(data, next=prev.next)
+
+
+        prev.next = node
+
+
+        self.size += 1
 
     def pop_head(self):
-        """
-        (1) case: linkedlist is empty then raise IndexError
-        (2) Handle: store current head data somewhere in memory 
-        (3) case: single node linkedlist
-        (4) case: multi node linkedlist
-        (5) update the size of the linked list
-        (6) return the data from the head node back to the caller
-        """
-        # case: linkedlist is empty
-        if self.head is None: # case: linkedlist is empty then raise IndexError
-            raise IndexError("pop from empty list") # raise error if list empty
 
-        data = self.head.data # store current head data somewhere in memory
+        if self.head is None:
+            raise IndexError("pop from empty list")
 
-        # case: single node linkedlist
+        data = self.head.data
+
+
         if self.head.next is None:
-            self.head = None # set head to None
-            self.tail = None # set tail to None
-        # case: multi node linkedlist
-        else:
-            self.head = self.head.next # set new head node
-        
-        # case: update size
-        self.size -= 1 # update the size of the linked list
+            self.head = None
+            self.tail = None
 
-        # return the data from the head node back to the caller
-        return data # return the data from the head node back to the caller
+        else:
+            self.head = self.head.next
+
+
+        self.size -= 1
+
+
+        return data
 
     def pop_tail(self):
-        """
-        (1) case: empty linkedlist
-        (2) case: single node linkedlist
-        (3) case: multinode linkedlist
-        (4) update the size of the linked list
-        (5) return the data from the tail node back to the caller
-        """
-        # case: empty linkedlist
-        if self.head is None: # case: linkedlist is empty then raise IndexError
-            raise IndexError("pop from empty list") # raise error if linkedlist is empty
-        
-        # case: single node linkedlist
-        if self.head.next == None: # case: single node linkedlist then pop head node
-            return self.pop_head() # pop head node and return the data from the head node back to the caller
 
-        # case: multinode linkedlist
+        if self.head is None:
+            raise IndexError("pop from empty list")
+
+
+        if self.head.next == None:
+            return self.pop_head()
+
+
         else:
-            prev = self._node_at(self.size - 2) # get second to last node
-            data = prev.next.data # get data from last node
-            prev.next = None # set second to last node's next pointer to None
-            self.tail = prev # set new tail node
-            self.size -= 1 # decrement size of linkedlist
-            return data # return data to caller
+            prev = self._node_at(self.size - 2)
+            data = prev.next.data
+            prev.next = None
+            self.tail = prev
+            self.size -= 1
+            return data
 
     def remove(self, index):
-        """
-        (1) case: empty linkedlist
-        (2) case: single node linkedlist
-        (3) case: multi node linkedlist
-        (4) update the size of the linked list
-        (5) return the data from the node that was removed back to the caller
-        """
-        # case: empty linkedlist
+
         if index < 0 or index >= self.size:
-            raise IndexError("index out of range") # case: index is out of range then raise IndexError
-        
-        # case: single node linkedlist
+            raise IndexError("index out of range")
+
+
         if index == 0:
-            return self.pop_head() # pop head node
+            return self.pop_head()
 
-        # case: multi node linkedlist
-        else:         
-            prev      = self._node_at(index - 1) # get the node right before the node that we want to remove
-            cur       = prev.next # get current node
-            prev.next = cur.next # remove node from list by setting prev node next node to current node next node
 
-            # case: removed tail node
+        else:
+            prev      = self._node_at(index - 1)
+            cur       = prev.next
+            prev.next = cur.next
+
+
             if prev.next is None:
-                self.tail = prev # set new tail node
-        
-        self.size -= 1 # decrement size of linkedlist
-        return cur.data # return data to caller
+                self.tail = prev
 
-    # helpers
+        self.size -= 1
+        return cur.data
+
+
     def get(self, index):
-        """
-        (1) Return the data found at a given index or raise
-        """
-        return self._node_at(index).data # get node at index and return data
+        return self._node_at(index).data
 
     def set(self, index, data):
-        """
-        (1) Set data for a given node or raise
-        """
-        self._node_at(index).data = data # set node's data at given index
+        self._node_at(index).data = data
 
-    # get the node at the given index
+
     def _node_at(self, index):
-        """
-        (1) case: index is out of range then raise IndexError
-        (2) case: index is in range then traverse the linked list and return the node at the given index.
-        """
         if index < 0 or index >= self.size:
-            raise IndexError("index out of range") # case: index is out of range then raise IndexError
-        cur = self.head # set starting point to head node
-        for _ in range(index): # traverse the linked list
-            cur = cur.next # set current node to next node in the linkedlist
-        return cur # return the node at the given index
+            raise IndexError("index out of range")
+        cur = self.head
+        for _ in range(index):
+            cur = cur.next
+        return cur
 
     def index_of(self, data):
-        """
-        (1) case: found data in linkedlist
-        (2) case: no data found in linkedlist then raise ValueError
-        """
-        
-        index = 0 # track iteration index starting at 0
-        cur = self.head # set starting point to head node
-        while cur is not None: # iterate while cur node next pointer is set
-            if cur.data == data: # check if node data is equal to parameters data
-                return index # case: is equal then is the data we need so return            
-            cur = cur.next # case is not equal then set current node to next node in the linkedlist
-            index += 1 # update index to move to next node in linkedlist
-        raise ValueError() # raise here sense the data was not found in the linkedlist
-    
+
+        index = 0
+        cur = self.head
+        while cur is not None:
+            if cur.data == data:
+                return index
+            cur = cur.next
+            index += 1
+        raise ValueError()
+
 
     def contains(self, data):
-        """
-        (1) case: found data in linkedlist
-        (2) case: no data found in linkedlist then return False
-        """
-        cur = self.head # set starting point to head node
-        while cur is not None: # iterate while cur node next pointer is set
-            if cur.data == data: # check if node data is equal to parameters data
-                return True # case: is equal then is the data we need so return            
-            cur = cur.next # case is not equal then set current node to next node in the linkedlist
-        return False # case: no data found in linkedlist then return False
+        cur = self.head
+        while cur is not None:
+            if cur.data == data:
+                return True
+            cur = cur.next
+        return False
 
     def reverse(self):
-        """
-        (1) case: reverse the linkedlist
-        """
-        prev = None # set previous node to None
-        cur = self.head # set current node to head node
-        self.tail = self.head # set tail to head
-        while cur is not None: # iterate while cur node next pointer is set
-            nxt = cur.next # set next node to current node next node
-            cur.next = prev # set current node next node to previous node
-            prev = cur # set previous node to current node
-            cur = nxt # set current node to next node
-        self.head = prev # set head to previous node
+        prev = None
+        cur = self.head
+        self.tail = self.head
+        while cur is not None:
+            nxt = cur.next
+            cur.next = prev
+            prev = cur
+            cur = nxt
+        self.head = prev
 
     def to_list(self):
-        """
-        Converts the linked list to a Python list.
+        return list(self)
 
-        (1) Iterates over the linked list using the __iter__ method, 
-            which yields each node's data in order.
-        (2) Uses the built-in list() function to collect these values into a list.
-        (3) Returns the resulting list.
-        """
-        return list(self) # convert linked list to python list and return result
-    
     def clear(self):
-        """
-        (1) Clear the linked list by setting the head and tail to None and the size to 0.
-        """
-        self.head = None # set head to None
-        self.tail = None # set tail to None
-        self.size = 0 # set size to 0
+        self.head = None
+        self.tail = None
+        self.size = 0
 
 
     def extend(self, other):
-        """
-        (1) Extend the linked list by appending all nodes from another linked list.
-        """
-        self.tail.next = other.head # set current tail's next to other head
-        self.tail = other.tail # set new tail to other tail
-        self.size += other.size # update size by adding other size
+        self.tail.next = other.head
+        self.tail = other.tail
+        self.size += other.size
 
     def sort(self):
-        """
-        (1) Sort the linked list using the built-in sorted function.
-        """
-        nodes = self.to_list() # convert linked list to python list
-        nodes.sort() # sort the linked list using the built-in sorted function
-        self.clear() # clear the linked list
-        for node in nodes: # iterate through the sorted nodes
-            self.append(node) # append the sorted nodes to the linked list
+        nodes = self.to_list()
+        nodes.sort()
+        self.clear()
+        for node in nodes:
+            self.append(node)
 ```
 
 ---
@@ -684,12 +581,10 @@ assert len(ll) == 1
 New node points to old head; update `head` (and `tail` if list was empty).
 
 ```python
-# Generic
 ll = LinkedList([2, 3])
 ll.prepend(1)
 assert list(ll) == [1, 2, 3]
 
-# Weather: newest backfilled reading at head of a working window (rare in prod; illustrative)
 buffer = LinkedList([
     DailyReading(201, 3, 0.2, "overcast"),
     DailyReading(202, 3, -0.5, "windy"),
@@ -726,7 +621,6 @@ ll.append("a")
 ll.append("b")
 assert list(ll) == ["a", "b"]
 
-# Weather: build series in chronological order (tail append + tail pointer)
 series = LinkedList()
 series.append(DailyReading(1, 1, 0.3, "mild"))
 series.append(DailyReading(2, 1, 1.1, "warm spell"))
@@ -873,7 +767,6 @@ ll = LinkedList(["x", "y", "z"])
 assert ll.index_of("y") == 1
 assert ll.contains("z")
 assert not ll.contains("w")
-# ll.index_of("w")  # ValueError
 ```
 
 | | |
@@ -952,7 +845,7 @@ ll = LinkedList([1, 2, 3])
 tail = LinkedList([4, 5])
 ll.extend(tail)
 assert ll.to_list() == [1, 2, 3, 4, 5]
-assert tail.to_list() == [4, 5]  # nodes are shared, not copied
+assert tail.to_list() == [4, 5]
 ```
 
 | Operation | Time | Space |
@@ -986,7 +879,6 @@ ll = LinkedList([10, 20, 30])
 total = sum(x for x in ll)
 assert total == 60
 
-# Weather: one pass over a daily chain — O(n) in readings on this window
 series = LinkedList([
     DailyReading(1, 1, 0.5, "a"),
     DailyReading(2, 1, -0.3, "b"),
@@ -1043,7 +935,6 @@ The **copy-value hack** avoids the predecessor scan when you may **mutate** `nod
 
 ```python
 def delete_node_copy_hack(node: Node) -> None:
-    """Remove node from chain by copying the next value in — O(1) if node.next exists."""
     if node.next is None:
         raise ValueError("cannot delete tail with copy-value hack")
     node.data = node.next.data
@@ -1053,12 +944,11 @@ def delete_node_copy_hack(node: Node) -> None:
 Weather example: a timeline holds a `Node` for “Day 102 — cold front”. You want to drop that day without scanning from the head; copy Day 103’s data into Day 102’s node, then unlink Day 103.
 
 ```python
-# n1 -> n2 -> n3  (three daily readings)
 n3 = Node(DailyReading(103, 2, 0.1, "light rain"))
 n2 = Node(DailyReading(102, 2, -1.2, "cold front"), next=n3)
 n1 = Node(DailyReading(101, 2, 0.4, "partly cloudy"), next=n2)
 
-delete_node_copy_hack(n2)  # O(1); chain is now n1 -> (103's data) -> None
+delete_node_copy_hack(n2)
 
 assert n1.next.data.reading_id == 103
 assert n1.next.next is None
@@ -1244,10 +1134,10 @@ sequenceDiagram
 ```python
 from collections import deque
 
-# Rolling last-k reading_ids from a live feed (O(1) ends)
+
 recent = deque(maxlen=10)
 recent.append(9021)
-recent.appendleft(9020)  # optional: treat as newest at left
+recent.appendleft(9020)
 ```
 
 `deque` is **not** a singly linked list you implement in Python—it is a C-level block deque. Treat it as the practical weather tool when the *reason* you wanted a linked list was O(1) push/pop at both ends of a **small** buffer.
@@ -1314,18 +1204,12 @@ Official Python sequences tutorial (arrays, not linked lists): [Data Structures 
 ## Quick reference card
 
 ```python
-# node + empty list
 head = None
 ll = LinkedList([1, 2, 3])
 
-# O(1) at head — e.g. prepend backfilled reading
 ll.prepend(0)
 x = ll.pop_head()
-
-# O(1) at tail (with tail pointer) — e.g. append next day in window
 ll.append(4)
-
-# O(n) — search / index / tail pop (avoid in archive-wide loops)
 ll.get(i)
 ll.insert(i, x)
 ll.remove(i)
@@ -1333,7 +1217,6 @@ ll.pop_tail()
 ll.extend(other_ll)
 ll.sort()
 
-# O(n) once per window — sum temp anomaly, export to list
 for reading in ll:
     ...
 ```

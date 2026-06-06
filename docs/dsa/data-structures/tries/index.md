@@ -6,12 +6,12 @@ A **tree keyed by characters (or tokens)** where each path from the root spells 
 | --- | --- |
 | **What it is** | Each edge labeled with one character; nodes mark end-of-word; search walks characters of the key. |
 | **Core operations** | Insert, exact search, prefix search, delete (with pruning). |
-| **When to use** | Autocomplete, prefix filters, dictionaries of player names, team abbrev suggestions. |
+| **When to use** | Autocomplete, prefix filters, dictionaries of station names, region-code suggestions. |
 | **Trade-off** | Space grows with alphabet × depth; hash map wins for exact key lookup only. |
 
-In **NFL data analysis**, tries shine when users **type ahead** on **player names** (`"Mah"` → Mahomes, Mahaffey), **team abbreviations** (`"K"` → KC, …), or **route concepts** with shared prefixes. Exact `play_id` lookup stays in a [Hash table](../hash-table/index.md); tries complement hashes for **prefix** and **completion** UX.
+In **daily weather data analysis**, tries shine when users **type ahead** on **station names** (`"Sea"` → Seattle, Seaside, SeaTac), **region abbreviations** (`"P"` → PDX, PHX, …), or **event tags** with shared prefixes (`"ColdFront#"`). Exact `reading_id` lookup stays in a [Hash table](../hash-table/index.md); tries complement hashes for **prefix** and **completion** UX.
 
-This page is your **ready reference**: Python implementations (`dict`-of-children and `Trie` class), every operation with NFL examples, complexity tables, pitfalls, and when `dict` beats trie. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: Python implementations (`dict`-of-children and `Trie` class), every operation with daily weather examples, complexity tables, pitfalls, and when `dict` beats trie. For Big-O notation and weather-scale *n*, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
@@ -25,52 +25,57 @@ This page is your **ready reference**: Python implementations (`dict`-of-childre
 | **Prefix all matches** | O(L + k) | O(n) scan all keys | O(log n + k) |
 | **Autocomplete** | Natural | Slow scan | Possible |
 | **Space** | O(total chars) | O(n) keys | O(n) |
-| **NFL** | Name/typeahead UI | `play_id` index | Leaderboards by name |
+| **Weather fit** | Name/typeahead UI | `reading_id` index | Leaderboards by station name |
 
 ```mermaid
 flowchart TB
   R["root"]
-  R --> M["m"]
-  M --> A["a"]
-  A --> H["h"]
-  AH["end: Mahomes"] --- A
-  A --> R2["r"]
-  R2 --> C["c"]
-  RC["end: Marquez"] --- R2
+  R --> S["s"]
+  S --> E["e"]
+  E --> A["a"]
+  EA["end: seattle"] --- E
+  E --> T["t"]
+  T --> T2["t"]
+  TT["end: seattle"] --- T
+  E --> S2["s"]
+  S2 --> I["i"]
+  SI["end: seaside"] --- S2
 ```
 
 **L** = key length (characters). **k** = number of matches returned.
 
 ---
 
-## NFL data analysis: what a trie models
+## Daily weather analysis: what a trie models
 
-| NFL idea | Trie keys | Operation |
+| Weather idea | Trie keys | Operation |
 | --- | --- | --- |
-| **Player search box** | `player.name.lower()` | `starts_with("mah")` |
-| **Team abbrev** | `"KC"`, `"BUF"`, … | prefix as user types |
-| **Concept tags** | `"PAConcept#"` shared prefix | group drills |
-| **Roster by last name** | `"Kelce"` | insert full names |
-| **Forbidden word filter** | banned substring scan | prefix walk |
+| **Station search box** | `station.name.lower()` | `starts_with("sea")` |
+| **Region abbrev** | `"SEA"`, `"PDX"`, … | prefix as user types |
+| **Event tags** | `"ColdFront#"` shared prefix | group drills |
+| **Catalog by city name** | `"Portland"` | insert full names |
+| **Invalid token filter** | banned substring scan | prefix walk |
 
 ```python
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Player:
-    player_id: str
+class Station:
+    station_id: str
     name: str
-    team: str
-    position: str
+    region: str
+    elevation_m: float
 
 
 @dataclass(frozen=True)
-class Team:
+class Region:
     abbr: str
-    city: str
-    name: str
+    state: str
+    label: str
 ```
+
+Each leaf can store a `Station` payload, not just the string key. `Trie` is defined in [Reference implementation](#reference-implementation-trie-with-full-api) below; later sections use `Station` in operation examples.
 
 ---
 
@@ -78,15 +83,15 @@ class Team:
 
 - **Root** — empty string prefix.
 - **Edge** — one character (or one token if word-level trie).
-- **`is_end`** — node completes a stored string; may also store `player_id` payload.
+- **`is_end`** — node completes a stored string; may also store `station_id` payload.
 
 ```mermaid
 sequenceDiagram
   participant UI as search UI
   participant T as trie
-  UI->>T: starts_with("mah")
-  T->>T: walk m → a → h
-  T-->>UI: ["Mahomes", "Mahaffey", ...]
+  UI->>T: starts_with("sea")
+  T->>T: walk s → e → a
+  T-->>UI: ["seattle", "seaside", ...]
 ```
 
 | Step | Cost driver |
@@ -102,13 +107,13 @@ sequenceDiagram
 
 ```python
 class TrieNode:
-    def __init__(self) -> None:
-        self.children: dict[str, TrieNode] = {}
-        self.is_end: bool = False
-        self.value: Any | None = None
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+        self.value = None
 
 class Trie:
-    def __init__(self) -> None:
+    def __init__(self):
         self.root = TrieNode()
 ```
 
@@ -117,13 +122,13 @@ class Trie:
 | **Time** | O(1) |
 | **Space** | O(1) |
 
-### 2. Insert roster from iterable
+### 2. Insert catalog from iterable
 
 ```python
-def build_player_trie(players: list[Player]) -> Trie:
+def build_station_trie(stations):
     t = Trie()
-    for p in players:
-        t.insert(p.name.lower(), p)
+    for s in stations:
+        t.insert(s.name.lower(), s)
     return t
 ```
 
@@ -137,10 +142,10 @@ def build_player_trie(players: list[Player]) -> Trie:
 ```python
 from collections import defaultdict
 
-def make_node() -> dict:
+def make_node():
     return defaultdict(make_node)
 
-# root = make_node()  # then navigate root['m']['a']['h']
+# root = make_node()  # then navigate root['s']['e']['a']
 ```
 
 | | |
@@ -152,10 +157,10 @@ def make_node() -> dict:
 
 Production Python services often use:
 
-- **Database** `LIKE 'mah%'` for large rosters.
+- **Database** `LIKE 'sea%'` for large station catalogs.
 - **Search engines** (Elasticsearch) for fuzzy match.
 
-Tries in pure Python excel in **medium** catalogs (thousands of players) and **teaching**.
+Tries in pure Python excel in **medium** catalogs (thousands of station names) and **teaching**.
 
 ```mermaid
 flowchart TD
@@ -170,39 +175,26 @@ flowchart TD
 ## Reference implementation: `Trie` with full API
 
 ```python
-from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import Any, Iterator
-
-
-@dataclass
 class TrieNode:
-    children: dict[str, TrieNode]
-    is_end: bool = False
-    value: Any | None = None
-
-    def __init__(self) -> None:
+    def __init__(self):
         self.children = {}
         self.is_end = False
         self.value = None
 
 
 class Trie:
-    """Prefix tree over single-character edges (lowercase strings)."""
-
-    def __init__(self) -> None:
+    def __init__(self):
         self.root = TrieNode()
         self._size = 0
 
-    def __len__(self) -> int:
+    def __len__(self):
         return self._size
 
-    def clear(self) -> None:
+    def clear(self):
         self.root = TrieNode()
         self._size = 0
 
-    def insert(self, word: str, value: Any | None = None) -> None:
+    def insert(self, word, value=None):
         node = self.root
         for ch in word:
             if ch not in node.children:
@@ -213,22 +205,20 @@ class Trie:
         node.is_end = True
         node.value = value
 
-    def search(self, word: str) -> Any | None:
+    def search(self, word):
         node = self._find_node(word)
         if node is None or not node.is_end:
             return None
         return node.value
 
-    def contains(self, word: str) -> bool:
-        return self.search(word) is not None or (
-            self._find_node(word) is not None
-            and self._find_node(word).is_end
-        )
+    def contains(self, word):
+        node = self._find_node(word)
+        return node is not None and node.is_end
 
-    def starts_with(self, prefix: str) -> bool:
+    def starts_with(self, prefix):
         return self._find_node(prefix) is not None
 
-    def _find_node(self, prefix: str) -> TrieNode | None:
+    def _find_node(self, prefix):
         node = self.root
         for ch in prefix:
             if ch not in node.children:
@@ -236,10 +226,8 @@ class Trie:
             node = node.children[ch]
         return node
 
-    def delete(self, word: str) -> bool:
-        """Remove word; prune dead branches."""
-
-        def _delete(node: TrieNode, depth: int) -> bool:
+    def delete(self, word):
+        def _delete(node, depth):
             if depth == len(word):
                 if not node.is_end:
                     return False
@@ -266,38 +254,37 @@ class Trie:
             return True
         return False
 
-    def collect(self, prefix: str = "") -> list[str]:
-        """All words with given prefix."""
+    def collect(self, prefix=""):
         node = self._find_node(prefix)
         if node is None:
             return []
-        out: list[str] = []
+        out = []
         self._dfs_words(node, prefix, out)
         return out
 
-    def collect_values(self, prefix: str = "") -> list[Any]:
+    def collect_values(self, prefix=""):
         node = self._find_node(prefix)
         if node is None:
             return []
-        out: list[Any] = []
+        out = []
         self._dfs_values(node, out)
         return out
 
-    def _dfs_words(self, node: TrieNode, path: str, out: list[str]) -> None:
+    def _dfs_words(self, node, path, out):
         if node.is_end:
             out.append(path)
         for ch, child in sorted(node.children.items()):
             self._dfs_words(child, path + ch, out)
 
-    def _dfs_values(self, node: TrieNode, out: list[Any]) -> None:
+    def _dfs_values(self, node, out):
         if node.is_end and node.value is not None:
             out.append(node.value)
         for child in node.children.values():
             self._dfs_values(child, out)
 
-    def longest_common_prefix(self) -> str:
+    def longest_common_prefix(self):
         node = self.root
-        prefix: list[str] = []
+        prefix = []
         while len(node.children) == 1 and not node.is_end:
             ch, node = next(iter(node.children.items()))
             prefix.append(ch)
@@ -326,8 +313,8 @@ flowchart TB
 
 ```python
 trie = Trie()
-trie.insert("mahomes", Player("00-001", "Patrick Mahomes", "KC", "QB"))
-trie.insert("mahaffey", Player("00-002", "Nick Mahaffey", "KC", "OL"))
+trie.insert("seattle", Station("USW00024233", "Seattle", "WA", 56.0))
+trie.insert("seaside", Station("USW00024234", "Seaside", "OR", 5.0))
 ```
 
 | | |
@@ -338,7 +325,7 @@ trie.insert("mahaffey", Player("00-002", "Nick Mahaffey", "KC", "OL"))
 ```mermaid
 sequenceDiagram
   participant T as trie
-  T->>T: walk/create m,a,h,...
+  T->>T: walk/create s,e,a,...
   T->>T: mark is_end at leaf
 ```
 
@@ -347,7 +334,7 @@ sequenceDiagram
 ### `search(word)` — exact match
 
 ```python
-p = trie.search("mahomes")
+s = trie.search("seattle")
 ```
 
 | | |
@@ -355,7 +342,7 @@ p = trie.search("mahomes")
 | **Time** | O(L) |
 | **Space** | O(1) |
 
-Returns attached `Player` or `None`.
+Returns attached `Station` or `None`.
 
 ---
 
@@ -371,7 +358,7 @@ Returns attached `Player` or `None`.
 ### `starts_with(prefix)` — any word under prefix?
 
 ```python
-assert trie.starts_with("mah")
+assert trie.starts_with("sea")
 assert not trie.starts_with("zzz")
 ```
 
@@ -380,15 +367,15 @@ assert not trie.starts_with("zzz")
 | **Time** | O(L) |
 | **Space** | O(1) |
 
-**NFL UI:** Enable autocomplete dropdown after user types 3+ chars.
+**Weather UI:** Enable autocomplete dropdown after user types 3+ chars.
 
 ---
 
 ### `collect(prefix)` — all completions
 
 ```python
-matches = trie.collect("mah")
-# ["mahaffey", "mahomes"] sorted by DFS order
+matches = trie.collect("sea")
+# ["seaside", "seattle"] sorted by DFS order
 ```
 
 | | |
@@ -401,7 +388,7 @@ matches = trie.collect("mah")
 ### `collect_values(prefix)` — payload objects
 
 ```python
-players = trie.collect_values("ma")
+stations = trie.collect_values("po")
 ```
 
 | | |
@@ -414,7 +401,7 @@ players = trie.collect_values("ma")
 ### `delete(word)`
 
 ```python
-trie.delete("mahaffey")
+trie.delete("seaside")
 ```
 
 | | |
@@ -430,9 +417,9 @@ Prune nodes that become useless branches.
 
 ```python
 t = Trie()
-for abbr in ["KC", "KCC", "KCY"]:
+for abbr in ["PDX", "PDT", "PDY"]:
     t.insert(abbr.lower())
-# useful for detecting shared team abbrev prefixes in toy data
+# useful for detecting shared region-code prefixes in toy data
 ```
 
 | | |
@@ -451,17 +438,17 @@ for abbr in ["KC", "KCC", "KCY"]:
 
 ---
 
-## NFL patterns with tries
+## Weather patterns with tries
 
-### Autocomplete player names
+### Autocomplete station names
 
 ```python
-def autocomplete(trie: Trie, partial: str, limit: int = 10) -> list[Player]:
+def autocomplete(trie, partial, limit=10):
     partial = partial.lower().strip()
     if not partial:
         return []
-    players = trie.collect_values(partial)
-    return players[:limit]
+    stations = trie.collect_values(partial)
+    return stations[:limit]
 ```
 
 | | |
@@ -469,37 +456,36 @@ def autocomplete(trie: Trie, partial: str, limit: int = 10) -> list[Player]:
 | **Time** | O(L + k) |
 | **Space** | O(k) |
 
-### Team abbreviation typeahead
+### Region abbreviation typeahead
 
 ```python
-TEAMS = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN",
-         "DET", "GB", "HOU", "IND", "JAX", "KC", "LA", "LAC", "LV", "MIA",
-         "MIN", "NE", "NO", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB",
-         "TEN", "WAS"]
+REGIONS = ["ABQ", "ATL", "BOS", "DEN", "DFW", "HNL", "IAH", "JFK", "LAS",
+           "LAX", "MIA", "MSP", "ORD", "PDX", "PHX", "SAN", "SEA", "SFO",
+           "SLC", "TPA"]
 
-team_trie = Trie()
-for abbr in TEAMS:
-    team_trie.insert(abbr.lower(), abbr)
+region_trie = Trie()
+for abbr in REGIONS:
+    region_trie.insert(abbr.lower(), abbr)
 
-def suggest_team(prefix: str) -> list[str]:
-    return [team_trie.search(w) for w in team_trie.collect(prefix.lower())]
+def suggest_region(prefix):
+    return [region_trie.search(w) for w in region_trie.collect(prefix.lower())]
 ```
 
 | | |
 | --- | --- |
 | **Time** | O(L + k) |
-| **Space** | O(32) tiny |
+| **Space** | O(20) tiny |
 
-For only 32 teams, a **sorted list + filter** is simpler—trie pays off when *n* is thousands (players).
+For only a few dozen region codes, a **sorted list + filter** is simpler—trie pays off when *n* is thousands (station names in a national catalog).
 
-### Prefix word filter on commentary tokens
+### Prefix token filter on ingest logs
 
 ```python
 banned = Trie()
-for word in ("badword1", "badword2"):
+for word in ("badtoken1", "badtoken2"):
     banned.insert(word)
 
-def has_banned_prefix(token: str) -> bool:
+def has_banned_prefix(token):
     return any(
         banned.starts_with(token[:i])
         for i in range(1, len(token) + 1)
@@ -519,19 +505,19 @@ def has_banned_prefix(token: str) -> bool:
 | --- | --- | --- |
 | **Compressed (radix / Patricia)** | Merge single-child chains | Save space on sparse tries |
 | **Array of size 26** | Fixed alphabet | Uppercase A–Z only |
-| **Word-level trie** | Edge = whole token | NLP play descriptions |
+| **Word-level trie** | Edge = whole token | NLP event descriptions |
 | **Suffix trie** | All suffixes of one string | advanced text; heavy space |
 
 ---
 
 ## Array-based children vs `dict` children
 
-| | **`dict[str, TrieNode]`** | **array[26]** |
+| | **`dict` children** | **array[26]** |
 | --- | --- | --- |
 | **Space** | O(active children) | O(26) per node always |
 | **Lookup child** | O(1) hash | O(1) index |
 | **Alphabet** | Unicode / arbitrary | Restricted |
-| **NFL names** | Preferred (mixed case normalized) | Only if A–Z enforced |
+| **Station names** | Preferred (mixed case normalized) | Only if A–Z enforced |
 
 ---
 
@@ -546,7 +532,7 @@ Let **L** = word length, **k** = matches, **N** = total stored characters across
 | `starts_with` | O(L) | O(1) |
 | `collect` / autocomplete | O(L + k + output) | O(k) stack |
 | `delete` | O(L) | O(L) stack |
-| Build n players avg length L̄ | O(n · L̄) | O(N) total |
+| Build n stations avg length L̄ | O(n · L̄) | O(N) total |
 | DFS all words | O(N) | O(output) |
 
 **Storage:** O(N) characters stored in tree structure plus node overhead.
@@ -557,17 +543,17 @@ Let **L** = word length, **k** = matches, **N** = total stored characters across
 
 | Need | Tool |
 | --- | --- |
-| Exact `play_id` | `dict[int, Play]` |
-| Few dozen teams | `list` + filter |
-| Thousands of players typeahead | `Trie` or DB `ILIKE` |
+| Exact `reading_id` | `dict[int, DailyReading]` |
+| Few dozen region codes | `list` + filter |
+| Thousands of station typeahead | `Trie` or DB `ILIKE` |
 | Fuzzy spelling | `difflib`, rapidfuzz, search engine |
-| Prefix in pandas | `df[df['name'].str.startswith('Mah')]` |
+| Prefix in pandas | `df[df['name'].str.startswith('Sea')]` |
 
 ```python
 import pandas as pd
 
-players = pd.read_csv("players.csv")
-hits = players[players["name"].str.lower().str.startswith("mah")]
+stations = pd.read_csv("stations.csv")
+hits = stations[stations["name"].str.lower().str.startswith("sea")]
 ```
 
 Vectorized pandas is often faster than pure Python trie for **batch** queries; trie wins for **interactive** single-prefix lookups in memory.
@@ -592,8 +578,8 @@ flowchart TD
 | Empty string insert | Define policy (usually skip) |
 | Huge alphabet Unicode | Use dict children, not array[65536] |
 | Duplicate insert same word | Decide overwrite vs ignore |
-| Trie for 32 teams only | Overkill — use list |
-| Not attaching `player_id` at leaf | Store payload in `value` |
+| Trie for ~20 region codes only | Overkill — use list |
+| Not attaching `station_id` at leaf | Store payload in `value` |
 
 ---
 
@@ -603,16 +589,16 @@ Normalize once at the boundary:
 
 ```python
 class CaseInsensitiveTrie:
-    def __init__(self) -> None:
+    def __init__(self):
         self._t = Trie()
 
-    def insert(self, word: str, value: Any | None = None) -> None:
+    def insert(self, word, value=None):
         self._t.insert(word.lower(), value)
 
-    def search(self, word: str) -> Any | None:
+    def search(self, word):
         return self._t.search(word.lower())
 
-    def collect(self, prefix: str) -> list[str]:
+    def collect(self, prefix):
         return self._t.collect(prefix.lower())
 ```
 
@@ -621,24 +607,24 @@ class CaseInsensitiveTrie:
 | **Time** | O(L) per op |
 | **Space** | Same as inner trie |
 
-**NFL:** User types `"MAH"` or `"mah"` — same completions.
+**Weather:** User types `"SEA"` or `"sea"` — same completions.
 
 ---
 
 ## Array-based trie node (A–Z only)
 
-When keys are **uppercase team codes** or A–Z only:
+When keys are **uppercase region codes** or A–Z only:
 
 ```python
 class AlphaTrieNode:
     __slots__ = ("children", "is_end", "value")
 
-    def __init__(self) -> None:
-        self.children: list[AlphaTrieNode | None] = [None] * 26
+    def __init__(self):
+        self.children = [None] * 26
         self.is_end = False
         self.value = None
 
-    def _idx(self, ch: str) -> int:
+    def _idx(self, ch):
         return ord(ch.upper()) - ord("A")
 ```
 
@@ -647,7 +633,7 @@ class AlphaTrieNode:
 | **Time** | O(1) child index |
 | **Space** | 26 pointers per node (sparse waste) |
 
-Use **`dict` children** for full player names with mixed characters.
+Use **`dict` children** for full station names with mixed characters.
 
 ---
 
@@ -657,26 +643,26 @@ Use **`dict` children** for full player names with mixed characters.
 sequenceDiagram
   participant T as Trie
   T->>T: start at root
-  loop each character in "mahomes"
+  loop each character in "seattle"
     T->>T: create child if missing
     T->>T: descend
   end
-  T->>T: is_end=True, value=Player(...)
+  T->>T: is_end=True, value=Station(...)
 ```
 
 ---
 
-## Word search on formation grid (toy)
+## Word search on acronym grid (toy)
 
-Given a 2D grid of letters, find if a formation code exists (DFS + trie):
+Given a 2D grid of letters, find if a weather acronym exists (DFS + trie):
 
 ```python
-def find_word(board: list[list[str]], word: str, trie: Trie) -> bool:
+def find_word(board, word, trie):
     if not trie.starts_with(word[0]):
         return False
     rows, cols = len(board), len(board[0])
 
-    def dfs(r: int, c: int, i: int) -> bool:
+    def dfs(r, c, i):
         if i == len(word):
             return True
         if r < 0 or c < 0 or r >= rows or c >= cols:
@@ -700,7 +686,7 @@ def find_word(board: list[list[str]], word: str, trie: Trie) -> bool:
 | **Time** | O(rows · cols · 4^L) naive |
 | **Space** | O(L) stack |
 
-**NFL:** Toy for workbook puzzles—not production PBP search.
+**Weather:** Toy for workbook puzzles—not production station-catalog search.
 
 ---
 
@@ -723,27 +709,27 @@ def find_word(board: list[list[str]], word: str, trie: Trie) -> bool:
 
 ## Radix / Patricia (compressed) — when space matters
 
-If the trie is **sparse** with long single-child chains, compress paths into one edge labeled with a substring. Python rarely needs this for player tries (≈ few thousand nodes); routing tables and DNA-style keys benefit more.
+If the trie is **sparse** with long single-child chains, compress paths into one edge labeled with a substring. Python rarely needs this for station tries (≈ few thousand nodes); routing tables and DNA-style keys benefit more.
 
 | | Standard trie | Radix tree |
 | --- | --- | --- |
 | Space | O(total chars) | O(nodes) smaller |
 | Implement | Easy in Python | Harder |
-| NFL autocomplete | dict trie enough | optional at scale |
+| Weather autocomplete | dict trie enough | optional at scale |
 
 ---
 
 ## Autocomplete API sketch (Flask-style)
 
 ```python
-def search_players(trie: Trie, q: str, limit: int = 8) -> list[dict]:
+def search_stations(trie, q, limit=8):
     q = q.strip().lower()
     if len(q) < 2:
         return []
-    players = trie.collect_values(q)
+    stations = trie.collect_values(q)
     return [
-        {"player_id": p.player_id, "name": p.name, "team": p.team}
-        for p in players[:limit]
+        {"station_id": s.station_id, "name": s.name, "region": s.region}
+        for s in stations[:limit]
     ]
 ```
 
@@ -760,27 +746,28 @@ sequenceDiagram
   participant UI
   participant API
   participant Trie
-  UI->>API: GET /players?q=mah
-  API->>Trie: collect_values("mah")
-  Trie-->>API: [Player, ...]
+  UI->>API: GET /stations?q=sea
+  API->>Trie: collect_values("sea")
+  Trie-->>API: [Station, ...]
   API-->>UI: JSON suggestions
 ```
 
 ---
 
-## Bulk build from nflverse roster CSV
+## Bulk build from station CSV
 
 ```python
 import csv
 
-def trie_from_roster_csv(path: str) -> Trie:
+def trie_from_station_csv(path):
     t = Trie()
     with open(path, newline="") as f:
         for row in csv.DictReader(f):
-            name = row.get("display_name") or row.get("player_name", "")
-            pid = row["gsis_id"]
-            team = row.get("team", "")
-            t.insert(name.lower(), Player(pid, name, team, row.get("position", "")))
+            name = row.get("station_name") or row.get("name", "")
+            sid = row["station_id"]
+            region = row.get("state", "")
+            elev = float(row.get("elevation_m", 0))
+            t.insert(name.lower(), Station(sid, name, region, elev))
     return t
 ```
 
@@ -789,7 +776,7 @@ def trie_from_roster_csv(path: str) -> Trie:
 | **Time** | O(total name characters) |
 | **Space** | O(trie nodes) |
 
-Rebuild trie when rosters update (trade deadline), not on every HTTP request.
+Rebuild trie when the station catalog updates, not on every HTTP request.
 
 ---
 
@@ -797,9 +784,9 @@ Rebuild trie when rosters update (trade deadline), not on every HTTP request.
 
 | Query | Structure |
 | --- | --- |
-| Keys **starting with** `"mah"` | Trie |
-| Keys **containing** `"homes"` | Scan all keys O(n) or full-text index |
-| Exact `play_id` | `dict` |
+| Keys **starting with** `"sea"` | Trie |
+| Keys **containing** `"attle"` | Scan all keys O(n) or full-text index |
+| Exact `reading_id` | `dict` |
 
 Document your search product: trie is **prefix-only**.
 
@@ -819,27 +806,27 @@ Document your search product: trie is **prefix-only**.
 
 ```python
 trie = Trie()
-trie.insert("mahomes", player_obj)
-trie.insert("mahaffey", other_player)
+trie.insert("seattle", station_obj)
+trie.insert("seaside", other_station)
 
 # Exact
-p = trie.search("mahomes")
+s = trie.search("seattle")
 
 # Prefix
-if trie.starts_with("mah"):
-    names = trie.collect("mah")
-    players = trie.collect_values("mah")
+if trie.starts_with("sea"):
+    names = trie.collect("sea")
+    stations = trie.collect_values("sea")
 
 # Remove
-trie.delete("mahaffey")
+trie.delete("seaside")
 ```
 
-Use a **trie** when **prefix queries** and **autocomplete** dominate—player search, shared concept prefixes, command palettes. Use **`dict`** for **`play_id`** and **`Counter`** for stats; use **pandas** for bulk season filters.
+Use a **trie** when **prefix queries** and **autocomplete** dominate—station search, shared event-tag prefixes, command palettes. Use **`dict`** for **`reading_id`** and **`Counter`** for stats; use **pandas** for bulk season filters.
 
-**NFL pipeline checklist**
+**Weather pipeline checklist**
 
-1. **Exact play lookup** — `dict` or DataFrame index, not trie.
+1. **Exact reading lookup** — `dict` or DataFrame index, not trie.
 2. **Name search UI** — trie on normalized `name.lower()`.
 3. **Normalize** — case and diacritics policy at insert and query.
-4. **Size** — trie for thousands of strings; consider DB for full historical roster search.
-5. **Return payload** — store `Player` at `is_end` node, not just string.
+4. **Size** — trie for thousands of strings; consider DB for full historical catalog search.
+5. **Return payload** — store `Station` at `is_end` node, not just string.

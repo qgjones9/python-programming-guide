@@ -7,11 +7,11 @@ A **comparison sort** that treats the input array as a **binary max-heap**, then
 | **What it is** | `build_max_heap` in O(n), then (n−1) × (swap root with end + `sift_down`). |
 | **Core operations** | `sift_up`, `sift_down`, `heapify`, extract-max loop—same machinery as [Max heap](../max-heap/index.md). |
 | **When to use** | Guaranteed in-place O(n log n), teaching heap property, embedded memory limits. |
-| **Trade-off** | **Not stable**—equal PPR players may reorder; constants slower than Timsort in Python. |
+| **Trade-off** | **Not stable**—equal temp-anomaly values may reorder; constants slower than Timsort in Python. |
 
-In **NFL data analysis**, heap sort is the **batch ranking** view of a [priority queue](../priority-queue/index.md): imagine a **max-heap of pending red-zone plays by EPA**—each step moves the best play to the “sorted so far” suffix at the array tail until every snap is ordered. For **“top 5 plays only”**, use **`heapq.nlargest`** instead of sorting the full drive. For **million-row season tables**, use **pandas** `sort_values`.
+In **daily weather data analysis**, heap sort is the **batch ranking** view of a [priority queue](../priority-queue/index.md): imagine a **max-heap of pending daily readings by temp anomaly**—each step moves the largest anomaly to the “sorted so far” suffix at the array tail until every day in the window is ordered. For **“top 5 hottest days only”**, use **`heapq.nlargest`** instead of sorting the full month. For **million-row climate archives**, use **pandas** `sort_values`.
 
-This page is your **ready reference**: heap layout in an array, full Python heap-sort and heap helpers, every phase with NFL examples, complexity tables, and links to the algorithm-focused companion page. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: heap layout in an array, full Python heap-sort and heap helpers, every phase with weather examples, complexity tables, and links to the algorithm-focused companion page. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 **Algorithm walkthrough (sorting focus):** [Heap sort (algorithms)](../../algorithms/heap-sort/index.md) — same sort, less structure detail.
 
@@ -19,12 +19,12 @@ This page is your **ready reference**: heap layout in an array, full Python heap
 
 ---
 
-## How heap sort fits NFL-shaped problems
+## How heap sort fits daily weather analysis
 
-| NFL idea | Heap sort view | Note |
+| Weather analysis idea | Heap sort view | Note |
 | --- | --- | --- |
-| **Rank all drive snaps by EPA** | Ascending sort via max-heap extract | Full order, not just top-k |
-| **Sort roster by rush yards in-place** | Mutate list on embedded device | O(1) extra space |
+| **Rank all days in a window by temp anomaly** | Ascending sort via max-heap extract | Full order, not just top-k |
+| **Sort stations by monthly precipitation in-place** | Mutate list on embedded device | O(1) extra space |
 | **Worst-case guarantee** | Θ(n log n) unlike quicksort | Predictable for adversarial inputs |
 | **Teaching heaps + sort together** | Same `sift_down` as [Max heap](../max-heap/index.md) | One mental model |
 
@@ -32,7 +32,7 @@ This page is your **ready reference**: heap layout in an array, full Python heap
 
 ```mermaid
 flowchart TD
-  A["unsorted EPA array"] --> B["build_max_heap O(n)"]
+  A["unsorted anomaly array"] --> B["build_max_heap O(n)"]
   B --> C["loop: swap max to end"]
   C --> D["sift_down on heap prefix"]
   D --> E{end > 0?}
@@ -52,7 +52,7 @@ Throughout this page, **n** is array length.
 | **Extra space** | O(1) | O(n) | O(log n) stack | O(n) worst |
 | **Stable** | No | Yes | No | Yes (Timsort) |
 | **In-place** | Yes | No | Yes | Yes |
-| **NFL default** | Teach / embed | Big merges | Rare in Python | **Use this** |
+| **Weather default** | Teach / embed | Big merges | Rare in Python | **Use this** |
 
 ```mermaid
 sequenceDiagram
@@ -95,39 +95,37 @@ flowchart LR
 
 ---
 
-## NFL data types for examples
+## Daily weather data types for examples
 
 ```python
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 
-@dataclass(frozen=True, slots=True)
-class Snap:
-    play_id: int
-    quarter: int
-    epa: float
-    description: str
+@dataclass
+class DailyReading:
+    reading_id: int
+    month: int
+    temp_anomaly: float
+    summary: str
 
 
-@dataclass(frozen=True, slots=True)
-class Player:
+@dataclass
+class Station:
     name: str
-    rush_yds: int
-    team: str
+    precip_mm: int
+    region: str
 ```
 
 ---
 
 ## Ways to run heap sort
 
-### 1. In-place on `list[float]` — canonical
+### 1. In-place on `list` of floats — canonical
 
 ```python
-yards = [45, 120, 88, 22, 95]
-heap_sort(yards)
-# [22, 45, 88, 95, 120]
+precip_mm = [12.4, 45.2, 28.1, 5.6, 31.0]
+heap_sort(precip_mm)
+# [5.6, 12.4, 28.1, 31.0, 45.2]
 ```
 
 | | |
@@ -138,7 +136,7 @@ heap_sort(yards)
 ### 2. Non-destructive copy
 
 ```python
-sorted_yards = heap_sort_copy([45, 120, 88])
+sorted_precip = heap_sort_copy([45.2, 12.4, 28.1])
 ```
 
 | | |
@@ -146,7 +144,7 @@ sorted_yards = heap_sort_copy([45, 120, 88])
 | **Time** | Θ(n log n) |
 | **Space** | O(n) copy |
 
-### 3. Sort players by key via index heap
+### 3. Sort stations by key via index heap
 
 Avoid moving fat objects—heap indices, permute at end (see full implementation).
 
@@ -160,7 +158,7 @@ Avoid moving fat objects—heap indices, permute at end (see full implementation
 ```python
 import heapq
 
-def heap_sort_via_heapq(nums: list[float]) -> list[float]:
+def heap_sort_via_heapq(nums):
     h = nums[:]
     heapq.heapify(h)
     return [heapq.heappop(h) for _ in range(len(h))]
@@ -176,7 +174,7 @@ Produces **ascending** order (min-heap). Max-heap sort moves max to **end** in-p
 ### 5. Build heap only — partial structure
 
 ```python
-build_max_heap(epas)  # O(n) — not fully sorted yet
+build_max_heap(anomalies)
 ```
 
 | | |
@@ -200,16 +198,10 @@ flowchart TD
 ## Reference implementation: heap helpers + sort
 
 ```python
-from __future__ import annotations
-
 from dataclasses import dataclass
-from typing import Callable, TypeVar
-
-T = TypeVar("T")
 
 
-def sift_down(nums: list[float], i: int, heap_size: int) -> None:
-    """Max-heap sift-down on nums[0:heap_size)."""
+def sift_down(nums, i, heap_size):
     while True:
         largest = i
         left = 2 * i + 1
@@ -224,7 +216,7 @@ def sift_down(nums: list[float], i: int, heap_size: int) -> None:
         i = largest
 
 
-def sift_up(nums: list[float], i: int) -> None:
+def sift_up(nums, i):
     while i > 0:
         p = (i - 1) // 2
         if nums[p] >= nums[i]:
@@ -233,18 +225,18 @@ def sift_up(nums: list[float], i: int) -> None:
         i = p
 
 
-def build_max_heap(nums: list[float]) -> None:
+def build_max_heap(nums):
     n = len(nums)
     for i in range(n // 2 - 1, -1, -1):
         sift_down(nums, i, n)
 
 
-def heap_push(nums: list[float], key: float) -> None:
+def heap_push(nums, key):
     nums.append(key)
     sift_up(nums, len(nums) - 1)
 
 
-def heap_pop_max(nums: list[float]) -> float:
+def heap_pop_max(nums):
     if not nums:
         raise IndexError("pop from empty heap")
     root = nums[0]
@@ -255,26 +247,24 @@ def heap_pop_max(nums: list[float]) -> float:
     return root
 
 
-def heap_sort(nums: list[float]) -> None:
-    """Sort nums ascending in-place using max-heap."""
+def heap_sort(nums):
     build_max_heap(nums)
     for end in range(len(nums) - 1, 0, -1):
         nums[0], nums[end] = nums[end], nums[0]
         sift_down(nums, 0, end)
 
 
-def heap_sort_copy(nums: list[float]) -> list[float]:
+def heap_sort_copy(nums):
     arr = nums[:]
     heap_sort(arr)
     return arr
 
 
-def heap_sort_key(items: list[T], *, key: Callable[[T], float]) -> None:
-    """Sort items ascending by key in-place via index heap."""
+def heap_sort_key(items, *, key):
     n = len(items)
     idx = list(range(n))
 
-    def sift_idx(i: int, size: int) -> None:
+    def sift_idx(i, size):
         while True:
             largest = i
             l, r = 2 * i + 1, 2 * i + 2
@@ -295,14 +285,14 @@ def heap_sort_key(items: list[T], *, key: Callable[[T], float]) -> None:
     items[:] = [items[i] for i in idx]
 
 
-@dataclass(frozen=True, slots=True)
-class Player:
+@dataclass
+class Station:
     name: str
-    rush_yds: int
+    precip_mm: int
 
 
-def heap_sort_players(players: list[Player]) -> None:
-    heap_sort_key(players, key=lambda p: p.rush_yds)
+def heap_sort_stations(stations):
+    heap_sort_key(stations, key=lambda s: s.precip_mm)
 ```
 
 | | |
@@ -317,8 +307,8 @@ def heap_sort_players(players: list[Player]) -> None:
 Floyd: sift-down from last parent `⌊n/2⌋ − 1` down to `0`.
 
 ```python
-epas = [0.4, -1.2, 0.8, 0.1, 0.9]
-build_max_heap(epas)
+anomalies = [0.4, -1.2, 0.8, 0.1, 0.9]
+build_max_heap(anomalies)
 # heap property restored; e.g. max 0.9 at index 0 (exact layout varies)
 ```
 
@@ -343,7 +333,7 @@ flowchart TB
 ## Phase 2: extract-max loop — (n−1) × O(log n)
 
 ```python
-def trace_heap_sort(nums: list[float]) -> list[list[float]]:
+def trace_heap_sort(nums):
     build_max_heap(nums)
     snapshots = [nums[:]]
     for end in range(len(nums) - 1, 0, -1):
@@ -418,8 +408,8 @@ Used in online heap insert; heap sort build uses sift-down only.
 ### `heap_sort(A)` — full ascending sort
 
 ```python
-drive_epas = [0.12, 0.44, 0.31, 0.08, 0.55]
-heap_sort(drive_epas)
+window_anomalies = [0.12, 0.44, 0.31, 0.08, 0.55]
+heap_sort(window_anomalies)
 # [0.08, 0.12, 0.31, 0.44, 0.55]
 ```
 
@@ -428,11 +418,11 @@ heap_sort(drive_epas)
 | **Time** | Θ(n log n) best, average, worst |
 | **Space** | O(1) |
 
-**NFL:** Sort one drive’s snaps by EPA before charting—small *n*, any sort works; heap sort teaches **in-place guarantee**.
+**Weather analysis:** Sort one month’s daily readings by temp anomaly before charting—small *n*, any sort works; heap sort teaches **in-place guarantee**.
 
 ---
 
-### `heap_sort_key(players, key=ppr)`
+### `heap_sort_key(stations, key=precip_mm)`
 
 | | |
 | --- | --- |
@@ -452,39 +442,39 @@ n pops from a max-heap also cost O(n log n)—same as heap sort without in-place
 
 ---
 
-## Trace: three rush-yard values
+## Trace: three precipitation values
 
-Input: `[45, 120, 88]`
+Input: `[12.4, 45.2, 28.1]`
 
-**After `build_max_heap`:** array might be `[120, 45, 88]` (max 120 at root).
+**After `build_max_heap`:** array might be `[45.2, 12.4, 28.1]` (max 45.2 at root).
 
 | step | action | heap prefix | sorted tail |
 | ---: | --- | --- | --- |
-| 1 | swap 120 ↔ 88, sift | `[88, 45]` | `[..., 120]` |
-| 2 | swap 88 ↔ 45, sift | `[45]` | `[45, 88, 120]` |
+| 1 | swap 45.2 ↔ 28.1, sift | `[28.1, 12.4]` | `[..., 45.2]` |
+| 2 | swap 28.1 ↔ 12.4, sift | `[12.4]` | `[12.4, 28.1, 45.2]` |
 
-Final: `[45, 88, 120]` ascending.
+Final: `[12.4, 28.1, 45.2]` ascending.
 
 ```mermaid
 sequenceDiagram
-  participant A as [45,120,88]
-  A->>A: build_max_heap → 120 at root
-  A->>A: swap root with last → tail gets 120
-  A->>A: sift_down → 88 root
-  A->>A: swap → tail gets 88
-  A->>A: sorted [45,88,120]
+  participant A as [12.4,45.2,28.1]
+  A->>A: build_max_heap → 45.2 at root
+  A->>A: swap root with last → tail gets 45.2
+  A->>A: sift_down → 28.1 root
+  A->>A: swap → tail gets 28.1
+  A->>A: sorted [12.4,28.1,45.2]
 ```
 
 ---
 
-## NFL patterns
+## Weather analysis patterns
 
-### Sort drive snaps for cumulative EPA chart
+### Sort daily readings for cumulative anomaly chart
 
 ```python
-def sorted_snaps_by_epa(snaps: list[Snap]) -> list[Snap]:
-    arr = snaps[:]
-    heap_sort_key(arr, key=lambda s: s.epa)
+def sorted_readings_by_anomaly(readings):
+    arr = readings[:]
+    heap_sort_key(arr, key=lambda r: r.temp_anomaly)
     return arr
 ```
 
@@ -498,9 +488,8 @@ def sorted_snaps_by_epa(snaps: list[Snap]) -> list[Snap]:
 ### In-place sort on constrained device
 
 ```python
-# No extra merge buffer — only O(1) aux beyond array
-weekly_points = [17, 31, 24, 10, 28]
-heap_sort(weekly_points)
+weekly_precip = [17.2, 31.5, 24.0, 10.8, 28.3]
+heap_sort(weekly_precip)
 ```
 
 | | |
@@ -515,7 +504,7 @@ heap_sort(weekly_points)
 ```python
 import heapq
 
-top5 = heapq.nlargest(5, snaps, key=lambda s: s.epa)
+top5 = heapq.nlargest(5, readings, key=lambda r: r.temp_anomaly)
 ```
 
 | | |
@@ -527,15 +516,15 @@ top5 = heapq.nlargest(5, snaps, key=lambda s: s.epa)
 
 ## Stability and equal keys
 
-Heap sort is **not stable**: equal PPR values may swap relative order during sift.
+Heap sort is **not stable**: equal temp-anomaly values may swap relative order during sift.
 
 | Need stable sort | Use |
 | --- | --- |
 | Preserve submission order on ties | [Merge sort](../../algorithms/merge-sort/index.md) or `list.sort` |
-| Tie-break explicitly | Sort by `(ppr, player_id)` tuple key |
+| Tie-break explicitly | Sort by `(temp_anomaly, reading_id)` tuple key |
 
 ```python
-players.sort(key=lambda p: (p.ppr, p.name))  # stable in Python 3
+readings.sort(key=lambda r: (r.temp_anomaly, r.reading_id))
 ```
 
 ---
@@ -563,17 +552,17 @@ players.sort(key=lambda p: (p.ppr, p.name))  # stable in Python 3
 | General sort | `list.sort`, `sorted` (Timsort) |
 | Top-k | `heapq.nlargest`, `heapq.nsmallest` |
 | Min-heapify | `heapq.heapify` |
-| DataFrame column | `df.sort_values("epa")` |
+| DataFrame column | `df.sort_values("temp_anomaly")` |
 
 ```python
 import pandas as pd
 
-df.sort_values("rush_yds", ascending=True, inplace=True)
+df.sort_values("precip_mm", ascending=True, inplace=True)
 ```
 
 ---
 
-## When to use / avoid (NFL context)
+## When to use / avoid (weather analysis context)
 
 ```mermaid
 flowchart TD
@@ -625,29 +614,29 @@ flowchart TD
 
 ```python
 # in-place ascending
-nums = [45, 120, 88, 22]
+nums = [12.4, 45.2, 28.1, 5.6]
 heap_sort(nums)
 
 # non-destructive
 sorted_nums = heap_sort_copy(nums)
 
 # objects by key
-heap_sort_players(roster)
+heap_sort_stations(stations)
 
 # phases only
-build_max_heap(epas)      # O(n) — heap structure
-heap_pop_max(epas)        # O(log n) — one max
+build_max_heap(anomalies)
+heap_pop_max(anomalies)
 
 # production
-roster.sort(key=lambda p: p.rush_yds)
-heapq.nlargest(10, snaps, key=lambda s: s.epa)
+stations.sort(key=lambda s: s.precip_mm)
+heapq.nlargest(10, readings, key=lambda r: r.temp_anomaly)
 ```
 
 **Heap sort:** build a **max-heap** in **O(n)**, then **(n−1) extracts** with **sift_down**—**Θ(n log n)** worst case, **O(1)** extra space, **unstable**. Pair with [Max heap](../max-heap/index.md) for structure; see [Heap sort (algorithms)](../../algorithms/heap-sort/index.md) for the sorting narrative.
 
-**NFL pipeline checklist**
+**Weather pipeline checklist**
 
-1. **Season tables** — `sort_values`, not heap sort.
+1. **Climate archives** — `sort_values`, not heap sort.
 2. **Top-k highlights** — `heapq.nlargest`.
 3. **Learn heaps** — `build_max_heap` then extract loop on this page.
 4. **Stable ties** — merge sort or explicit secondary key.

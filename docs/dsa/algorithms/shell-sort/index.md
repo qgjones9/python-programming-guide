@@ -9,9 +9,9 @@ A generalization of **insertion sort** that sorts elements **far apart** first (
 | **Space** | O(1). |
 | **Stability** | **Not stable** (long-gap swaps move equals). |
 | **In-place** | **Yes**. |
-| **When to use** | Medium *n* in-memory when you want in-place better than insertion; rarely chosen over `list.sort` in Python NFL pipelines. |
+| **When to use** | Medium *n* in-memory when you want in-place better than insertion; rarely chosen over `list.sort` in Python weather pipelines. |
 
-**NFL lens:** shell sort is like coarse **pre-ranking** prospects by **combine tier gaps** (every 10th pick) before fine-sorting within tiers—early passes move a RB from index 0 near index 30 in one swap when gap is large.
+**Daily weather lens:** shell sort is like coarse **pre-ordering** daily readings by **week gaps** (every 7th day) before fine-sorting within each week—early passes move a cold-front day from index 0 near index 30 in one swap when the gap is large.
 
 [Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
 
@@ -77,8 +77,6 @@ SHELL_SORT(A):
 ## Python implementation
 
 ```python
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 
@@ -117,43 +115,47 @@ def shell_sort_knuth(nums: list[float]) -> None:
 
 
 @dataclass(frozen=True, slots=True)
-class Player:
-    name: str
-    ppr: float
+class DailyReading:
+    reading_id: int
+    month: int
+    temp_anomaly: float
+    summary: str
 
 
-def shell_sort_players(players: list[Player], *, key=lambda p: p.ppr) -> None:
-    n = len(players)
+def shell_sort_readings(
+    readings: list[DailyReading], *, key=lambda r: r.temp_anomaly
+) -> None:
+    n = len(readings)
     for g in knuth_gaps(n):
         for i in range(g, n):
-            current = players[i]
+            current = readings[i]
             k = key(current)
             j = i
-            while j >= g and key(players[j - g]) > k:
-                players[j] = players[j - g]
+            while j >= g and key(readings[j - g]) > k:
+                readings[j] = readings[j - g]
                 j -= g
-            players[j] = current
+            readings[j] = current
 ```
 
 ---
 
-## Trace: PPR with gap 2 then 1
+## Trace: temp anomalies with gap 2 then 1
 
-`[31.0, 22.1, 28.4, 25.6]` (four QBs)
+`[1.0, -1.2, 0.4, 0.1]` (four daily readings)
 
 **g = 2:** subarrays indices `(0,2)` and `(1,3)`
 
-- Sort `(31.0, 28.4)` → `(28.4, 31.0)`
-- Sort `(22.1, 25.6)` → `(22.1, 25.6)`  
-→ `[28.4, 22.1, 31.0, 25.6]`
+- Sort `(1.0, 0.4)` → `(0.4, 1.0)`
+- Sort `(-1.2, 0.1)` → `(-1.2, 0.1)`  
+→ `[0.4, -1.2, 1.0, 0.1]`
 
-**g = 1:** insertion sort → `[22.1, 25.6, 28.4, 31.0]`
+**g = 1:** insertion sort → `[-1.2, 0.1, 0.4, 1.0]`
 
 ---
 
 ## Versus `list.sort()` / `sorted()` / `heapq`
 
-- **`list.sort`:** Always prefer for NFL tables—Timsort with Θ(n log n) worst guarantee and stability.
+- **`list.sort`:** Always prefer for weather tables—Timsort with Θ(n log n) worst guarantee and stability.
 - **Shell sort:** Historical / educational bridge between insertion and O(n log n).
 - **`heapq`:** Partial selection, not gap-based full sort.
 
@@ -164,11 +166,11 @@ def shell_sort_players(players: list[Player], *, key=lambda p: p.ppr) -> None:
 | Use | Avoid |
 | --- | --- |
 | Algorithms course | Production pandas |
-| Embedded systems lore | Stable fantasy rankings |
-| Compare gap sequences in homework | Large play-by-play |
+| Embedded systems lore | Stable anomaly ties |
+| Compare gap sequences in homework | Large multi-year archives |
 
 ```python
-weekly.sort_values("epa", ascending=False)
+daily.sort_values("temp_anomaly", ascending=True)
 ```
 
 ---
@@ -210,10 +212,10 @@ weekly.sort_values("epa", ascending=False)
 ## Quick reference
 
 ```python
-shell_sort(ppr)
-shell_sort_knuth(ppr)
-shell_sort_players(roster)
-roster.sort(key=lambda p: p.ppr)  # production
+shell_sort(anomalies)
+shell_sort_knuth(anomalies)
+shell_sort_readings(window)
+window.sort(key=lambda r: r.temp_anomaly)
 ```
 
-**Shell sort:** in-place gap insertion—faster than bare insertion on medium *n*, **unstable**, still beat by **`list.sort`** for NFL data at scale.
+**Shell sort:** in-place gap insertion—faster than bare insertion on medium *n*, **unstable**, still beat by **`list.sort`** for daily weather data at scale.

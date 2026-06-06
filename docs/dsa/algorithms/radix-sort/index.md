@@ -9,9 +9,9 @@ A **non-comparison** sort that orders keys **digit by digit** (or by fixed-width
 | **Space** | O(n + k) per digit pass for counting sort auxiliary. |
 | **Stability** | **Stable** when each digit pass is stable (counting sort). |
 | **In-place** | **No** (typical counting-sort radix). |
-| **When to use** | Fixed-width integers: **jersey numbers**, **draft pick** (bounded range), millisecond **play timestamps** encoded as ints—not arbitrary floats without scaling. |
+| **When to use** | Fixed-width integers: **station codes**, **reading_id** (bounded range), millisecond **observation timestamps** encoded as ints—not arbitrary floats without scaling. |
 
-**NFL lens:** radix sort shines when you sort **32-bit play_id** or **jersey 00–99** in linear passes over digits—think “sort every player on the roster by jersey without comparing full strings.” For **floating PPR**, you normally scale to integers or use comparison sort / `sort_values`.
+In **daily weather data analysis**, radix sort shines when you sort **32-bit reading_id** or **station codes 00–99** in linear passes over digits—think “sort every station in the network by code without comparing full strings.” For **floating anomalies**, you normally scale to integers or use comparison sort / `sort_values`.
 
 [Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
 
@@ -31,7 +31,7 @@ A **non-comparison** sort that orders keys **digit by digit** (or by fixed-width
 
 ## How LSD radix sort works
 
-1. Pad keys to fixed width if needed (e.g. jersey always two digits conceptually).
+1. Pad keys to fixed width if needed (e.g. station code always two digits conceptually).
 2. For digit position `d` from **least** to **most** significant:
    - **Counting sort** on digit `d` (stable).
 3. After last digit, array is sorted.
@@ -75,7 +75,6 @@ from dataclasses import dataclass
 
 
 def counting_sort_by_digit(nums: list[int], exp: int) -> None:
-    """Stable sort by digit at 10^exp place."""
     n = len(nums)
     output = [0] * n
     count = [0] * 10
@@ -101,26 +100,25 @@ def radix_sort_lsd(nums: list[int]) -> None:
 
 
 @dataclass(frozen=True, slots=True)
-class Player:
+class Station:
     name: str
-    jersey: int  # 0-99
+    station_code: int
 
 
-def radix_sort_jersey(players: list[Player]) -> None:
-    """LSD radix on two-digit jersey (0-99)."""
+def radix_sort_station_code(stations: list[Station]) -> None:
     for exp in (1, 10):
-        n = len(players)
-        out: list[Player | None] = [None] * n
+        n = len(stations)
+        out: list[Station | None] = [None] * n
         count = [0] * 10
-        for p in players:
-            count[(p.jersey // exp) % 10] += 1
+        for s in stations:
+            count[(s.station_code // exp) % 10] += 1
         for i in range(1, 10):
             count[i] += count[i - 1]
         for i in range(n - 1, -1, -1):
-            d = (players[i].jersey // exp) % 10
+            d = (stations[i].station_code // exp) % 10
             count[d] -= 1
-            out[count[d]] = players[i]
-        players[:] = [p for p in out if p is not None]
+            out[count[d]] = stations[i]
+        stations[:] = [s for s in out if s is not None]
 ```
 
 | | |
@@ -130,14 +128,14 @@ def radix_sort_jersey(players: list[Player]) -> None:
 
 ---
 
-## Trace: jersey numbers LSD
+## Trace: station codes LSD
 
-Sort `[89, 12, 12, 45]` by jersey (two decimal digits).
+Sort `[89, 12, 12, 45]` by station code (two decimal digits).
 
 **exp = 1** (ones): buckets → stable order by ones digit  
 **exp = 10** (tens): complete sort → `[12, 12, 45, 89]`
 
-Equal jerseys **12** stay in input order → **stable**.
+Equal codes **12** stay in input order → **stable**.
 
 ---
 
@@ -145,14 +143,12 @@ Equal jerseys **12** stay in input order → **stable**.
 
 | | Radix | `sort` |
 | --- | --- | --- |
-| Float PPR | Needs fixed-point scaling | Native |
+| Float anomalies | Needs fixed-point scaling | Native |
 | Bounded ints | Linear in digits | O(n log n) |
-| Strings (names) | MSD radix on chars | `sort` |
+| Strings (station names) | MSD radix on chars | `sort` |
 
 ```python
-# Jerseys as ints — production often still:
-df.sort_values("jersey_number")
-# Custom radix only if you implement fixed-width pipeline
+df.sort_values("station_code")
 ```
 
 ---
@@ -161,13 +157,12 @@ df.sort_values("jersey_number")
 
 | Use | Avoid |
 | --- | --- |
-| Fixed-width `play_id` ints | Arbitrary EPA floats without quantization |
+| Fixed-width `reading_id` ints | Arbitrary anomaly floats without quantization |
 | Millions of keys, small digit count | Small *n* (overhead) |
 | Stable digit passes needed | Negative floats without offset handling |
 
 ```python
-# Scale EPA to micro-units if you must radix:
-epa_micro = (df["epa"] * 1_000_000).astype("int64")
+anomaly_micro = (df["temp_anomaly"] * 1_000_000).astype("int64")
 ```
 
 ---
@@ -206,9 +201,9 @@ epa_micro = (df["epa"] * 1_000_000).astype("int64")
 ## Quick reference
 
 ```python
-radix_sort_lsd(jersey_ints)
-radix_sort_jersey(roster)
-df.sort_values("jersey_number")  # production
+radix_sort_lsd(station_code_ints)
+radix_sort_station_code(network)
+df.sort_values("station_code")
 ```
 
-**Radix sort:** stable, non-comparison, **Θ(d·n)** for fixed digits—ideal for **bounded NFL integers**, not raw **float leaderboards** without scaling.
+**Radix sort:** stable, non-comparison, **Θ(d·n)** for fixed digits—ideal for **bounded weather integers**, not raw **float leaderboards** without scaling.

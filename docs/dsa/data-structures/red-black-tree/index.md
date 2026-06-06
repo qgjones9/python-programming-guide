@@ -4,15 +4,15 @@ A **self-balancing binary search tree** where every node is colored **red** or *
 
 | | |
 | --- | --- |
-| **What it is** | A [BST](../binary-search-tree/index.md) plus color bit and RB invariants; root is black; no two consecutive reds on a path. |
+| **What it is** | A [BST](../binary-search-tree/index.md) plus color bit and station invariants; root is black; no two consecutive reds on a path. |
 | **Core operations** | `search`, `insert`, `delete` in O(log n) worst case. |
 | **Balance** | Looser than [AVL](../avl-tree/index.md)—fewer rotations on write, slightly taller. |
 | **When to use** | Understanding library map/set implementations; interview “design a sorted dictionary.” |
 | **Trade-off** | More cases than AVL on paper; excellent amortized behavior in practice. |
 
-In **NFL data analysis**, red–black trees are the **conceptual engine** behind **ordered maps** in other ecosystems: e.g. a `TreeMap<(week, game_id), GameInfo>` for schedule lookup with guaranteed log updates. In **Python**, you use **`dict`** for `player_id → stats` (hash table) and **pandas/SQL** for sorted reports—not an RB tree in stdlib. Learn RB trees to **compare balancing strategies** and to read **CPython-adjacent** designs (some third-party sorted containers use similar ideas).
+In **daily weather data analysis**, red–black trees are the **conceptual engine** behind **ordered maps** in other ecosystems: e.g. a `TreeMap<(date, station_id), ReadingInfo>` for chronologically sorted station lookup with guaranteed log updates. In **Python**, you use **`dict`** for `station_id → stats` (hash table) and **pandas/SQL** for sorted reports—not an station tree in stdlib. Learn station trees to **compare balancing strategies** and to read **CPython-adjacent** designs (some third-party sorted containers use similar ideas).
 
-This page is your **ready reference**: invariants, insert/delete fixups, Python teaching implementation, NFL analogies, and complexity tables. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: invariants, insert/delete fixups, Python teaching implementation, daily weather examples, and complexity tables. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
@@ -30,7 +30,7 @@ Together, these force height ≤ **2 log(n + 1)**.
 
 ```mermaid
 flowchart TB
-  subgraph rb["Valid red–black tree — keys = fantasy points tiers"]
+  subgraph rb["Valid red–black tree — keys = temp anomaly tiers"]
     B1["15 BLACK"]
     R1["8 RED"]
     B2["22 BLACK"]
@@ -47,14 +47,14 @@ Throughout this page, **n** = node count.
 
 ---
 
-## How red–black fits NFL-shaped problems
+## How red–black fits daily weather analysis
 
-| NFL idea | RB tree view | Note |
+| Weather analysis idea | station tree view | Note |
 | --- | --- | --- |
-| **Schedule map** | Key `(week, slot)` → broadcast info | Ordered iteration by week |
-| **Fantasy price ladder** | Sorted unique price points | Insert/delete with log guarantee |
-| **Play clock events** | Timestamp-ordered tree | Other langs; Python uses heap/list often |
-| **Compare to Python** | Mental model for Java/C++ maps | `dict` = hash, not RB |
+| **Chronological station map** | Key `(date, station_id)` → reading row | Ordered iteration by date |
+| **Anomaly tier ladder** | Sorted unique anomaly thresholds | Insert/delete with log guarantee |
+| **Event log timestamps** | Timestamp-ordered tree | Other langs; Python uses heap/list often |
+| **Compare to Python** | Mental model for Java/C++ maps | `dict` = hash, not station |
 
 **Ship Python with `dict` + sort.** **Study red–black** to explain **why sorted maps in C++/Java are O(log n)** and how that differs from Python hashing.
 
@@ -68,7 +68,7 @@ Throughout this page, **n** = node count.
 | **Insert rotations** | ≤ 2 | ≤ 2 (stricter rebalance) | 0 | N/A |
 | **Key order** | Inorder sorted | Inorder sorted | Inorder sorted | Insertion order (3.7+), not sort order |
 | **Implementation** | Color cases | Balance factor | Simple | Hash + probe |
-| **NFL lookup by player id** | Overkill in Python | Overkill | Overkill | **Correct tool** |
+| **Reading lookup by station id** | Overkill in Python | Overkill | Overkill | **Correct tool** |
 
 !!! note "Python `dict` is a hash table, not a red–black tree"
     **`dict`** gives average **O(1)** lookup by hashable key. It does **not** maintain **comparison-based sorted order**. Need sorted keys? **`sorted(d.keys())`**, **`bisect`** on a list, or third-party **`sortedcontainers.SortedDict`**.
@@ -77,11 +77,11 @@ Throughout this page, **n** = node count.
 sequenceDiagram
   participant Py as Python analyst
   participant D as dict hash
-  participant RB as RB tree concept
-  Py->>D: stats["Mahomes"] — O(1) avg
-  Note over Py,D: No inorder by passing yards
-  Py->>RB: inorder walk — sorted keys
-  Note over RB: Used in Java TreeMap not in dict
+  participant station as station tree concept
+  Py->>D: readings["KSEA"] — O(1) avg
+  Note over Py,D: No inorder by temp anomaly
+  Py->>station: inorder walk — sorted keys
+  Note over station: Used in Java TreeMap not in dict
 ```
 
 ---
@@ -102,9 +102,9 @@ class Color(Enum):
 
 
 @dataclass(frozen=True, order=True)
-class FantasyTier:
-    points: float
-    player_id: str
+class AnomalyTier:
+    temp_anomaly: float
+    reading_id: str
 
 
 @dataclass
@@ -113,7 +113,7 @@ class RBNode:
     color: Color = Color.RED
     left: RBNode | None = None
     right: RBNode | None = None
-    parent: RBNode | None = None  # optional; helps delete fixup
+    parent: RBNode | None = None
 ```
 
 | | |
@@ -326,13 +326,13 @@ class RedBlackTree:
 tree = RedBlackTree()
 ```
 
-### 2. Insert unsorted fantasy tiers
+### 2. Insert unsorted anomaly tiers
 
 ```python
 tree = RedBlackTree()
-for pts, pid in [(18.2, "QB1"), (12.1, "RB3"), (22.5, "WR7"), (15.0, "TE2")]:
-    tree.insert(FantasyTier(pts, pid))
-assert [k.points for k in tree.inorder()] == sorted([18.2, 12.1, 22.5, 15.0])
+for anomaly, rid in [(18.2, "R001"), (12.1, "R003"), (22.5, "R007"), (15.0, "R002")]:
+    tree.insert(AnomalyTier(anomaly, rid))
+assert [k.temp_anomaly for k in tree.inorder()] == sorted([18.2, 12.1, 22.5, 15.0])
 ```
 
 | | |
@@ -342,25 +342,24 @@ assert [k.points for k in tree.inorder()] == sorted([18.2, 12.1, 22.5, 15.0])
 
 ### 3. Sorted insert — still O(log n) height
 
-Unlike plain BST, inserting ascending `(week, id)` stays balanced.
+Unlike plain BST, inserting ascending `(day, id)` stays balanced.
 
 ```python
 tree = RedBlackTree()
-for w in range(1, 19):
-    tree.insert(FantasyTier(float(w), f"W{w}"))
-# height O(log n) — contrast with BST chain
+for d in range(1, 19):
+    tree.insert(AnomalyTier(float(d), f"D{d}"))
 ```
 
 ---
 
-## Operations with NFL examples
+## Operations with daily weather examples
 
-### Search — find player at fantasy tier
+### Search — find reading at anomaly tier
 
 ```python
 tree = RedBlackTree()
-tree.insert(FantasyTier(19.5, "WR01"))
-found = tree.search(FantasyTier(19.5, "WR01"))
+tree.insert(AnomalyTier(19.5, "R001"))
+found = tree.search(AnomalyTier(19.5, "R001"))
 assert found is not None
 ```
 
@@ -371,15 +370,15 @@ assert found is not None
 
 ---
 
-### Inorder — ascending fantasy points
+### Inorder — ascending temp anomaly
 
 ```python
 tree = RedBlackTree()
-scores = [(14.0, "A"), (21.5, "B"), (9.0, "C")]
-for p, pid in scores:
-    tree.insert(FantasyTier(p, pid))
+readings = [(14.0, "A"), (21.5, "B"), (9.0, "C")]
+for anomaly, rid in readings:
+    tree.insert(AnomalyTier(anomaly, rid))
 for k in tree.inorder_iter():
-    print(f"{k.player_id}: {k.points}")
+    print(f"{k.reading_id}: {k.temp_anomaly}")
 ```
 
 | | |
@@ -389,30 +388,27 @@ for k in tree.inorder_iter():
 
 ---
 
-## NFL application: ordered schedule (conceptual)
+## Daily weather application: ordered chronology (conceptual)
 
 In Java/C++ you might write:
 
 ```text
-TreeMap<WeekSlot, GameInfo> schedule;
-schedule.put(new WeekSlot(1, "G001"), game);
+TreeMap<DateStation, ReadingInfo> chronology;
+chronology.put(new DateStation(1, "R001"), reading);
 ```
 
 Python equivalent patterns:
 
 ```python
-# Lookup by id — use dict
-games_by_id: dict[str, dict] = {"G001": {"week": 1, "matchup": "KC @ BAL"}}
+readings_by_id: dict[str, dict] = {"R001": {"day": 1, "station": "KSEA"}}
 
-# Sorted by week — sort once
-games = sorted(games_by_id.values(), key=lambda g: (g["week"], g.get("id", "")))
+readings = sorted(readings_by_id.values(), key=lambda r: (r["day"], r.get("id", "")))
 
-# Or teaching RB tree
 schedule_rb = RedBlackTree()
-schedule_rb.insert(FantasyTier(1.0, "G001"))  # stand-in key type
+schedule_rb.insert(AnomalyTier(1.0, "R001"))
 ```
 
-| Approach | Lookup by id | Sorted by week |
+| Atemp_anomalyoach | Lookup by id | Sorted by date |
 | --- | --- | --- |
 | `dict` | O(1) avg | Sort separately O(n log n) |
 | Red–black (other langs) | O(log n) | Inorder O(n) |
@@ -454,10 +450,10 @@ BST delete, then if removed node was black, fix **extra black** on path with sib
 
 ```mermaid
 flowchart TD
-  Q([Python NFL project?])
-  Q -->|player lookup| D["dict"]
+  Q([Python weather project?])
+  Q -->|station lookup| D["dict"]
   Q -->|sorted report once| P["pandas sort_values"]
-  Q -->|learn maps in C++/Java| RB["Red–black tree"]
+  Q -->|learn maps in C++/Java| station["Red–black tree"]
   Q -->|stricter balance theory| AVL["AVL tree"]
 ```
 
@@ -470,8 +466,8 @@ flowchart TD
 | Assuming `dict` is ordered by value | Wrong API expectations | `sorted(d.items(), key=...)` |
 | Forgetting to blacken root after insert | Invariant broken | Always set `root.color = BLACK` at end |
 | Confusing insertion order with sort order | Python 3.7+ dict order ≠ sorted | Explicit sort or tree |
-| Implementing delete before insert solid | RB delete is hardest | Master insert + rotations first |
-| Using RB for hashable player IDs only | Hash wins in Python | `dict[str, Stats]` |
+| Implementing delete before insert solid | station delete is hardest | Master insert + rotations first |
+| Using station for hashable station IDs only | Hash wins in Python | `dict[str, Reading]` |
 
 ---
 
@@ -481,7 +477,7 @@ flowchart TD
 | --- | --- |
 | [Binary search tree](../binary-search-tree/index.md) | Base ordering |
 | [AVL tree](../avl-tree/index.md) | Stricter balance |
-| [2-3-4 tree](../2-3-4-tree/index.md) | Isomorphic to RB |
+| [2-3-4 tree](../2-3-4-tree/index.md) | Isomorphic to station |
 | [Hash table](../hash-table/index.md) | Python `dict` |
 | [Complexity analysis](../../complexity/index.md) | Big-O |
 | [Data structures hub](../index.md) | Index |
@@ -492,12 +488,9 @@ flowchart TD
 
 ```python
 tree = RedBlackTree()
-tree.insert(FantasyTier(17.5, "WR09"))
-tree.search(FantasyTier(17.5, "WR09"))
-list(tree.inorder_iter())  # sorted by points, player_id
-
-# Invariants: root black; no red-red; equal black height on all paths
-# Python production: dict for lookup, not RB tree
+tree.insert(AnomalyTier(17.5, "R009"))
+tree.search(AnomalyTier(17.5, "R009"))
+list(tree.inorder_iter())
 ```
 
 A **red–black tree** is the **standard balanced BST** behind many **sorted map** APIs—compare with **[AVL](../avl-tree/index.md)** and remember **`dict` in Python is hashed**, not red–black.

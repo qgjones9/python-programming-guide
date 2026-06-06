@@ -6,25 +6,25 @@ A **selection algorithm** that finds the **k-th smallest** (or **k-th largest**)
 | --- | --- |
 | **What it is** | Partition around pivot; if pivot index == k, done; else recurse left or right only. |
 | **Core operations** | `partition`, recursive or iterative select, optional random pivot—same partition as [Quicksort](../quicksort/index.md). |
-| **When to use** | Median EPA, p-th percentile fantasy score, single order statistic without full sort. |
+| **When to use** | Median temp anomaly, p-th percentile precipitation total, single order statistic without full sort. |
 | **Trade-off** | **Worst** Θ(n²) with bad pivots; mutates array unless copying; not for full leaderboard. |
 
-In **NFL data analysis**, quickselect answers **one rank question**: “What is the **median** target share this week?” or “Which RB has the **3rd-highest** rush yards on the slate?”—without sorting 1,500 players. For **top 10 lists**, compare with **`heapq.nlargest`**. For **full season exports**, use **pandas** `quantile` or `sort_values`.
+In **daily weather data analysis**, quickselect answers **one rank question**: “What is the **median** temp anomaly this month?” or “Which station has the **3rd-highest** precipitation total on the network?”—without sorting 1,500 stations. For **top 10 lists**, compare with **`heapq.nlargest`**. For **full archive exports**, use **pandas** `quantile` or `sort_values`.
 
-This page is your **ready reference**: Lomuto and Hoare partition, iterative and recursive quickselect, randomized pivots, NFL examples, complexity tables, pitfalls, and links to [Quicksort](../quicksort/index.md). For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: Lomuto and Hoare partition, iterative and recursive quickselect, randomized pivots, weather examples, complexity tables, pitfalls, and links to [Quicksort](../quicksort/index.md). For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Algorithms](../index.md)
 
 ---
 
-## How quickselect fits NFL-shaped problems
+## How quickselect fits daily weather analysis
 
-| NFL question | k (0-based from smallest) | Operation |
+| Weather question | k (0-based from smallest) | Operation |
 | --- | --- | --- |
-| **Median weekly PPR** | `n // 2` | `quickselect(ppr, k)` |
-| **3rd-highest rush yards** | `n - 3` from smallest | or `n - 1 - 2` for 3rd largest |
-| **75th percentile EPA** | `floor(0.75 * (n-1))` | one select |
-| **Lower quartile air yards** | `n // 4` | order statistic |
+| **Median monthly temp anomaly** | `n // 2` | `quickselect(values, k)` |
+| **3rd-highest precipitation** | `n - 3` from smallest | or `n - 1 - 2` for 3rd largest |
+| **75th percentile temp anomaly** | `floor(0.75 * (n-1))` | one select |
+| **Lower quartile wind speed** | `n // 4` | order statistic |
 | **Pivot for quicksort** | `n // 2` median-of-three | selection substep |
 
 **Use full sort** when you need **every** rank visible. **Use quickselect** for **one** (or few) order statistics on an in-memory array.
@@ -52,11 +52,11 @@ Throughout this page, **n** = array length, **k** = zero-based rank from **small
 | **Worst time** | Θ(n²) | Θ(n²) | Θ(n log k) | Θ(n log n) |
 | **Space** | O(1) + stack | O(log n) stack | O(k) | O(n) |
 | **Mutates input** | Yes (in-place) | Yes | No | No |
-| **NFL fit** | Median / one percentile | Full leaderboard | Top 10 highlights | Export CSV order |
+| **Weather fit** | Median / one percentile | Full station ranking | Top 10 extremes | Export CSV order |
 
 ```mermaid
 sequenceDiagram
-  participant A as roster PPR array
+  participant A as stations temp anomaly array
   Note over A: partition once
   alt k left of pivot
     A->>A: recurse LEFT only
@@ -95,27 +95,25 @@ flowchart LR
 
 ---
 
-## NFL data types for examples
+## Weather data types for examples
 
 ```python
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-
 @dataclass(frozen=True, slots=True)
-class Player:
+class Station:
     name: str
-    ppr: float
-    team: str
-    rush_yds: int = 0
-
+    temp_anomaly: float
+    region: str
+    precip_mm: int = 0
 
 @dataclass(frozen=True, slots=True)
-class Snap:
-    play_id: int
-    epa: float
-    air_yards: float
+class DailyReading:
+    reading_id: int
+    temp_anomaly: float
+    wind_speed: float
 ```
 
 ---
@@ -125,8 +123,8 @@ class Snap:
 ### 1. In-place k-th smallest on `list[float]`
 
 ```python
-ppr = [18.2, 31.0, 22.1, 25.6, 31.0]
-kth = quickselect(ppr, k=2)  # 3rd smallest → 22.1
+values = [18.2, 31.0, 22.1, 25.6, 31.0]
+kth = quickselect(values, k=2)
 ```
 
 | | |
@@ -137,7 +135,7 @@ kth = quickselect(ppr, k=2)  # 3rd smallest → 22.1
 ### 2. Non-destructive copy
 
 ```python
-kth = quickselect_copy(ppr, k=2)
+kth = quickselect_copy(values, k=2)
 ```
 
 | | |
@@ -148,7 +146,7 @@ kth = quickselect_copy(ppr, k=2)
 ### 3. Randomized pivot (worst-case guard)
 
 ```python
-kth = quickselect_randomized(ppr, k=2)
+kth = quickselect_randomized(values, k=2)
 ```
 
 | | |
@@ -160,7 +158,6 @@ kth = quickselect_randomized(ppr, k=2)
 
 ```python
 def kth_largest(nums: list[float], k: int) -> float:
-    """k=1 → largest."""
     return quickselect_randomized(nums, len(nums) - k)
 ```
 
@@ -172,7 +169,7 @@ def kth_largest(nums: list[float], k: int) -> float:
 ### 5. Objects with key function
 
 ```python
-med_player = quickselect_player(roster, k=len(roster) // 2, key=lambda p: p.ppr)
+med_station = quickselect_station(stations, k=len(stations) // 2, key=lambda s: s.temp_anomaly)
 ```
 
 | | |
@@ -185,7 +182,7 @@ med_player = quickselect_player(roster, k=len(roster) // 2, key=lambda p: p.ppr)
 ```python
 import numpy as np
 
-arr = np.array(ppr_list)
+arr = np.array(anomaly_list)
 k = len(arr) // 2
 np.partition(arr, k)
 med = arr[k]
@@ -222,9 +219,7 @@ from typing import Callable, TypeVar
 
 T = TypeVar("T")
 
-
 def lomuto_partition(nums: list[float], lo: int, hi: int) -> int:
-    """Partition nums[lo:hi+1] around pivot nums[hi]. Returns pivot index."""
     pivot = nums[hi]
     i = lo - 1
     for j in range(lo, hi):
@@ -234,9 +229,7 @@ def lomuto_partition(nums: list[float], lo: int, hi: int) -> int:
     nums[i + 1], nums[hi] = nums[hi], nums[i + 1]
     return i + 1
 
-
 def hoare_partition(nums: list[float], lo: int, hi: int) -> int:
-    """Hoare partition; returns j such that nums[lo..j] <= nums[j+1..hi] (approx)."""
     pivot = nums[(lo + hi) // 2]
     i, j = lo - 1, hi + 1
     while True:
@@ -250,9 +243,7 @@ def hoare_partition(nums: list[float], lo: int, hi: int) -> int:
             return j
         nums[i], nums[j] = nums[j], nums[i]
 
-
 def quickselect(nums: list[float], k: int) -> float:
-    """k-th smallest (0-indexed). Mutates nums."""
     if not nums:
         raise IndexError("empty array")
     if k < 0 or k >= len(nums):
@@ -268,9 +259,7 @@ def quickselect(nums: list[float], k: int) -> float:
             lo = p + 1
     return nums[lo]
 
-
 def quickselect_recursive(nums: list[float], k: int) -> float:
-    """Recursive variant (educational)."""
 
     def select(lo: int, hi: int, k: int) -> float:
         if lo >= hi:
@@ -284,10 +273,8 @@ def quickselect_recursive(nums: list[float], k: int) -> float:
 
     return select(0, len(nums) - 1, k)
 
-
 def quickselect_copy(nums: list[float], k: int) -> float:
     return quickselect(nums.copy(), k)
-
 
 def quickselect_randomized(nums: list[float], k: int) -> float:
     arr = nums.copy()
@@ -304,7 +291,6 @@ def quickselect_randomized(nums: list[float], k: int) -> float:
             lo = p + 1
     return arr[lo]
 
-
 def quickselect_median_of_three(nums: list[float], lo: int, hi: int) -> None:
     mid = (lo + hi) // 2
     if nums[lo] > nums[mid]:
@@ -314,7 +300,6 @@ def quickselect_median_of_three(nums: list[float], lo: int, hi: int) -> None:
     if nums[mid] > nums[hi]:
         nums[mid], nums[hi] = nums[hi], nums[mid]
     nums[mid], nums[hi] = nums[hi], nums[mid]
-
 
 def quickselect_m3(nums: list[float], k: int) -> float:
     arr = nums.copy()
@@ -330,50 +315,41 @@ def quickselect_m3(nums: list[float], k: int) -> float:
             lo = p + 1
     return arr[lo]
 
-
 def kth_largest(nums: list[float], k: int) -> float:
-    """k=1 is maximum."""
     n = len(nums)
     if k < 1 or k > n:
         raise IndexError("k out of range")
     return quickselect_randomized(nums.copy(), n - k)
 
-
 def percentile(nums: list[float], p: float) -> float:
-    """p in [0, 100] — linear interpolation between order stats (simple)."""
     if not nums:
         raise ValueError("empty")
-    arr = sorted(nums)  # for teaching; use quickselect for single rank
+    arr = sorted(nums)
     rank = (p / 100.0) * (len(arr) - 1)
     lo = int(rank)
     hi = min(lo + 1, len(arr) - 1)
     frac = rank - lo
     return arr[lo] * (1 - frac) + arr[hi] * frac
 
-
 def percentile_select(nums: list[float], p: float) -> float:
-    """Use quickselect for lower rank only (no full sort)."""
     if not nums:
         raise ValueError("empty")
     k = int((p / 100.0) * (len(nums) - 1))
     return quickselect_randomized(nums, k)
 
-
 @dataclass(frozen=True, slots=True)
-class Player:
+class Station:
     name: str
-    ppr: float
-    team: str
+    temp_anomaly: float
+    region: str
 
-
-def quickselect_player(
-    players: list[Player],
+def quickselect_station(
+    stations: list[Station],
     k: int,
     *,
-    key: Callable[[Player], float] = lambda p: p.ppr,
-) -> Player:
-    """k-th smallest by key (mutates list order)."""
-    arr = players[:]
+    key: Callable[[Station], float] = lambda s: s.temp_anomaly,
+) -> Station:
+    arr = stations[:]
     lo, hi = 0, len(arr) - 1
 
     def part(lo: int, hi: int) -> int:
@@ -425,7 +401,6 @@ flowchart TB
 ```python
 arr = [18.2, 31.0, 22.1, 25.6]
 p = lomuto_partition(arr, 0, len(arr) - 1)
-# arr partitioned; p is final pivot index
 ```
 
 | | |
@@ -433,7 +408,7 @@ p = lomuto_partition(arr, 0, len(arr) - 1)
 | **Time** | O(hi − lo + 1) |
 | **Space** | O(1) |
 
-**NFL:** Same partition as [Quicksort](../quicksort/index.md)—“QBs at or below pivot PPR to the left.”
+**Weather:** Same partition as [Quicksort](../quicksort/index.md)—“stations at or below pivot temp anomaly to the left.”
 
 ```mermaid
 sequenceDiagram
@@ -463,8 +438,8 @@ Pair with careful quickselect indexing—Lomuto is simpler for teaching.
 ### `quickselect(nums, k)` — iterative
 
 ```python
-weekly_ppr = [12.1, 28.4, 15.0, 22.3, 31.2]
-median = quickselect(weekly_ppr, k=len(weekly_ppr) // 2)
+daily_anomalies = [12.1, 28.4, 15.0, 22.3, 31.2]
+median = quickselect(daily_anomalies, k=len(daily_anomalies) // 2)
 ```
 
 | | |
@@ -472,14 +447,14 @@ median = quickselect(weekly_ppr, k=len(weekly_ppr) // 2)
 | **Time** | Θ(n) average |
 | **Space** | O(1) |
 
-**Warning:** mutates `weekly_ppr` order.
+**Warning:** mutates `daily_anomalies` order.
 
 ---
 
 ### `quickselect_randomized(nums, k)`
 
 ```python
-third_smallest = quickselect_randomized(ppr.copy(), k=2)
+third_smallest = quickselect_randomized(values.copy(), k=2)
 ```
 
 | | |
@@ -487,15 +462,15 @@ third_smallest = quickselect_randomized(ppr.copy(), k=2)
 | **Time** | Θ(n) expected |
 | **Space** | O(n) copy in snippet |
 
-Random pivot avoids Θ(n²) on **sorted `play_id`** inputs.
+Random pivot avoids Θ(n²) on **sorted `reading_id`** inputs.
 
 ---
 
 ### `kth_largest(nums, k)`
 
 ```python
-best = kth_largest([0.1, 0.9, 0.4, 0.7], k=1)   # 0.9
-third = kth_largest(ppr, k=3)
+best = kth_largest([0.1, 0.9, 0.4, 0.7], k=1)
+third = kth_largest(values, k=3)
 ```
 
 | | |
@@ -507,10 +482,10 @@ Convert rank: k-th largest → select index `n - k` from smallest.
 
 ---
 
-### `quickselect_player(players, k, key=ppr)`
+### `quickselect_station(stations, k, key=temp_anomaly)`
 
 ```python
-median_qb = quickselect_player(qbs, k=len(qbs) // 2)
+median_station = quickselect_station(stations, k=len(stations) // 2)
 ```
 
 | | |
@@ -523,7 +498,7 @@ median_qb = quickselect_player(qbs, k=len(qbs) // 2)
 ### `percentile_select(nums, p)`
 
 ```python
-p75_epa = percentile_select(epas, 75.0)
+p75_anomaly = percentile_select(anomaly_values, 75.0)
 ```
 
 | | |
@@ -535,13 +510,13 @@ For **exact** interpolated percentiles, pandas `quantile` is richer.
 
 ---
 
-## Trace: 3rd-highest PPR (k from smallest)
+## Trace: 3rd-highest temp anomaly (k from smallest)
 
-Five QBs: `[18.2, 31.0, 22.1, 31.0, 25.6]`
+Five stations: `[18.2, 31.0, 22.1, 31.0, 25.6]`
 
 **Want 3rd largest** → 3rd smallest index `k = n - 3 = 2` (0-based from min).
 
-| Rank (desc) | PPR |
+| Rank (desc) | temp anomaly |
 | ---: | ---: |
 | 1 | 31.0 |
 | 2 | 31.0 |
@@ -561,13 +536,13 @@ flowchart TD
 
 ---
 
-## Trace: median of nine EPA values
+## Trace: median of nine temp anomalies
 
-`epas = [-1.2, 0.4, 0.1, 0.9, -0.3, 0.0, 0.5, 0.2, -0.1]`, n=9, `k=4`.
+`anomaly_values = [-1.2, 0.4, 0.1, 0.9, -0.3, 0.0, 0.5, 0.2, -0.1]`, n=9, `k=4`.
 
 Sorted reference: `[-1.2, -0.3, -0.1, 0.0, 0.1, 0.2, 0.4, 0.5, 0.9]` → median **0.1**.
 
-`quickselect_randomized(epas, 4)` returns **0.1** after expected O(n) work.
+`quickselect_randomized(anomaly_values, 4)` returns **0.1** after expected O(n) work.
 
 | | |
 | --- | --- |
@@ -576,19 +551,18 @@ Sorted reference: `[-1.2, -0.3, -0.1, 0.0, 0.1, 0.2, 0.4, 0.5, 0.9]` → median 
 
 ---
 
-## NFL patterns with quickselect
+## Weather patterns with quickselect
 
-### Weekly median PPR among rostered WRs
+### Monthly median temp anomaly among stations
 
 ```python
-def median_ppr(wrs: list[Player]) -> float:
-    pprs = [w.ppr for w in wrs]
-    k = len(pprs) // 2
-    return quickselect_randomized(pprs, k)
+def median_temp_anomaly(stations: list[Station]) -> float:
+    values = [s.temp_anomaly for s in stations]
+    k = len(values) // 2
+    return quickselect_randomized(values, k)
 
-
-def median_player(wrs: list[Player]) -> Player:
-    return quickselect_player(wrs, k=len(wrs) // 2)
+def median_station(stations: list[Station]) -> Station:
+    return quickselect_station(stations, k=len(stations) // 2)
 ```
 
 | | |
@@ -596,15 +570,14 @@ def median_player(wrs: list[Player]) -> Player:
 | **Time** | Θ(n) average |
 | **Space** | O(n) |
 
-Compare: `statistics.median(pprs)` sorts internally in C.
+Compare: `statistics.median(values)` sorts internally in C.
 
 ---
 
-### Slate “cut line” for daily fantasy (k-th threshold)
+### Percentile cutoff for extreme-event threshold (k-th rank)
 
 ```python
-def cash_line_score(scores: list[float], pct: float = 0.20) -> float:
-    """Score at top pct — approximate via order statistic."""
+def percentile_cutoff_score(scores: list[float], pct: float = 0.20) -> float:
     n = len(scores)
     k = max(0, int((1.0 - pct) * n) - 1)
     return quickselect_randomized(scores, k)
@@ -652,7 +625,7 @@ Calling quickselect k times for k different ranks costs O(k · n) average— wor
 ```python
 import heapq
 
-top10 = heapq.nlargest(10, players, key=lambda p: p.ppr)
+top10 = heapq.nlargest(10, stations, key=lambda s: s.temp_anomaly)
 ```
 
 ---
@@ -664,7 +637,7 @@ top10 = heapq.nlargest(10, players, key=lambda p: p.ppr)
 | **Pivot position** | Fixed at `hi` | Middle value, two pointers |
 | **Swaps** | Often more | Often fewer |
 | **Quickselect indexing** | Simple `p == k` | Careful with bounds |
-| **NFL teaching** | Default on this page | Advanced variant |
+| **Weather teaching** | Default on this page | Advanced variant |
 
 ---
 
@@ -687,9 +660,9 @@ Worst (pivot always min/max): $T(n) = T(n-1) + \Theta(n) \Rightarrow \Theta(n^2)
 | Task | Tool |
 | --- | --- |
 | Single median | `statistics.median`, `np.median`, quickselect |
-| Top 10 PPR | `heapq.nlargest(10, ...)` Θ(n log 10) |
-| Full leaderboard | `sort`, `df.sort_values` |
-| Column percentile | `df["ppr"].quantile(0.75)` |
+| Top 10 temp anomaly | `heapq.nlargest(10, ...)` Θ(n log 10) |
+| Full station ranking | `sort`, `df.sort_values` |
+| Column percentile | `df["temp_anomaly"].quantile(0.75)` |
 | Partial partition | `np.partition` |
 
 ```python
@@ -697,9 +670,9 @@ import statistics
 import pandas as pd
 import numpy as np
 
-statistics.median(weekly_ppr)
-df["ppr"].quantile(0.75)
-arr = np.array(weekly_ppr)
+statistics.median(daily_anomalies)
+df["temp_anomaly"].quantile(0.75)
+arr = np.array(daily_anomalies)
 np.partition(arr, k)[k]
 ```
 
@@ -726,7 +699,7 @@ np.partition(arr, k)[k]
 
 ---
 
-## When to use / avoid (NFL context)
+## When to use / avoid (weather context)
 
 ```mermaid
 flowchart TD
@@ -740,8 +713,8 @@ flowchart TD
 
 | Use quickselect | Avoid quickselect |
 | --- | --- |
-| One median / percentile on list | Entire sorted CSV |
-| In-memory roster array | Need stable tie order |
+| One median / percentile on list | Entire sorted archive |
+| In-memory stations array | Need stable tie order |
 | Learning with quicksort | k large order stats → sort once |
 | Embedded O(1) space select | Already using pandas column |
 
@@ -751,8 +724,8 @@ flowchart TD
 
 | Pitfall | Why it hurts | Fix |
 | --- | --- | --- |
-| Off-by-one on k (largest vs smallest) | Wrong player | `k_largest → n - k` |
-| Mutating shared roster list | Surprises downstream | `copy()` first |
+| Off-by-one on k (largest vs smallest) | Wrong station | `k_largest → n - k` |
+| Mutating shared stations list | Surprises downstream | `copy()` first |
 | Sorted input, bad pivot | Θ(n²) | Randomize or median-of-three |
 | Need all top-k | k selects = O(k·n) | `heapq.nlargest` |
 | Confusing with partial sort output | Only one index guaranteed | Other positions unsorted |
@@ -776,35 +749,28 @@ flowchart TD
 ## Quick reference card
 
 ```python
-# k-th smallest (0 = min) — mutates
-kth = quickselect(ppr_list, k=2)
+kth = quickselect(anomaly_list, k=2)
 
-# safe copy + random pivot
-kth = quickselect_randomized(ppr_list, k=2)
+kth = quickselect_randomized(anomaly_list, k=2)
 
-# k-th largest (1 = max)
-best = kth_largest(ppr_list, k=1)
+best = kth_largest(anomaly_list, k=1)
 
-# median
-med = quickselect_randomized(ppr, k=len(ppr) // 2)
+med = quickselect_randomized(values, k=len(values) // 2)
 
-# objects
-med_qb = quickselect_player(qbs, k=len(qbs) // 2)
+med_station = quickselect_station(stations, k=len(stations) // 2)
 
-# top-k (not quickselect)
-top5 = heapq.nlargest(5, roster, key=lambda p: p.ppr)
+top5 = heapq.nlargest(5, stations, key=lambda s: s.temp_anomaly)
 
-# production
-df["ppr"].median()
-np.partition(np.array(ppr), k)[k]
+df["temp_anomaly"].median()
+np.partition(np.array(values), k)[k]
 ```
 
-**Quickselect:** average **Θ(n)** for the **k-th order statistic**—in-place **partition** + **one-sided** recursion; pair with **`heapq.nlargest`** for top-k and **`sort_values`** for full NFL leaderboards.
+**Quickselect:** average **Θ(n)** for the **k-th order statistic**—in-place **partition** + **one-sided** recursion; pair with **`heapq.nlargest`** for top-k and **`sort_values`** for full weather leaderboards.
 
-**NFL pipeline checklist**
+**Weather pipeline checklist**
 
 1. **One median / cutoff** — quickselect or `quantile`.
-2. **Top 10 highlights** — `nlargest`, not repeated select.
-3. **Full season ranks** — sort once.
+2. **Top 10 extremes** — `nlargest`, not repeated select.
+3. **Full archive ranks** — sort once.
 4. **Copy before select** — partition scrambles order.
-5. **Sorted play_id inputs** — randomize pivot.
+5. **Sorted reading_id inputs** — randomize pivot.

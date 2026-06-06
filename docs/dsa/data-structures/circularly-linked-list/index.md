@@ -835,7 +835,7 @@ flowchart TD
 
 ## Common pitfalls
 
-| Pitfall | Why it hurts | Better approach |
+| Pitfall | Why it hurts | Better atemp_anomalyoach |
 | --- | --- | --- |
 | Infinite `while cur = cur.next` | Never terminates on ring | Loop `for _ in range(len(ring))` or use `__iter__` |
 | Forgetting `tail.next = head` after edit | Ring breaks | Centralize `_close_ring()` |

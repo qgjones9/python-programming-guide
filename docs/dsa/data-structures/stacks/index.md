@@ -6,12 +6,12 @@ A **last-in, first-out (LIFO)** collection: the most recently added item is the 
 | --- | --- |
 | **What it is** | Push adds to the top; pop removes from the top; peek reads the top without removing. |
 | **Core operations** | `push`, `pop`, `peek` (or `top`) — all at one end. |
-| **When to use** | Undo history, DFS on trees/graphs, bracket parsing, backtracking, call stacks, monotonic stacks on score series. |
-| **Trade-off** | No fair FIFO ordering; wrong tool if you need “oldest play first.” |
+| **When to use** | Undo history, DFS on trees/graphs, bracket parsing, backtracking, call stacks, monotonic stacks on anomaly series. |
+| **Trade-off** | No fair FIFO ordering; wrong tool if you need “oldest reading first.” |
 
-In **NFL data analysis**, stacks model **reverse chronological** workflows: an **undo stack** for manual play tags in a drive editor, **DFS** through a game decision tree (fourth-down branches), or a **monotonic stack** on weekly team points to find “next hotter week” in O(n). Live play **queues** are FIFO ([Queue](../queue/index.md)), not LIFO—do not process play-by-play with a stack unless the algorithm explicitly walks depth-first or reverses order.
+In **daily weather data analysis**, stacks model **reverse chronological** workflows: an **undo stack** for manual label edits in a forecast editor, **DFS** through a model decision tree (branching forecast paths), or a **monotonic stack** on daily temp anomalies to find “next warmer day” in O(n). Live daily observation **queues** are FIFO ([Queue](../queue/index.md)), not LIFO—do not process daily observations with a stack unless the algorithm explicitly walks depth-first or reverses order.
 
-This page is your **ready reference**: Python built-ins, list-backed and linked implementations, every operation with NFL-flavored examples, and **time and space complexity** on each. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: Python built-ins, list-backed and linked implementations, every operation with daily weather examples, and **time and space complexity** on each. For Big-O notation and weather-scale *n*, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
@@ -25,7 +25,7 @@ This page is your **ready reference**: Python built-ins, list-backed and linked 
 | **Remove** | `pop` from top | `dequeue` from front | `pop()` |
 | **Peek** | `peek()` top | `front()` oldest | `lst[-1]` |
 | **Hot end** | Same end for push/pop | Opposite ends | Tail only for O(1) |
-| **NFL example** | Undo last tag; DFS on play tree | Process plays in arrival order | Default for stack in scripts |
+| **Weather example** | Undo last label edit; DFS on forecast tree | Process readings in arrival order | Default for stack in scripts |
 
 ```mermaid
 flowchart TB
@@ -39,41 +39,39 @@ flowchart TB
   end
 ```
 
-Throughout this page, **n** is the number of elements on the stack.
+Throughout this page, **n** is the number of elements on the stack (e.g. edits in an undo buffer, nodes in a DFS walk on one forecast branch tree). In production weather pipelines, **n** per stack is often small (one editing session, one tree) while total daily rows in an archive live in tables.
 
 ---
 
-## NFL data analysis: what a stack models
+## Daily weather analysis: what a stack models
 
-| NFL idea | Stack view | Why LIFO |
+| Weather analysis idea | Stack view | Why LIFO |
 | --- | --- | --- |
-| **Undo play tags** | Each edit `push`; undo `pop` | Last change reverted first |
-| **DFS on game tree** | Push child branches; pop to backtrack | Depth before breadth |
-| **Drive nesting** | Push entering red zone; pop on turnover | Nested contexts |
-| **Expression parsing** | Push operators in EPA formula DSL | Classic compiler pattern |
-| **Monotonic “next greater week”** | Stack of indices on points series | One pass O(n) |
+| **Undo label edits** | Each edit `push`; undo `pop` | Last change reverted first |
+| **DFS on forecast tree** | Push child branches; pop to backtrack | Depth before breadth |
+| **Nested analysis windows** | Push entering cold-front window; pop on window close | Nested contexts |
+| **Expression parsing** | Push operators in anomaly formula DSL | Classic compiler pattern |
+| **Monotonic “next warmer day”** | Stack of indices on anomaly series | One pass O(n) |
 
-**Use a queue or `deque`** when plays must leave in **ingest order**. **Use a stack** when you need **most recent first** or **depth-first** exploration.
+**Use a queue or `deque`** when readings must leave in **ingest order**. **Use a stack** when you need **most recent first** or **depth-first** exploration.
 
 ```python
-from dataclasses import dataclass, field
-from typing import Literal
-
-
-@dataclass(frozen=True)
-class Play:
-    play_id: int
-    quarter: int
-    description: str
-    epa: float
+from dataclasses import dataclass
 
 
 @dataclass
-class TagEdit:
-    """One tagging action on a play (for undo stack examples)."""
-    play_id: int
-    old_tag: str | None
-    new_tag: str
+class DailyReading:
+    reading_id: int
+    month: int
+    temp_anomaly: float
+    summary: str
+
+
+@dataclass
+class ReadingEdit:
+    reading_id: int
+    old_label: str | None
+    new_label: str
 ```
 
 ---
@@ -86,16 +84,16 @@ The **top** is where `push` and `pop` happen. The **bottom** is the oldest remai
 sequenceDiagram
   participant Analyst
   participant S as undo stack
-  Analyst->>S: push(TagEdit on play 4021))
-  Analyst->>S: push(TagEdit on play 4022))
+  Analyst->>S: push(ReadingEdit on reading 4021)
+  Analyst->>S: push(ReadingEdit on reading 4022)
   Analyst->>S: peek() → last edit
-  Analyst->>S: pop() → undo 4022 tag
+  Analyst->>S: pop() → undo 4022 label
 ```
 
-| Kind | Cost | Stack examples | NFL example |
+| Kind | Cost | Stack examples | Weather-flavored example |
 | --- | --- | --- | --- |
-| **Top only** | O(1) | `push`, `pop`, `peek` | Undo last tag |
-| **Search bottom** | O(n) | scan all | Find if any edit touched play X |
+| **Top only** | O(1) | `push`, `pop`, `peek` | Undo last label edit |
+| **Search bottom** | O(n) | scan all | Find if any edit touched reading X |
 | **Copy stack** | O(n) | snapshot | Save checkpoint before bulk import |
 
 ---
@@ -105,7 +103,7 @@ sequenceDiagram
 ### 1. Empty Python `list` (most common)
 
 ```python
-stack: list[Play] = []
+stack: list[DailyReading] = []
 ```
 
 | | |
@@ -113,14 +111,13 @@ stack: list[Play] = []
 | **Time** | O(1) |
 | **Space** | O(1) |
 
-### 2. `list` with initial plays (bottom → top order)
+### 2. `list` with initial readings (bottom → top order)
 
 ```python
 stack = [
-    Play(101, 1, "rush", 0.1),
-    Play(102, 1, "pass", 0.8),
+    DailyReading(101, 2, 0.4, "partly cloudy"),
+    DailyReading(102, 2, -1.2, "cold front"),
 ]
-# top is Play(102, ...)
 ```
 
 | | |
@@ -133,10 +130,9 @@ stack = [
 ```python
 from collections import deque
 
-stack: deque[Play] = deque()
-stack.append(play)       # push
-top = stack.pop()        # pop
-# or: stack.appendleft / popleft if you prefer top on the left
+stack: deque[DailyReading] = deque()
+stack.append(reading)
+top = stack.pop()
 ```
 
 | | |
@@ -192,9 +188,9 @@ def push_node(data: Any) -> None:
 ```python
 from queue import LifoQueue
 
-q: LifoQueue[Play] = LifoQueue()
-q.put(play)
-p = q.get()
+q: LifoQueue[DailyReading] = LifoQueue()
+q.put(reading)
+r = q.get()
 ```
 
 | | |
@@ -226,8 +222,6 @@ from typing import Any, Iterable, Iterator
 
 
 class ListStack:
-    """LIFO stack backed by a Python list (top at end)."""
-
     def __init__(self, items: Iterable[Any] | None = None) -> None:
         self._items: list[Any] = list(items) if items is not None else []
 
@@ -267,7 +261,6 @@ class ListStack:
             self.push(item)
 
     def __iter__(self) -> Iterator[Any]:
-        """Top to bottom (most recent first)."""
         for i in range(len(self._items) - 1, -1, -1):
             yield self._items[i]
 ```
@@ -326,7 +319,7 @@ class LinkedStack:
 
 ---
 
-## All operations (with examples and complexity)
+## All operations (weather examples + complexity)
 
 ```mermaid
 flowchart TB
@@ -346,14 +339,12 @@ flowchart TB
 ### `push(item)` — add to top
 
 ```python
-# list idiom
-undo: list[TagEdit] = []
-undo.append(TagEdit(4021, "run", "pass"))
+undo: list[ReadingEdit] = []
+undo.append(ReadingEdit(4021, "mild", "cold front"))
 
-# ListStack
 st = ListStack()
-st.push(Play(201, 2, "sack", -1.5))
-st.push(Play(202, 2, "scramble", 0.3))
+st.push(DailyReading(201, 3, -0.8, "overcast"))
+st.push(DailyReading(202, 3, 0.3, "clearing"))
 ```
 
 | | |
@@ -375,7 +366,7 @@ sequenceDiagram
 ### `pop()` — remove top
 
 ```python
-last = undo.pop()  # reverts most recent tag
+last = undo.pop()
 ```
 
 | | |
@@ -383,7 +374,7 @@ last = undo.pop()  # reverts most recent tag
 | **Time** | O(1) |
 | **Space** | O(1) |
 
-**NFL:** After `pop`, restore `old_tag` on `play_id` in your database or in-memory row.
+After `pop`, restore `old_label` on `reading_id` in your database or in-memory row.
 
 ---
 
@@ -392,7 +383,7 @@ last = undo.pop()  # reverts most recent tag
 ```python
 if undo:
     preview = undo[-1]
-# ListStack
+
 edit = st.peek()
 ```
 
@@ -443,8 +434,8 @@ Linear scan from top or bottom.
 ### Iteration (top → bottom)
 
 ```python
-for edit in st:  # ListStack __iter__
-    print(edit.play_id)
+for edit in st:
+    print(edit.reading_id)
 ```
 
 | | |
@@ -462,7 +453,7 @@ for edit in st:  # ListStack __iter__
 | **Memory** | Contiguous array of refs | Value + `next` per item |
 | **Growth** | Over-allocates sometimes | One node at a time |
 | **Interview / teaching** | Still cite linked version | Shows LIFO = prepend at head |
-| **NFL scripts** | Default choice | Rare unless exercising pointers |
+| **Weather scripts** | Default choice | Rare unless exercising pointers |
 
 ```mermaid
 flowchart LR
@@ -470,26 +461,24 @@ flowchart LR
     A0["[0] bottom"] --- A1["[1]"] --- A2["top"]
   end
   subgraph linked_impl["linked stack"]
-    TOP["top"] --> N1["Play 202"]
-    N1 --> N2["Play 201"]
+    TOP["top"] --> N1["reading 202"]
+    N1 --> N2["reading 201"]
     N2 --> NIL["None"]
   end
 ```
 
 ---
 
-## NFL patterns with stacks
+## Weather patterns with stacks
 
-### Undo stack for play tags
+### Undo stack for reading labels
 
 ```python
-def apply_tag(stack: ListStack, play_id: int, old: str | None, new: str) -> None:
-    stack.push(TagEdit(play_id, old, new))
-    # ... write new tag to store ...
+def apply_label(stack: ListStack, reading_id: int, old: str | None, new: str) -> None:
+    stack.push(ReadingEdit(reading_id, old, new))
 
 def undo(stack: ListStack) -> None:
     edit = stack.pop()
-    # restore edit.old_tag on edit.play_id
 ```
 
 | | |
@@ -497,10 +486,10 @@ def undo(stack: ListStack) -> None:
 | **Time** | O(1) per undo |
 | **Space** | O(edits) |
 
-### DFS on a game decision tree
+### DFS on a forecast decision tree
 
 ```python
-def dfs_plays(root_id: int, adj: dict[int, list[int]]) -> list[int]:
+def dfs_readings(root_id: int, adj: dict[int, list[int]]) -> list[int]:
     stack = [root_id]
     order: list[int] = []
     while stack:
@@ -516,18 +505,17 @@ def dfs_plays(root_id: int, adj: dict[int, list[int]]) -> list[int]:
 | **Time** | O(V + E) |
 | **Space** | O(V) stack depth worst case |
 
-**NFL:** Branch nodes might be “go for it” vs “punt” outcomes; stack explores one branch deeply before siblings (pre-order with reversed children).
+Branch nodes might be “warm spell continues” vs “front passes” outcomes; stack explores one branch deeply before siblings (pre-order with reversed children).
 
-### Monotonic stack — next week with more points
+### Monotonic stack — next day with higher anomaly
 
 ```python
-def next_greater_week(points: list[float]) -> list[int | None]:
-    """For each week i, index of next week j>i with points[j] > points[i], else None."""
-    n = len(points)
+def next_greater_anomaly(anomalies: list[float]) -> list[int | None]:
+    n = len(anomalies)
     result: list[int | None] = [None] * n
-    stack: list[int] = []  # indices, decreasing points
+    stack: list[int] = []
     for i in range(n):
-        while stack and points[i] > points[stack[-1]]:
+        while stack and anomalies[i] > anomalies[stack[-1]]:
             j = stack.pop()
             result[j] = i
         stack.append(i)
@@ -539,10 +527,10 @@ def next_greater_week(points: list[float]) -> list[int | None]:
 | **Time** | O(n) |
 | **Space** | O(n) |
 
-### Valid parentheses — challenge flag syntax
+### Valid parentheses — formula syntax
 
 ```python
-def valid_flags(s: str) -> bool:
+def valid_formula(s: str) -> bool:
     pairs = {")": "(", "]": "[", "}": "{"}
     stack: list[str] = []
     for ch in s:
@@ -573,8 +561,8 @@ def valid_flags(s: str) -> bool:
 | `clear` | O(1) | O(1) | drop structure |
 | `contains` | O(n) | O(1) | |
 | Copy / `to_list` | O(n) | O(n) | |
-| DFS with stack | O(V+E) | O(V) | game tree |
-| Monotonic pass | O(n) | O(n) | weekly points |
+| DFS with stack | O(V+E) | O(V) | forecast tree |
+| Monotonic pass | O(n) | O(n) | daily anomalies |
 
 **Storage:** Θ(n) for n stacked items.
 
@@ -591,10 +579,11 @@ def valid_flags(s: str) -> bool:
 | No `stack` in stdlib | Roll your own or `list` | |
 
 ```python
-# Anti-pattern for FIFO plays
-plays: list[Play] = []
-plays.insert(0, new_play)  # O(n) — use deque or Queue instead
+readings: list[DailyReading] = []
+readings.insert(0, new_reading)
 ```
+
+Use `deque` or [Queue](../queue/index.md) for FIFO ingest—`insert(0, …)` is O(n) per push.
 
 ---
 
@@ -612,11 +601,11 @@ flowchart TD
 
 | Scenario | Stack | Better alternative |
 | --- | --- | --- |
-| Process plays in ingest order | Wrong | [Queue](../queue/index.md) |
+| Process readings in ingest order | Wrong | [Queue](../queue/index.md) |
 | Undo last N edits | Yes | — |
-| BFS shortest path on roster graph | Wrong | queue |
-| Random access `plays[i]` | Wrong | `list` / DataFrame |
-| Season stats aggregation | Wrong | pandas, `Counter` |
+| BFS shortest path on station graph | Wrong | queue |
+| Random access `readings[i]` | Wrong | `list` / DataFrame |
+| Climatology aggregation | Wrong | pandas, `Counter` |
 
 ---
 
@@ -626,7 +615,7 @@ flowchart TD
 | --- | --- | --- |
 | `pop()` on empty | `IndexError` | Check `if stack:` or `try_peek` |
 | `insert(0, x)` as “stack” | O(n) per push | Use `append` |
-| Using stack for play queue | Reverses order | FIFO queue |
+| Using stack for observation queue | Reverses order | FIFO queue |
 | Unbounded undo stack | Memory grows | Cap size or spill to disk |
 | Peeking after pop | Stale variable | Call `peek` again |
 | Confusing `deque.popleft` with stack | Wrong end | Document which end is “top” |
@@ -635,7 +624,7 @@ flowchart TD
 
 ## Advanced stack patterns
 
-### Min stack — track running minimum EPA in window
+### Min stack — track running minimum anomaly in window
 
 Keep a parallel stack of minima so `get_min()` is O(1) after each push.
 
@@ -645,10 +634,10 @@ class MinStack:
         self._data: list[float] = []
         self._mins: list[float] = []
 
-    def push(self, epa: float) -> None:
-        self._data.append(epa)
-        if not self._mins or epa <= self._mins[-1]:
-            self._mins.append(epa)
+    def push(self, anomaly: float) -> None:
+        self._data.append(anomaly)
+        if not self._mins or anomaly <= self._mins[-1]:
+            self._mins.append(anomaly)
 
     def pop(self) -> float:
         v = self._data.pop()
@@ -656,7 +645,7 @@ class MinStack:
             self._mins.pop()
         return v
 
-    def min_epa(self) -> float:
+    def min_anomaly(self) -> float:
         return self._mins[-1]
 ```
 
@@ -664,13 +653,13 @@ class MinStack:
 | --- | --- | --- |
 | `push` | O(1) | O(1) |
 | `pop` | O(1) | O(1) |
-| `min_epa` | O(1) | O(1) |
+| `min_anomaly` | O(1) | O(1) |
 
-**NFL:** Track worst EPA snap in the current drive without rescanning the drive list on each new snap.
+Track the lowest temp anomaly in the current analysis window without rescanning the reading list on each new day.
 
 ---
 
-### Reverse Polish Notation — fantasy points calculator
+### Reverse Polish Notation — derived metric calculator
 
 ```python
 def eval_rpn(tokens: list[str], lookup: dict[str, float]) -> float:
@@ -683,9 +672,8 @@ def eval_rpn(tokens: list[str], lookup: dict[str, float]) -> float:
             stack.append(lookup[tok])
     return stack[-1]
 
-# yards=45, td=1 → tokens from DSL
-lookup = {"yards": 45.0, "td": 6.0}
-score = eval_rpn(["yards", "td", "+"], lookup)
+lookup = {"anomaly": 1.2, "precip_mm": 8.0}
+score = eval_rpn(["anomaly", "precip_mm", "+"], lookup)
 ```
 
 | | |
@@ -695,9 +683,9 @@ score = eval_rpn(["yards", "td", "+"], lookup)
 
 ---
 
-### Recursion vs explicit stack on play tree
+### Recursion vs explicit stack on forecast tree
 
-CPython call depth is limited (~1000 frames). Deep game trees use an explicit stack:
+CPython call depth is limited (~1000 frames). Deep forecast trees use an explicit stack:
 
 ```python
 def dfs_iterative(root: int, adj: dict[int, list[int]]) -> list[int]:
@@ -723,7 +711,7 @@ def dfs_iterative(root: int, adj: dict[int, list[int]]) -> list[int]:
 ```mermaid
 sequenceDiagram
   participant S as stack
-  participant Tree as decision tree
+  participant Tree as forecast tree
   S->>Tree: pop node
   Tree-->>S: push unvisited children
   Note over S: Same order as DFS with reversed child push
@@ -734,10 +722,10 @@ sequenceDiagram
 ### Bounded undo stack (cap at N edits)
 
 ```python
-def push_undo(stack: list[TagEdit], edit: TagEdit, cap: int = 50) -> None:
+def push_undo(stack: list[ReadingEdit], edit: ReadingEdit, cap: int = 50) -> None:
     stack.append(edit)
     while len(stack) > cap:
-        stack.pop(0)  # O(n) — for strict cap use deque + rotate policy
+        stack.pop(0)
 ```
 
 | Approach | Cap enforcement | Notes |
@@ -746,16 +734,16 @@ def push_undo(stack: list[TagEdit], edit: TagEdit, cap: int = 50) -> None:
 | `deque(maxlen=N)` | O(1) | Drops **oldest** undo — may be wrong semantics |
 | Drop bottom with linked list | O(1) | Custom |
 
-For NFL tagging UIs, **cap at 50** undos is usually enough; document whether oldest undo is discarded.
+For forecast annotation UIs, **cap at 50** undos is usually enough; document whether oldest undo is discarded.
 
 ---
 
-### `copy` / snapshot before bulk re-tag
+### `copy` / snapshot before bulk re-label
 
 ```python
 import copy
 
-checkpoint = copy.copy(undo_stack)  # shallow: same TagEdit objects
+checkpoint = copy.copy(undo_stack)
 deep_checkpoint = copy.deepcopy(undo_stack)
 ```
 
@@ -798,27 +786,24 @@ deep_checkpoint = copy.deepcopy(undo_stack)
 ## Quick reference card
 
 ```python
-# Idiomatic Python stack
-stack: list[TagEdit] = []
-stack.append(TagEdit(4022, "rush", "pass"))  # push O(1)
-top = stack[-1]                               # peek O(1)
-edit = stack.pop()                            # pop O(1)
+stack: list[ReadingEdit] = []
+stack.append(ReadingEdit(4022, "mild", "cold front"))
+top = stack[-1]
+edit = stack.pop()
 
-# Class wrapper
 st = ListStack()
-st.push(Play(101, 1, "kickoff", 0.0))
-play = st.pop()
+st.push(DailyReading(101, 2, 0.4, "partly cloudy"))
+reading = st.pop()
 
-# Linked (interview / teaching)
 lst = LinkedStack()
-lst.push(Play(102, 1, "punt", -0.2))
+lst.push(DailyReading(102, 2, -1.2, "cold front"))
 ```
 
 Use a **stack** when **last in, first out** matches the problem—undo, DFS, parsing, monotonic scans. Use a **`list`** in Python unless you need linked-list practice or `LifoQueue` for threads.
 
-**NFL pipeline checklist**
+**Weather pipeline checklist**
 
-1. **Undo / backtrack** — `list` stack of edits or DFS on small trees.
-2. **Play ingest** — queue or `deque`, not stack.
-3. **One-pass “next greater”** — monotonic stack on numpy/list series.
+1. **Undo / backtrack** — `list` stack of edits or DFS on small forecast trees.
+2. **Observation ingest** — queue or `deque`, not stack.
+3. **One-pass “next greater”** — monotonic stack on numpy/list anomaly series.
 4. **Guard** — never `pop()` without checking empty on live UI handlers.

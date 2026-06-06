@@ -1,6 +1,6 @@
 # AVL tree
 
-A **self-balancing binary search tree** where the **height difference** (balance factor) between left and right subtrees is at most **1** at every node. After each insert or delete, **rotations** restore that invariant so height stays **O(log n)**—guaranteed fast lookup even when NFL stats arrive **sorted by week** or **player ID**.
+A **self-balancing binary search tree** where the **height difference** (balance factor) between left and right subtrees is at most **1** at every node. After each insert or delete, **rotations** restore that invariant so height stays **O(log n)**—guaranteed fast lookup even when daily readings arrive **sorted by day of year** or **station ID**.
 
 | | |
 | --- | --- |
@@ -10,36 +10,36 @@ A **self-balancing binary search tree** where the **height difference** (balance
 | **When to use** | Teaching strict balancing; guaranteed log height when plain BST would skew. |
 | **Trade-off** | More bookkeeping and rotations than [red–black](../red-black-tree/index.md); stricter balance → slightly fewer compares on lookup, more work on write. |
 
-In **NFL data analysis**, an AVL tree models a **live stat board** that stays balanced as you ingest `(week, player_id, yards)` in **chronological or alphabetical order**—the case that breaks a plain BST. Use it to understand **rotations** before [red–black trees](../red-black-tree/index.md) (used in many language runtimes). For production Python, you still reach for **`dict`**, **pandas**, or **`sortedcontainers`**; AVL is for **learning and interviews**.
+In **daily weather data analysis**, an AVL tree models a **live anomaly board** that stays balanced as you ingest `(day_of_year, station_id, temp_anomaly)` in **chronological or alphabetical order**—the case that breaks a plain BST. Use it to understand **rotations** before [red–black trees](../red-black-tree/index.md) (used in many language runtimes). For production Python, you still reach for **`dict`**, **pandas**, or **`sortedcontainers`**; AVL is for **learning and interviews**.
 
-This page is your **ready reference**: balance factors, rotations, full Python implementation, NFL examples, and complexity per operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: balance factors, rotations, full Python implementation, daily weather data examples, and complexity per operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How an AVL tree fits NFL-shaped problems
+## How an AVL tree fits daily weather analysis
 
-| NFL idea | AVL view | Why balance matters |
+| Weather analysis idea | AVL view | Why balance matters |
 | --- | --- | --- |
-| **Weekly yards feed** | Insert `(week, yards, player)` in week order | Plain BST becomes a chain; AVL stays log |
-| **Injury list by priority + id** | Ordered key; frequent insert/remove | O(log n) guaranteed each update |
-| **Season-long fantasy rank** | Inorder = sorted; height log | Predictable latency on gameday |
-| **Merge two team rosters** | Inorder merge of two AVLs | O(n + m) walk if both balanced |
+| **Daily anomaly feed** | Insert `(day_of_year, anomaly, station)` in day order | Plain BST becomes a chain; AVL stays log |
+| **Sensor priority list by id** | Ordered key; frequent insert/remove | O(log n) guaranteed each update |
+| **Season-long anomaly rank** | Inorder = sorted; height log | Predictable latency during storm events |
+| **Merge two station streams** | Inorder merge of two AVLs | O(n + m) walk if both balanced |
 
-**Use pandas** for batch season stats. **Use AVL** when you implement **ordered maps** yourself or need to **explain rotations** on a whiteboard.
+**Use pandas** for batch multi-year archives. **Use AVL** when you implement **ordered maps** yourself or need to **explain rotations** on a whiteboard.
 
 ```mermaid
 flowchart TB
-  subgraph before["BST skew — sorted week insert"]
+  subgraph before["BST skew — sorted day insert"]
     direction TB
-    W1["W1"] --> W2["W2"] --> W3["W3"] --> W4["W4"]
+    D1["D1"] --> D2["D2"] --> D3["D3"] --> D4["D4"]
   end
   subgraph after["AVL — same keys, rebalanced"]
-    W2a["W2"]
-    W2a --> W1a["W1"]
-    W2a --> W4a["W4"]
-    W4a --> W3a["W3"]
+    D2a["D2"]
+    D2a --> D1a["D1"]
+    D2a --> D4a["D4"]
+    D4a --> D3a["D3"]
   end
   before -->|"rotations"| after
 ```
@@ -56,7 +56,7 @@ Throughout this page, **n** = nodes, **h** = O(log n) guaranteed.
 | **Insert/delete** | O(log n), more rotations | O(h) | O(log n), fewer rotations | O(1) avg |
 | **Balance** | Stricter (BF ∈ {−1,0,1}) | None | Relaxed via color rules | N/A |
 | **Lookup-heavy** | Slightly favored | Skew risk | Industry default for maps | Hash, unordered |
-| **NFL teaching** | Rotation drills | Baseline invariant | “Why not RB in Python dict” | `player_id` lookup |
+| **Weather teaching** | Rotation drills | Baseline invariant | "Why not RB in Python dict" | `station_id` lookup |
 
 !!! note "Python `dict` uses hashing, not AVL"
     CPython **`dict`** is a **hash table** (open addressing with perturbation). It does **not** keep keys in sorted order by comparison. For sorted maps in Python ecosystems, see **`sortedcontainers`**, **`bisect`** on a list, or databases with indexes.
@@ -75,10 +75,10 @@ from typing import Any, Iterator
 
 
 @dataclass(frozen=True, order=True)
-class WeekStat:
-    week: int
-    player_id: str
-    yards: int = 0
+class DayStat:
+    day_of_year: int
+    station_id: str
+    temp_anomaly: float = 0.0
 
 
 @dataclass
@@ -226,15 +226,15 @@ tree = AVLTree()
 | **Time** | O(1) |
 | **Space** | O(1) |
 
-### 2. Insert sorted weeks — stays O(log n) per insert
+### 2. Insert sorted days — stays O(log n) per insert
 
-Unlike plain BST, inserting weeks 1…18 in order keeps height logarithmic.
+Unlike plain BST, inserting days 1…365 in order keeps height logarithmic.
 
 ```python
 tree = AVLTree()
-for w in range(1, 19):
-    tree.insert(WeekStat(w, f"P{w}", w * 10))
-assert tree.height() <= 6  # ~ log2(18)
+for d in range(1, 366):
+    tree.insert(DayStat(d, f"S{d}", d * 0.01))
+assert tree.height() <= 10
 ```
 
 | | |
@@ -276,7 +276,6 @@ class AVLTree:
         self.insert_strict(key)
 
     def insert_strict(self, key: Any) -> bool:
-        """Insert only if key absent; return whether inserted."""
         before = self._size
         self.root = self._insert_rec_strict(self.root, key)
         return self._size > before
@@ -355,18 +354,18 @@ class AVLTree:
 
 ---
 
-## Operations with NFL examples
+## Operations with weather examples
 
-### Insert weekly stats in sorted order
+### Insert daily stats in sorted order
 
 ```python
 tree = AVLTree()
-for week in range(1, 19):
-    tree.insert_strict(WeekStat(week, "QB01", week * 25))
-assert len(tree) == 18
-assert tree.height() <= 6
-ordered_weeks = [k.week for k in tree.inorder()]
-assert ordered_weeks == list(range(1, 19))
+for day in range(1, 366):
+    tree.insert_strict(DayStat(day, "STN01", day * 0.025))
+assert len(tree) == 365
+assert tree.height() <= 10
+ordered_days = [k.day_of_year for k in tree.inorder()]
+assert ordered_days == list(range(1, 366))
 ```
 
 | | |
@@ -376,29 +375,29 @@ assert ordered_weeks == list(range(1, 19))
 
 ```mermaid
 sequenceDiagram
-  participant Feed as weekly CSV
+  participant Feed as daily CSV
   participant AVL as AVLTree
-  Feed->>AVL: insert W1..W18 in order
+  Feed->>AVL: insert D1..D365 in order
   loop each insert
     AVL->>AVL: descend O(log n)
     AVL->>AVL: rebalance with 0–1 rotations
   end
-  AVL-->>Feed: height O(log n) not 18
+  AVL-->>Feed: height O(log n) not 365
 ```
 
 ---
 
-### Search / delete — drop player week after trade
+### Search / delete — drop station day after sensor offline
 
 ```python
 tree = AVLTree()
-for w in [3, 1, 4, 2, 5]:
-    tree.insert_strict(WeekStat(w, "RB07", w * 40))
+for d in [3, 1, 4, 2, 5]:
+    tree.insert_strict(DayStat(d, "STN07", d * 0.4))
 
-assert tree.contains(WeekStat(4, "RB07"))
-tree.delete(WeekStat(4, "RB07"))
-assert not tree.contains(WeekStat(4, "RB07"))
-assert [k.week for k in tree.inorder()] == [1, 2, 3, 5]
+assert tree.contains(DayStat(4, "STN07"))
+tree.delete(DayStat(4, "STN07"))
+assert not tree.contains(DayStat(4, "STN07"))
+assert [k.day_of_year for k in tree.inorder()] == [1, 2, 3, 5]
 ```
 
 | | |
@@ -408,17 +407,17 @@ assert [k.week for k in tree.inorder()] == [1, 2, 3, 5]
 
 ---
 
-### Inorder — chronological week report
+### Inorder — chronological day report
 
 Same as BST: **inorder** yields sorted keys.
 
 ```python
 tree = AVLTree()
-stats = [WeekStat(5, "A", 90), WeekStat(2, "B", 110), WeekStat(8, "C", 70)]
+stats = [DayStat(150, "A", 0.9), DayStat(60, "B", 1.1), DayStat(240, "C", 0.7)]
 for s in stats:
     tree.insert_strict(s)
 for s in tree.inorder_iter():
-    print(f"Week {s.week}: {s.yards} yards")
+    print(f"Day {s.day_of_year}: {s.temp_anomaly:+.1f}°C")
 ```
 
 | | |
@@ -428,27 +427,27 @@ for s in tree.inorder_iter():
 
 ---
 
-## NFL application: balanced live yards index
+## Weather application: balanced live anomaly index
 
 ```python
-class WeeklyYardsIndex:
+class DailyAnomalyIndex:
     def __init__(self) -> None:
         self._tree = AVLTree()
 
-    def record(self, week: int, player_id: str, yards: int) -> None:
-        self._tree.insert_strict(WeekStat(week, player_id, yards))
+    def record(self, day_of_year: int, station_id: str, temp_anomaly: float) -> None:
+        self._tree.insert_strict(DayStat(day_of_year, station_id, temp_anomaly))
 
-    def weeks_for_player(self, player_id: str) -> list[WeekStat]:
-        return [k for k in self._tree.inorder() if k.player_id == player_id]
+    def days_for_station(self, station_id: str) -> list[DayStat]:
+        return [k for k in self._tree.inorder() if k.station_id == station_id]
 
-    def report_through_week(self, max_week: int) -> list[WeekStat]:
-        return [k for k in self._tree.inorder() if k.week <= max_week]
+    def report_through_day(self, max_day: int) -> list[DayStat]:
+        return [k for k in self._tree.inorder() if k.day_of_year <= max_day]
 
 
-idx = WeeklyYardsIndex()
-for w in range(1, 11):
-    idx.record(w, "WR10", w * 8)
-through = idx.report_through_week(5)
+idx = DailyAnomalyIndex()
+for d in range(1, 11):
+    idx.record(d, "STN10", d * 0.08)
+through = idx.report_through_day(5)
 assert len(through) == 5
 assert idx._tree.height() <= 5
 ```
@@ -456,7 +455,7 @@ assert idx._tree.height() <= 5
 | Operation | Time | Space |
 | --- | --- | --- |
 | `record` | O(log n) | O(1) |
-| `report_through_week` | O(n) scan | O(output) |
+| `report_through_day` | O(n) scan | O(output) |
 
 ---
 
@@ -468,7 +467,7 @@ assert idx._tree.height() <= 5
 | Rotations on insert | Often more | Often fewer |
 | Lookup | Fewer compares (shorter) | Slightly more |
 | Typical use | Databases (some), teaching | `std::map`, Java `TreeMap` |
-| NFL analogy | Precise injury priority queue with strict fairness | High-volume schedule index |
+| Weather analogy | Precise sensor priority queue with strict fairness | High-volume observation index |
 
 ---
 
@@ -531,12 +530,11 @@ flowchart TD
 
 ```python
 tree = AVLTree()
-tree.insert_strict(WeekStat(3, "QB01", 280))
-tree.search(WeekStat(3, "QB01"))
-tree.delete(WeekStat(3, "QB01"))
-list(tree.inorder_iter())  # sorted by week, player_id
-tree.height()              # O(log n) guaranteed
-# Rotations: _right_rotate, _left_rotate, _rebalance on BF ∉ {−1,0,1}
+tree.insert_strict(DayStat(150, "STN01", 2.8))
+tree.search(DayStat(150, "STN01"))
+tree.delete(DayStat(150, "STN01"))
+list(tree.inorder_iter())
+tree.height()
 ```
 
 An **AVL tree** is a **BST with strict height balance**—master **rotations** here, then compare with **[red–black](../red-black-tree/index.md)** for the trade-offs real map implementations make.
