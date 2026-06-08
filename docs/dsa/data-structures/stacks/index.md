@@ -56,22 +56,22 @@ Throughout this page, **n** is the number of elements on the stack (e.g. edits i
 **Use a queue or `deque`** when readings must leave in **ingest order**. **Use a stack** when you need **most recent first** or **depth-first** exploration.
 
 ```python
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
 class DailyReading:
-    reading_id: int
-    month: int
-    temp_anomaly: float
-    summary: str
+    reading_id = field()
+    month = field()
+    temp_anomaly = field()
+    summary = field()
 
 
 @dataclass
 class ReadingEdit:
-    reading_id: int
-    old_label: str | None
-    new_label: str
+    reading_id = field()
+    old_label = field(default=None)
+    new_label = field()
 ```
 
 ---
@@ -103,7 +103,7 @@ sequenceDiagram
 ### 1. Empty Python `list` (most common)
 
 ```python
-stack: list[DailyReading] = []
+stack = []
 ```
 
 | | |
@@ -130,7 +130,7 @@ stack = [
 ```python
 from collections import deque
 
-stack: deque[DailyReading] = deque()
+stack = deque()
 stack.append(reading)
 top = stack.pop()
 ```
@@ -144,13 +144,13 @@ top = stack.pop()
 
 ```python
 class ListStack:
-    def __init__(self) -> None:
-        self._items: list[Any] = []
+    def __init__(self):
+        self._items = []
 
-    def push(self, item: Any) -> None:
+    def push(self, item):
         self._items.append(item)
 
-    def pop(self) -> Any:
+    def pop(self):
         if not self._items:
             raise IndexError("pop from empty stack")
         return self._items.pop()
@@ -166,14 +166,17 @@ s = ListStack()
 ### 5. Linked-list stack (head = top)
 
 ```python
+from dataclasses import dataclass, field
+
+
 @dataclass
 class SNode:
-    data: Any
-    next: SNode | None = None
+    data = field()
+    next = field(default=None)
 
-top: SNode | None = None
+top = None
 
-def push_node(data: Any) -> None:
+def push_node(data):
     global top
     top = SNode(data, next=top)
 ```
@@ -188,7 +191,7 @@ def push_node(data: Any) -> None:
 ```python
 from queue import LifoQueue
 
-q: LifoQueue[DailyReading] = LifoQueue()
+q = LifoQueue()
 q.put(reading)
 r = q.get()
 ```
@@ -215,52 +218,46 @@ flowchart TD
 Full ADT with `push`, `pop`, `peek`, `clear`, iteration (top-down), and size.
 
 ```python
-from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import Any, Iterable, Iterator
-
-
 class ListStack:
-    def __init__(self, items: Iterable[Any] | None = None) -> None:
-        self._items: list[Any] = list(items) if items is not None else []
+    def __init__(self, items=None):
+        self._items = list(items) if items is not None else []
 
-    def __len__(self) -> int:
+    def __len__(self):
         return len(self._items)
 
-    def is_empty(self) -> bool:
+    def is_empty(self):
         return len(self._items) == 0
 
-    def push(self, item: Any) -> None:
+    def push(self, item):
         self._items.append(item)
 
-    def pop(self) -> Any:
+    def pop(self):
         if not self._items:
             raise IndexError("pop from empty stack")
         return self._items.pop()
 
-    def peek(self) -> Any:
+    def peek(self):
         if not self._items:
             raise IndexError("peek from empty stack")
         return self._items[-1]
 
-    def try_peek(self) -> Any | None:
+    def try_peek(self):
         return self._items[-1] if self._items else None
 
-    def clear(self) -> None:
+    def clear(self):
         self._items.clear()
 
-    def contains(self, item: Any) -> bool:
+    def contains(self, item):
         return item in self._items
 
-    def to_list(self, bottom_first: bool = True) -> list[Any]:
+    def to_list(self, bottom_first=True):
         return list(self._items) if bottom_first else list(reversed(self._items))
 
-    def extend_push(self, items: Iterable[Any]) -> None:
+    def extend_push(self, items):
         for item in items:
             self.push(item)
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self):
         for i in range(len(self._items) - 1, -1, -1):
             yield self._items[i]
 ```
@@ -272,28 +269,31 @@ class ListStack:
 Top = head; O(1) push/pop; no dynamic array resize.
 
 ```python
+from dataclasses import dataclass, field
+
+
 @dataclass
 class SNode:
-    data: Any
-    next: SNode | None = None
+    data = field()
+    next = field(default=None)
 
 
 class LinkedStack:
-    def __init__(self) -> None:
-        self._top: SNode | None = None
+    def __init__(self):
+        self._top = None
         self._size = 0
 
-    def __len__(self) -> int:
+    def __len__(self):
         return self._size
 
-    def is_empty(self) -> bool:
+    def is_empty(self):
         return self._top is None
 
-    def push(self, item: Any) -> None:
+    def push(self, item):
         self._top = SNode(item, next=self._top)
         self._size += 1
 
-    def pop(self) -> Any:
+    def pop(self):
         if self._top is None:
             raise IndexError("pop from empty stack")
         data = self._top.data
@@ -301,12 +301,12 @@ class LinkedStack:
         self._size -= 1
         return data
 
-    def peek(self) -> Any:
+    def peek(self):
         if self._top is None:
             raise IndexError("peek from empty stack")
         return self._top.data
 
-    def clear(self) -> None:
+    def clear(self):
         self._top = None
         self._size = 0
 ```
@@ -339,7 +339,7 @@ flowchart TB
 ### `push(item)` — add to top
 
 ```python
-undo: list[ReadingEdit] = []
+undo = []
 undo.append(ReadingEdit(4021, "mild", "cold front"))
 
 st = ListStack()
@@ -474,10 +474,10 @@ flowchart LR
 ### Undo stack for reading labels
 
 ```python
-def apply_label(stack: ListStack, reading_id: int, old: str | None, new: str) -> None:
+def apply_label(stack, reading_id, old, new):
     stack.push(ReadingEdit(reading_id, old, new))
 
-def undo(stack: ListStack) -> None:
+def undo(stack):
     edit = stack.pop()
 ```
 
@@ -489,9 +489,9 @@ def undo(stack: ListStack) -> None:
 ### DFS on a forecast decision tree
 
 ```python
-def dfs_readings(root_id: int, adj: dict[int, list[int]]) -> list[int]:
+def dfs_readings(root_id, adj):
     stack = [root_id]
-    order: list[int] = []
+    order = []
     while stack:
         node = stack.pop()
         order.append(node)
@@ -510,10 +510,10 @@ Branch nodes might be “warm spell continues” vs “front passes” outcomes;
 ### Monotonic stack — next day with higher anomaly
 
 ```python
-def next_greater_anomaly(anomalies: list[float]) -> list[int | None]:
+def next_greater_anomaly(anomalies):
     n = len(anomalies)
-    result: list[int | None] = [None] * n
-    stack: list[int] = []
+    result = [None] * n
+    stack = []
     for i in range(n):
         while stack and anomalies[i] > anomalies[stack[-1]]:
             j = stack.pop()
@@ -530,9 +530,9 @@ def next_greater_anomaly(anomalies: list[float]) -> list[int | None]:
 ### Valid parentheses — formula syntax
 
 ```python
-def valid_formula(s: str) -> bool:
+def valid_formula(s):
     pairs = {")": "(", "]": "[", "}": "{"}
-    stack: list[str] = []
+    stack = []
     for ch in s:
         if ch in "([{":
             stack.append(ch)
@@ -579,7 +579,7 @@ def valid_formula(s: str) -> bool:
 | No `stack` in stdlib | Roll your own or `list` | |
 
 ```python
-readings: list[DailyReading] = []
+readings = []
 readings.insert(0, new_reading)
 ```
 
@@ -630,22 +630,22 @@ Keep a parallel stack of minima so `get_min()` is O(1) after each push.
 
 ```python
 class MinStack:
-    def __init__(self) -> None:
-        self._data: list[float] = []
-        self._mins: list[float] = []
+    def __init__(self):
+        self._data = []
+        self._mins = []
 
-    def push(self, anomaly: float) -> None:
+    def push(self, anomaly):
         self._data.append(anomaly)
         if not self._mins or anomaly <= self._mins[-1]:
             self._mins.append(anomaly)
 
-    def pop(self) -> float:
+    def pop(self):
         v = self._data.pop()
         if v == self._mins[-1]:
             self._mins.pop()
         return v
 
-    def min_anomaly(self) -> float:
+    def min_anomaly(self):
         return self._mins[-1]
 ```
 
@@ -662,8 +662,8 @@ Track the lowest temp anomaly in the current analysis window without rescanning 
 ### Reverse Polish Notation — derived metric calculator
 
 ```python
-def eval_rpn(tokens: list[str], lookup: dict[str, float]) -> float:
-    stack: list[float] = []
+def eval_rpn(tokens, lookup):
+    stack = []
     for tok in tokens:
         if tok in "+-*/":
             b, a = stack.pop(), stack.pop()
@@ -688,10 +688,10 @@ score = eval_rpn(["anomaly", "precip_mm", "+"], lookup)
 CPython call depth is limited (~1000 frames). Deep forecast trees use an explicit stack:
 
 ```python
-def dfs_iterative(root: int, adj: dict[int, list[int]]) -> list[int]:
+def dfs_iterative(root, adj):
     stack = [root]
-    visited: set[int] = set()
-    order: list[int] = []
+    visited = set()
+    order = []
     while stack:
         node = stack.pop()
         if node in visited:
@@ -722,7 +722,7 @@ sequenceDiagram
 ### Bounded undo stack (cap at N edits)
 
 ```python
-def push_undo(stack: list[ReadingEdit], edit: ReadingEdit, cap: int = 50) -> None:
+def push_undo(stack, edit, cap=50):
     stack.append(edit)
     while len(stack) > cap:
         stack.pop(0)
