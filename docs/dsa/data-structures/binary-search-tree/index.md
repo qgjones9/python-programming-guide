@@ -79,25 +79,22 @@ sequenceDiagram
 Each node stores a **key** (comparable tuple or dataclass) and **left** / **right** child pointers.
 
 ```python
-from __future__ import annotations
-
 from dataclasses import dataclass
-from typing import Any, Iterator
 
 
 @dataclass(frozen=True, order=True)
 class MapEntry:
- priority: int
- record_id: str
- label: str = ""
+ priority = 0
+ record_id = ""
+ label= ""
 
 
 @dataclass
 class BSTNode:
- key: Any
- left: BSTNode | None = None
- right: BSTNode | None = None
- payload: Any = None
+ key = None
+ left= None
+ right= None
+ payload= None
 ```
 
 | | |
@@ -123,7 +120,7 @@ flowchart TB
 ### 1. Empty tree — root is `None`
 
 ```python
-root: BSTNode | None = None
+root= None
 ```
 
 | | |
@@ -135,8 +132,8 @@ root: BSTNode | None = None
 
 ```python
 class BinarySearchTree:
- def __init__(self) -> None:
- self.root: BSTNode | None = None
+ def __init__(self):
+ self.root= None
  self._size = 0
 
 tree = BinarySearchTree()
@@ -164,7 +161,7 @@ root = BSTNode(MapEntry(120, "rec01", "high priority"))
 Preserves **BST shape** depends on **insert order**—same keys, different order → different shape.
 
 ```python
-def insert_bst(root: BSTNode | None, key: Any) -> BSTNode:
+def insert_bst(root, key):
  if root is None:
  return BSTNode(key)
  if key < root.key:
@@ -229,17 +226,17 @@ The class below implements **search**, **insert**, **delete**, **min/max**, **in
 
 ```python
 class BinarySearchTree:
- def __init__(self) -> None:
- self.root: BSTNode | None = None
+ def __init__(self):
+ self.root= None
  self._size = 0
 
- def is_empty(self) -> bool:
+ def is_empty(self):
  return self.root is None
 
- def __len__(self) -> int:
+ def __len__(self):
  return self._size
 
- def search(self, key: Any) -> BSTNode | None:
+ def search(self, key):
  cur = self.root
  while cur is not None:
  if key == cur.key:
@@ -247,10 +244,10 @@ class BinarySearchTree:
  cur = cur.left if key < cur.key else cur.right
  return None
 
- def contains(self, key: Any) -> bool:
+ def contains(self, key):
  return self.search(key) is not None
 
- def insert(self, key: Any, payload: Any = None) -> None:
+ def insert(self, key, payload=None):
  if self.root is None:
  self.root = BSTNode(key, payload=payload)
  self._size += 1
@@ -273,15 +270,13 @@ class BinarySearchTree:
  cur.payload = payload
  return
 
- def delete(self, key: Any) -> bool:
+ def delete(self, key):
  self.root, deleted = self._delete_rec(self.root, key)
  if deleted:
  self._size -= 1
  return deleted
 
- def _delete_rec(
- self, node: BSTNode | None, key: Any
- ) -> tuple[BSTNode | None, bool]:
+ def _delete_rec(self, node, key):
  if node is None:
  return None, False
  if key < node.key:
@@ -300,17 +295,17 @@ class BinarySearchTree:
  node.right, _ = self._delete_rec(node.right, succ.key)
  return node, True
 
- def _min_node(self, node: BSTNode) -> BSTNode:
+ def _min_node(self, node):
  while node.left is not None:
  node = node.left
  return node
 
- def minimum(self) -> Any | None:
+ def minimum(self):
  if self.root is None:
  return None
  return self._min_node(self.root).key
 
- def maximum(self) -> Any | None:
+ def maximum(self):
  if self.root is None:
  return None
  cur = self.root
@@ -318,20 +313,20 @@ class BinarySearchTree:
  cur = cur.right
  return cur.key
 
- def inorder(self) -> list[Any]:
- out: list[Any] = []
+ def inorder(self):
+ out= []
  self._inorder_rec(self.root, out)
  return out
 
- def _inorder_rec(self, node: BSTNode | None, out: list[Any]) -> None:
+ def _inorder_rec(self, node, out):
  if node is None:
  return
  self._inorder_rec(node.left, out)
  out.append(node.key)
  self._inorder_rec(node.right, out)
 
- def inorder_iter(self) -> Iterator[Any]:
- stack: list[BSTNode] = []
+ def inorder_iter(self):
+ stack= []
  cur = self.root
  while stack or cur is not None:
  while cur is not None:
@@ -341,46 +336,44 @@ class BinarySearchTree:
  yield cur.key
  cur = cur.right
 
- def preorder(self) -> list[Any]:
- out: list[Any] = []
+ def preorder(self):
+ out= []
  self._preorder_rec(self.root, out)
  return out
 
- def _preorder_rec(self, node: BSTNode | None, out: list[Any]) -> None:
+ def _preorder_rec(self, node, out):
  if node is None:
  return
  out.append(node.key)
  self._preorder_rec(node.left, out)
  self._preorder_rec(node.right, out)
 
- def postorder(self) -> list[Any]:
- out: list[Any] = []
+ def postorder(self):
+ out= []
  self._postorder_rec(self.root, out)
  return out
 
- def _postorder_rec(self, node: BSTNode | None, out: list[Any]) -> None:
+ def _postorder_rec(self, node, out):
  if node is None:
  return
  self._postorder_rec(node.left, out)
  self._postorder_rec(node.right, out)
  out.append(node.key)
 
- def height(self) -> int:
+ def height(self):
  return self._height_rec(self.root)
 
- def _height_rec(self, node: BSTNode | None) -> int:
+ def _height_rec(self, node):
  if node is None:
  return -1
  return 1 + max(self._height_rec(node.left), self._height_rec(node.right))
 
- def range_query(self, lo: Any, hi: Any) -> list[Any]:
- out: list[Any] = []
+ def range_query(self, lo, hi):
+ out= []
  self._range_rec(self.root, lo, hi, out)
  return out
 
- def _range_rec(
- self, node: BSTNode | None, lo: Any, hi: Any, out: list[Any]
- ) -> None:
+ def _range_rec(self, node, lo, hi, out):
  if node is None:
  return
  if lo < node.key:
@@ -575,10 +568,10 @@ assert tree.height() == 9
 
 ```python
 class ScoreIndex:
- def __init__(self) -> None:
+ def __init__(self):
  self._tree = BinarySearchTree()
 
- def upsert(self, record_id: str, label: str, priority: int) -> None:
+ def upsert(self, record_id, label, priority):
  node = self._tree.search(MapEntry(0, record_id))
  if node is None:
  self._tree.insert(MapEntry(priority, record_id, label))
@@ -589,13 +582,13 @@ class ScoreIndex:
  MapEntry(old.priority + priority, record_id, label or old.label)
  )
 
- def range_report(self, min_priority: int, max_priority: int) -> list[MapEntry]:
+ def range_report(self, min_priority, max_priority):
  return self._tree.range_query(
  MapEntry(min_priority, ""),
  MapEntry(max_priority, "\uffff"),
  )
 
- def print_ranked(self) -> None:
+ def print_ranked(self):
  for key in self._tree.inorder_iter():
  print(f"{key.record_id}: priority {key.priority} — {key.label}")
 
@@ -621,9 +614,9 @@ assert len(mid) == 2
 ```python
 @dataclass(frozen=True, order=True)
 class ScheduleSlot:
- timestamp: int
- task_id: str
- label: str = ""
+ timestamp = 0
+ task_id = ""
+ label= ""
 
 
 schedule = BinarySearchTree()

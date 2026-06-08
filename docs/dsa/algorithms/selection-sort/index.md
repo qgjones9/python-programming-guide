@@ -91,9 +91,9 @@ def selection_sort(nums):
 
 @dataclass
 class Record:
- label: str
- record_id: int # lower = earlier in ingest order
- score: float
+ label = ""
+ record_id = 0  # lower = earlier in ingest order
+ score = 0.0
 
 
 def selection_sort_records(records, *, key=lambda r: r.record_id):
@@ -145,7 +145,7 @@ Lower `record_id` = earlier entry in the ingest log. Data: ids `[32, 5, 5, 12]` 
 | Interview “implement selection” | pandas pipelines |
 
 ```python
-records.sort(key=lambda r: (r.record_id, r.label)) # stable tie-break in production
+records.sort(key=lambda r: (r.record_id, r.label))
 ```
 
 ---
@@ -183,9 +183,9 @@ records.sort(key=lambda r: (r.record_id, r.label)) # stable tie-break in product
 ## Quick reference
 
 ```python
-selection_sort(nums) # Θ(n²), unstable
-selection_sort_records(window, key=...) # by record_id
-window.sort(key=lambda r: r.record_id) # production
+selection_sort(nums)
+selection_sort_records(window, key=...)
+window.sort(key=lambda r: r.record_id)
 ```
 
 **Selection sort:** in-place, few swaps, **always Θ(n²)**, **not stable**—teach the min-scan idea, then move on.

@@ -102,7 +102,7 @@ BUBBLE_SORT(A):
 from __future__ import annotations
 
 
-def bubble_sort(nums: list[float]) -> None:
+def bubble_sort(nums):
  n = len(nums)
  end = n - 1
  while end > 0:
@@ -116,7 +116,7 @@ def bubble_sort(nums: list[float]) -> None:
  end -= 1
 
 
-def bubble_sort_return(nums: list[float]) -> list[float]:
+def bubble_sort_return(nums):
  out = nums.copy()
  bubble_sort(out)
  return out
@@ -135,15 +135,15 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
 class Record:
- record_id: int
- timestamp: float
- score: float
- label: str
+ record_id = 0
+ timestamp = 0.0
+ score = 0.0
+ label = ""
 
 
 def bubble_sort_records(
- records: list[Record], *, key=lambda r: r.score
-) -> None:
+ records, *, key=lambda r: r.score
+):
  n = len(records)
  end = n - 1
  while end > 0:
@@ -209,7 +209,6 @@ sequenceDiagram
 
 ```python
 import heapq
-
 batch = sorted(window, key=lambda r: r.score, reverse=True)
 top10 = heapq.nlargest(10, window, key=lambda r: r.score)
 ```
@@ -229,9 +228,8 @@ Bubble sort teaches **adjacent swaps**; CPython's **Timsort** (used by `list.sor
 
 ```python
 import pandas as pd
-
-records = pd.read_parquet("events.parquet")
-records.sort_values(["record_id", "timestamp"], inplace=True)
+records = pd.read_parquet('events.parquet')
+records.sort_values(['record_id', 'timestamp'], inplace=True)
 ```
 
 ---

@@ -155,7 +155,7 @@ root = None
 
 ```python
 class Tree234:
-    def __init__(self) -> None:
+    def __init__(self):
         self.root = None
 ```
 
@@ -181,30 +181,28 @@ Unlike BST, sorted insert does **not** degenerate height—splits keep leaves le
 ## Reference implementation (teaching)
 
 ```python
-from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
 
 
 @dataclass
 class Node234:
-    keys: list[Any] = field(default_factory=list)
-    children: list[Node234 | None] = field(default_factory=list)
-    is_leaf: bool = True
+    keys= field(default_factory=list)
+    children= field(default_factory=list)
+    is_leaf= True
 
-    def is_4node(self) -> bool:
+    def is_4node(self):
         return len(self.keys) == 3
 
 
 class Tree234:
-    def __init__(self) -> None:
-        self.root: Node234 | None = None
+    def __init__(self):
+        self.root= None
 
-    def search(self, key: Any) -> bool:
+    def search(self, key):
         return self._search(self.root, key)
 
-    def _search(self, node: Node234 | None, key: Any) -> bool:
+    def _search(self, node, key):
         if node is None:
             return False
         i = 0
@@ -216,7 +214,7 @@ class Tree234:
             return False
         return self._search(node.children[i], key)
 
-    def insert(self, key: Any) -> None:
+    def insert(self, key):
         if self.root is None:
             self.root = Node234(keys=[key], is_leaf=True)
             return
@@ -227,7 +225,7 @@ class Tree234:
             self._split_child(self.root, 0)
         self._insert_nonfull(self.root, key)
 
-    def _insert_nonfull(self, node: Node234, key: Any) -> None:
+    def _insert_nonfull(self, node, key):
         i = len(node.keys) - 1
         if node.is_leaf:
             node.keys.append(key)
@@ -245,7 +243,7 @@ class Tree234:
                 i += 1
         self._insert_nonfull(node.children[i], key)
 
-    def _split_child(self, parent: Node234, idx: int) -> None:
+    def _split_child(self, parent, idx):
         full = parent.children[idx]
         assert full is not None and len(full.keys) == 3
         mid = full.keys[1]
@@ -262,12 +260,12 @@ class Tree234:
         if not parent.children:
             parent.is_leaf = False
 
-    def inorder(self) -> list[Any]:
-        out: list[Any] = []
+    def inorder(self):
+        out= []
         self._inorder(self.root, out)
         return out
 
-    def _inorder(self, node: Node234 | None, out: list[Any]) -> None:
+    def _inorder(self, node, out):
         if node is None:
             return
         for i in range(len(node.keys)):

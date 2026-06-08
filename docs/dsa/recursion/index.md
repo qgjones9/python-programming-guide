@@ -18,7 +18,7 @@ Every correct recursive function needs both:
 If either is missing or the recursive step does not shrink the problem, you get infinite recursion and a `RecursionError` once Python hits its recursion limit (often around 1000 frames by default).
 
 ```python
-def factorial(n: int) -> int:
+def factorial(n):
  if n <= 1: # base case
  return 1
  return n * factorial(n - 1) # recursive case: smaller n
@@ -63,7 +63,7 @@ Tracing on paper or with a few `print` depths helps at first; later you rely on 
 **Sum a list** — base case empty list; recursive case first element plus sum of rest:
 
 ```python
-def sum_list(values: list[int]) -> int:
+def sum_list(values):
  if not values:
  return 0
  return values[0] + sum_list(values[1:])
@@ -75,12 +75,12 @@ Time O(*n*), stack depth O(*n*). An iterative loop uses O(1) extra space and is 
 
 ```python
 class Node:
- def __init__(self, value: int, left: "Node | None" = None, right: "Node | None" = None):
+ def __init__(self, value, left= None, right= None):
  self.value = value
  self.left = left
  self.right = right
 
-def height(root: Node | None) -> int:
+def height(root):
  if root is None:
  return 0
  return 1 + max(height(root.left), height(root.right))
@@ -92,8 +92,8 @@ Matches how [binary trees](../data-structures/binary-search-tree/index.md) are d
 
 ```python
 def binary_search_rec(
- sorted_values: list[int], target: int, lo: int, hi: int
-) -> int | None:
+ sorted_values, target, lo, hi
+):
  if lo > hi:
  return None
  mid = (lo + hi) // 2

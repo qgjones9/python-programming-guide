@@ -68,25 +68,23 @@ Throughout this page, **n** = nodes, **h** = O(log n) guaranteed.
 Store **key**, **height** (or balance factor), **left**, **right**.
 
 ```python
-from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Iterator
 
 
 @dataclass(frozen=True, order=True)
 class MapEntry:
- priority: int
- record_id: str
- label: str = ""
+ priority = 0
+ record_id = ""
+ label= ""
 
 
 @dataclass
 class AVLNode:
- key: Any
- height: int = 1
- left: AVLNode | None = None
- right: AVLNode | None = None
+ key = None
+ height= 1
+ left= None
+ right= None
 ```
 
 | | |
@@ -124,19 +122,19 @@ flowchart LR
 ```
 
 ```python
-def _height(node: AVLNode | None) -> int:
+def _height(node):
  return 0 if node is None else node.height
 
 
-def _update_height(node: AVLNode) -> None:
+def _update_height(node):
  node.height = 1 + max(_height(node.left), _height(node.right))
 
 
-def _balance_factor(node: AVLNode) -> int:
+def _balance_factor(node):
  return _height(node.left) - _height(node.right)
 
 
-def _right_rotate(y: AVLNode) -> AVLNode:
+def _right_rotate(y):
  x = y.left
  assert x is not None
  t2 = x.right
@@ -147,7 +145,7 @@ def _right_rotate(y: AVLNode) -> AVLNode:
  return x
 
 
-def _left_rotate(x: AVLNode) -> AVLNode:
+def _left_rotate(x):
  y = x.right
  assert y is not None
  t2 = y.left
@@ -185,7 +183,7 @@ flowchart TD
 ```
 
 ```python
-def _rebalance(node: AVLNode) -> AVLNode:
+def _rebalance(node):
  _update_height(node)
  bf = _balance_factor(node)
  if bf > 1:
@@ -214,8 +212,8 @@ def _rebalance(node: AVLNode) -> AVLNode:
 
 ```python
 class AVLTree:
- def __init__(self) -> None:
- self.root: AVLNode | None = None
+ def __init__(self):
+ self.root= None
  self._size = 0
 
 tree = AVLTree()
@@ -248,20 +246,20 @@ assert tree.height() <= 10
 
 ```python
 class AVLTree:
- def __init__(self) -> None:
- self.root: AVLNode | None = None
+ def __init__(self):
+ self.root= None
  self._size = 0
 
- def __len__(self) -> int:
+ def __len__(self):
  return self._size
 
- def is_empty(self) -> bool:
+ def is_empty(self):
  return self.root is None
 
- def height(self) -> int:
+ def height(self):
  return _height(self.root)
 
- def search(self, key: Any) -> AVLNode | None:
+ def search(self, key):
  cur = self.root
  while cur is not None:
  if key == cur.key:
@@ -269,18 +267,18 @@ class AVLTree:
  cur = cur.left if key < cur.key else cur.right
  return None
 
- def contains(self, key: Any) -> bool:
+ def contains(self, key):
  return self.search(key) is not None
 
- def insert(self, key: Any) -> None:
+ def insert(self, key):
  self.insert_strict(key)
 
- def insert_strict(self, key: Any) -> bool:
+ def insert_strict(self, key):
  before = self._size
  self.root = self._insert_rec_strict(self.root, key)
  return self._size > before
 
- def _insert_rec_strict(self, node: AVLNode | None, key: Any) -> AVLNode:
+ def _insert_rec_strict(self, node, key):
  if node is None:
  self._size += 1
  return AVLNode(key)
@@ -290,15 +288,15 @@ class AVLTree:
  node.right = self._insert_rec_strict(node.right, key)
  return _rebalance(node)
 
- def delete(self, key: Any) -> bool:
+ def delete(self, key):
  self.root, deleted = self._delete_rec(self.root, key)
  if deleted:
  self._size -= 1
  return deleted
 
  def _delete_rec(
- self, node: AVLNode | None, key: Any
- ) -> tuple[AVLNode | None, bool]:
+ self, node, key
+ ):
  if node is None:
  return None, False
  if key < node.key:
@@ -318,25 +316,25 @@ class AVLTree:
  return None, deleted
  return _rebalance(node), deleted
 
- def _min_node(self, node: AVLNode) -> AVLNode:
+ def _min_node(self, node):
  while node.left is not None:
  node = node.left
  return node
 
- def inorder(self) -> list[Any]:
- out: list[Any] = []
+ def inorder(self):
+ out= []
  self._inorder_rec(self.root, out)
  return out
 
- def _inorder_rec(self, node: AVLNode | None, out: list[Any]) -> None:
+ def _inorder_rec(self, node, out):
  if node is None:
  return
  self._inorder_rec(node.left, out)
  out.append(node.key)
  self._inorder_rec(node.right, out)
 
- def inorder_iter(self) -> Iterator[Any]:
- stack: list[AVLNode] = []
+ def inorder_iter(self):
+ stack= []
  cur = self.root
  while stack or cur is not None:
  while cur is not None:
@@ -431,16 +429,16 @@ for entry in tree.inorder_iter():
 
 ```python
 class SymbolTableIndex:
- def __init__(self) -> None:
+ def __init__(self):
  self._tree = AVLTree()
 
- def upsert(self, priority: int, record_id: str, label: str = "") -> None:
+ def upsert(self, priority, record_id, label= ""):
  self._tree.insert_strict(MapEntry(priority, record_id, label))
 
- def entries_for_id(self, record_id: str) -> list[MapEntry]:
+ def entries_for_id(self, record_id):
  return [k for k in self._tree.inorder() if k.record_id == record_id]
 
- def range_up_to(self, max_priority: int) -> list[MapEntry]:
+ def range_up_to(self, max_priority):
  return [k for k in self._tree.inorder() if k.priority <= max_priority]
 
 

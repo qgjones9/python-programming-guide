@@ -66,17 +66,17 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class Product:
-    product_id: str
-    name: str
-    category: str
-    price: float
+    product_id = ""
+    name = ""
+    category = ""
+    price = 0.0
 
 
 @dataclass(frozen=True)
 class Route:
-    path: str
-    handler: str
-    methods: tuple[str, ...]
+    path = ""
+    handler = ""
+    methods = ()
 ```
 
 Each leaf can store a `Product` payload, not just the string key. `Trie` is defined in [Reference implementation](#reference-implementation-trie-with-full-api) below; later sections use `Product` in operation examples.

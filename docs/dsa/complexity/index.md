@@ -64,7 +64,7 @@ Always ask **which case** a statement refers to. A structure’s “O(1) lookup�
 **Single loop over *n* items** — O(n):
 
 ```python
-def find_max(values: list[int]) -> int:
+def find_max(values):
     best = values[0]
     for x in values[1:]:
         if x > best:
@@ -75,7 +75,7 @@ def find_max(values: list[int]) -> int:
 **Nested loops, each up to *n*** — O(n²):
 
 ```python
-def has_duplicate_pair(values: list[int]) -> bool:
+def has_duplicate_pair(values):
     for i in range(len(values)):
         for j in range(i + 1, len(values)):
             if values[i] == values[j]:
@@ -86,8 +86,8 @@ def has_duplicate_pair(values: list[int]) -> bool:
 **Halving the search space** — O(log n) (e.g. binary search on a sorted list):
 
 ```python
-def binary_search(sorted_values: list[int], target: int) -> int | None:
-    lo, hi = 0, len(sorted_values) - 1
+def binary_search(sorted_values, target):
+    lo, hi = (0, len(sorted_values) - 1)
     while lo <= hi:
         mid = (lo + hi) // 2
         if sorted_values[mid] == target:

@@ -89,7 +89,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-def insertion_sort(nums: list[float]) -> None:
+def insertion_sort(nums):
  for i in range(1, len(nums)):
  key = nums[i]
  j = i - 1
@@ -101,15 +101,15 @@ def insertion_sort(nums: list[float]) -> None:
 
 @dataclass(frozen=True, slots=True)
 class Record:
- record_id: int
- timestamp: float
- score: float
- label: str
+ record_id = 0
+ timestamp = 0.0
+ score = 0.0
+ label = ""
 
 
 def insertion_sort_records(
- records: list[Record], *, key=lambda r: r.score
-) -> None:
+ records, *, key=lambda r: r.score
+):
  for i in range(1, len(records)):
  current = records[i]
  k = key(current)
@@ -152,8 +152,8 @@ Equal `record_id` **101** stayed in original relative order → **stable**.
 | Insertion sort | Best didactic match for "one record at a time"; same Θ(n²) class as bubble/selection but **fewer writes** on average and **O(n)** on sorted `record_id` streams | Pedagogy and tiny *n* |
 
 ```python
-def one_pass_fix(record_ids: list[int]) -> bool:
- return all(record_ids[i] <= record_ids[i + 1] for i in range(len(record_ids) - 1))
+def one_pass_fix(record_ids):
+    return all((record_ids[i] <= record_ids[i + 1] for i in range(len(record_ids) - 1)))
 ```
 
 ---
@@ -168,8 +168,7 @@ def one_pass_fix(record_ids: list[int]) -> bool:
 
 ```python
 import pandas as pd
-
-df = events.sort_values(["month", "score"], ascending=[True, False])
+df = events.sort_values(['month', 'score'], ascending=[True, False])
 ```
 
 ---

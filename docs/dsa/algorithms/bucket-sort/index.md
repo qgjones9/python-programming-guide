@@ -107,22 +107,21 @@ flowchart LR
 
 ```python
 from __future__ import annotations
-
 from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
 class EventRecord:
- entry_id: int
- batch_id: int
- offset_sec: float
- score: float
- summary: str
+    entry_id = 0
+    batch_id = 0
+    offset_sec = 0.0
+    score = 0.0
+    summary = ''
 
 @dataclass(frozen=True, slots=True)
 class TaskItem:
- name: str
- service_id: int
- bytes_sent: int
+    name = ''
+    service_id = 0
+    bytes_sent = 0
 ```
 
 ---
@@ -216,11 +215,9 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass
-from typing import Callable, TypeVar
 
-T = TypeVar("T")
 
-def bucket_index(value: float, lo: float, hi: float, m: int) -> int:
+def bucket_index(value, lo, hi, m):
  span = hi - lo
  if span == 0:
  return 0
@@ -232,63 +229,63 @@ def bucket_index(value: float, lo: float, hi: float, m: int) -> int:
  idx = 0
  return idx
 
-def bucket_sort_unit_interval(nums: list[float], m: int | None = None) -> list[float]:
+def bucket_sort_unit_interval(nums, m= None):
  if not nums:
  return []
  if m is None:
  m = max(len(nums), 1)
- buckets: list[list[float]] = [[] for _ in range(m)]
+ buckets= [[] for _ in range(m)]
  for x in nums:
  idx = min(int(x * m), m - 1) if x < 1.0 else m - 1
  if idx < 0:
  idx = 0
  buckets[idx].append(x)
- out: list[float] = []
+ out= []
  for b in buckets:
  b.sort()
  out.extend(b)
  return out
 
-def bucket_sort_range_inplace(nums: list[float], m: int) -> None:
+def bucket_sort_range_inplace(nums, m):
  if len(nums) <= 1:
  return
  lo, hi = min(nums), max(nums)
- buckets: list[list[float]] = [[] for _ in range(m)]
+ buckets= [[] for _ in range(m)]
  for x in nums:
  buckets[bucket_index(x, lo, hi, m)].append(x)
  nums[:] = [x for b in buckets for x in sorted(b)]
 
-def bucket_sort_stable(nums: list[float], m: int) -> list[float]:
+def bucket_sort_stable(nums, m):
  if not nums:
  return []
  lo, hi = min(nums), max(nums)
- buckets: list[deque[float]] = [deque() for _ in range(m)]
+ buckets= [deque() for _ in range(m)]
  for x in nums:
  buckets[bucket_index(x, lo, hi, m)].append(x)
- out: list[float] = []
+ out= []
  for b in buckets:
  sorted_chunk = sorted(b)
  out.extend(sorted_chunk)
  return out
 
-def bucket_sort_integers(nums: list[int], max_val: int, m: int) -> list[int]:
+def bucket_sort_integers(nums, max_val, m):
  if not nums:
  return []
- buckets: list[list[int]] = [[] for _ in range(m)]
+ buckets= [[] for _ in range(m)]
  for x in nums:
  idx = bucket_index(float(x), 0.0, float(max_val), m)
  buckets[idx].append(x)
  return [x for b in buckets for x in sorted(b)]
 
-def bucket_sort_by_key(items: list[T], m: int, key: Callable[[T], float]) -> list[T]:
+def bucket_sort_by_key(items, m, key):
  if not items:
  return []
  keys = [key(x) for x in items]
  lo, hi = min(keys), max(keys)
- buckets: list[list[T]] = [[] for _ in range(m)]
+ buckets= [[] for _ in range(m)]
  for item in items:
  buckets[bucket_index(key(item), lo, hi, m)].append(item)
- out: list[T] = []
+ out= []
  for b in buckets:
  b.sort(key=key)
  out.extend(b)
@@ -296,18 +293,18 @@ def bucket_sort_by_key(items: list[T], m: int, key: Callable[[T], float]) -> lis
 
 @dataclass(frozen=True, slots=True)
 class EventRecord:
- entry_id: int
- batch_id: int
- offset_sec: float
- score: float
- summary: str = ""
+ entry_id = 0
+ batch_id = 0
+ offset_sec = 0.0
+ score = 0.0
+ summary= ""
 
-def bucket_sort_events_by_offset(entries: list[EventRecord], m: int) -> list[EventRecord]:
+def bucket_sort_events_by_offset(entries, m):
  return bucket_sort_by_key(entries, m, key=lambda e: e.offset_sec)
 
-def bucket_sort_insertion_inner(nums: list[float], m: int) -> list[float]:
+def bucket_sort_insertion_inner(nums, m):
 
- def insertion_sort(arr: list[float]) -> None:
+ def insertion_sort(arr):
  for i in range(1, len(arr)):
  v = arr[i]
  j = i - 1
@@ -319,10 +316,10 @@ def bucket_sort_insertion_inner(nums: list[float], m: int) -> list[float]:
  if not nums:
  return []
  lo, hi = min(nums), max(nums)
- buckets: list[list[float]] = [[] for _ in range(m)]
+ buckets= [[] for _ in range(m)]
  for x in nums:
  buckets[bucket_index(x, lo, hi, m)].append(x)
- out: list[float] = []
+ out= []
  for b in buckets:
  insertion_sort(b)
  out.extend(b)
@@ -354,10 +351,10 @@ flowchart TB
 
 ```python
 m = 4
-buckets: list[list[float]] = [[] for _ in range(m)]
+buckets = [[] for _ in range(m)]
 for x in [0.12, 0.91, 0.15, 0.88]:
- idx = min(int(x * m), m - 1)
- buckets[idx].append(x)
+    idx = min(int(x * m), m - 1)
+    buckets[idx].append(x)
 ```
 
 | | |
@@ -380,7 +377,7 @@ sequenceDiagram
 
 ```python
 for b in buckets:
- b.sort()
+    b.sort()
 ```
 
 | | |
@@ -395,9 +392,9 @@ for b in buckets:
 ### Gather — concatenate in bucket order
 
 ```python
-out: list[float] = []
+out = []
 for b in buckets:
- out.extend(b)
+    out.extend(b)
 ```
 
 | | |
@@ -448,11 +445,7 @@ Use when equal timestamps must keep **entry_id** submission order (sort objects 
 ### `bucket_sort_events_by_offset(entries, m)`
 
 ```python
-sample_batch = [
- EventRecord(1, 1, 120.0, 0.1, "ok"),
- EventRecord(2, 1, 3600.0, 0.5, "retry"),
- EventRecord(3, 1, 900.0, -0.2, "fail"),
-]
+sample_batch = [EventRecord(1, 1, 120.0, 0.1, 'ok'), EventRecord(2, 1, 3600.0, 0.5, 'retry'), EventRecord(3, 1, 900.0, -0.2, 'fail')]
 ordered = bucket_sort_events_by_offset(sample_batch, m=4)
 ```
 
@@ -523,7 +516,7 @@ bucket_sort_range_inplace(clustered, m=8)
 ### Sort one batch by timestamp offset
 
 ```python
-def order_batch_by_offset(entries: list[EventRecord]) -> list[EventRecord]:
+def order_batch_by_offset(entries):
  if len(entries) <= 1:
  return entries[:]
  m = max(len(entries), 4)
@@ -542,9 +535,9 @@ For **small batches** (n < 31), **`sorted(entries, key=...)`** is simpler—buck
 ### Histogram-equalized score bins (analytics prep)
 
 ```python
-def score_bins(scores: list[float], m: int = 10) -> list[list[float]]:
+def score_bins(scores, m= 10):
  lo, hi = min(scores), max(scores)
- buckets: list[list[float]] = [[] for _ in range(m)]
+ buckets= [[] for _ in range(m)]
  for x in scores:
  buckets[bucket_index(x, lo, hi, m)].append(x)
  return buckets
@@ -576,12 +569,8 @@ sorted_ids = bucket_sort_integers(service_ids, max_val=99, m=10)
 ### Stable sort with entry_id tie-break
 
 ```python
-def stable_entry_sort(entries: list[EventRecord], m: int) -> list[EventRecord]:
- return bucket_sort_by_key(
- entries,
- m,
- key=lambda e: (e.offset_sec, e.entry_id),
- )
+def stable_entry_sort(entries, m):
+    return bucket_sort_by_key(entries, m, key=lambda e: (e.offset_sec, e.entry_id))
 ```
 
 Use tuple keys so inner `sort` orders ties by `entry_id`.
@@ -619,14 +608,14 @@ flowchart TD
 ## Hybrid bucket + quicksort (worst-case guard)
 
 ```python
-def hybrid_bucket_sort(nums: list[float], m: int, threshold: int = 32) -> list[float]:
+def hybrid_bucket_sort(nums, m, threshold= 32):
  if not nums:
  return []
  lo, hi = min(nums), max(nums)
- buckets: list[list[float]] = [[] for _ in range(m)]
+ buckets= [[] for _ in range(m)]
  for x in nums:
  buckets[bucket_index(x, lo, hi, m)].append(x)
- out: list[float] = []
+ out= []
  for b in buckets:
  if len(b) > threshold:
  from quicksort import quicksort
@@ -656,9 +645,8 @@ def hybrid_bucket_sort(nums: list[float], m: int, threshold: int = 32) -> list[f
 
 ```python
 import pandas as pd
-
-df.sort_values(["service_id", "entry_id"])
-df["score_bin"] = pd.cut(df["score"], bins=10)
+df.sort_values(['service_id', 'entry_id'])
+df['score_bin'] = pd.cut(df['score'], bins=10)
 ```
 
 **`pd.qcut`** builds **equal-frequency** buckets—analytics twin to choosing m for uniform **rank** keys.
@@ -738,16 +726,12 @@ flowchart TD
 
 ```python
 sorted_norm = bucket_sort_unit_interval(normalized, m=len(normalized))
-
 times = [120.5, 3600.0, 900.2]
 bucket_sort_range_inplace(times, m=8)
-
 ordered = bucket_sort_events_by_offset(sample_batch, m=8)
-
 sorted_stable = bucket_sort_stable(values, m=16)
-
-df.sort_values("offset_sec")
-pd.cut(df["score"], bins=10)
+df.sort_values('offset_sec')
+pd.cut(df['score'], bins=10)
 ```
 
 **Bucket sort:** **scatter** → **sort buckets** → **gather**—**Θ(n) average** when keys spread evenly; watch **worst-case pile-up** on clustered same-timestamp entries. Pair with [Radix sort](../radix-sort/index.md) for digit models; use **pandas** for event tables.

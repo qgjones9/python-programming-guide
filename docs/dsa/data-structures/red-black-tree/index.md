@@ -89,11 +89,9 @@ sequenceDiagram
 ## Node definition
 
 ```python
-from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Iterator
 
 
 class Color(Enum):
@@ -103,17 +101,17 @@ class Color(Enum):
 
 @dataclass(frozen=True, order=True)
 class IndexKey:
- priority: int
- record_id: str
+ priority = 0
+ record_id = ""
 
 
 @dataclass
 class RBNode:
- key: Any
- color: Color = Color.RED
- left: RBNode | None = None
- right: RBNode | None = None
- parent: RBNode | None = None
+ key = None
+ color= Color.RED
+ left= None
+ right= None
+ parent= None
 ```
 
 | | |
@@ -126,7 +124,7 @@ class RBNode:
 ## Rotations (same as AVL)
 
 ```python
-def _left_rotate(tree: "RedBlackTree", x: RBNode) -> None:
+def _left_rotate(tree, x):
  y = x.right
  assert y is not None
  x.right = y.left
@@ -143,7 +141,7 @@ def _left_rotate(tree: "RedBlackTree", x: RBNode) -> None:
  x.parent = y
 
 
-def _right_rotate(tree: "RedBlackTree", y: RBNode) -> None:
+def _right_rotate(tree, y):
  x = y.left
  assert x is not None
  y.left = x.right
@@ -216,14 +214,14 @@ Teaching implementation with **insert** and **search** (delete is longer but fol
 
 ```python
 class RedBlackTree:
- def __init__(self) -> None:
- self.root: RBNode | None = None
+ def __init__(self):
+ self.root= None
  self._size = 0
 
- def __len__(self) -> int:
+ def __len__(self):
  return self._size
 
- def search(self, key: Any) -> RBNode | None:
+ def search(self, key):
  cur = self.root
  while cur is not None:
  if key == cur.key:
@@ -231,9 +229,9 @@ class RedBlackTree:
  cur = cur.left if key < cur.key else cur.right
  return None
 
- def insert(self, key: Any) -> None:
+ def insert(self, key):
  node = RBNode(key, color=Color.RED)
- parent: RBNode | None = None
+ parent= None
  cur = self.root
  while cur is not None:
  parent = cur
@@ -253,7 +251,7 @@ class RedBlackTree:
  self._insert_fixup(node)
  self._size += 1
 
- def _insert_fixup(self, node: RBNode) -> None:
+ def _insert_fixup(self, node):
  while node.parent is not None and node.parent.color == Color.RED:
  assert node.parent.parent is not None
  if node.parent is node.parent.parent.left:
@@ -287,20 +285,20 @@ class RedBlackTree:
  if self.root is not None:
  self.root.color = Color.BLACK
 
- def inorder(self) -> list[Any]:
- out: list[Any] = []
+ def inorder(self):
+ out= []
  self._inorder(self.root, out)
  return out
 
- def _inorder(self, node: RBNode | None, out: list[Any]) -> None:
+ def _inorder(self, node, out):
  if node is None:
  return
  self._inorder(node.left, out)
  out.append(node.key)
  self._inorder(node.right, out)
 
- def inorder_iter(self) -> Iterator[Any]:
- stack: list[RBNode] = []
+ def inorder_iter(self):
+ stack= []
  cur = self.root
  while stack or cur is not None:
  while cur is not None:
@@ -400,7 +398,7 @@ ordered_map.put(new IndexKey(1, "rec01"), record);
 Python equivalent patterns:
 
 ```python
-records_by_id: dict[str, dict] = {"rec01": {"priority": 1, "symbol": "alpha"}}
+records_by_id= {"rec01": {"priority": 1, "symbol": "alpha"}}
 
 records = sorted(records_by_id.values(), key=lambda r: (r["priority"], r.get("id", "")))
 

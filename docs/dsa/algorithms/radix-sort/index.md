@@ -74,7 +74,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-def counting_sort_by_digit(nums: list[int], exp: int) -> None:
+def counting_sort_by_digit(nums, exp):
  n = len(nums)
  output = [0] * n
  count = [0] * 10
@@ -89,7 +89,7 @@ def counting_sort_by_digit(nums: list[int], exp: int) -> None:
  nums[:] = output
 
 
-def radix_sort_lsd(nums: list[int]) -> None:
+def radix_sort_lsd(nums):
  if not nums:
  return
  max_val = max(nums)
@@ -101,14 +101,14 @@ def radix_sort_lsd(nums: list[int]) -> None:
 
 @dataclass(frozen=True, slots=True)
 class Product:
- name: str
- product_code: int
+ name = ""
+ product_code = 0
 
 
-def radix_sort_product_code(products: list[Product]) -> None:
+def radix_sort_product_code(products):
  for exp in (1, 10):
  n = len(products)
- out: list[Product | None] = [None] * n
+ out= [None] * n
  count = [0] * 10
  for p in products:
  count[(p.product_code // exp) % 10] += 1
@@ -148,7 +148,7 @@ Equal codes **12** stay in input order → **stable**.
 | Strings (product names) | MSD radix on chars | `sort` |
 
 ```python
-df.sort_values("product_code")
+df.sort_values('product_code')
 ```
 
 ---
@@ -162,7 +162,7 @@ df.sort_values("product_code")
 | Stable digit passes needed | Negative floats without offset handling |
 
 ```python
-score_micro = (df["score"] * 1_000_000).astype("int64")
+score_micro = (df['score'] * 1000000).astype('int64')
 ```
 
 ---
@@ -203,7 +203,7 @@ score_micro = (df["score"] * 1_000_000).astype("int64")
 ```python
 radix_sort_lsd(product_code_ints)
 radix_sort_product_code(catalog)
-df.sort_values("product_code")
+df.sort_values('product_code')
 ```
 
 **Radix sort:** stable, non-comparison, **Θ(d·n)** for fixed digits—ideal for **bounded integers**, not raw **float leaderboards** without scaling.

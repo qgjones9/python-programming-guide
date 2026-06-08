@@ -92,7 +92,7 @@ import random
 from dataclasses import dataclass
 
 
-def quicksort(nums: list[float], lo: int = 0, hi: int | None = None) -> None:
+def quicksort(nums, lo= 0, hi= None):
  if hi is None:
  hi = len(nums) - 1
  if lo >= hi:
@@ -102,7 +102,7 @@ def quicksort(nums: list[float], lo: int = 0, hi: int | None = None) -> None:
  quicksort(nums, p + 1, hi)
 
 
-def _partition(nums: list[float], lo: int, hi: int) -> int:
+def _partition(nums, lo, hi):
  pivot = nums[hi]
  i = lo - 1
  for j in range(lo, hi):
@@ -113,25 +113,25 @@ def _partition(nums: list[float], lo: int, hi: int) -> int:
  return i + 1
 
 
-def quicksort_randomized(nums: list[float]) -> None:
+def quicksort_randomized(nums):
  random.shuffle(nums)
  quicksort(nums)
 
 
 @dataclass(frozen=True, slots=True)
 class TaskItem:
- task_id: int
- priority: int
- label: str
+ task_id = 0
+ priority = 0
+ label = ""
 
 
 def quicksort_items(
- items: list[TaskItem],
- lo: int = 0,
- hi: int | None = None,
+ items,
+ lo= 0,
+ hi= None,
  *,
  key=lambda t: t.priority,
-) -> None:
+):
  if hi is None:
  hi = len(items) - 1
  if lo >= hi:

@@ -84,7 +84,7 @@ Throughout this page, **n** means `len(xs)` unless stated otherwise. **k** means
 The most common idiom for “I will fill this later.”
 
 ```python
-xs: list[int] = []
+xs= []
 assert xs == []
 ```
 
@@ -682,7 +682,7 @@ for i, value in enumerate(["a", "b"]):
 **Push** with `append`; **pop** from the end with `pop()`.
 
 ```python
-stack: list[str] = []
+stack= []
 stack.append("first")
 stack.append("second")
 top = stack.pop()
@@ -714,7 +714,7 @@ sequenceDiagram
 **Enqueue** at end with `append` is fine. **Dequeue** from front with `pop(0)` is **O(n)** because every remaining element shifts down.
 
 ```python
-q: list[int] = []
+q= []
 q.append(1)
 q.append(2)
 front = q.pop(0)
@@ -798,7 +798,7 @@ nums[:] = [x for x in nums if x % 2 == 0]
 ### Deduplicate while preserving order
 
 ```python
-def unique_keep_order(items: list) -> list:
+def unique_keep_order(items):
  seen = set()
  out = []
  for x in items:
@@ -859,7 +859,7 @@ Official reference: [Built-in Types — list](https://docs.python.org/3/library/
 ## Quick reference card
 
 ```python
-xs: list = []
+xs= []
 xs = list(iterable)
 xs = [f(x) for x in iterable if cond]
 

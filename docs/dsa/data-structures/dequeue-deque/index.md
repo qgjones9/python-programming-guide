@@ -57,18 +57,16 @@ Throughout this page, **n** is `len(d)`.
 from collections import deque
 from dataclasses import dataclass
 
-
 @dataclass(frozen=True)
 class DataRecord:
- record_id: int
- value: float
- label: str
-
+ record_id = 0
+ value = 0.0
+ label = ""
 
 @dataclass(frozen=True)
 class NamedItem:
- item_id: str
- name: str
+ item_id = ""
+ name = ""
 ```
 
 ---
@@ -80,7 +78,7 @@ class NamedItem:
 ```python
 from collections import deque
 
-d: deque[DataRecord] = deque()
+d= deque()
 ```
 
 | | |
@@ -105,7 +103,7 @@ d = deque([
 ### 3. Bounded `maxlen` — ring buffer
 
 ```python
-window_last_5: deque[float] = deque(maxlen=5)
+window_last_5= deque(maxlen=5)
 for value in [0.1, -0.3, 0.9, 0.2, 1.1, 0.0]:
  window_last_5.append(value)
 ```
@@ -158,7 +156,7 @@ Official docs: [collections.deque](https://docs.python.org/3/library/collections
 | `extendleft(iterable)` | left | O(k) | Note: reverses order of iterable |
 
 ```python
-jobs: deque[str] = deque()
+jobs= deque()
 jobs.append("export_node01_metrics")
 jobs.appendleft("backfill_4021_now")
 jobs.extend(["export_node02", "export_node03"])
@@ -216,7 +214,7 @@ Use `d[0]` and `d[-1]` for peek front/rear in O(1) in practice for ends.
 ### Rotation
 
 ```python
-items: deque[str] = deque(["ITEM01", "ITEM02", "ITEM03", "ITEM04"])
+items= deque(["ITEM01", "ITEM02", "ITEM03", "ITEM04"])
 items.rotate(1)
 items.rotate(-1)
 ```
@@ -241,7 +239,7 @@ sequenceDiagram
 When full, `append` drops left; `appendleft` drops right.
 
 ```python
-window: deque[float] = deque(maxlen=3)
+window= deque(maxlen=3)
 window.append(1.0)
 window.append(2.0)
 window.append(3.0)
@@ -309,58 +307,55 @@ Equality must match; frozen `DataRecord` dataclasses work if same fields.
 Wrapper documenting both-end semantics for learners.
 
 ```python
-from __future__ import annotations
 
 from collections import deque
-from typing import Any, Iterable, Iterator
-
 
 class DequeADT:
- def __init__(self, items: Iterable[Any] | None = None, maxlen: int | None = None) -> None:
- self._d: deque[Any] = deque(items, maxlen=maxlen)
+ def __init__(self, items= None, maxlen= None):
+ self._d= deque(items, maxlen=maxlen)
 
- def __len__(self) -> int:
+ def __len__(self):
  return len(self._d)
 
- def is_empty(self) -> bool:
+ def is_empty(self):
  return len(self._d) == 0
 
- def push_back(self, item: Any) -> None:
+ def push_back(self, item):
  self._d.append(item)
 
- def push_front(self, item: Any) -> None:
+ def push_front(self, item):
  self._d.appendleft(item)
 
- def pop_back(self) -> Any:
+ def pop_back(self):
  if not self._d:
  raise IndexError("pop from empty deque")
  return self._d.pop()
 
- def pop_front(self) -> Any:
+ def pop_front(self):
  if not self._d:
  raise IndexError("popleft from empty deque")
  return self._d.popleft()
 
- def peek_back(self) -> Any:
+ def peek_back(self):
  if not self._d:
  raise IndexError("peek back empty")
  return self._d[-1]
 
- def peek_front(self) -> Any:
+ def peek_front(self):
  if not self._d:
  raise IndexError("peek front empty")
  return self._d[0]
 
- def rotate(self, n: int = 1) -> None:
+ def rotate(self, n= 1):
  self._d.rotate(n)
 
- def clear(self) -> None:
+ def clear(self):
  self._d.clear()
 
- def __iter__(self) -> Iterator[Any]:
+ def __iter__(self):
  yield from self._d
 
- def to_list(self) -> list[Any]:
+ def to_list(self):
  return list(self._d)
 ```
 
@@ -393,9 +388,9 @@ flowchart TB
 ### Rolling score window (maxlen)
 
 ```python
-def rolling_mean(scores: Iterable[float], k: int) -> list[float]:
- window: deque[float] = deque(maxlen=k)
- means: list[float] = []
+def rolling_mean(scores, k):
+ window= deque(maxlen=k)
+ means= []
  for x in scores:
  window.append(x)
  means.append(sum(window) / len(window))
@@ -410,9 +405,9 @@ def rolling_mean(scores: Iterable[float], k: int) -> list[float]:
 ### BFS with deque (grid or graph)
 
 ```python
-def bfs_zero(grid: list[list[int]], start: tuple[int, int]) -> int:
+def bfs_zero(grid, start):
  rows, cols = len(grid), len(grid[0])
- q: deque[tuple[int, int]] = deque([start])
+ q= deque([start])
  grid[start[0]][start[1]] = 1
  dist = 0
  while q:
@@ -437,7 +432,7 @@ def bfs_zero(grid: list[list[int]], start: tuple[int, int]) -> int:
 ### Palindrome token sequence (both ends)
 
 ```python
-def is_palindrome_tokens(tokens: deque[str]) -> bool:
+def is_palindrome_tokens(tokens):
  while len(tokens) > 1:
  if tokens.popleft() != tokens.pop():
  return False
@@ -455,9 +450,9 @@ assert is_palindrome_tokens(d)
 ### Monotonic deque — sliding window maximum score
 
 ```python
-def sliding_max(scores: list[float], k: int) -> list[float]:
- dq: deque[int] = deque()
- out: list[float] = []
+def sliding_max(scores, k):
+ dq= deque()
+ out= []
  for i, x in enumerate(scores):
  while dq and scores[dq[-1]] <= x:
  dq.pop()
@@ -533,12 +528,12 @@ Model the last **20** records of a stream with automatic eviction:
 ```python
 from collections import deque
 
-replay_buffer: deque[DataRecord] = deque(maxlen=20)
+replay_buffer= deque(maxlen=20)
 
-def on_new_record(record: DataRecord) -> None:
+def on_new_record(record):
  replay_buffer.append(record)
 
-def last_k_values(k: int) -> list[float]:
+def last_k_values(k):
  return [r.value for r in list(replay_buffer)[-k:]]
 ```
 
@@ -578,14 +573,14 @@ sequenceDiagram
 Label window plus value window:
 
 ```python
-tags: deque[str] = deque(maxlen=50)
-values: deque[float] = deque(maxlen=50)
+tags= deque(maxlen=50)
+values= deque(maxlen=50)
 
-def ingest(record: DataRecord) -> None:
+def ingest(record):
  tags.append("active" if record.value > 0.5 else "idle")
  values.append(record.value)
 
-def active_rate() -> float:
+def active_rate():
  if not tags:
  return 0.0
  return sum(1 for t in tags if t == "active") / len(tags)
@@ -603,7 +598,7 @@ Maintain running counts if you need O(1) rate after each ingest.
 ## `extend` vs loop `append`
 
 ```python
-d: deque[DataRecord] = deque()
+d= deque()
 d.extend(records_from_batch)
 for r in records_from_batch:
  d.append(r)
@@ -636,14 +631,13 @@ Cap pending jobs so a slow renderer does not exhaust RAM:
 from dataclasses import dataclass
 from collections import deque
 
-
 @dataclass(frozen=True)
 class RenderJob:
- target_id: str
- batch: int
- chart: str
+ target_id = ""
+ batch = 0
+ chart = ""
 
-pending: deque[RenderJob] = deque(maxlen=100)
+pending= deque(maxlen=100)
 pending.append(RenderJob("node05", 2024, "latency_chart"))
 ```
 
@@ -666,11 +660,11 @@ pending.append(RenderJob("node05", 2024, "latency_chart"))
 | Slice `records[10:20]` | Yes | No slice on deque |
 
 ```python
-def drain_list_bad(q: list[DataRecord]) -> None:
+def drain_list_bad(q):
  while q:
  process(q.pop(0))
 
-def drain_deque_good(q: deque[DataRecord]) -> None:
+def drain_deque_good(q):
  while q:
  process(q.popleft())
 ```
@@ -680,7 +674,7 @@ def drain_deque_good(q: deque[DataRecord]) -> None:
 ## `rotate` and carousel rotation (detailed)
 
 ```python
-item_rotation: deque[str] = deque(
+item_rotation= deque(
  ["ITEM01", "ITEM02", "ITEM03", "ITEM04"]
 )
 item_rotation.rotate(1)
@@ -710,11 +704,11 @@ flowchart LR
 Document your convention in module docstring:
 
 ```python
-history: deque[LabelEdit] = deque()
+history= deque()
 history.append(edit)
 history.pop()
 
-fifo: deque[DataRecord] = deque()
+fifo= deque()
 fifo.append(record)
 fifo.popleft()
 ```
@@ -770,18 +764,18 @@ Python’s deque is documented in the standard library: [collections.deque](http
 ```python
 from collections import deque
 
-q: deque[DataRecord] = deque()
+q= deque()
 q.append(record)
 p = q.popleft()
 
-w: deque[float] = deque(maxlen=10)
+w= deque(maxlen=10)
 w.append(record.value)
 
 d = deque(["ITEM01", "ITEM02"])
 d.appendleft("ITEM03")
 d.rotate(1)
 
-st: deque[DataRecord] = deque()
+st= deque()
 st.append(record)
 st.pop()
 ```

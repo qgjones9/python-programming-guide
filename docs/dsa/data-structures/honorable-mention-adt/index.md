@@ -41,17 +41,17 @@ Vertices = hosts or routers; union nodes when they share a network link (or same
 
 ```python
 class UnionFind:
- def __init__(self, items: list[str]) -> None:
+ def __init__(self, items):
  self.parent = {x: x for x in items}
  self.rank = {x: 0 for x in items}
 
- def find(self, x: str) -> str:
+ def find(self, x):
  while self.parent[x] != x:
  self.parent[x] = self.parent[self.parent[x]]
  x = self.parent[x]
  return x
 
- def union(self, a: str, b: str) -> bool:
+ def union(self, a, b):
  ra, rb = self.find(a), self.find(b)
  if ra == rb:
  return False
@@ -62,7 +62,7 @@ class UnionFind:
  self.rank[ra] += 1
  return True
 
- def connected(self, a: str, b: str) -> bool:
+ def connected(self, a, b):
  return self.find(a) == self.find(b)
 
 
@@ -126,23 +126,23 @@ import hashlib
 
 
 class BloomFilter:
- def __init__(self, size: int = 1 << 20, num_hashes: int = 7) -> None:
+ def __init__(self, size= 1 << 20, num_hashes= 7):
  self.size = size
  self.num_hashes = num_hashes
  self.bits = bytearray((size + 7) // 8)
 
- def _hashes(self, key: str) -> list[int]:
+ def _hashes(self, key):
  digests = []
  for i in range(self.num_hashes):
  h = hashlib.md5(f"{key}:{i}".encode()).hexdigest()
  digests.append(int(h, 16) % self.size)
  return digests
 
- def add(self, key: str) -> None:
+ def add(self, key):
  for idx in self._hashes(key):
  self.bits[idx // 8] |= 1 << (idx % 8)
 
- def might_contain(self, key: str) -> bool:
+ def might_contain(self, key):
  return all(
  self.bits[idx // 8] & (1 << (idx % 8))
  for idx in self._hashes(key)
@@ -221,25 +221,25 @@ from dataclasses import dataclass, field
 
 @dataclass
 class SkipNode:
- key: int
- value: str
- forward: list[SkipNode | None] = field(default_factory=list)
+ key = 0
+ value = ""
+ forward= field(default_factory=list)
 
 
 class SkipList:
- def __init__(self, p: float = 0.5, max_level: int = 16) -> None:
+ def __init__(self, p= 0.5, max_level= 16):
  self.p = p
  self.max_level = max_level
  self.head = SkipNode(key=-1, value="", forward=[None] * max_level)
  self.level = 0
 
- def _random_level(self) -> int:
+ def _random_level(self):
  lvl = 0
  while random.random() < self.p and lvl < self.max_level - 1:
  lvl += 1
  return lvl
 
- def search(self, key: int) -> str | None:
+ def search(self, key):
  cur = self.head
  for i in range(self.level, -1, -1):
  while cur.forward[i] and cur.forward[i].key < key:

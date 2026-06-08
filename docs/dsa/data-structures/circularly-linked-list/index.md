@@ -58,13 +58,12 @@ Throughout this page, **n** is the number of nodes in the ring (e.g. items in on
 ```python
 from dataclasses import dataclass
 
-
 @dataclass
 class PlaylistTrack:
-    track_id: int
-    disc: int
-    duration_ms: float
-    title: str
+    track_id = 0
+    disc = 0
+    duration_ms = 0.0
+    title = ''
 ```
 
 ---
@@ -108,15 +107,12 @@ sequenceDiagram
 
 ```python
 from __future__ import annotations
-
 from dataclasses import dataclass
-from typing import Any, Iterable, Iterator
-
 
 @dataclass
 class CNode:
-    data: Any
-    next: CNode | None = None
+    data = None
+    next = None
 ```
 
 | | |
@@ -129,9 +125,9 @@ class CNode:
 ```python
 @dataclass
 class DCNode:
-    data: Any
-    prev: DCNode | None = None
-    next: DCNode | None = None
+    data = None
+    prev = None
+    next = None
 ```
 
 | | |
@@ -159,8 +155,8 @@ flowchart TB
 ### 1. Empty list
 
 ```python
-head: CNode | None = None
-tail: CNode | None = None
+head = None
+tail = None
 ```
 
 | | |
@@ -172,11 +168,11 @@ tail: CNode | None = None
 
 ```python
 class SinglyCircularLinkedList:
-    def __init__(self) -> None:
-        self.head: CNode | None = None
-        self.tail: CNode | None = None
-        self._size = 0
 
+    def __init__(self):
+        self.head = None
+        self.tail = None
+        self._size = 0
 ring = SinglyCircularLinkedList()
 assert ring.is_empty()
 ```
@@ -189,7 +185,7 @@ assert ring.is_empty()
 ### 3. Single-node ring (degenerate circle)
 
 ```python
-node = CNode(PlaylistTrack(101, 2, 0.4, "Home"))
+node = CNode(PlaylistTrack(101, 2, 0.4, 'Home'))
 node.next = node
 head = tail = node
 ```
@@ -204,18 +200,12 @@ head = tail = node
 Preserves input order; after the loop, `tail.next = head`.
 
 ```python
-def ring_from_iterable(items: Iterable[Any]) -> SinglyCircularLinkedList:
+def ring_from_iterable(items):
     ring = SinglyCircularLinkedList()
     for item in items:
         ring.append(item)
     return ring
-
-sample_tracks = [
-    PlaylistTrack(101, 2, 0.4, "Home"),
-    PlaylistTrack(102, 2, -1.2, "Docs"),
-    PlaylistTrack(103, 2, 0.1, "Settings"),
-    PlaylistTrack(104, 2, 0.2, "About"),
-]
+sample_tracks = [PlaylistTrack(101, 2, 0.4, 'Home'), PlaylistTrack(102, 2, -1.2, 'Docs'), PlaylistTrack(103, 2, 0.1, 'Settings'), PlaylistTrack(104, 2, 0.2, 'About')]
 rotation = ring_from_iterable(sample_tracks)
 ```
 
@@ -231,7 +221,7 @@ nodes = [CNode(r) for r in sample_tracks]
 for i in range(len(nodes) - 1):
     nodes[i].next = nodes[i + 1]
 nodes[-1].next = nodes[0]
-head, tail = nodes[0], nodes[-1]
+head, tail = (nodes[0], nodes[-1])
 ```
 
 | | |
@@ -245,10 +235,9 @@ Not a linked list, but the practical stdlib tool for fixed windows:
 
 ```python
 from collections import deque
-
-recent_plays: deque[str] = deque(maxlen=10)
-recent_plays.append("Home")
-recent_plays.append("Docs")
+recent_plays = deque(maxlen=10)
+recent_plays.append('Home')
+recent_plays.append('Docs')
 ```
 
 | | |
@@ -259,7 +248,7 @@ recent_plays.append("Docs")
 ### 7. Python `list` + modulo index (static rotation table)
 
 ```python
-tracks = ["Home", "Docs", "Settings", "About"]
+tracks = ['Home', 'Docs', 'Settings', 'About']
 i = 0
 current = tracks[i % len(tracks)]
 i += 1
@@ -288,24 +277,25 @@ Complete class with head, tail, cached size, and safe iteration.
 
 ```python
 class SinglyCircularLinkedList:
-    def __init__(self, items: Iterable[Any] | None = None) -> None:
-        self.head: CNode | None = None
-        self.tail: CNode | None = None
+
+    def __init__(self, items=None):
+        self.head = None
+        self.tail = None
         self._size = 0
         if items is not None:
             self.extend(items)
 
-    def _close_ring(self) -> None:
+    def _close_ring(self):
         if self.tail is not None and self.head is not None:
             self.tail.next = self.head
 
-    def is_empty(self) -> bool:
+    def is_empty(self):
         return self._size == 0
 
-    def __len__(self) -> int:
+    def __len__(self):
         return self._size
 
-    def append(self, data: Any) -> None:
+    def append(self, data):
         node = CNode(data)
         if self.head is None:
             self.head = self.tail = node
@@ -317,7 +307,7 @@ class SinglyCircularLinkedList:
             self.tail = node
         self._size += 1
 
-    def prepend(self, data: Any) -> None:
+    def prepend(self, data):
         node = CNode(data)
         if self.head is None:
             self.head = self.tail = node
@@ -329,19 +319,19 @@ class SinglyCircularLinkedList:
             self.head = node
         self._size += 1
 
-    def insert_after(self, pivot_data: Any, data: Any) -> None:
+    def insert_after(self, pivot_data, data):
         pivot = self._find_node(pivot_data)
         if pivot is None:
-            raise ValueError(f"{pivot_data!r} not in ring")
+            raise ValueError(f'{pivot_data!r} not in ring')
         node = CNode(data, next=pivot.next)
         pivot.next = node
         if pivot is self.tail:
             self.tail = node
         self._size += 1
 
-    def insert_at(self, index: int, data: Any) -> None:
+    def insert_at(self, index, data):
         if index < 0 or index > self._size:
-            raise IndexError("index out of range")
+            raise IndexError('index out of range')
         if index == 0:
             self.prepend(data)
             return
@@ -352,7 +342,7 @@ class SinglyCircularLinkedList:
             self.tail = node
         self._size += 1
 
-    def remove_first(self, data: Any) -> bool:
+    def remove_first(self, data):
         if self.head is None:
             return False
         if self._size == 1 and self.head.data == data:
@@ -377,9 +367,9 @@ class SinglyCircularLinkedList:
             cur = nxt
         return False
 
-    def remove_at(self, index: int) -> Any:
+    def remove_at(self, index):
         if index < 0 or index >= self._size:
-            raise IndexError("index out of range")
+            raise IndexError('index out of range')
         if self._size == 1:
             data = self.head.data
             self.clear()
@@ -396,9 +386,9 @@ class SinglyCircularLinkedList:
         self._size -= 1
         return data
 
-    def pop_head(self) -> Any:
+    def pop_head(self):
         if self.head is None:
-            raise IndexError("pop from empty ring")
+            raise IndexError('pop from empty ring')
         data = self.head.data
         if self._size == 1:
             self.clear()
@@ -409,26 +399,26 @@ class SinglyCircularLinkedList:
         self._size -= 1
         return data
 
-    def get(self, index: int) -> Any:
+    def get(self, index):
         return self._node_at(index).data
 
-    def set(self, index: int, data: Any) -> None:
+    def set(self, index, data):
         self._node_at(index).data = data
 
-    def index_of(self, data: Any) -> int:
+    def index_of(self, data):
         for i, item in enumerate(self):
             if item == data:
                 return i
-        raise ValueError(f"{data!r} not in ring")
+        raise ValueError(f'{data!r} not in ring')
 
-    def contains(self, data: Any) -> bool:
+    def contains(self, data):
         return self._find_node(data) is not None
 
-    def clear(self) -> None:
+    def clear(self):
         self.head = self.tail = None
         self._size = 0
 
-    def rotate_forward(self, steps: int = 1) -> None:
+    def rotate_forward(self, steps=1):
         if self.head is None or steps == 0:
             return
         steps %= self._size
@@ -437,19 +427,19 @@ class SinglyCircularLinkedList:
             self.head = self.head.next
             self.tail = self.tail.next if self.tail else None
 
-    def rotate_backward(self, steps: int = 1) -> None:
+    def rotate_backward(self, steps=1):
         if self.head is None:
             return
-        self.rotate_forward(self._size - (steps % self._size))
+        self.rotate_forward(self._size - steps % self._size)
 
-    def to_list(self) -> list[Any]:
+    def to_list(self):
         return list(self)
 
-    def extend(self, items: Iterable[Any]) -> None:
+    def extend(self, items):
         for item in items:
             self.append(item)
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self):
         if self.head is None:
             return
         cur = self.head
@@ -458,9 +448,9 @@ class SinglyCircularLinkedList:
             assert cur.next is not None
             cur = cur.next
 
-    def _node_at(self, index: int) -> CNode:
+    def _node_at(self, index):
         if index < 0 or index >= self._size:
-            raise IndexError("index out of range")
+            raise IndexError('index out of range')
         cur = self.head
         for _ in range(index):
             assert cur is not None and cur.next is not None
@@ -468,7 +458,7 @@ class SinglyCircularLinkedList:
         assert cur is not None
         return cur
 
-    def _find_node(self, data: Any) -> CNode | None:
+    def _find_node(self, data):
         cur = self.head
         for _ in range(self._size):
             if cur is None:
@@ -509,7 +499,7 @@ flowchart TB
 ```python
 ring = SinglyCircularLinkedList()
 assert ring.is_empty()
-ring.append(PlaylistTrack(101, 2, 0.4, "Home"))
+ring.append(PlaylistTrack(101, 2, 0.4, 'Home'))
 assert len(ring) == 1
 ```
 
@@ -524,8 +514,8 @@ assert len(ring) == 1
 
 ```python
 ring = SinglyCircularLinkedList()
-ring.append(PlaylistTrack(101, 2, 0.4, "Home"))
-ring.append(PlaylistTrack(102, 2, -1.2, "Docs"))
+ring.append(PlaylistTrack(101, 2, 0.4, 'Home'))
+ring.append(PlaylistTrack(102, 2, -1.2, 'Docs'))
 assert len(ring) == 2
 assert ring.tail.next is ring.head
 ```
@@ -552,8 +542,8 @@ sequenceDiagram
 ### `prepend(data)` — insert before head
 
 ```python
-ring = SinglyCircularLinkedList([PlaylistTrack(102, 2, -1.2, "Docs")])
-ring.prepend(PlaylistTrack(101, 2, 0.4, "Home"))
+ring = SinglyCircularLinkedList([PlaylistTrack(102, 2, -1.2, 'Docs')])
+ring.prepend(PlaylistTrack(101, 2, 0.4, 'Home'))
 assert ring.get(0).track_id == 101
 ```
 
@@ -569,14 +559,8 @@ assert ring.get(0).track_id == 101
 **Application use:** Insert a **reordered track** after a specific playlist item in a rotation sketch.
 
 ```python
-ring = SinglyCircularLinkedList([
-    PlaylistTrack(101, 2, 0.4, "Home"),
-    PlaylistTrack(103, 2, 0.1, "Settings"),
-])
-ring.insert_after(
-    PlaylistTrack(101, 2, 0.4, "Home"),
-    PlaylistTrack(102, 2, -1.2, "Docs"),
-)
+ring = SinglyCircularLinkedList([PlaylistTrack(101, 2, 0.4, 'Home'), PlaylistTrack(103, 2, 0.1, 'Settings')])
+ring.insert_after(PlaylistTrack(101, 2, 0.4, 'Home'), PlaylistTrack(102, 2, -1.2, 'Docs'))
 ```
 
 | | |
@@ -611,8 +595,8 @@ Index `0` → `prepend`; otherwise walk to predecessor.
 Always repair `tail.next = head` after head changes.
 
 ```python
-ring = SinglyCircularLinkedList(["A", "B", "C"])
-assert ring.pop_head() == "A"
+ring = SinglyCircularLinkedList(['A', 'B', 'C'])
+assert ring.pop_head() == 'A'
 assert len(ring) == 2
 ```
 
@@ -629,11 +613,7 @@ assert len(ring) == 2
 **Application use:** Advance **current item on a carousel** without rebuilding the list.
 
 ```python
-ring = SinglyCircularLinkedList([
-    PlaylistTrack(101, 2, 0.4, "Home"),
-    PlaylistTrack(102, 2, -1.2, "Docs"),
-    PlaylistTrack(103, 2, 0.1, "Settings"),
-])
+ring = SinglyCircularLinkedList([PlaylistTrack(101, 2, 0.4, 'Home'), PlaylistTrack(102, 2, -1.2, 'Docs'), PlaylistTrack(103, 2, 0.1, 'Settings')])
 ring.rotate_forward(1)
 assert ring.get(0).track_id == 102
 ring.rotate_forward(3)
@@ -688,11 +668,12 @@ When you need **O(1) step backward**, use `prev`:
 
 ```python
 class DoublyCircularLinkedList:
-    def __init__(self) -> None:
-        self.head: DCNode | None = None
+
+    def __init__(self):
+        self.head = None
         self._size = 0
 
-    def append(self, data: Any) -> None:
+    def append(self, data):
         node = DCNode(data)
         if self.head is None:
             node.next = node.prev = node
@@ -706,7 +687,7 @@ class DoublyCircularLinkedList:
             self.head.prev = node
         self._size += 1
 
-    def rotate_backward(self, steps: int = 1) -> None:
+    def rotate_backward(self, steps=1):
         if self.head is None:
             return
         steps %= self._size
@@ -756,7 +737,7 @@ Let **n** = `len(ring)`.
 On a **circular** structure, every traverse must stop after **n** steps. Floyd’s algorithm applies when a **broken** linear list accidentally points backward and forms a hidden cycle.
 
 ```python
-def has_cycle_floyd(head: CNode | None) -> bool:
+def has_cycle_floyd(head):
     slow = fast = head
     while fast is not None and fast.next is not None:
         slow = slow.next
@@ -774,7 +755,7 @@ def has_cycle_floyd(head: CNode | None) -> bool:
 ### Round-robin fair scheduler
 
 ```python
-def next_entry(ring: SinglyCircularLinkedList) -> PlaylistTrack:
+def next_entry(ring):
     entry = ring.pop_head()
     ring.append(entry)
     return entry
@@ -809,8 +790,7 @@ Rotating by moving head to tail after serving is O(1) per tick—fair round-robi
 
 ```python
 from itertools import cycle
-
-tracks = ("Home", "Docs", "Settings", "About")
+tracks = ('Home', 'Docs', 'Settings', 'About')
 rot = cycle(tracks)
 next(rot)
 next(rot)
@@ -862,21 +842,13 @@ flowchart TD
 ## Quick reference card
 
 ```python
-ring = SinglyCircularLinkedList([
-    PlaylistTrack(101, 2, 0.4, "Home"),
-    PlaylistTrack(102, 2, -1.2, "Docs"),
-])
-
-ring.append(PlaylistTrack(103, 2, 0.1, "Settings"))
-ring.prepend(PlaylistTrack(100, 2, 0.0, "backfill"))
-
+ring = SinglyCircularLinkedList([PlaylistTrack(101, 2, 0.4, 'Home'), PlaylistTrack(102, 2, -1.2, 'Docs')])
+ring.append(PlaylistTrack(103, 2, 0.1, 'Settings'))
+ring.prepend(PlaylistTrack(100, 2, 0.0, 'backfill'))
 ring.rotate_forward(1)
-
-ring.index_of(PlaylistTrack(102, 2, -1.2, "Docs"))
+ring.index_of(PlaylistTrack(102, 2, -1.2, 'Docs'))
 ring.get(2)
-
 tracks = ring.to_list()
-
 for r in ring:
     ...
 ```

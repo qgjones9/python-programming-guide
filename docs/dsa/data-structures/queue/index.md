@@ -54,21 +54,19 @@ Throughout this page, **n** is the queue length.
 ```python
 from dataclasses import dataclass
 
-
 @dataclass(frozen=True)
 class LogEvent:
- event_id: int
- source: str
- priority: int
- message: str
- score: float
-
+ event_id = 0
+ source = ""
+ priority = 0
+ message = ""
+ score = 0.0
 
 @dataclass(frozen=True)
 class Job:
- task_id: str
- run_id: int
- report: str
+ task_id = ""
+ run_id = 0
+ report = ""
 ```
 
 ---
@@ -103,7 +101,7 @@ sequenceDiagram
 ```python
 from collections import deque
 
-event_queue: deque[LogEvent] = deque()
+event_queue= deque()
 event_queue.append(new_event)
 nxt = event_queue.popleft()
 ```
@@ -118,7 +116,7 @@ nxt = event_queue.popleft()
 ```python
 from queue import Queue
 
-q: Queue[LogEvent] = Queue()
+q= Queue()
 q.put(event)
 p = q.get()
 ```
@@ -133,7 +131,7 @@ p = q.get()
 ```python
 from queue import SimpleQueue
 
-sq: SimpleQueue[Job] = SimpleQueue()
+sq= SimpleQueue()
 sq.put(Job("task-01", 2024, "latency_report"))
 job = sq.get()
 ```
@@ -146,7 +144,7 @@ job = sq.get()
 ### 4. Python `list` — enqueue `append`, dequeue `pop(0)` ⚠️
 
 ```python
-q: list[LogEvent] = []
+q= []
 q.append(event)
 p = q.pop(0)
 ```
@@ -162,9 +160,9 @@ p = q.pop(0)
 
 ```python
 class ListQueue:
- def __init__(self) -> None:
+ def __init__(self):
  from collections import deque
- self._dq: deque[Any] = deque()
+ self._dq= deque()
 ```
 
 ### 6. Linked-list queue (maintain `head` + `tail`)
@@ -176,8 +174,8 @@ See [Reference implementation](#reference-implementation-linkedqueue) below.
 ```python
 import asyncio
 
-async def main() -> None:
- aq: asyncio.Queue[LogEvent] = asyncio.Queue()
+async def main():
+ aq= asyncio.Queue()
  await aq.put(LogEvent(1, "api-01", 1, "request_ok", 0.0))
  p = await aq.get()
 ```
@@ -211,13 +209,13 @@ CPython `list` is a **dynamic array**. Index `0` is the front. Removing it **shi
 Processing **every event** in a batch with `list.pop(0)` costs **O(n²)** over the batch. `deque` uses a **block chain** in C: pops from the left without shifting the whole sequence.
 
 ```python
-events: list[LogEvent] = []
+events= []
 events.append(incoming)
 while events:
  process(events.pop(0))
 
 from collections import deque
-events_q: deque[LogEvent] = deque()
+events_q= deque()
 events_q.append(incoming)
 while events_q:
  process(events_q.popleft())
@@ -240,53 +238,50 @@ sequenceDiagram
 Thin FIFO wrapper over `collections.deque`.
 
 ```python
-from __future__ import annotations
 
 from collections import deque
-from typing import Any, Iterable, Iterator
-
 
 class DequeQueue:
- def __init__(self, items: Iterable[Any] | None = None) -> None:
- self._items: deque[Any] = deque(items) if items is not None else deque()
+ def __init__(self, items= None):
+ self._items= deque(items) if items is not None else deque()
 
- def __len__(self) -> int:
+ def __len__(self):
  return len(self._items)
 
- def is_empty(self) -> bool:
+ def is_empty(self):
  return len(self._items) == 0
 
- def enqueue(self, item: Any) -> None:
+ def enqueue(self, item):
  self._items.append(item)
 
- def dequeue(self) -> Any:
+ def dequeue(self):
  if not self._items:
  raise IndexError("dequeue from empty queue")
  return self._items.popleft()
 
- def front(self) -> Any:
+ def front(self):
  if not self._items:
  raise IndexError("front from empty queue")
  return self._items[0]
 
- def try_front(self) -> Any | None:
+ def try_front(self):
  return self._items[0] if self._items else None
 
- def rear(self) -> Any:
+ def rear(self):
  if not self._items:
  raise IndexError("rear from empty queue")
  return self._items[-1]
 
- def clear(self) -> None:
+ def clear(self):
  self._items.clear()
 
- def contains(self, item: Any) -> bool:
+ def contains(self, item):
  return item in self._items
 
- def extend_enqueue(self, items: Iterable[Any]) -> None:
+ def extend_enqueue(self, items):
  self._items.extend(items)
 
- def __iter__(self) -> Iterator[Any]:
+ def __iter__(self):
  yield from self._items
 ```
 
@@ -296,28 +291,25 @@ class DequeQueue:
 
 ```python
 from dataclasses import dataclass
-from typing import Any
-
 
 @dataclass
 class QNode:
- data: Any
- next: QNode | None = None
-
+ data = None
+ next= None
 
 class LinkedQueue:
- def __init__(self) -> None:
- self._head: QNode | None = None
- self._tail: QNode | None = None
+ def __init__(self):
+ self._head= None
+ self._tail= None
  self._size = 0
 
- def __len__(self) -> int:
+ def __len__(self):
  return self._size
 
- def is_empty(self) -> bool:
+ def is_empty(self):
  return self._head is None
 
- def enqueue(self, item: Any) -> None:
+ def enqueue(self, item):
  node = QNode(item)
  if self._tail is None:
  self._head = self._tail = node
@@ -326,7 +318,7 @@ class LinkedQueue:
  self._tail = node
  self._size += 1
 
- def dequeue(self) -> Any:
+ def dequeue(self):
  if self._head is None:
  raise IndexError("dequeue from empty queue")
  data = self._head.data
@@ -336,12 +328,12 @@ class LinkedQueue:
  self._size -= 1
  return data
 
- def front(self) -> Any:
+ def front(self):
  if self._head is None:
  raise IndexError("front from empty queue")
  return self._head.data
 
- def clear(self) -> None:
+ def clear(self):
  self._head = self._tail = None
  self._size = 0
 ```
@@ -451,8 +443,8 @@ for event in q:
 ### Live event processor
 
 ```python
-def drain_events(q: DequeQueue, max_batch: int = 50) -> list[float]:
- scores: list[float] = []
+def drain_events(q, max_batch= 50):
+ scores= []
  for _ in range(min(max_batch, len(q))):
  event = q.dequeue()
  scores.append(event.score)
@@ -467,9 +459,9 @@ def drain_events(q: DequeQueue, max_batch: int = 50) -> list[float]:
 ### BFS — shortest path on unweighted graph
 
 ```python
-def bfs(start: str, adj: dict[str, list[str]]) -> dict[str, int]:
+def bfs(start, adj):
  dist = {start: 0}
- q: deque[str] = deque([start])
+ q= deque([start])
  while q:
  u = q.popleft()
  for v in adj.get(u, []):
@@ -489,11 +481,11 @@ BFS gives minimum **number of hops** in an unweighted graph (not weighted path c
 ### Level-order traversal of tree
 
 ```python
-def level_order(root: QNode | None) -> list[Any]:
+def level_order(root):
  if root is None:
  return []
- out: list[Any] = []
- q: deque[QNode] = deque([root])
+ out= []
+ q= deque([root])
  while q:
  node = q.popleft()
  out.append(node.data)
@@ -515,21 +507,21 @@ Useful when buffer size is **fixed** (ring buffer). Indices wrap with modulo.
 
 ```python
 class CircularArrayQueue:
- def __init__(self, capacity: int) -> None:
+ def __init__(self, capacity):
  self._cap = capacity
- self._data: list[Any | None] = [None] * capacity
+ self._data= [None] * capacity
  self._head = 0
  self._tail = 0
  self._size = 0
 
- def enqueue(self, item: Any) -> None:
+ def enqueue(self, item):
  if self._size == self._cap:
  raise OverflowError("queue full")
  self._data[self._tail] = item
  self._tail = (self._tail + 1) % self._cap
  self._size += 1
 
- def dequeue(self) -> Any:
+ def dequeue(self):
  if self._size == 0:
  raise IndexError("dequeue from empty queue")
  item = self._data[self._head]
@@ -658,18 +650,18 @@ for r in batch:
 from queue import Queue
 from threading import Thread
 
-def producer(q: Queue[LogEvent], events: list[LogEvent]) -> None:
+def producer(q, events):
  for e in events:
  q.put(e)
 
-def consumer(q: Queue[LogEvent]) -> None:
+def consumer(q):
  while True:
  e = q.get()
  if e is None:
  break
  q.task_done()
 
-q: Queue[LogEvent] = Queue(maxsize=1000)
+q= Queue(maxsize=1000)
 Thread(target=producer, args=(q, events)).start()
 ```
 
@@ -687,14 +679,14 @@ Back-pressure when the live feed outpaces the worker—`maxsize` prevents unboun
 ```python
 import asyncio
 
-async def worker(q: asyncio.Queue[Job]) -> None:
+async def worker(q):
  while True:
  job = await q.get()
  await run_report(job)
  q.task_done()
 
-async def main() -> None:
- q: asyncio.Queue[Job] = asyncio.Queue()
+async def main():
+ q= asyncio.Queue()
  asyncio.create_task(worker(q))
  await q.put(Job("task-01", 2024, "latency_summary"))
  await q.join()
@@ -735,9 +727,9 @@ flowchart LR
 When edge weights are 0 or 1, use `deque` and push to front on 0-cost edges:
 
 ```python
-def zero_one_bfs(start: int, adj: dict[int, list[tuple[int, int]]]) -> dict[int, int]:
+def zero_one_bfs(start, adj):
  dist = {start: 0}
- q: deque[int] = deque([start])
+ q= deque([start])
  while q:
  u = q.popleft()
  for v, w in adj.get(u, []):
@@ -788,7 +780,7 @@ def zero_one_bfs(start: int, adj: dict[int, list[tuple[int, int]]]) -> dict[int,
 ```python
 from collections import deque
 
-q: deque[LogEvent] = deque()
+q= deque()
 q.append(event)
 nxt = q[0]
 p = q.popleft()

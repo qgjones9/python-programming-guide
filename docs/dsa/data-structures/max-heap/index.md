@@ -109,30 +109,29 @@ flowchart LR
 ## Example data types
 
 ```python
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 
 
 @dataclass(order=True, slots=True)
 class PrioritizedJob:
- neg_priority: float
- job_id: int = field(compare=False)
- label: str = field(compare=False, default="")
+ neg_priority = 0.0
+ job_id= field(compare=False)
+ label= field(compare=False, default="")
 
 
 @dataclass(frozen=True, slots=True)
 class Task:
- task_id: int
- priority: float
- label: str
+ task_id = 0
+ priority = 0.0
+ label = ""
 
 
 @dataclass(frozen=True, slots=True)
 class TimedEvent:
- name: str
- urgency: float
- deadline_ms: int
+ name = ""
+ urgency = 0.0
+ deadline_ms = 0
 ```
 
 ---
@@ -209,7 +208,7 @@ Python stdlib has **min-heap** only; negate scores for “max” behavior.
 ```python
 import heapq
 
-min_heap: list[tuple[float, Task]] = []
+min_heap= []
 heapq.heappush(min_heap, (-task.priority, task))
 best = heapq.heappop(min_heap)[1]
 ```
@@ -237,72 +236,68 @@ flowchart TD
 Generic max heap over comparable keys with optional satellite data (e.g. attach a `Task` at each priority score).
 
 ```python
-from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Generic, Iterable, Iterator, TypeVar
 
-K = TypeVar("K")
-V = TypeVar("V")
 
 
 @dataclass
-class _Entry(Generic[K, V]):
- key: K
- value: V | None = None
+class _Entry:
+ key = None
+ value= None
 
 
-class MaxHeap(Generic[K, V]):
- def __init__(self, items: Iterable[K] | None = None) -> None:
- self._data: list[_Entry[K, V]] = []
+class MaxHeap:
+ def __init__(self, items= None):
+ self._data= []
  if items is not None:
  for k in items:
  self._data.append(_Entry(k))
  self.heapify()
 
  @classmethod
- def from_pairs(cls, pairs: Iterable[tuple[K, V]]) -> MaxHeap[K, V]:
- h: MaxHeap[K, V] = cls()
+ def from_pairs(cls, pairs):
+ h= cls()
  for key, value in pairs:
  h._data.append(_Entry(key, value))
  h.heapify()
  return h
 
  @classmethod
- def copy_of(cls, other: MaxHeap[K, V]) -> MaxHeap[K, V]:
- out: MaxHeap[K, V] = cls()
+ def copy_of(cls, other):
+ out= cls()
  out._data = [_Entry(e.key, e.value) for e in other._data]
  return out
 
- def __len__(self) -> int:
+ def __len__(self):
  return len(self._data)
 
- def is_empty(self) -> bool:
+ def is_empty(self):
  return len(self._data) == 0
 
- def clear(self) -> None:
+ def clear(self):
  self._data.clear()
 
- def peek_max(self) -> K:
+ def peek_max(self):
  if not self._data:
  raise IndexError("peek_max from empty heap")
  return self._data[0].key
 
- def peek_entry(self) -> tuple[K, V | None]:
+ def peek_entry(self):
  if not self._data:
  raise IndexError("peek from empty heap")
  e = self._data[0]
  return e.key, e.value
 
- def insert(self, key: K, value: V | None = None) -> None:
+ def insert(self, key, value= None):
  self._data.append(_Entry(key, value))
  self._sift_up(len(self._data) - 1)
 
- def extract_max(self) -> K:
+ def extract_max(self):
  key, _ = self.extract_entry()
  return key
 
- def extract_entry(self) -> tuple[K, V | None]:
+ def extract_entry(self):
  if not self._data:
  raise IndexError("extract_max from empty heap")
  root = self._data[0]
@@ -312,7 +307,7 @@ class MaxHeap(Generic[K, V]):
  self._sift_down(0)
  return root.key, root.value
 
- def replace_max(self, key: K, value: V | None = None) -> K:
+ def replace_max(self, key, value= None):
  if not self._data:
  self.insert(key, value)
  return key
@@ -322,7 +317,7 @@ class MaxHeap(Generic[K, V]):
  self._sift_up(0)
  return old
 
- def increase_key_at(self, index: int, new_key: K) -> None:
+ def increase_key_at(self, index, new_key):
  if not (0 <= index < len(self._data)):
  raise IndexError(index)
  if new_key < self._data[index].key:
@@ -330,31 +325,31 @@ class MaxHeap(Generic[K, V]):
  self._data[index].key = new_key
  self._sift_up(index)
 
- def heapify(self) -> None:
+ def heapify(self):
  n = len(self._data)
  for i in range(n // 2 - 1, -1, -1):
  self._sift_down(i)
 
- def to_list(self) -> list[K]:
+ def to_list(self):
  return [e.key for e in self._data]
 
- def validate(self) -> bool:
+ def validate(self):
  for i in range(1, len(self._data)):
  p = (i - 1) // 2
  if self._data[p].key < self._data[i].key:
  return False
  return True
 
- def _parent(self, i: int) -> int:
+ def _parent(self, i):
  return (i - 1) // 2
 
- def _left(self, i: int) -> int:
+ def _left(self, i):
  return 2 * i + 1
 
- def _right(self, i: int) -> int:
+ def _right(self, i):
  return 2 * i + 2
 
- def _sift_up(self, i: int) -> None:
+ def _sift_up(self, i):
  while i > 0:
  p = self._parent(i)
  if self._data[p].key >= self._data[i].key:
@@ -362,7 +357,7 @@ class MaxHeap(Generic[K, V]):
  self._data[p], self._data[i] = self._data[i], self._data[p]
  i = p
 
- def _sift_down(self, i: int) -> None:
+ def _sift_down(self, i):
  n = len(self._data)
  while True:
  largest = i
@@ -377,7 +372,7 @@ class MaxHeap(Generic[K, V]):
  self._data[i], self._data[largest] = self._data[largest], self._data[i]
  i = largest
 
- def __iter__(self) -> Iterator[K]:
+ def __iter__(self):
  for e in self._data:
  yield e.key
 ```
@@ -605,8 +600,8 @@ Array is **not** sorted; only root is max.
 import heapq
 
 
-def top_k_tasks(tasks: list[Task], k: int) -> list[Task]:
- heap: list[tuple[float, Task]] = []
+def top_k_tasks(tasks, k):
+ heap= []
  for t in tasks:
  if len(heap) < k:
  heapq.heappush(heap, (t.priority, t))
@@ -615,9 +610,9 @@ def top_k_tasks(tasks: list[Task], k: int) -> list[Task]:
  return [t for _, t in sorted(heap, reverse=True)]
 
 
-def top_k_maxheap(tasks: list[Task], k: int) -> list[Task]:
+def top_k_maxheap(tasks, k):
  h = MaxHeap.from_pairs((t.priority, t) for t in tasks)
- out: list[Task] = []
+ out= []
  for _ in range(min(k, len(h))):
  _, task = h.extract_entry()
  out.append(task)
@@ -639,9 +634,9 @@ For large *n*, prefer **`nlargest`**. For streaming with unknown length, size-k 
 When merging many sorted streams, a min-heap of stream heads is classic—max-heap if you want descending merge.
 
 ```python
-def merge_desc(list_a: list[float], list_b: list[float]) -> list[float]:
+def merge_desc(list_a, list_b):
  h = MaxHeap(list_a + list_b)
- out: list[float] = []
+ out= []
  while not h.is_empty():
  out.append(h.extract_max())
  return out
@@ -657,9 +652,9 @@ def merge_desc(list_a: list[float], list_b: list[float]) -> list[float]:
 ### Priority scheduler simulation
 
 ```python
-def select_top_events(events: list[TimedEvent], keep: int) -> list[TimedEvent]:
+def select_top_events(events, keep):
  h = MaxHeap.from_pairs((e.urgency, e) for e in events)
- kept: list[TimedEvent] = []
+ kept= []
  for _ in range(min(keep, len(h))):
  _, event = h.extract_entry()
  kept.append(event)
@@ -709,7 +704,7 @@ flowchart LR
 ```python
 import heapq
 
-h: list[tuple[float, Task]] = []
+h= []
 heapq.heappush(h, (-task.priority, task))
 neg_priority, best = heapq.heappop(h)
 actual_priority = -neg_priority

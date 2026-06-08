@@ -133,9 +133,9 @@ from dataclasses import dataclass
 
 @dataclass
 class Edge:
- u: str
- v: str
- weight: float = 1.0
+ u = ""
+ v = ""
+ weight= 1.0
 
 
 class Graph:

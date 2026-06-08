@@ -80,7 +80,7 @@ SHELL_SORT(A):
 from dataclasses import dataclass
 
 
-def shell_sort(nums: list[float]) -> None:
+def shell_sort(nums):
  n = len(nums)
  g = n // 2
  while g > 0:
@@ -94,8 +94,8 @@ def shell_sort(nums: list[float]) -> None:
  g //= 2
 
 
-def knuth_gaps(n: int) -> list[int]:
- gaps: list[int] = []
+def knuth_gaps(n):
+ gaps= []
  k = 1
  while (3**k - 1) // 2 < n:
  gaps.append((3**k - 1) // 2)
@@ -103,7 +103,7 @@ def knuth_gaps(n: int) -> list[int]:
  return list(reversed(gaps)) or [1]
 
 
-def shell_sort_knuth(nums: list[float]) -> None:
+def shell_sort_knuth(nums):
  for g in knuth_gaps(len(nums)):
  for i in range(g, len(nums)):
  temp = nums[i]
@@ -116,14 +116,14 @@ def shell_sort_knuth(nums: list[float]) -> None:
 
 @dataclass(frozen=True, slots=True)
 class TaskItem:
- task_id: int
- priority: int
- label: str
+ task_id = 0
+ priority = 0
+ label = ""
 
 
 def shell_sort_items(
- items: list[TaskItem], *, key=lambda t: t.priority
-) -> None:
+ items, *, key=lambda t: t.priority
+):
  n = len(items)
  for g in knuth_gaps(n):
  for i in range(g, n):

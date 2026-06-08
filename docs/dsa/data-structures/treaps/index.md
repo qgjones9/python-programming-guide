@@ -73,31 +73,27 @@ sequenceDiagram
 Each node stores **key**, **value** (optional payload), **priority** (random on insert), and **left** / **right** children.
 
 ```python
-from __future__ import annotations
 
 import random
 from dataclasses import dataclass
-from typing import Any, Generic, Iterator, TypeVar
 
-K = TypeVar("K")
-V = TypeVar("V")
 
 
 @dataclass
 class IndexRecord:
-    record_id: str
-    symbol: str
-    sequence: int
-    priority: int
+    record_id = ""
+    symbol = ""
+    sequence = 0
+    priority = 0
 
 
 @dataclass
-class TreapNode(Generic[K, V]):
-    key: K
-    value: V
-    priority: int
-    left: TreapNode[K, V] | None = None
-    right: TreapNode[K, V] | None = None
+class TreapNode:
+    key = None
+    value = None
+    priority = 0
+    left= None
+    right= None
 ```
 
 | | |
@@ -123,7 +119,7 @@ flowchart LR
 ### 1. Empty treap — root is `None`
 
 ```python
-root: TreapNode[str, IndexRecord] | None = None
+root= None
 ```
 
 | | |
@@ -134,12 +130,12 @@ root: TreapNode[str, IndexRecord] | None = None
 ### 2. Empty `Treap` wrapper class
 
 ```python
-class Treap(Generic[K, V]):
-    def __init__(self) -> None:
-        self.root: TreapNode[K, V] | None = None
+class Treap:
+    def __init__(self):
+        self.root= None
         self._size = 0
 
-board = Treap[int, str]()
+board = Treap()
 assert board.is_empty()
 ```
 
@@ -168,7 +164,7 @@ root = TreapNode(
 Preserves API/CSV order of insertion; **not** the same as sorting first (sorted keys without random priorities can degrade a plain BST—treap priorities fix expectation).
 
 ```python
-def build_treap(items: list[tuple[K, V]]) -> TreapNode[K, V] | None:
+def build_treap(items):
     root = None
     for key, value in items:
         root = treap_insert(root, key, value)
@@ -193,7 +189,7 @@ Each insert draws a **new random priority** and rotates; expected height stays l
 
 ```python
 sorted_by_priority = sorted(entries, key=lambda e: (-e[0], e[1]))
-treap = Treap[tuple[int, str], IndexRecord]()
+treap = Treap()
 for rank, sym in sorted_by_priority:
     treap.insert((rank, sym), IndexRecord(sym, sym, rank, rank))
 ```
@@ -245,26 +241,22 @@ flowchart LR
 All method sections below use this class. Priorities are **max-heap**: parent priority ≥ children. **Split** returns `(left, right)` where every key in `left` is `< pivot` and every key in `right` is `≥ pivot`.
 
 ```python
-from __future__ import annotations
 
 import random
 from dataclasses import dataclass
-from typing import Any, Generic, Iterable, Iterator, TypeVar
 
-K = TypeVar("K")
-V = TypeVar("V")
 
 
 @dataclass
-class TreapNode(Generic[K, V]):
-    key: K
-    value: V
-    priority: int
-    left: TreapNode[K, V] | None = None
-    right: TreapNode[K, V] | None = None
+class TreapNode:
+    key = None
+    value = None
+    priority = 0
+    left= None
+    right= None
 
 
-def _rotate_right(y: TreapNode[K, V]) -> TreapNode[K, V]:
+def _rotate_right(y):
     x = y.left
     assert x is not None
     y.left = x.right
@@ -272,7 +264,7 @@ def _rotate_right(y: TreapNode[K, V]) -> TreapNode[K, V]:
     return x
 
 
-def _rotate_left(x: TreapNode[K, V]) -> TreapNode[K, V]:
+def _rotate_left(x):
     y = x.right
     assert y is not None
     x.right = y.left
@@ -281,8 +273,8 @@ def _rotate_left(x: TreapNode[K, V]) -> TreapNode[K, V]:
 
 
 def treap_insert(
-    root: TreapNode[K, V] | None, key: K, value: V, priority: int | None = None
-) -> TreapNode[K, V]:
+    root, key, value, priority= None
+):
     if root is None:
         p = priority if priority is not None else random.randint(1, 10**9)
         return TreapNode(key, value, p)
@@ -299,7 +291,7 @@ def treap_insert(
     return root
 
 
-def treap_search(root: TreapNode[K, V] | None, key: K) -> TreapNode[K, V] | None:
+def treap_search(root, key):
     cur = root
     while cur is not None:
         if key == cur.key:
@@ -308,7 +300,7 @@ def treap_search(root: TreapNode[K, V] | None, key: K) -> TreapNode[K, V] | None
     return None
 
 
-def treap_delete(root: TreapNode[K, V] | None, key: K) -> TreapNode[K, V] | None:
+def treap_delete(root, key):
     if root is None:
         return None
     if key < root.key:
@@ -330,8 +322,7 @@ def treap_delete(root: TreapNode[K, V] | None, key: K) -> TreapNode[K, V] | None
 
 
 def treap_split(
-    root: TreapNode[K, V] | None, key: K
-) -> tuple[TreapNode[K, V] | None, TreapNode[K, V] | None]:
+    root, key):
     if root is None:
         return None, None
     if root.key < key:
@@ -345,8 +336,8 @@ def treap_split(
 
 
 def treap_merge(
-    left: TreapNode[K, V] | None, right: TreapNode[K, V] | None
-) -> TreapNode[K, V] | None:
+    left, right
+):
     if left is None:
         return right
     if right is None:
@@ -358,7 +349,7 @@ def treap_merge(
     return right
 
 
-def _inorder(root: TreapNode[K, V] | None) -> Iterator[tuple[K, V]]:
+def _inorder(root):
     if root is None:
         return
     yield from _inorder(root.left)
@@ -366,41 +357,41 @@ def _inorder(root: TreapNode[K, V] | None) -> Iterator[tuple[K, V]]:
     yield from _inorder(root.right)
 
 
-class Treap(Generic[K, V]):
-    def __init__(self, items: Iterable[tuple[K, V]] | None = None) -> None:
-        self.root: TreapNode[K, V] | None = None
+class Treap:
+    def __init__(self, items= None):
+        self.root= None
         self._size = 0
         if items is not None:
             for key, value in items:
                 self.insert(key, value)
 
-    def __len__(self) -> int:
+    def __len__(self):
         return self._size
 
-    def __iter__(self) -> Iterator[tuple[K, V]]:
+    def __iter__(self):
         return _inorder(self.root)
 
-    def is_empty(self) -> bool:
+    def is_empty(self):
         return self._size == 0
 
-    def insert(self, key: K, value: V, priority: int | None = None) -> None:
+    def insert(self, key, value, priority= None):
         existed = treap_search(self.root, key) is not None
         self.root = treap_insert(self.root, key, value, priority)
         if not existed:
             self._size += 1
 
-    def search(self, key: K) -> V | None:
+    def search(self, key):
         node = treap_search(self.root, key)
         return None if node is None else node.value
 
-    def delete(self, key: K) -> bool:
+    def delete(self, key):
         if treap_search(self.root, key) is None:
             return False
         self.root = treap_delete(self.root, key)
         self._size -= 1
         return True
 
-    def split(self, key: K) -> tuple[Treap[K, V], Treap[K, V]]:
+    def split(self, key):
         left_root, right_root = treap_split(self.root, key)
         left_t, right_t = Treap(), Treap()
         left_t.root, right_t.root = left_root, right_root
@@ -409,12 +400,12 @@ class Treap(Generic[K, V]):
         self.root, self._size = None, 0
         return left_t, right_t
 
-    def merge(self, other: Treap[K, V]) -> None:
+    def merge(self, other):
         self.root = treap_merge(self.root, other.root)
         self._size = sum(1 for _ in self)
         other.root, other._size = None, 0
 
-    def min_key(self) -> K | None:
+    def min_key(self):
         if self.root is None:
             return None
         cur = self.root
@@ -422,7 +413,7 @@ class Treap(Generic[K, V]):
             cur = cur.left
         return cur.key
 
-    def max_key(self) -> K | None:
+    def max_key(self):
         if self.root is None:
             return None
         cur = self.root
@@ -536,7 +527,7 @@ top12, rest = board.split(12)
 Model **active tasks** as a treap keyed by **priority rank**. On dispatch, `delete(key)`. To show “next 5 highest-priority tasks”, walk from `min_key` in-order five steps.
 
 ```python
-available = Treap[int, str]()
+available = Treap()
 for rank, task_id in load_scheduler():
     available.insert(rank, task_id)
 
@@ -561,8 +552,8 @@ for rank, task_id in available:
 Keys `(priority, record_id)` keep priority primary and break ties by id. On update: `delete` old key, `insert` new priority.
 
 ```python
-leaders = Treap[tuple[int, str], IndexRecord]()
-def update_record(row: IndexRecord) -> None:
+leaders = Treap()
+def update_record(row):
     old = leaders.search((row.priority, row.record_id))
     leaders.insert((row.priority, row.record_id), row)
 ```

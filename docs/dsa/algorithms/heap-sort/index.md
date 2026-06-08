@@ -84,7 +84,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-def sift_down(nums: list[float], i: int, heap_size: int) -> None:
+def sift_down(nums, i, heap_size):
  while True:
  largest = i
  left = 2 * i + 1
@@ -99,13 +99,13 @@ def sift_down(nums: list[float], i: int, heap_size: int) -> None:
  i = largest
 
 
-def build_max_heap(nums: list[float]) -> None:
+def build_max_heap(nums):
  n = len(nums)
  for i in range(n // 2 - 1, -1, -1):
  sift_down(nums, i, n)
 
 
-def heap_sort(nums: list[float]) -> None:
+def heap_sort(nums):
  build_max_heap(nums)
  for end in range(len(nums) - 1, 0, -1):
  nums[0], nums[end] = nums[end], nums[0]
@@ -114,15 +114,15 @@ def heap_sort(nums: list[float]) -> None:
 
 @dataclass(frozen=True, slots=True)
 class Record:
- category_id: str
- score: float
+ category_id = ""
+ score = 0.0
 
 
-def heap_sort_records(records: list[Record], *, key=lambda r: r.score) -> None:
+def heap_sort_records(records, *, key=lambda r: r.score):
  n = len(records)
  idx = list(range(n))
 
- def sift_idx(i: int, size: int) -> None:
+ def sift_idx(i, size):
  while True:
  largest = i
  l, r = 2 * i + 1, 2 * i + 2
@@ -174,7 +174,6 @@ After `build_max_heap`: max 2.1 at root (array representation may be `[2.1, 0.4,
 
 ```python
 import heapq
-
 top_scores = heapq.nlargest(10, batch, key=lambda r: r.score)
 full_sorted = sorted(batch, key=lambda r: r.score)
 ```
@@ -190,7 +189,7 @@ full_sorted = sorted(batch, key=lambda r: r.score)
 | Introsort fallback in other languages | When `sort_values` is one line |
 
 ```python
-df.sort_values("score", ascending=True)
+df.sort_values('score', ascending=True)
 ```
 
 ---

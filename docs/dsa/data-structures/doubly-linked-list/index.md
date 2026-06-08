@@ -70,16 +70,15 @@ Every node stores **data** (e.g. a browser history entry), **next**, and **prev*
 ```python
 from dataclasses import dataclass
 
-
 @dataclass
 class HistoryEntry:
-    entry_id: int
-    tab_id: int
-    duration_ms: int
-    title: str
-
+    entry_id = 0
+    tab_id = 0
+    duration_ms = 0
+    title = ''
 
 class Node:
+
     def __init__(self, data):
         self.data = data
         self.next = None
@@ -122,11 +121,11 @@ tail = None
 
 ```python
 class DoublyLinkedList:
+
     def __init__(self):
         self.head = None
         self.tail = None
         self.size = 0
-
 history = DoublyLinkedList()
 assert history.is_empty()
 ```
@@ -139,7 +138,7 @@ assert history.is_empty()
 ### 3. Single-node list
 
 ```python
-node = Node(HistoryEntry(101, 2, 120, "Home"))
+node = Node(HistoryEntry(101, 2, 120, 'Home'))
 head = tail = node
 ```
 
@@ -164,13 +163,8 @@ def from_iterable_tail(items):
             assert tail is not None
             tail.next = node
             tail = node
-    return head, tail
-
-entries = [
-    HistoryEntry(101, 2, 120, "Home"),
-    HistoryEntry(102, 2, 340, "Docs"),
-    HistoryEntry(103, 2, 90, "Settings"),
-]
+    return (head, tail)
+entries = [HistoryEntry(101, 2, 120, 'Home'), HistoryEntry(102, 2, 340, 'Docs'), HistoryEntry(103, 2, 90, 'Settings')]
 head, tail = from_iterable_tail(entries)
 ```
 
@@ -204,10 +198,7 @@ def from_iterable_head(items):
 
 ```python
 history = DoublyLinkedList()
-for entry in [
-    HistoryEntry(101, 2, 120, "Home"),
-    HistoryEntry(102, 2, 340, "Docs"),
-]:
+for entry in [HistoryEntry(101, 2, 120, 'Home'), HistoryEntry(102, 2, 340, 'Docs')]:
     history.append(entry)
 ```
 
@@ -219,14 +210,14 @@ for entry in [
 ### 7. Manual wiring (tests, diagrams, interviews)
 
 ```python
-n1 = Node(HistoryEntry(101, 2, 120, "Home"))
-n2 = Node(HistoryEntry(102, 2, 340, "Docs"))
-n3 = Node(HistoryEntry(103, 2, 90, "Settings"))
+n1 = Node(HistoryEntry(101, 2, 120, 'Home'))
+n2 = Node(HistoryEntry(102, 2, 340, 'Docs'))
+n3 = Node(HistoryEntry(103, 2, 90, 'Settings'))
 n1.next = n2
 n2.prev = n1
 n2.next = n3
 n3.prev = n2
-head, tail = n1, n3
+head, tail = (n1, n3)
 ```
 
 | | |
@@ -237,10 +228,7 @@ head, tail = n1, n3
 ### 8. From an existing Python `list` of history entries
 
 ```python
-entries_list = [
-    HistoryEntry(201, 1, 200, "About"),
-    HistoryEntry(202, 1, 110, "Profile"),
-]
+entries_list = [HistoryEntry(201, 1, 200, 'About'), HistoryEntry(202, 1, 110, 'Profile')]
 history = DoublyLinkedList()
 history.extend(entries_list)
 ```
@@ -275,22 +263,24 @@ All method sections below use this class. It keeps **`head`**, **`tail`**, and *
 
 ```python
 class Node:
+
     def __init__(self, data):
         self.data = data
         self.next = None
         self.prev = None
 
 class DoublyLinkedList:
+
     def __init__(self):
         self.head = None
         self.tail = None
         self.size = 0
 
     def __str__(self):
-        return f"DoublyLinkedList({self.to_list()})"
+        return f'DoublyLinkedList({self.to_list()})'
 
     def __repr__(self):
-        return f"DoublyLinkedList({self.to_list()})"
+        return f'DoublyLinkedList({self.to_list()})'
 
     def __len__(self):
         return self.size
@@ -332,11 +322,10 @@ class DoublyLinkedList:
 
     def insert(self, index, data):
         if index < 0 or index > self.size:
-            raise IndexError("index out of bounds")
+            raise IndexError('index out of bounds')
         if index == 0:
             self.push(data)
             return self
-
         node = Node(data)
         prev = self._node_at(index - 1)
         node.next = prev.next
@@ -348,7 +337,7 @@ class DoublyLinkedList:
 
     def pop(self):
         if self.is_empty():
-            raise IndexError("pop from empty list")
+            raise IndexError('pop from empty list')
         data = self.tail.data
         if self.head.next is None:
             self.head = None
@@ -361,7 +350,7 @@ class DoublyLinkedList:
 
     def _pop_head(self):
         if self.is_empty():
-            raise IndexError("pop from empty list")
+            raise IndexError('pop from empty list')
         data = self.head.data
         if self.head.next is None:
             self.head = None
@@ -374,7 +363,7 @@ class DoublyLinkedList:
 
     def remove(self, index):
         if index < 0 or index >= self.size:
-            raise IndexError("index out of bounds")
+            raise IndexError('index out of bounds')
         if index == 0:
             return self._pop_head()
         if index == self.size - 1:
@@ -395,7 +384,7 @@ class DoublyLinkedList:
 
     def _node_at(self, index):
         if index < 0 or index >= self.size:
-            raise IndexError("index out of bounds")
+            raise IndexError('index out of bounds')
         current = self.head
         for _ in range(index):
             current = current.next
@@ -414,12 +403,12 @@ class DoublyLinkedList:
 
     def reverse(self):
         if self.is_empty():
-            raise IndexError("reverse empty list")
+            raise IndexError('reverse empty list')
         current = self.head
         while current is not None:
-            current.next, current.prev = current.prev, current.next
+            current.next, current.prev = (current.prev, current.next)
             current = current.prev
-        self.head, self.tail = self.tail, self.head
+        self.head, self.tail = (self.tail, self.head)
         return self
 
     def to_list(self):
@@ -440,27 +429,22 @@ class DoublyLinkedList:
 
     def extend(self, items):
         if isinstance(items, DoublyLinkedList):
-
             if items.is_empty():
                 return self
             if self.is_empty():
-
                 self.head = items.head
                 self.tail = items.tail
                 self.size = items.size
             else:
-
                 self.tail.next = items.head
                 items.head.prev = self.tail
                 self.tail = items.tail
                 self.size += items.size
             return self
         else:
-
             for item in items:
                 self.append(item)
             return self
-
 
     def sort(self):
         if self.size < 2:
@@ -509,7 +493,7 @@ class DoublyLinkedList:
         current = self.head
         while current is not None:
             data = current.data
-            if hasattr(data, "entry_id"):
+            if hasattr(data, 'entry_id'):
                 if data.entry_id == entry_id:
                     return data
             elif data == entry_id:
@@ -575,8 +559,7 @@ def make_history_chain(entries):
 history = DoublyLinkedList()
 assert history.is_empty()
 assert len(history) == 0
-
-history.append(HistoryEntry(101, 2, 120, "Home"))
+history.append(HistoryEntry(101, 2, 120, 'Home'))
 assert len(history) == 1
 assert history[0].entry_id == 101
 ```
@@ -595,8 +578,8 @@ Create a node, wire `next`/`prev` to the current head (or set both `head` and `t
 Example: push a **backfilled visit** so it becomes the oldest page in the undo chain.
 
 ```python
-history = make_history_chain([HistoryEntry(102, 2, 340, "Docs")])
-history.push(HistoryEntry(101, 2, 120, "Home"))
+history = make_history_chain([HistoryEntry(102, 2, 340, 'Docs')])
+history.push(HistoryEntry(101, 2, 120, 'Home'))
 assert history.get(0).entry_id == 101
 ```
 
@@ -623,9 +606,9 @@ Create a node, link it after `tail` (or set both `head` and `tail` when empty), 
 
 ```python
 history = DoublyLinkedList()
-history.append(HistoryEntry(101, 2, 120, "Home"))
-history.append(HistoryEntry(102, 2, 340, "Docs"))
-assert list(history)[-1].title == "Docs"
+history.append(HistoryEntry(101, 2, 120, 'Home'))
+history.append(HistoryEntry(102, 2, 340, 'Docs'))
+assert list(history)[-1].title == 'Docs'
 ```
 
 | | |
@@ -642,12 +625,8 @@ Valid indices are `0 … size` (inclusive upper bound). Index **`0`** delegates 
 Insert a **restored undo step** before the page currently at index 2.
 
 ```python
-history = make_history_chain([
-    HistoryEntry(101, 2, 120, "Home"),
-    HistoryEntry(102, 2, 340, "Docs"),
-    HistoryEntry(104, 2, 150, "About"),
-])
-history.insert(2, HistoryEntry(103, 2, 210, "Settings (restored)"))
+history = make_history_chain([HistoryEntry(101, 2, 120, 'Home'), HistoryEntry(102, 2, 340, 'Docs'), HistoryEntry(104, 2, 150, 'About')])
+history.insert(2, HistoryEntry(103, 2, 210, 'Settings (restored)'))
 ids = [s.entry_id for s in history]
 assert ids == [101, 102, 103, 104]
 ```
@@ -672,10 +651,10 @@ flowchart LR
 Both use **`_node_at(index)`**, which walks forward from the head and raises **`IndexError("index out of bounds")`** when **`index < 0`** or **`index >= size`**. **`set`** mutates **`node.data`** in place and returns **`self`**.
 
 ```python
-history = make_history_chain([HistoryEntry(i, 1, 0, f"page {i}") for i in range(10)])
+history = make_history_chain([HistoryEntry(i, 1, 0, f'page {i}') for i in range(10)])
 assert history.get(0).entry_id == 0
 assert history.get(9).entry_id == 9
-history.set(5, HistoryEntry(99, 1, 0, "replaced"))
+history.set(5, HistoryEntry(99, 1, 0, 'replaced'))
 assert history.get(5).entry_id == 99
 ```
 
@@ -693,10 +672,7 @@ For thousands of table rows, store an index in a **`dict[entry_id, HistoryEntry]
 Head removal is handled by `remove(0)` (internally `_pop_head`).
 
 ```python
-history = make_history_chain([
-    HistoryEntry(101, 2, 120, "Home"),
-    HistoryEntry(102, 2, 340, "Docs"),
-])
+history = make_history_chain([HistoryEntry(101, 2, 120, 'Home'), HistoryEntry(102, 2, 340, 'Docs')])
 old_first = history.remove(0)
 assert old_first.entry_id == 101
 assert history.get(0).entry_id == 102
@@ -714,10 +690,7 @@ assert history.get(0).entry_id == 102
 Removes the **tail** node, returns its **data**, and decrements **`size`**. On a one-node list, sets both **`head`** and **`tail`** to **`None`**. Singly linked lists need an O(n) scan for the predecessor; **doubly linked does not**.
 
 ```python
-history = make_history_chain([
-    HistoryEntry(101, 2, 120, "Home"),
-    HistoryEntry(102, 2, 340, "Docs"),
-])
+history = make_history_chain([HistoryEntry(101, 2, 120, 'Home'), HistoryEntry(102, 2, 340, 'Docs')])
 last = history.pop()
 assert last.entry_id == 102
 assert len(history) == 1
@@ -743,11 +716,7 @@ sequenceDiagram
 Returns the removed **data**. Index **`0`** calls **`_pop_head()`**; index **`size - 1`** delegates to **`pop()`**; otherwise rewire through the predecessor at **`index - 1`**. All three paths update `size` and fix `prev`/`next`.
 
 ```python
-history = make_history_chain([
-    HistoryEntry(101, 2, 120, "Home"),
-    HistoryEntry(102, 2, 340, "Docs"),
-    HistoryEntry(103, 2, 90, "Settings"),
-])
+history = make_history_chain([HistoryEntry(101, 2, 120, 'Home'), HistoryEntry(102, 2, 340, 'Docs'), HistoryEntry(103, 2, 90, 'Settings')])
 assert history.remove(1).entry_id == 102
 assert [s.entry_id for s in history] == [101, 103]
 ```
@@ -764,15 +733,12 @@ assert [s.entry_id for s in history] == [101, 103]
 `find_entry` returns the **data** (not the node). It matches objects with a `entry_id` attribute or raw values.
 
 ```python
-history = make_history_chain([
-    HistoryEntry(101, 2, 120, "Home"),
-    HistoryEntry(102, 2, 340, "Docs"),
-])
+history = make_history_chain([HistoryEntry(101, 2, 120, 'Home'), HistoryEntry(102, 2, 340, 'Docs')])
 entry = history.find_entry(102)
-assert entry is not None and entry.title == "Docs"
-assert history.contains(HistoryEntry(101, 2, 120, "Home"))
-assert history.index_of(HistoryEntry(102, 2, 340, "Docs")) == 1
-assert history.index_of(HistoryEntry(999, 1, 0, "missing")) == -1
+assert entry is not None and entry.title == 'Docs'
+assert history.contains(HistoryEntry(101, 2, 120, 'Home'))
+assert history.index_of(HistoryEntry(102, 2, 340, 'Docs')) == 1
+assert history.index_of(HistoryEntry(999, 1, 0, 'missing')) == -1
 ```
 
 | | |
@@ -787,12 +753,7 @@ assert history.index_of(HistoryEntry(999, 1, 0, "missing")) == -1
 Forward iteration uses **`__iter__`** (yields each node's **data** from head to tail). **`walk_forward_from(node)`** and **`walk_backward_from(node)`** take a **`Node`** reference (e.g. `history.head` or `history.tail`), follow `next` or `prev`, and return a **Python list of data**—not an iterator.
 
 ```python
-history = make_history_chain([
-    HistoryEntry(101, 2, 120, "Home"),
-    HistoryEntry(102, 2, 340, "Docs"),
-    HistoryEntry(103, 2, 90, "Settings"),
-])
-
+history = make_history_chain([HistoryEntry(101, 2, 120, 'Home'), HistoryEntry(102, 2, 340, 'Docs'), HistoryEntry(103, 2, 90, 'Settings')])
 forward_dwell = [s.duration_ms for s in history]
 backward_dwell = [s.duration_ms for s in history.walk_backward_from(history.tail)]
 assert forward_dwell == [120, 340, 90]
@@ -816,7 +777,7 @@ assert backward_dwell == [90, 340, 120]
 Sets **`head`**, **`tail`**, and **`size`** back to empty state. Returns **`self`**.
 
 ```python
-history = make_history_chain([HistoryEntry(101, 2, 120, "Home")])
+history = make_history_chain([HistoryEntry(101, 2, 120, 'Home')])
 history.clear()
 assert history.is_empty()
 ```
@@ -833,9 +794,9 @@ assert history.is_empty()
 Shallow copy: new nodes, **same** `HistoryEntry` objects.
 
 ```python
-original = make_history_chain([HistoryEntry(101, 2, 120, "Home")])
+original = make_history_chain([HistoryEntry(101, 2, 120, 'Home')])
 branch = original.copy()
-branch.append(HistoryEntry(999, 2, 0, "Redo branch"))
+branch.append(HistoryEntry(999, 2, 0, 'Redo branch'))
 assert len(original) == 1 and len(branch) == 2
 assert branch.head is not original.head
 ```
@@ -856,7 +817,7 @@ Useful after **push-heavy** paste to get chronological visit order.
 ```python
 history = DoublyLinkedList()
 for pid in [103, 102, 101]:
-    history.push(HistoryEntry(pid, 2, 0, "x"))
+    history.push(HistoryEntry(pid, 2, 0, 'x'))
 history.reverse()
 assert [s.entry_id for s in history] == [101, 102, 103]
 ```
@@ -873,11 +834,7 @@ assert [s.entry_id for s in history] == [101, 102, 103]
 Exports values with **`to_list()`**, sorts in place with Python's **`list.sort()`** (data must be mutually comparable), clears the chain, and rebuilds with **`append`**. No-op when **`size < 2`**. Returns **`self`**.
 
 ```python
-history = make_history_chain([
-    HistoryEntry(103, 2, 0, "c"),
-    HistoryEntry(101, 2, 0, "a"),
-    HistoryEntry(102, 2, 0, "b"),
-])
+history = make_history_chain([HistoryEntry(103, 2, 0, 'c'), HistoryEntry(101, 2, 0, 'a'), HistoryEntry(102, 2, 0, 'b')])
 history.sort()
 assert [s.entry_id for s in history] == [101, 102, 103]
 ```
@@ -894,8 +851,8 @@ assert [s.entry_id for s in history] == [101, 102, 103]
 When **`items`** is another **`DoublyLinkedList`**: empty source is a no-op; if **`self`** is empty, adopt the other chain's **`head`**, **`tail`**, and **`size`**; otherwise splice at the tail in O(1). Any other iterable appends one item at a time. Returns **`self`**. **`to_list()`** walks head→tail and returns a Python list of data.
 
 ```python
-history = make_history_chain([HistoryEntry(101, 2, 120, "Home")])
-history.extend([HistoryEntry(102, 2, 340, "Docs"), HistoryEntry(103, 2, 90, "Settings")])
+history = make_history_chain([HistoryEntry(101, 2, 120, 'Home')])
+history.extend([HistoryEntry(102, 2, 340, 'Docs'), HistoryEntry(103, 2, 90, 'Settings')])
 rows = history.to_list()
 assert len(rows) == 3
 ```
@@ -913,12 +870,11 @@ assert len(rows) == 3
 **`trim_front(count)`** loops up to **count** times, calling **`remove(0)`** until empty. **`trim_back(keep)`** loops **`pop()`** while **`size > keep`**. Both return **`self`**.
 
 ```python
-history = make_history_chain([HistoryEntry(i, 1, 0, f"page {i}") for i in range(10)])
+history = make_history_chain([HistoryEntry(i, 1, 0, f'page {i}') for i in range(10)])
 history.trim_front(5)
 assert len(history) == 5
 assert history.get(0).entry_id == 5
-
-history2 = make_history_chain([HistoryEntry(i, 1, 0, f"page {i}") for i in range(10)])
+history2 = make_history_chain([HistoryEntry(i, 1, 0, f'page {i}') for i in range(10)])
 history2.trim_back(5)
 assert len(history2) == 5
 assert history2.get(4).entry_id == 4
@@ -936,7 +892,7 @@ assert history2.get(4).entry_id == 4
 **`latest()`** returns **`tail.data`**; **`oldest_in_buffer()`** and **`current()`** both return **`head.data`**. Each returns **`None`** when the list is empty. These are fixed head/tail accessors—not a movable cursor (see **`HistoryNavigator`** below for prev/next scrubbing).
 
 ```python
-history = make_history_chain([HistoryEntry(101, 2, 120, "a"), HistoryEntry(102, 2, 340, "b")])
+history = make_history_chain([HistoryEntry(101, 2, 120, 'a'), HistoryEntry(102, 2, 340, 'b')])
 assert history.latest().entry_id == 102
 assert history.oldest_in_buffer().entry_id == 101
 assert history.current().entry_id == 101
@@ -953,6 +909,7 @@ assert history.current().entry_id == 101
 
 ```python
 class RecentHistory:
+
     def __init__(self, max_entries=5):
         self._chain = DoublyLinkedList()
         self._max = max_entries
@@ -967,11 +924,9 @@ class RecentHistory:
 
     def oldest_in_buffer(self):
         return self._chain.oldest_in_buffer()
-
-
 recent_buffer = RecentHistory(max_entries=3)
 for rid in range(10):
-    recent_buffer.push(HistoryEntry(rid, 1, 0, f"page {rid}"))
+    recent_buffer.push(HistoryEntry(rid, 1, 0, f'page {rid}'))
 assert recent_buffer.latest().entry_id == 9
 assert recent_buffer.oldest_in_buffer().entry_id == 7
 ```
@@ -986,6 +941,7 @@ assert recent_buffer.oldest_in_buffer().entry_id == 7
 
 ```python
 class HistoryNavigator:
+
     def __init__(self, history):
         self._history = history
         self._current = history.head
@@ -1004,13 +960,7 @@ class HistoryNavigator:
             return None
         self._current = self._current.prev
         return self._current.data
-
-
-history = make_history_chain([
-    HistoryEntry(101, 2, 120, "Home"),
-    HistoryEntry(102, 2, 340, "Docs"),
-    HistoryEntry(103, 2, 90, "Settings"),
-])
+history = make_history_chain([HistoryEntry(101, 2, 120, 'Home'), HistoryEntry(102, 2, 340, 'Docs'), HistoryEntry(103, 2, 90, 'Settings')])
 nav = HistoryNavigator(history)
 assert nav.current().entry_id == 101
 assert nav.next_entry().entry_id == 102
@@ -1032,13 +982,13 @@ Simplify deletion near ends when you do not keep a full `DoublyLinkedList` class
 
 ```python
 def remove_draft_entries(head):
-    dummy = Node(HistoryEntry(0, 0, 0, "sentinel"))
+    dummy = Node(HistoryEntry(0, 0, 0, 'sentinel'))
     dummy.next = head
     if head is not None:
         head.prev = dummy
     cur = dummy
     while cur.next is not None:
-        if cur.next.data.title == "":
+        if cur.next.data.title == '':
             nxt = cur.next.next
             if nxt is not None:
                 nxt.prev = cur
@@ -1062,7 +1012,7 @@ Same pointer technique as singly linked merge; doubly linked lets you splice wit
 
 ```python
 def merge_by_entry_id(a, b):
-    dummy = Node(HistoryEntry(0, 0, 0, ""))
+    dummy = Node(HistoryEntry(0, 0, 0, ''))
     tail = dummy
     while a is not None and b is not None:
         if a.data.entry_id <= b.data.entry_id:
@@ -1109,10 +1059,9 @@ CPython's `deque` is implemented as a **block doubly linked list** at C level—
 
 ```python
 from collections import deque
-
 recent = deque(maxlen=5)
-recent.append(HistoryEntry(101, 2, 120, "Home"))
-recent.appendleft(HistoryEntry(100, 2, 0, "backfill"))
+recent.append(HistoryEntry(101, 2, 120, 'Home'))
+recent.appendleft(HistoryEntry(100, 2, 0, 'backfill'))
 assert len(recent) <= 5
 ```
 
@@ -1215,7 +1164,6 @@ flowchart TD
 history = DoublyLinkedList()
 for r in [entry1, entry2]:
     history.append(r)
-
 history.push(entry)
 history.append(entry)
 history.remove(0)
@@ -1225,13 +1173,10 @@ history[i]
 history.insert(i, entry)
 history.remove(i)
 history.find_entry(entry_id)
-
-
-for r in history: ...
+for r in history:
+    ...
 history.walk_forward_from(history.head)
 history.walk_backward_from(history.tail)
-
-
 history.trim_front(3)
 history.trim_back(5)
 history.latest()

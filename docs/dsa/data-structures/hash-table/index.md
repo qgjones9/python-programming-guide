@@ -52,20 +52,18 @@ Throughout this page, **n** is the number of entries; **m** is bucket count (imp
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 
-
 @dataclass(frozen=True)
 class User:
- user_id: int
- username: str
- email: str
- role: str
-
+    user_id = 0
+    username = ''
+    email = ''
+    role = ''
 
 @dataclass(frozen=True)
 class Route:
- path: str
- handler: str
- methods: tuple[str, ...]
+    path = ''
+    handler = ''
+    methods = ()
 ```
 
 ---
@@ -101,7 +99,7 @@ sequenceDiagram
 ### 1. Empty `dict`
 
 ```python
-users_by_id: dict[int, User] = {}
+users_by_id = {}
 ```
 
 | | |
@@ -112,12 +110,8 @@ users_by_id: dict[int, User] = {}
 ### 2. Dict literal / comprehension
 
 ```python
-slug_title = {"intro": "Introduction", "api": "API Reference", "faq": "FAQ"}
-
-users = {
- u.user_id: u
- for u in load_users_from_csv("users.csv")
-}
+slug_title = {'intro': 'Introduction', 'api': 'API Reference', 'faq': 'FAQ'}
+users = {u.user_id: u for u in load_users_from_csv('users.csv')}
 ```
 
 | | |
@@ -128,7 +122,7 @@ users = {
 ### 3. `dict()` constructor
 
 ```python
-d = dict([("alice", 3), ("bob", 2)])
+d = dict([('alice', 3), ('bob', 2)])
 d2 = dict(zip(user_ids, usernames))
 ```
 
@@ -140,7 +134,7 @@ d2 = dict(zip(user_ids, usernames))
 ### 4. Empty `set`
 
 ```python
-seen_sessions: set[str] = set()
+seen_sessions = set()
 ```
 
 | | |
@@ -151,8 +145,8 @@ seen_sessions: set[str] = set()
 ### 5. `defaultdict` — missing keys get default
 
 ```python
-score_by_category: defaultdict[float] = defaultdict(float)
-score_by_category["electronics"] += 1.2
+score_by_category = defaultdict(float)
+score_by_category['electronics'] += 1.2
 ```
 
 | | |
@@ -163,8 +157,8 @@ score_by_category["electronics"] += 1.2
 ### 6. `Counter` — multiset counts
 
 ```python
-status_counts = Counter(["404", "404", "200", "500", "404"])
-assert status_counts["404"] == 3
+status_counts = Counter(['404', '404', '200', '500', '404'])
+assert status_counts['404'] == 3
 ```
 
 | | |
@@ -175,8 +169,8 @@ assert status_counts["404"] == 3
 ### 7. Build index from list of rows (manual)
 
 ```python
-def index_users(rows: list[dict]) -> dict[int, dict]:
- return {row["user_id"]: row for row in rows}
+def index_users(rows):
+    return {row['user_id']: row for row in rows}
 ```
 
 | | |
@@ -210,7 +204,7 @@ flowchart TD
 **Rule:** Use `user_id: int` or `(tenant_id, user_id)` tuple as key—not a mutable row `dict` as key.
 
 ```python
-key = (row["tenant_id"], row["user_id"])
+key = (row['tenant_id'], row['user_id'])
 index[key] = row
 ```
 
@@ -223,8 +217,8 @@ index[key] = row
 **Open addressing:** on collision, probe `i+1`, `i+2`, … (CPython dict uses a variant).
 
 ```python
-def toy_hash(key: str, m: int) -> int:
- return sum(ord(c) for c in key) % m
+def toy_hash(key, m):
+    return sum((ord(c) for c in key)) % m
 ```
 
 | Case | Time |
@@ -243,32 +237,31 @@ Simplified teaching class (not production).
 ```python
 from __future__ import annotations
 
-from typing import Any, Hashable, Iterator
 
 
 class SeparateChainingHashTable:
- def __init__(self, capacity: int = 8) -> None:
+ def __init__(self, capacity= 8):
  self._capacity = max(4, capacity)
- self._buckets: list[list[tuple[Hashable, Any]]] = [[] for _ in range(self._capacity)]
+ self._buckets= [[] for _ in range(self._capacity)]
  self._size = 0
 
- def _index(self, key: Hashable) -> int:
+ def _index(self, key):
  return hash(key) % self._capacity
 
- def __len__(self) -> int:
+ def __len__(self):
  return self._size
 
- def __contains__(self, key: Hashable) -> bool:
+ def __contains__(self, key):
  return self.get(key, _missing := object()) is not _missing
 
- def get(self, key: Hashable, default: Any = None) -> Any:
+ def get(self, key, default= None):
  bucket = self._buckets[self._index(key)]
  for k, v in bucket:
  if k == key:
  return v
  return default
 
- def set(self, key: Hashable, value: Any) -> None:
+ def set(self, key, value):
  i = self._index(key)
  bucket = self._buckets[i]
  for j, (k, _) in enumerate(bucket):
@@ -280,7 +273,7 @@ class SeparateChainingHashTable:
  if self._size > self._capacity * 2:
  self._resize(self._capacity * 2)
 
- def delete(self, key: Hashable) -> bool:
+ def delete(self, key):
  i = self._index(key)
  bucket = self._buckets[i]
  for j, (k, _) in enumerate(bucket):
@@ -290,12 +283,12 @@ class SeparateChainingHashTable:
  return True
  return False
 
- def keys(self) -> Iterator[Hashable]:
+ def keys(self):
  for bucket in self._buckets:
  for k, _ in bucket:
  yield k
 
- def _resize(self, new_cap: int) -> None:
+ def _resize(self, new_cap):
  old_items = [(k, v) for b in self._buckets for k, v in b]
  self._capacity = new_cap
  self._buckets = [[] for _ in range(self._capacity)]
@@ -316,9 +309,8 @@ class SeparateChainingHashTable:
 ### `d[key] = value` / `setdefault`
 
 ```python
-users: dict[int, User] = {}
-users[4021] = User(4021, "alice", "alice@example.com", "admin")
-
+users = {}
+users[4021] = User(4021, 'alice', 'alice@example.com', 'admin')
 meta = users.setdefault(4021, default_user)
 ```
 
@@ -362,7 +354,7 @@ removed = users.pop(4022, None)
 
 ```python
 if 4021 in users:
- ...
+    ...
 ```
 
 | | |
@@ -376,7 +368,7 @@ if 4021 in users:
 
 ```python
 for user_id, user in users.items():
- admin_count += 1 if user.role == "admin" else 0
+    admin_count += 1 if user.role == 'admin' else 0
 ```
 
 | | |
@@ -405,7 +397,7 @@ merged = users_a | users_b
 ### `dict comprehension` — rebuild index
 
 ```python
-admins_only = {uid: u for uid, u in users.items() if u.role == "admin"}
+admins_only = {uid: u for uid, u in users.items() if u.role == 'admin'}
 ```
 
 | | |
@@ -418,10 +410,10 @@ admins_only = {uid: u for uid, u in users.items() if u.role == "admin"}
 ## `set` operations
 
 ```python
-seen: set[str] = set()
-seen.add("sess-abc123")
-if "sess-def456" in seen:
- ...
+seen = set()
+seen.add('sess-abc123')
+if 'sess-def456' in seen:
+    ...
 union = seen | other
 ```
 
@@ -439,7 +431,7 @@ union = seen | other
 ### Status code frequency
 
 ```python
-statuses = Counter(row["status"] for row in log_rows)
+statuses = Counter((row['status'] for row in log_rows))
 top3 = statuses.most_common(3)
 ```
 
@@ -451,9 +443,9 @@ top3 = statuses.most_common(3)
 ### Score by category without KeyError
 
 ```python
-score_by_category: defaultdict[float] = defaultdict(float)
+score_by_category = defaultdict(float)
 for user in users.values():
- score_by_category[user.role] += 1.0
+    score_by_category[user.role] += 1.0
 ```
 
 | | |
@@ -464,8 +456,8 @@ for user in users.values():
 ### `Counter` arithmetic
 
 ```python
-january = Counter({"404": 20, "200": 30})
-february = Counter({"404": 18, "200": 35})
+january = Counter({'404': 20, '200': 30})
+february = Counter({'404': 18, '200': 35})
 diff = january - february
 ```
 
@@ -489,8 +481,8 @@ sequenceDiagram
 ```python
 import csv
 
-def load_user_index(path: str) -> dict[int, dict]:
- index: dict[int, dict] = {}
+def load_user_index(path):
+ index= {}
  with open(path, newline="") as f:
  for row in csv.DictReader(f):
  uid = int(row["user_id"])
@@ -536,9 +528,8 @@ row = index[4021]
 
 ```python
 import pandas as pd
-
-users_df = pd.read_parquet("users.parquet")
-users_df.set_index("user_id", inplace=True)
+users_df = pd.read_parquet('users.parquet')
+users_df.set_index('user_id', inplace=True)
 row = users_df.loc[4021]
 ```
 
@@ -569,8 +560,8 @@ flowchart TD
 Use when you need a **set as dict key** (e.g. grouping permission bundles):
 
 ```python
-perms = frozenset({"read", "write", "admin"})
-role_score: dict[frozenset[str], float] = {}
+perms = frozenset({'read', 'write', 'admin'})
+role_score = {}
 role_score[perms] = 12.4
 ```
 
@@ -589,8 +580,8 @@ Hash table caches **function arguments** → return values:
 from functools import lru_cache
 
 @lru_cache(maxsize=4096)
-def profile_for_user(user_id: int) -> dict:
- return load_profile(user_id)
+def profile_for_user(user_id):
+    return load_profile(user_id)
 ```
 
 | | |
@@ -605,9 +596,9 @@ Keys must be **hashable**—use `str`, `int`, not mutable `dict`.
 ## `defaultdict(list)` — group records by category
 
 ```python
-by_category: defaultdict[list[dict]] = defaultdict(list)
+by_category = defaultdict(list)
 for row in log_rows:
- by_category[row["category"]].append(row)
+    by_category[row['category']].append(row)
 ```
 
 | | |
@@ -660,11 +651,10 @@ You cannot switch CPython's policy; understanding collisions explains rare worst
 ```python
 @dataclass(frozen=True)
 class SessionKey:
- tenant_id: str
- user_id: int
-
-index: dict[SessionKey, User] = {}
-index[SessionKey("acme", 4021)] = user
+    tenant_id = ''
+    user_id = 0
+index = {}
+index[SessionKey('acme', 4021)] = user
 ```
 
 | | |
@@ -680,15 +670,10 @@ Frozen dataclasses generate `__hash__` automatically when `eq=True`.
 
 ```python
 from collections import Counter
-
-month_status = Counter(
- (row["month"], row["status"])
- for row in log_rows
-)
-
+month_status = Counter(((row['month'], row['status']) for row in log_rows))
 latency_weights = Counter()
 for row in log_rows:
- latency_weights[row["status"]] += float(row["latency_ms"])
+    latency_weights[row['status']] += float(row['latency_ms'])
 ```
 
 | Operation | Time |
@@ -708,10 +693,9 @@ for row in log_rows:
 | Repeated SQL filters | database with B-tree index |
 
 ```python
-user_index = {int(r["user_id"]): r for r in rows}
-
+user_index = {int(r['user_id']): r for r in rows}
 import pandas as pd
-archive = pd.read_parquet("users.parquet")
+archive = pd.read_parquet('users.parquet')
 user = archive.loc[4021]
 ```
 
@@ -720,9 +704,8 @@ user = archive.loc[4021]
 ## Set algebra for tag logic
 
 ```python
-beta_users = {"u-101", "u-102", "u-103"}
-premium_users = {"u-102", "u-201", "u-202"}
-
+beta_users = {'u-101', 'u-102', 'u-103'}
+premium_users = {'u-102', 'u-201', 'u-202'}
 both_tiers = beta_users & premium_users
 either = beta_users | premium_users
 beta_only = beta_users - premium_users
@@ -740,9 +723,9 @@ symmetric = beta_users ^ premium_users
 ## Inverting index: category → list of user_ids
 
 ```python
-category_users: defaultdict[list[int]] = defaultdict(list)
+category_users = defaultdict(list)
 for uid, user in users_by_id.items():
- category_users[user.role].append(uid)
+    category_users[user.role].append(uid)
 ```
 
 | Build | Lookup users for category |
@@ -758,8 +741,8 @@ Pair with [Tries](../tries/index.md) when the UI searches **product names** or *
 When a CPython `dict` grows past ~2/3 full, it **resizes** to a larger table—occasional O(n) rehash, **amortized O(1)** insert. You see a one-time hitch when a dict jumps from thousands to millions of keys; pre-size with comprehension from known CSV row count if profiling shows resize spikes.
 
 ```python
-n_users = 10_000
-users_by_id = {int(r["user_id"]): r for r in rows}
+n_users = 10000
+users_by_id = {int(r['user_id']): r for r in rows}
 ```
 
 ---
@@ -779,16 +762,12 @@ users_by_id = {int(r["user_id"]): r for r in rows}
 
 ```python
 from collections import Counter, defaultdict
-
-users: dict[int, User] = {u.user_id: u for u in load()}
+users = {u.user_id: u for u in load()}
 u = users[4021]
-
-seen: set[str] = set()
+seen = set()
 seen.add(session_id)
-
-cnt = Counter(row["status"] for row in rows)
-
-score_by_category: defaultdict[float] = defaultdict(float)
+cnt = Counter((row['status'] for row in rows))
+score_by_category = defaultdict(float)
 score_by_category[category_id] += score
 ```
 

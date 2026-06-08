@@ -96,30 +96,26 @@ flowchart LR
 ## Example data types
 
 ```python
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-
 @dataclass(order=True, slots=True)
 class ReviewTask:
- neg_priority: float
- record_id: int = field(compare=False)
- analyst: str = field(compare=False, default="")
-
+ neg_priority = 0.0
+ record_id= field(compare=False)
+ analyst= field(compare=False, default="")
 
 @dataclass(frozen=True, slots=True)
 class DataRecord:
- record_id: int
- value: float
- label: str
-
+ record_id = 0
+ value = 0.0
+ label = ""
 
 @dataclass(frozen=True, slots=True)
 class SystemAlert:
- source: str
- severity: int
- coverage_pct: float
+ source = ""
+ severity = 0
+ coverage_pct = 0.0
 ```
 
 ---
@@ -155,10 +151,10 @@ pq = PriorityQueue.from_pairs(tasks, max_queue=True)
 ```python
 import heapq
 
-pq: list[tuple[float, int, DataRecord]] = []
+pq= []
 counter = 0
 
-def push(record: DataRecord, priority: float) -> None:
+def push(record, priority):
  global counter
  heapq.heappush(pq, (priority, counter, record))
  counter += 1
@@ -174,7 +170,7 @@ def push(record: DataRecord, priority: float) -> None:
 ```python
 from queue import PriorityQueue as ThreadSafePQ
 
-tpq: ThreadSafePQ[tuple[float, DataRecord]] = ThreadSafePQ()
+tpq= ThreadSafePQ()
 tpq.put((7.5, record))
 item = tpq.get()
 ```
@@ -213,53 +209,47 @@ flowchart TD
 Wraps the same array heap as [Max heap](../max-heap/index.md) with ADT naming and tie-break counter for stable ordering among equal priorities.
 
 ```python
-from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Generic, Iterable, Iterator, TypeVar
-
-T = TypeVar("T")
-
 
 @dataclass
-class _PQEntry(Generic[T]):
- priority: float
- seq: int
- item: T
+class _PQEntry:
+ priority = 0.0
+ seq = 0
+ item = None
 
-
-class PriorityQueue(Generic[T]):
- def __init__(self, max_queue: bool = True) -> None:
- self._heap: list[_PQEntry[T]] = []
+class PriorityQueue:
+ def __init__(self, max_queue= True):
+ self._heap= []
  self._seq = 0
  self._max_queue = max_queue
 
  @classmethod
  def from_pairs(
- cls, pairs: Iterable[tuple[float, T]], *, max_queue: bool = True
- ) -> PriorityQueue[T]:
- pq: PriorityQueue[T] = cls(max_queue=max_queue)
+ cls, pairs, *, max_queue= True
+ ):
+ pq= cls(max_queue=max_queue)
  for prio, item in pairs:
  pq.push(item, prio)
  return pq
 
- def __len__(self) -> int:
+ def __len__(self):
  return len(self._heap)
 
- def is_empty(self) -> bool:
+ def is_empty(self):
  return not self._heap
 
- def clear(self) -> None:
+ def clear(self):
  self._heap.clear()
  self._seq = 0
 
- def push(self, item: T, priority: float) -> None:
+ def push(self, item, priority):
  entry = _PQEntry(priority, self._seq, item)
  self._seq += 1
  self._heap.append(entry)
  self._sift_up(len(self._heap) - 1)
 
- def pop(self) -> T:
+ def pop(self):
  if not self._heap:
  raise IndexError("pop from empty priority queue")
  self._swap(0, len(self._heap) - 1)
@@ -268,24 +258,24 @@ class PriorityQueue(Generic[T]):
  self._sift_down(0)
  return entry.item
 
- def peek(self) -> T:
+ def peek(self):
  if not self._heap:
  raise IndexError("peek from empty priority queue")
  return self._heap[0].item
 
- def peek_priority(self) -> float:
+ def peek_priority(self):
  if not self._heap:
  raise IndexError("peek from empty priority queue")
  return self._heap[0].priority
 
- def merge(self, other: PriorityQueue[T]) -> None:
- temp: list[tuple[float, T]] = []
+ def merge(self, other):
+ temp= []
  while not other.is_empty():
  temp.append((other.peek_priority(), other.pop()))
  for prio, item in temp:
  self.push(item, prio)
 
- def _better(self, a: _PQEntry[T], b: _PQEntry[T]) -> bool:
+ def _better(self, a, b):
  if self._max_queue:
  if a.priority != b.priority:
  return a.priority > b.priority
@@ -294,19 +284,19 @@ class PriorityQueue(Generic[T]):
  return a.priority < b.priority
  return a.seq < b.seq
 
- def _parent(self, i: int) -> int:
+ def _parent(self, i):
  return (i - 1) // 2
 
- def _left(self, i: int) -> int:
+ def _left(self, i):
  return 2 * i + 1
 
- def _right(self, i: int) -> int:
+ def _right(self, i):
  return 2 * i + 2
 
- def _swap(self, i: int, j: int) -> None:
+ def _swap(self, i, j):
  self._heap[i], self._heap[j] = self._heap[j], self._heap[i]
 
- def _sift_up(self, i: int) -> None:
+ def _sift_up(self, i):
  while i > 0:
  p = self._parent(i)
  if self._better(self._heap[p], self._heap[i]):
@@ -314,7 +304,7 @@ class PriorityQueue(Generic[T]):
  self._swap(p, i)
  i = p
 
- def _sift_down(self, i: int) -> None:
+ def _sift_down(self, i):
  n = len(self._heap)
  while True:
  best = i
@@ -329,7 +319,7 @@ class PriorityQueue(Generic[T]):
  self._swap(i, best)
  i = best
 
- def __iter__(self) -> Iterator[T]:
+ def __iter__(self):
  for e in self._heap:
  yield e.item
 ```
@@ -347,24 +337,24 @@ For Dijkstra and schedulers that **improve** a vertex’s distance, keep **`id �
 
 ```python
 class IndexedMinPQ:
- def __init__(self, n: int) -> None:
- self._pq: list[int] = []
- self._qp: list[int] = [-1] * n
- self._keys: list[float] = [float("inf")] * n
+ def __init__(self, n):
+ self._pq= []
+ self._qp= [-1] * n
+ self._keys= [float("inf")] * n
 
- def insert(self, i: int, key: float) -> None:
+ def insert(self, i, key):
  self._keys[i] = key
  self._qp[i] = len(self._pq)
  self._pq.append(i)
  self._sift_up(self._qp[i])
 
- def decrease_key(self, i: int, key: float) -> None:
+ def decrease_key(self, i, key):
  if key >= self._keys[i]:
  return
  self._keys[i] = key
  self._sift_up(self._qp[i])
 
- def pop_min(self) -> tuple[int, float]:
+ def pop_min(self):
  if not self._pq:
  raise IndexError("empty")
  root = self._pq[0]
@@ -375,24 +365,24 @@ class IndexedMinPQ:
  self._sift_down(0)
  return root, self._keys[root]
 
- def _better(self, i: int, j: int) -> bool:
+ def _better(self, i, j):
  return self._keys[i] < self._keys[j]
 
- def _swap(self, a: int, b: int) -> None:
+ def _swap(self, a, b):
  i, j = self._pq[a], self._pq[b]
  self._pq[a], self._pq[b] = j, i
  self._qp[i], self._qp[j] = b, a
 
- def _parent(self, i: int) -> int:
+ def _parent(self, i):
  return (i - 1) // 2
 
- def _left(self, i: int) -> int:
+ def _left(self, i):
  return 2 * i + 1
 
- def _right(self, i: int) -> int:
+ def _right(self, i):
  return 2 * i + 2
 
- def _sift_up(self, j: int) -> None:
+ def _sift_up(self, j):
  while j > 0:
  p = self._parent(j)
  if self._better(self._pq[p], self._pq[j]):
@@ -400,7 +390,7 @@ class IndexedMinPQ:
  self._swap(p, j)
  j = p
 
- def _sift_down(self, j: int) -> None:
+ def _sift_down(self, j):
  n = len(self._pq)
  while True:
  best = j
@@ -534,7 +524,7 @@ Combine two queues—naive: pop all from `other` and push into `self`.
 ```python
 import heapq
 
-dist_pq: list[tuple[float, int]] = []
+dist_pq= []
 heapq.heappush(dist_pq, (0.0, start_node))
 d, u = heapq.heappop(dist_pq)
 ```
@@ -548,9 +538,9 @@ Toggle `max_queue=False` on `PriorityQueue` or negate priorities for max behavio
 ### Priority task desk
 
 ```python
-def process_reviews(tasks: list[tuple[float, ReviewTask]]) -> list[ReviewTask]:
+def process_reviews(tasks):
  pq = PriorityQueue.from_pairs(tasks)
- done: list[ReviewTask] = []
+ done= []
  while not pq.is_empty():
  done.append(pq.pop())
  return done
@@ -566,7 +556,7 @@ def process_reviews(tasks: list[tuple[float, ReviewTask]]) -> list[ReviewTask]:
 ### Dijkstra on weighted graph (min-priority)
 
 ```python
-def dijkstra(adj: dict[int, list[tuple[int, float]]], start: int, n: int) -> list[float]:
+def dijkstra(adj, start, n):
  dist = [float("inf")] * n
  dist[start] = 0.0
  pq = IndexedMinPQ(n)
@@ -605,9 +595,8 @@ Same as [Max heap](../max-heap/index.md) size-k pattern—PQ language emphasizes
 ```python
 import heapq
 
-
-def top_k_scores(candidates: list[tuple[float, str]], k: int) -> list[str]:
- heap: list[tuple[float, str]] = []
+def top_k_scores(candidates, k):
+ heap= []
  for score, label in candidates:
  if len(heap) < k:
  heapq.heappush(heap, (score, label))
@@ -628,8 +617,8 @@ def top_k_scores(candidates: list[tuple[float, str]], k: int) -> list[str]:
 ```python
 @dataclass(order=True)
 class Event:
- time: float
- kind: str = field(compare=False)
+ time = 0.0
+ kind= field(compare=False)
 
 events = PriorityQueue[Event](max_queue=False)
 events.push(Event(0.0, "midnight run"), priority=0.0)
@@ -680,7 +669,7 @@ flowchart TD
 import asyncio
 
 async def schedule():
- apq: asyncio.PriorityQueue[tuple[int, str]] = asyncio.PriorityQueue()
+ apq= asyncio.PriorityQueue()
  await apq.put((1, "report render"))
 ```
 

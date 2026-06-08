@@ -84,7 +84,7 @@ flowchart TB
 ### 1. Empty set — **not** `{}` (that is a dict)
 
 ```python
-beta_users: set[str] = set()
+beta_users= set()
 ```
 
 | | |
@@ -157,7 +157,7 @@ users = set(df["user_id"].dropna().unique())
 Conceptual buckets: `hash(x) % table_size` → chain or open addressing (CPython uses open addressing with perturbation).
 
 ```python
-def demo_membership() -> None:
+def demo_membership():
  admins = {"u-101", "u-201", "u-301", "u-401"}
  assert "u-101" in admins
  admins.add("u-501")
@@ -181,12 +181,12 @@ Used in C++ `std::set`, Java `TreeSet`—not Python stdlib. **Red–black** or s
 
 ```python
 class OrderedSet:
- def __init__(self) -> None:
+ def __init__(self):
  self.root = None
 
- def insert(self, key: str) -> None: ...
- def contains(self, key: str) -> bool: ...
- def inorder(self) -> list[str]: ...
+ def insert(self, key): ...
+ def contains(self, key): ...
+ def inorder(self): ...
 ```
 
 | Operation | Time | Space |
@@ -295,7 +295,7 @@ READ_ONLY = frozenset({"read", "list"})
 WRITE = frozenset({"read", "write", "delete"})
 ADMIN = READ_ONLY | WRITE | frozenset({"admin"})
 
-def same_tier(p1: str, p2: str) -> bool:
+def same_tier(p1, p2):
  for tier in (READ_ONLY, WRITE, ADMIN):
  if p1 in tier and p2 in tier:
  return True
@@ -312,7 +312,7 @@ def same_tier(p1: str, p2: str) -> bool:
 ## Application: two-month login overlap
 
 ```python
-def session_ids_with_login(rows: list[dict]) -> set[str]:
+def session_ids_with_login(rows):
  return {r["session_id"] for r in rows if r["event"] == "login"}
 
 jan = session_ids_with_login(january_events)
@@ -346,16 +346,16 @@ retryable_hosts = {
 When universe is **small and fixed** (32 feature flags, 64 host index), bit vectors give O(1) word-sized ops.
 
 ```python
-def bitset_from_ids(ids: list[int], universe: int = 32) -> int:
+def bitset_from_ids(ids, universe=32):
  mask = 0
  for i in ids:
  mask |= 1 << i
  return mask
 
-def in_bitset(mask: int, i: int) -> bool:
+def in_bitset(mask, i):
  return (mask >> i) & 1 == 1
 
-def union_masks(a: int, b: int) -> int:
+def union_masks(a, b):
  return a | b
 ```
 

@@ -164,9 +164,9 @@ def _ms_inplace(a, lo, hi, buf):
 
 @dataclass
 class TaskItem:
- task_id: int
- priority: int
- label: str
+ task_id = 0
+ priority = 0
+ label = ""
 
 
 def merge_sort_items(items):
@@ -226,7 +226,7 @@ Full merge sort on `[32.1, 10.0, 28.4, 10.0]` splits until singletons, then merg
 - **`heapq`:** partial order for top-*k*; not a substitute for full stable sort.
 
 ```python
-items.sort(key=lambda t: t.task_id)  # Timsort — use in production
+items.sort(key=lambda t: t.task_id)
 ```
 
 ---
@@ -240,7 +240,7 @@ items.sort(key=lambda t: t.task_id)  # Timsort — use in production
 | External sort (disk chunks) | Anything &gt; few thousand elements in pure Python |
 
 ```python
-sorted(batch, key=lambda t: (t.priority, t.task_id))  # stable tuple key
+sorted(batch, key=lambda t: (t.priority, t.task_id))
 ```
 
 ---
@@ -283,8 +283,8 @@ Recurrence: $T(n) = 2T(n/2) + \Theta(n) \Rightarrow \Theta(n \log n)$.
 ```python
 sorted_values = merge_sort(value_list)
 merge_sort_inplace(value_list)
-merge_sort_items(batch)  # by task_id
-items.sort(key=lambda t: t.task_id)  # production
+merge_sort_items(batch)
+items.sort(key=lambda t: t.task_id)
 ```
 
 **Merge sort:** stable, Θ(n log n) always, Θ(n) extra space—the textbook backbone for **merging sorted sequences**.

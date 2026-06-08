@@ -79,21 +79,19 @@ You will rarely store an entire catalog in a hand-rolled `LinkedList`. The struc
 ```python
 from dataclasses import dataclass
 
-
 @dataclass
 class PlaylistTrack:
-    track_id: int
-    disc: int
-    duration_ms: float
-    title: str
-
+    track_id = 0
+    disc = 0
+    duration_ms = 0.0
+    title = ''
 
 @dataclass
 class HistoryEntry:
-    entry_id: int
-    tab_id: int
-    duration_ms: float
-    title: str
+    entry_id = 0
+    tab_id = 0
+    duration_ms = 0.0
+    title = ''
 ```
 
 Each node's `data` can be a `PlaylistTrack`, a `HistoryEntry`, a `track_id`, or an event dict. `LinkedList` is defined in [Reference implementation](#reference-implementation) below; later sections use `PlaylistTrack` and `HistoryEntry` in operation examples.
@@ -140,6 +138,7 @@ Use a small class. The list **logic** lives in a wrapper class that holds `head`
 
 ```python
 class Node:
+
     def __init__(self, data, next=None):
         self.data = data
         self.next = next
@@ -180,11 +179,11 @@ head = None
 
 ```python
 class LinkedList:
+
     def __init__(self, values=None):
         self.head = None
         self.tail = None
         self.size = 0
-
 ll = LinkedList()
 assert ll.head is None
 ```
@@ -198,8 +197,7 @@ assert ll.head is None
 
 ```python
 head = Node(42)
-
-head = Node("only", next=None)
+head = Node('only', next=None)
 ```
 
 | | |
@@ -223,7 +221,6 @@ def from_iterable(items):
             tail.next = node
             tail = node
     return head
-
 track_ids = [401, 402, 403]
 chain = from_iterable(track_ids)
 ```
@@ -243,7 +240,6 @@ def from_iterable_reversed(items):
     for item in items:
         head = Node(item, next=head)
     return head
-
 chain = from_iterable_reversed([10, 20, 30])
 ```
 
@@ -256,6 +252,7 @@ chain = from_iterable_reversed([10, 20, 30])
 
 ```python
 class LinkedList:
+
     def __init__(self, values=None):
         self.head = None
         self.tail = None
@@ -263,7 +260,6 @@ class LinkedList:
         if values is not None:
             for value in values:
                 self.append(value)
-
 ll = LinkedList([1, 2, 3])
 ```
 
@@ -311,6 +307,7 @@ The sections below use this **complete** singly linked list (`LinkedList` class)
 
 ```python
 class Node:
+
     def __init__(self, data, next=None):
         self.data = data
         self.next = next
@@ -322,11 +319,9 @@ class LinkedList:
         self.tail = None
         self.next = None
         self.size = 0
-
         if values is not None:
             for value in values:
                 self.append(value)
-
 
     def __str__(self):
         current = self.head
@@ -334,12 +329,10 @@ class LinkedList:
         while current:
             out.append(repr(current.data))
             current = current.next
-        return f"LinkedList([{', '.join(out)}])"
-
+        return f'LinkedList([{', '.join(out)}])'
 
     def __repr__(self):
         return self.__str__()
-
 
     def __len__(self):
         return self.size
@@ -350,97 +343,54 @@ class LinkedList:
             yield cur.data
             cur = cur.next
 
-
     def is_empty(self):
-
         return self.head is None
 
-
     def prepend(self, data):
-
         new_node = Node(data, next=self.head)
-
-
         self.head = new_node
-
-
         if self.tail is None:
             self.tail = new_node
-
-
         self.size += 1
 
-
     def append(self, data):
-
         node = Node(data)
-
-
         if self.tail is None:
             self.head = self.tail = node
         else:
-
             self.tail.next = node
-
             self.tail = node
-
-
         self.size += 1
 
     def insert(self, index, data):
-
         if index >= self.size:
             self.append(data)
             return
-
-
         if index == 0:
             self.prepend(data)
             return
-
-
         prev = self._node_at(index - 1)
-
-
         node = Node(data, next=prev.next)
-
-
         prev.next = node
-
-
         self.size += 1
 
     def pop_head(self):
-
         if self.head is None:
-            raise IndexError("pop from empty list")
-
+            raise IndexError('pop from empty list')
         data = self.head.data
-
-
         if self.head.next is None:
             self.head = None
             self.tail = None
-
         else:
             self.head = self.head.next
-
-
         self.size -= 1
-
-
         return data
 
     def pop_tail(self):
-
         if self.head is None:
-            raise IndexError("pop from empty list")
-
-
+            raise IndexError('pop from empty list')
         if self.head.next == None:
             return self.pop_head()
-
-
         else:
             prev = self._node_at(self.size - 2)
             data = prev.next.data
@@ -450,27 +400,18 @@ class LinkedList:
             return data
 
     def remove(self, index):
-
         if index < 0 or index >= self.size:
-            raise IndexError("index out of range")
-
-
+            raise IndexError('index out of range')
         if index == 0:
             return self.pop_head()
-
-
         else:
-            prev      = self._node_at(index - 1)
-            cur       = prev.next
+            prev = self._node_at(index - 1)
+            cur = prev.next
             prev.next = cur.next
-
-
             if prev.next is None:
                 self.tail = prev
-
         self.size -= 1
         return cur.data
-
 
     def get(self, index):
         return self._node_at(index).data
@@ -478,17 +419,15 @@ class LinkedList:
     def set(self, index, data):
         self._node_at(index).data = data
 
-
     def _node_at(self, index):
         if index < 0 or index >= self.size:
-            raise IndexError("index out of range")
+            raise IndexError('index out of range')
         cur = self.head
         for _ in range(index):
             cur = cur.next
         return cur
 
     def index_of(self, data):
-
         index = 0
         cur = self.head
         while cur is not None:
@@ -497,7 +436,6 @@ class LinkedList:
             cur = cur.next
             index += 1
         raise ValueError()
-
 
     def contains(self, data):
         cur = self.head
@@ -525,7 +463,6 @@ class LinkedList:
         self.head = None
         self.tail = None
         self.size = 0
-
 
     def extend(self, other):
         self.tail.next = other.head
@@ -571,7 +508,6 @@ flowchart TB
 ll = LinkedList()
 assert ll.is_empty()
 assert len(ll) == 0
-
 ll.append(1)
 assert not ll.is_empty()
 assert len(ll) == 1
@@ -592,12 +528,8 @@ New node points to old head; update `head` (and `tail` if list was empty).
 ll = LinkedList([2, 3])
 ll.prepend(1)
 assert list(ll) == [1, 2, 3]
-
-buffer = LinkedList([
-    PlaylistTrack(201, 3, 212000, "Neon Skyline"),
-    PlaylistTrack(202, 3, 198000, "Late Shift"),
-])
-buffer.prepend(PlaylistTrack(200, 3, 245000, "Opening Act"))
+buffer = LinkedList([PlaylistTrack(201, 3, 212000, 'Neon Skyline'), PlaylistTrack(202, 3, 198000, 'Late Shift')])
+buffer.prepend(PlaylistTrack(200, 3, 245000, 'Opening Act'))
 ```
 
 | | |
@@ -625,13 +557,12 @@ With a **tail pointer**, no traversal. Without tail, each append is O(n).
 
 ```python
 ll = LinkedList()
-ll.append("a")
-ll.append("b")
-assert list(ll) == ["a", "b"]
-
+ll.append('a')
+ll.append('b')
+assert list(ll) == ['a', 'b']
 playlist = LinkedList()
-playlist.append(PlaylistTrack(1, 1, 212000, "Neon Skyline"))
-playlist.append(PlaylistTrack(2, 1, 198000, "Late Shift"))
+playlist.append(PlaylistTrack(1, 1, 212000, 'Neon Skyline'))
+playlist.append(PlaylistTrack(2, 1, 198000, 'Late Shift'))
 ```
 
 | | |
@@ -664,7 +595,6 @@ Index `0` delegates to `prepend`. Otherwise find the **predecessor** at `index -
 ll = LinkedList([10, 30])
 ll.insert(1, 20)
 assert list(ll) == [10, 20, 30]
-
 ll.insert(0, 5)
 assert list(ll) == [5, 10, 20, 30]
 ```
@@ -690,10 +620,10 @@ flowchart TD
 No shortcut: walk from head.
 
 ```python
-ll = LinkedList(["a", "b", "c"])
-assert ll.get(1) == "b"
-ll.set(1, "B")
-assert ll.get(1) == "B"
+ll = LinkedList(['a', 'b', 'c'])
+assert ll.get(1) == 'b'
+ll.set(1, 'B')
+assert ll.get(1) == 'B'
 ```
 
 | | |
@@ -771,10 +701,10 @@ If you hold a **node reference** but not its index or predecessor, see [copy-val
 Linear search.
 
 ```python
-ll = LinkedList(["x", "y", "z"])
-assert ll.index_of("y") == 1
-assert ll.contains("z")
-assert not ll.contains("w")
+ll = LinkedList(['x', 'y', 'z'])
+assert ll.index_of('y') == 1
+assert ll.contains('z')
+assert not ll.contains('w')
 ```
 
 | | |
@@ -884,15 +814,10 @@ assert ll.to_list() == [1, 2, 3, 4]
 
 ```python
 ll = LinkedList([10, 20, 30])
-total = sum(x for x in ll)
+total = sum((x for x in ll))
 assert total == 60
-
-playlist = LinkedList([
-    PlaylistTrack(1, 1, 212000, "Neon Skyline"),
-    PlaylistTrack(2, 1, 198000, "Late Shift"),
-    PlaylistTrack(3, 1, 245000, "Opening Act"),
-])
-total_duration = sum(r.duration_ms for r in playlist)
+playlist = LinkedList([PlaylistTrack(1, 1, 212000, 'Neon Skyline'), PlaylistTrack(2, 1, 198000, 'Late Shift'), PlaylistTrack(3, 1, 245000, 'Opening Act')])
+total_duration = sum((r.duration_ms for r in playlist))
 ```
 
 | | |
@@ -942,9 +867,9 @@ The **copy-value hack** avoids the predecessor scan when you may **mutate** `nod
 2. Delete `node.next` instead — O(1) when you hold `node`, because `node` is the predecessor of `node.next`.
 
 ```python
-def delete_node_copy_hack(node: Node) -> None:
+def delete_node_copy_hack(node):
     if node.next is None:
-        raise ValueError("cannot delete tail with copy-value hack")
+        raise ValueError('cannot delete tail with copy-value hack')
     node.data = node.next.data
     node.next = node.next.next
 ```
@@ -952,12 +877,10 @@ def delete_node_copy_hack(node: Node) -> None:
 Application example: a browser history chain holds a `Node` for “Entry 102 — Docs”. You want to remove that entry without scanning from the head; copy Entry 103’s data into Entry 102’s node, then unlink Entry 103.
 
 ```python
-n3 = Node(HistoryEntry(103, 2, 12000, "Settings"))
-n2 = Node(HistoryEntry(102, 2, 45000, "Docs"), next=n3)
-n1 = Node(HistoryEntry(101, 2, 8000, "Home"), next=n2)
-
+n3 = Node(HistoryEntry(103, 2, 12000, 'Settings'))
+n2 = Node(HistoryEntry(102, 2, 45000, 'Docs'), next=n3)
+n1 = Node(HistoryEntry(101, 2, 8000, 'Home'), next=n2)
 delete_node_copy_hack(n2)
-
 assert n1.next.data.entry_id == 103
 assert n1.next.next is None
 ```
@@ -1141,8 +1064,6 @@ sequenceDiagram
 
 ```python
 from collections import deque
-
-
 recent = deque(maxlen=10)
 recent.append(9021)
 recent.appendleft(9020)
@@ -1214,7 +1135,6 @@ Official Python sequences tutorial (arrays, not linked lists): [Data Structures 
 ```python
 head = None
 ll = LinkedList([1, 2, 3])
-
 ll.prepend(0)
 x = ll.pop_head()
 ll.append(4)
@@ -1224,7 +1144,6 @@ ll.remove(i)
 ll.pop_tail()
 ll.extend(other_ll)
 ll.sort()
-
 for entry in ll:
     ...
 ```

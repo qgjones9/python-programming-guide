@@ -58,20 +58,18 @@ Throughout this page, **n** is the number of elements on the stack (e.g. edits i
 ```python
 from dataclasses import dataclass
 
-
 @dataclass
 class WorkItem:
- task_id: int
- priority: int
- metric: float
- label: str
-
+ task_id = 0
+ priority = 0
+ metric = 0.0
+ label = ""
 
 @dataclass
 class TextEdit:
- doc_id: int
- old_label: str | None = None
- new_label: str = ""
+ doc_id = 0
+ old_label= None
+ new_label= ""
 ```
 
 ---
@@ -167,7 +165,6 @@ s = ListStack()
 
 ```python
 from dataclasses import dataclass, field
-
 
 @dataclass
 class SNode:
@@ -271,12 +268,10 @@ Top = head; O(1) push/pop; no dynamic array resize.
 ```python
 from dataclasses import dataclass, field
 
-
 @dataclass
 class SNode:
  data = field()
  next = field(default=None)
-
 
 class LinkedStack:
  def __init__(self):
@@ -786,7 +781,7 @@ deep_checkpoint = copy.deepcopy(undo_stack)
 ## Quick reference card
 
 ```python
-stack: list[TextEdit] = []
+stack= []
 stack.append(TextEdit(4022, "draft", "published"))
 top = stack[-1]
 edit = stack.pop()

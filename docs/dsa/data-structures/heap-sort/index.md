@@ -103,16 +103,16 @@ from dataclasses import dataclass
 
 @dataclass
 class Task:
- task_id: int
- priority: float
- label: str
+ task_id = 0
+ priority = 0.0
+ label = ""
 
 
 @dataclass
 class TimedEvent:
- name: str
- deadline_ms: int
- label: str
+ name = ""
+ deadline_ms = 0
+ label = ""
 ```
 
 ---
@@ -286,8 +286,8 @@ def heap_sort_key(items, *, key):
 
 @dataclass
 class TimedEvent:
- name: str
- deadline_ms: int
+ name = ""
+ deadline_ms = 0
 
 
 def heap_sort_events(events):

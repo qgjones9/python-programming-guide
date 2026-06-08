@@ -99,21 +99,20 @@ flowchart LR
 
 ```python
 from __future__ import annotations
-
 from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
 class TaskItem:
- name: str
- score: float
- region: str
- bytes_sent: int = 0
+    name = ''
+    score = 0.0
+    region = ''
+    bytes_sent = 0
 
 @dataclass(frozen=True, slots=True)
 class ServiceMetric:
- service_id: int
- score: float
- latency_ms: float
+    service_id = 0
+    score = 0.0
+    latency_ms = 0.0
 ```
 
 ---
@@ -157,8 +156,8 @@ kth = quickselect_randomized(values, k=2)
 ### 4. k-th largest via index conversion
 
 ```python
-def kth_largest(nums: list[float], k: int) -> float:
- return quickselect_randomized(nums, len(nums) - k)
+def kth_largest(nums, k):
+    return quickselect_randomized(nums, len(nums) - k)
 ```
 
 | | |
@@ -181,7 +180,6 @@ med_item = quickselect_item(items, k=len(items) // 2, key=lambda s: s.score)
 
 ```python
 import numpy as np
-
 arr = np.array(score_list)
 k = len(arr) // 2
 np.partition(arr, k)
@@ -215,11 +213,9 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass
-from typing import Callable, TypeVar
 
-T = TypeVar("T")
 
-def lomuto_partition(nums: list[float], lo: int, hi: int) -> int:
+def lomuto_partition(nums, lo, hi):
  pivot = nums[hi]
  i = lo - 1
  for j in range(lo, hi):
@@ -229,7 +225,7 @@ def lomuto_partition(nums: list[float], lo: int, hi: int) -> int:
  nums[i + 1], nums[hi] = nums[hi], nums[i + 1]
  return i + 1
 
-def hoare_partition(nums: list[float], lo: int, hi: int) -> int:
+def hoare_partition(nums, lo, hi):
  pivot = nums[(lo + hi) // 2]
  i, j = lo - 1, hi + 1
  while True:
@@ -243,7 +239,7 @@ def hoare_partition(nums: list[float], lo: int, hi: int) -> int:
  return j
  nums[i], nums[j] = nums[j], nums[i]
 
-def quickselect(nums: list[float], k: int) -> float:
+def quickselect(nums, k):
  if not nums:
  raise IndexError("empty array")
  if k < 0 or k >= len(nums):
@@ -259,9 +255,9 @@ def quickselect(nums: list[float], k: int) -> float:
  lo = p + 1
  return nums[lo]
 
-def quickselect_recursive(nums: list[float], k: int) -> float:
+def quickselect_recursive(nums, k):
 
- def select(lo: int, hi: int, k: int) -> float:
+ def select(lo, hi, k):
  if lo >= hi:
  return nums[lo]
  p = lomuto_partition(nums, lo, hi)
@@ -273,10 +269,10 @@ def quickselect_recursive(nums: list[float], k: int) -> float:
 
  return select(0, len(nums) - 1, k)
 
-def quickselect_copy(nums: list[float], k: int) -> float:
+def quickselect_copy(nums, k):
  return quickselect(nums.copy(), k)
 
-def quickselect_randomized(nums: list[float], k: int) -> float:
+def quickselect_randomized(nums, k):
  arr = nums.copy()
  lo, hi = 0, len(arr) - 1
  while lo < hi:
@@ -291,7 +287,7 @@ def quickselect_randomized(nums: list[float], k: int) -> float:
  lo = p + 1
  return arr[lo]
 
-def quickselect_median_of_three(nums: list[float], lo: int, hi: int) -> None:
+def quickselect_median_of_three(nums, lo, hi):
  mid = (lo + hi) // 2
  if nums[lo] > nums[mid]:
  nums[lo], nums[mid] = nums[mid], nums[lo]
@@ -301,7 +297,7 @@ def quickselect_median_of_three(nums: list[float], lo: int, hi: int) -> None:
  nums[mid], nums[hi] = nums[hi], nums[mid]
  nums[mid], nums[hi] = nums[hi], nums[mid]
 
-def quickselect_m3(nums: list[float], k: int) -> float:
+def quickselect_m3(nums, k):
  arr = nums.copy()
  lo, hi = 0, len(arr) - 1
  while lo < hi:
@@ -315,13 +311,13 @@ def quickselect_m3(nums: list[float], k: int) -> float:
  lo = p + 1
  return arr[lo]
 
-def kth_largest(nums: list[float], k: int) -> float:
+def kth_largest(nums, k):
  n = len(nums)
  if k < 1 or k > n:
  raise IndexError("k out of range")
  return quickselect_randomized(nums.copy(), n - k)
 
-def percentile(nums: list[float], p: float) -> float:
+def percentile(nums, p):
  if not nums:
  raise ValueError("empty")
  arr = sorted(nums)
@@ -331,7 +327,7 @@ def percentile(nums: list[float], p: float) -> float:
  frac = rank - lo
  return arr[lo] * (1 - frac) + arr[hi] * frac
 
-def percentile_select(nums: list[float], p: float) -> float:
+def percentile_select(nums, p):
  if not nums:
  raise ValueError("empty")
  k = int((p / 100.0) * (len(nums) - 1))
@@ -339,20 +335,20 @@ def percentile_select(nums: list[float], p: float) -> float:
 
 @dataclass(frozen=True, slots=True)
 class TaskItem:
- name: str
- score: float
- region: str
+ name = ""
+ score = 0.0
+ region = ""
 
 def quickselect_item(
- items: list[TaskItem],
- k: int,
+ items,
+ k,
  *,
- key: Callable[[TaskItem], float] = lambda s: s.score,
-) -> TaskItem:
+ key= lambda s: s.score,
+):
  arr = items[:]
  lo, hi = 0, len(arr) - 1
 
- def part(lo: int, hi: int) -> int:
+ def part(lo, hi):
  pivot = key(arr[hi])
  i = lo - 1
  for j in range(lo, hi):
@@ -556,13 +552,13 @@ Sorted reference: `[-1.2, -0.3, -0.1, 0.0, 0.1, 0.2, 0.4, 0.5, 0.9]` → median 
 ### Batch median score among items
 
 ```python
-def median_score(items: list[TaskItem]) -> float:
- values = [s.score for s in items]
- k = len(values) // 2
- return quickselect_randomized(values, k)
+def median_score(items):
+    values = [s.score for s in items]
+    k = len(values) // 2
+    return quickselect_randomized(values, k)
 
-def median_service(services: list[TaskItem]) -> TaskItem:
- return quickselect_item(items, k=len(items) // 2)
+def median_service(services):
+    return quickselect_item(items, k=len(items) // 2)
 ```
 
 | | |
@@ -577,10 +573,10 @@ Compare: `statistics.median(values)` sorts internally in C.
 ### Percentile cutoff for SLA breach (k-th rank)
 
 ```python
-def percentile_cutoff_score(scores: list[float], pct: float = 0.20) -> float:
- n = len(scores)
- k = max(0, int((1.0 - pct) * n) - 1)
- return quickselect_randomized(scores, k)
+def percentile_cutoff_score(scores, pct=0.2):
+    n = len(scores)
+    k = max(0, int((1.0 - pct) * n) - 1)
+    return quickselect_randomized(scores, k)
 ```
 
 | | |
@@ -595,7 +591,7 @@ def percentile_cutoff_score(scores: list[float], pct: float = 0.20) -> float:
 [Quicksort](../quicksort/index.md) uses the same `partition` but recurses **both** sides—quickselect is the **one-sided** optimization.
 
 ```python
-def quicksort(nums: list[float], lo: int = 0, hi: int | None = None) -> None:
+def quicksort(nums, lo= 0, hi= None):
  if hi is None:
  hi = len(nums) - 1
  if lo >= hi:
@@ -624,7 +620,6 @@ Calling quickselect k times for k different ranks costs O(k · n) average— wor
 
 ```python
 import heapq
-
 top10 = heapq.nlargest(10, items, key=lambda s: s.score)
 ```
 
@@ -669,9 +664,8 @@ Worst (pivot always min/max): $T(n) = T(n-1) + \Theta(n) \Rightarrow \Theta(n^2)
 import statistics
 import pandas as pd
 import numpy as np
-
 statistics.median(sample_scores)
-df["score"].quantile(0.75)
+df['score'].quantile(0.75)
 arr = np.array(sample_scores)
 np.partition(arr, k)[k]
 ```
@@ -750,18 +744,12 @@ flowchart TD
 
 ```python
 kth = quickselect(score_list, k=2)
-
 kth = quickselect_randomized(score_list, k=2)
-
 best = kth_largest(score_list, k=1)
-
 med = quickselect_randomized(values, k=len(values) // 2)
-
 med_item = quickselect_item(items, k=len(items) // 2)
-
 top5 = heapq.nlargest(5, items, key=lambda s: s.score)
-
-df["score"].median()
+df['score'].median()
 np.partition(np.array(values), k)[k]
 ```
 
