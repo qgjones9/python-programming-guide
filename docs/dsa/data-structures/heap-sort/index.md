@@ -19,7 +19,7 @@ This page is your **ready reference**: heap layout in an array, full Python heap
 
 ---
 
-## How heap sort fits systems work
+## What heap sort models
 
 | Use case | Heap sort view | Note |
 | --- | --- | --- |
@@ -466,7 +466,7 @@ sequenceDiagram
 
 ---
 
-## Scheduler and timer patterns
+## Common application patterns
 
 ### Sort tasks for priority dispatch
 
@@ -631,7 +631,7 @@ heapq.nlargest(10, tasks, key=lambda t: t.priority)
 
 **Heap sort:** build a **max-heap** in **O(n)**, then **(n−1) extracts** with **sift_down**—**Θ(n log n)** worst case, **O(1)** extra space, **unstable**. Pair with [Max heap](../max-heap/index.md) for structure; see [Heap sort (algorithms)](../../algorithms/heap-sort/index.md) for the sorting narrative.
 
-**Scheduler checklist**
+**Application checklist**
 
 1. **Large batch exports** — `list.sort`, not heap sort.
 2. **Top-k highlights** — `heapq.nlargest`.

@@ -17,7 +17,7 @@ This page is your **ready reference**: array indexing, a complete Python `MaxHea
 
 ---
 
-## How a max heap fits systems work
+## What a max heap models
 
 | Use case | Heap view | Why max at root |
 | --- | --- | --- |
@@ -484,7 +484,7 @@ scheduler.insert(91, Task(102, 91, "page on-call"))
 | **Time** | O(log n) |
 | **Space** | O(1) aux; O(1) amortized array growth |
 
-Stream tasks into a “highest priority so far” structure during a live scheduler recap.
+Stream tasks into a “highest priority so far” structure during incremental ingest.
 
 ---
 
@@ -816,7 +816,7 @@ heapq.nlargest(10, tasks, key=lambda t: t.priority)
 
 Use a **max heap** when you need **repeated access to the current maximum** with **interleaved inserts**—priority schedulers, event timers, and the foundation of **heap sort**. Reach for **`heapq.nlargest`** and **`sorted`** when the job is **one-shot ranking** on a large batch.
 
-**Scheduler checklist**
+**Application checklist**
 
 1. **One-shot top-k** — `heapq.nlargest`.
 2. **Streaming priority** — max heap or [priority queue](../priority-queue/index.md).

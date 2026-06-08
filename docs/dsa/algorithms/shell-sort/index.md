@@ -11,7 +11,7 @@ A generalization of **insertion sort** that sorts elements **far apart** first (
 | **In-place** | **Yes**. |
 | **When to use** | Medium *n* in-memory when you want in-place better than insertion; rarely chosen over `list.sort` in Python production pipelines. |
 
-**Intuition:** shell sort is like coarse **pre-ordering** by wide **gaps** (every 7th index) before fine-sorting within each subsequence—early passes move a low score from index 0 near index 30 in one shift when the gap is large.
+**Intuition:** shell sort is like coarse **pre-ordering** by wide **gaps** (every 7th index) before fine-sorting within each subsequence—early passes move a small value from index 0 near index 30 in one shift when the gap is large.
 
 [Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
 
@@ -115,41 +115,40 @@ def shell_sort_knuth(nums: list[float]) -> None:
 
 
 @dataclass(frozen=True, slots=True)
-class Record:
- record_id: int
- timestamp: float
- score: float
+class TaskItem:
+ task_id: int
+ priority: int
  label: str
 
 
-def shell_sort_records(
- records: list[Record], *, key=lambda r: r.score
+def shell_sort_items(
+ items: list[TaskItem], *, key=lambda t: t.priority
 ) -> None:
- n = len(records)
+ n = len(items)
  for g in knuth_gaps(n):
  for i in range(g, n):
- current = records[i]
+ current = items[i]
  k = key(current)
  j = i
- while j >= g and key(records[j - g]) > k:
- records[j] = records[j - g]
+ while j >= g and key(items[j - g]) > k:
+ items[j] = items[j - g]
  j -= g
- records[j] = current
+ items[j] = current
 ```
 
 ---
 
-## Trace: scores with gap 2 then 1
+## Trace: values with gap 2 then 1
 
-`[1.0, -1.2, 0.4, 0.1]` (four numeric scores)
+`[7, 2, 5, 1]` (four integers)
 
 **g = 2:** subarrays indices `(0,2)` and `(1,3)`
 
-- Sort `(1.0, 0.4)` → `(0.4, 1.0)`
-- Sort `(-1.2, 0.1)` → `(-1.2, 0.1)` 
-→ `[0.4, -1.2, 1.0, 0.1]`
+- Sort `(7, 5)` → `(5, 7)`
+- Sort `(2, 1)` → `(1, 2)`
+→ `[5, 1, 7, 2]`
 
-**g = 1:** insertion sort → `[-1.2, 0.1, 0.4, 1.0]`
+**g = 1:** insertion sort → `[1, 2, 5, 7]`
 
 ---
 
@@ -165,12 +164,12 @@ def shell_sort_records(
 
 | Use | Avoid |
 | --- | --- |
-| Algorithms course | Production pandas |
-| Embedded systems lore | Stable score ties |
-| Compare gap sequences in homework | Large multi-year archives |
+| Algorithms course | Production `list.sort` at scale |
+| Embedded systems lore | Stable tie-breaking |
+| Compare gap sequences in homework | Large in-memory tables |
 
 ```python
-events.sort_values("score", ascending=True)
+tasks.sort(key=lambda t: t.priority)
 ```
 
 ---
@@ -212,10 +211,10 @@ events.sort_values("score", ascending=True)
 ## Quick reference
 
 ```python
-shell_sort(scores)
-shell_sort_knuth(scores)
-shell_sort_records(window)
-window.sort(key=lambda r: r.score)
+shell_sort(values)
+shell_sort_knuth(values)
+shell_sort_items(batch)
+batch.sort(key=lambda t: t.priority)
 ```
 
 **Shell sort:** in-place gap insertion—faster than bare insertion on medium *n*, **unstable**, still beat by **`list.sort`** for large datasets at scale.

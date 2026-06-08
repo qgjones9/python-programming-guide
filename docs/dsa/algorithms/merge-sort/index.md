@@ -11,7 +11,7 @@ A **divide-and-conquer** comparison sort: **split** the array in half, **recursi
 | **In-place** | **No** (standard top-down array version). |
 | **When to use** | Large *n*, need stable Θ(n log n), external sort, linked-list sort. |
 
-**Practical lens:** merge sort is how you think about **merging two sorted lists** (week 1 transactions + week 2 transactions) into one timeline in O(n) per merge level—or sorting 50,000 rows by score with guaranteed O(n log n) regardless of pivot luck. Production still uses **Timsort** (`list.sort`), which is merge-inspired; **pandas** uses highly optimized C sorts.
+**Practical lens:** merge sort is how you think about **merging two sorted lists** (left partition + right partition) into one ordered run in O(n) per merge level—or sorting 50,000 items by key with guaranteed O(n log n) regardless of pivot luck. Production still uses **Timsort** (`list.sort`), which is merge-inspired.
 
 [Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
 
@@ -21,10 +21,10 @@ A **divide-and-conquer** comparison sort: **split** the array in half, **recursi
 
 | Scenario | Merge-sort angle |
 | --- | --- |
-| Merge `(category_id, record_id)` sorted exports | Classic O(n) merge pass |
-| Stable sort records tied on score | Stable merge preserves prior order |
-| Linked list of ordered records | Merge sort without random access—O(1) splice |
-| In-memory 50k-row table | Use `sort_values`; same asymptotic class |
+| Merge two sorted ID lists | Classic O(n) merge pass |
+| Stable sort with tied keys | Stable merge preserves prior order |
+| Linked list of ordered nodes | Merge sort without random access—O(1) splice |
+| In-memory 50k-element array | Use `list.sort`; same asymptotic class |
 
 ---
 
@@ -163,27 +163,27 @@ def _ms_inplace(a, lo, hi, buf):
 
 
 @dataclass
-class Record:
- record_id: int
- score: float
+class TaskItem:
+ task_id: int
+ priority: int
  label: str
 
 
-def merge_sort_records(records):
- if len(records) <= 1:
- return records[:]
- mid = len(records) // 2
- return _merge_records(
- merge_sort_records(records[:mid]),
- merge_sort_records(records[mid:]),
+def merge_sort_items(items):
+ if len(items) <= 1:
+ return items[:]
+ mid = len(items) // 2
+ return _merge_items(
+ merge_sort_items(items[:mid]),
+ merge_sort_items(items[mid:]),
  )
 
 
-def _merge_records(left, right):
+def _merge_items(left, right):
  out = []
  i = j = 0
  while i < len(left) and j < len(right):
- if left[i].record_id <= right[j].record_id:
+ if left[i].task_id <= right[j].task_id:
  out.append(left[i])
  i += 1
  else:
@@ -203,8 +203,8 @@ def _merge_records(left, right):
 
 ## Trace: merge two sorted halves
 
-**Left** (records 101–103 by `record_id`): `[101, 102, 103]` 
-**Right** (records 104–105): `[104, 105]` 
+**Left** (task IDs 101–103): `[101, 102, 103]` 
+**Right** (task IDs 104–105): `[104, 105]` 
 Already sorted halves—one merge pass:
 
 | step | take | output |
@@ -221,26 +221,26 @@ Full merge sort on `[32.1, 10.0, 28.4, 10.0]` splits until singletons, then merg
 
 ## Versus `list.sort()` / `sorted()` / `heapq`
 
-- **CPython Timsort:** hybrid merge + insertion; Θ(n log n) worst; exploits **runs** in real data (e.g. records mostly ordered by `record_id` with a few corrections).
+- **CPython Timsort:** hybrid merge + insertion; Θ(n log n) worst; exploits **runs** in real data (e.g. items mostly ordered by key with a few corrections).
 - **`sorted()`:** same engine, new list.
 - **`heapq`:** partial order for top-*k*; not a substitute for full stable sort.
 
 ```python
-records.sort(key=lambda r: r.record_id) # Timsort — use in pipelines
+items.sort(key=lambda t: t.task_id)  # Timsort — use in production
 ```
 
 ---
 
 ## When to use / avoid
 
-| Use merge sort | Use pandas / `sort` |
+| Use merge sort | Use `list.sort` / `sorted` |
 | --- | --- |
-| Teaching divide-and-conquer | Monthly batch exports |
-| Stable sort on linked nodes | Multi-column keys with `kind="mergesort"` in pandas if you need stable |
-| External sort (disk chunks) | Anything &gt; few thousand rows in pure Python |
+| Teaching divide-and-conquer | Large batch exports |
+| Stable sort on linked nodes | Multi-key sorts with `sorted(..., key=...)` |
+| External sort (disk chunks) | Anything &gt; few thousand elements in pure Python |
 
 ```python
-df.sort_values("score", kind="mergesort") # stable sort in pandas
+sorted(batch, key=lambda t: (t.priority, t.task_id))  # stable tuple key
 ```
 
 ---
@@ -281,10 +281,10 @@ Recurrence: $T(n) = 2T(n/2) + \Theta(n) \Rightarrow \Theta(n \log n)$.
 ## Quick reference
 
 ```python
-sorted_scores = merge_sort(score_list)
-merge_sort_inplace(score_list)
-merge_sort_records(batch_records) # by record_id
-records.sort(key=lambda r: r.record_id) # production
+sorted_values = merge_sort(value_list)
+merge_sort_inplace(value_list)
+merge_sort_items(batch)  # by task_id
+items.sort(key=lambda t: t.task_id)  # production
 ```
 
 **Merge sort:** stable, Θ(n log n) always, Θ(n) extra space—the textbook backbone for **merging sorted sequences**.

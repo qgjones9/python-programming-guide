@@ -9,7 +9,7 @@ A **distribution sort** that maps each key into one of **m buckets** (usually by
 | **When to use** | Uniform floats in `[0, 1)`, fixed-width bins on normalized metrics, external sort chunks. |
 | **Trade-off** | Needs **extra space** O(n + m); not in-place; worst case Θ(n²) without many buckets. |
 
-In **software and data systems**, bucket sort fits **“sort entries by day-of-year within a time window”** when timestamps spread evenly—you map `t` to bucket `⌊m · (t − t_min) / (t_max − t_min)⌋`. If every entry shares the **same timestamp** (one fat bucket), you fall back to Θ(n²) inner sort. For **archive-scale tables**, use **pandas** `sort_values`; bucket sort teaches **distribution** thinking alongside [Radix sort](../radix-sort/index.md).
+In **software and data systems**, bucket sort fits **“sort events by offset within a batch window”** when timestamps spread evenly—you map `t` to bucket `⌊m · (t − t_min) / (t_max − t_min)⌋`. If every entry shares the **same timestamp** (one fat bucket), you fall back to Θ(n²) inner sort. For **large event tables**, use **pandas** `sort_values`; bucket sort teaches **distribution** thinking alongside [Radix sort](../radix-sort/index.md).
 
 This page is your **ready reference**: scatter/gather mechanics, full Python implementations (floats, integers, entries, entities), every creation variant, traces, complexity tables, pitfalls, and application patterns. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
@@ -21,7 +21,7 @@ This page is your **ready reference**: scatter/gather mechanics, full Python imp
 
 | Use case | Bucket key | Uniform when |
 | --- | --- | --- |
-| **Day-of-year within month** | Ordinal day 1..31 | Spread across the month |
+| **Offset within batch window** | Seconds since batch start | Spread across the batch |
 | **Normalized throughput** | `amount / max_amount` in [0,1) | Many distinct amounts |
 | **Score (bounded clip)** | Clip to [-7, 7] then bin | Roughly flat histogram |
 | **TaskItem ID bins** | 0–99 → 10 buckets | Depends on network |
@@ -111,10 +111,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
-class LogEntry:
+class EventRecord:
  entry_id: int
- month: int
- sequence_num: float
+ batch_id: int
+ offset_sec: float
  score: float
  summary: str
 
@@ -165,10 +165,10 @@ bucket_sort_integers(service_ids, max_val=99, m=10)
 | **Time** | Θ(n + m) average |
 | **Space** | O(n + m) |
 
-### 4. Objects with key function (entries by time)
+### 4. Objects with key function (events by offset)
 
 ```python
-sorted_month = bucket_sort_entries_by_offset(month_readings, m=8)
+sorted_batch = bucket_sort_events_by_offset(batch_entries, m=8)
 ```
 
 | | |
@@ -295,15 +295,15 @@ def bucket_sort_by_key(items: list[T], m: int, key: Callable[[T], float]) -> lis
  return out
 
 @dataclass(frozen=True, slots=True)
-class LogEntry:
+class EventRecord:
  entry_id: int
- month: int
- sequence_num: float
+ batch_id: int
+ offset_sec: float
  score: float
  summary: str = ""
 
-def bucket_sort_entries_by_offset(readings: list[LogEntry], m: int) -> list[LogEntry]:
- return bucket_sort_by_key(readings, m, key=lambda s: s.sequence_num)
+def bucket_sort_events_by_offset(entries: list[EventRecord], m: int) -> list[EventRecord]:
+ return bucket_sort_by_key(entries, m, key=lambda e: e.offset_sec)
 
 def bucket_sort_insertion_inner(nums: list[float], m: int) -> list[float]:
 
@@ -445,15 +445,15 @@ Use when equal timestamps must keep **entry_id** submission order (sort objects 
 
 ---
 
-### `bucket_sort_entries_by_offset(readings, m)`
+### `bucket_sort_events_by_offset(entries, m)`
 
 ```python
-month_window = [
- LogEntry(1, 1, 120.0, 0.1, "clear"),
- LogEntry(2, 1, 3600.0, 0.5, "beta"),
- LogEntry(3, 1, 900.0, -0.2, "warning"),
+sample_batch = [
+ EventRecord(1, 1, 120.0, 0.1, "ok"),
+ EventRecord(2, 1, 3600.0, 0.5, "retry"),
+ EventRecord(3, 1, 900.0, -0.2, "fail"),
 ]
-ordered = bucket_sort_entries_by_offset(month_window, m=4)
+ordered = bucket_sort_events_by_offset(sample_batch, m=4)
 ```
 
 | | |
@@ -465,7 +465,7 @@ ordered = bucket_sort_entries_by_offset(month_window, m=4)
 
 ### `bucket_sort_by_key(items, m, key=...)`
 
-Generic pattern for **TaskItem** by `bytes_sent`, **LogEntry** by `score`, etc.
+Generic pattern for **TaskItem** by `bytes_sent`, **EventRecord** by `score`, etc.
 
 | | |
 | --- | --- |
@@ -474,7 +474,7 @@ Generic pattern for **TaskItem** by `bytes_sent`, **LogEntry** by `score`, etc.
 
 ---
 
-## Trace: four normalized day fractions
+## Trace: four normalized unit-interval keys
 
 Keys in `[0, 1)`: `[0.12, 0.91, 0.15, 0.88]`, `m = 4`
 
@@ -520,14 +520,14 @@ bucket_sort_range_inplace(clustered, m=8)
 
 ## Application patterns with bucket sort
 
-### Sort one time window by day-of-year
+### Sort one batch by timestamp offset
 
 ```python
-def order_time_window(readings: list[LogEntry]) -> list[LogEntry]:
- if len(readings) <= 1:
- return readings[:]
- m = max(len(readings), 4)
- return bucket_sort_entries_by_offset(readings, m=m)
+def order_batch_by_offset(entries: list[EventRecord]) -> list[EventRecord]:
+ if len(entries) <= 1:
+ return entries[:]
+ m = max(len(entries), 4)
+ return bucket_sort_events_by_offset(entries, m=m)
 ```
 
 | | |
@@ -535,7 +535,7 @@ def order_time_window(readings: list[LogEntry]) -> list[LogEntry]:
 | **Time** | Θ(n) average uniform times |
 | **Space** | O(n + m) |
 
-For **single time windows** (n < 31), **`sorted(readings, key=...)`** is simpler—bucket sort illustrates **distribution**.
+For **small batches** (n < 31), **`sorted(entries, key=...)`** is simpler—bucket sort illustrates **distribution**.
 
 ---
 
@@ -576,11 +576,11 @@ sorted_ids = bucket_sort_integers(service_ids, max_val=99, m=10)
 ### Stable sort with entry_id tie-break
 
 ```python
-def stable_entry_sort(readings: list[LogEntry], m: int) -> list[LogEntry]:
+def stable_entry_sort(entries: list[EventRecord], m: int) -> list[EventRecord]:
  return bucket_sort_by_key(
- readings,
+ entries,
  m,
- key=lambda s: (s.sequence_num, s.entry_id),
+ key=lambda e: (e.offset_sec, e.entry_id),
  )
 ```
 
@@ -648,7 +648,7 @@ def hybrid_bucket_sort(nums: list[float], m: int, threshold: int = 32) -> list[f
 
 | Task | Tool |
 | --- | --- |
-| Full archive sort | `df.sort_values("sequence_num")` |
+| Full table sort | `df.sort_values("offset_sec")` |
 | Uniform unit floats teaching | `bucket_sort_unit_interval` |
 | Top-k score | `heapq.nlargest` — not bucket sort |
 | Integer digits | [Radix sort](../radix-sort/index.md) |
@@ -701,9 +701,9 @@ flowchart TD
 
 | Use bucket sort | Avoid bucket sort |
 | --- | --- |
-| Normalized day-of-year in [0,1) | Arbitrary string names |
+| Normalized offset in [0,1) | Arbitrary string names |
 | Fixed histogram bins | Need worst-case Θ(n log n) guarantee alone |
-| External sort teaching | Single small window—use `sorted` |
+| External sort teaching | Single small batch—use `sorted` |
 | Uniform simulated metrics | Clustered same-timestamp entries without tuning m |
 
 ---
@@ -742,11 +742,11 @@ sorted_norm = bucket_sort_unit_interval(normalized, m=len(normalized))
 times = [120.5, 3600.0, 900.2]
 bucket_sort_range_inplace(times, m=8)
 
-ordered = bucket_sort_entries_by_offset(month_window, m=8)
+ordered = bucket_sort_events_by_offset(sample_batch, m=8)
 
 sorted_stable = bucket_sort_stable(values, m=16)
 
-df.sort_values("sequence_num")
+df.sort_values("offset_sec")
 pd.cut(df["score"], bins=10)
 ```
 
@@ -754,8 +754,8 @@ pd.cut(df["score"], bins=10)
 
 **Quick checklist**
 
-1. **Full archive sort** — `sort_values`, not buckets.
-2. **Normalized month timing** — bucket sort teaching fit.
+1. **Full table sort** — `sort_values`, not buckets.
+2. **Normalized batch offsets** — bucket sort teaching fit.
 3. **Check max bucket size** — hybrid fallback if huge.
 4. **Equal-frequency bins** — `pd.qcut` in analytics.
 5. **Stability on ties** — FIFO buckets + stable inner sort.

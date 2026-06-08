@@ -9,7 +9,7 @@ A **selection algorithm** that finds the **k-th smallest** (or **k-th largest**)
 | **When to use** | Median score, p-th percentile amount, single order statistic without full sort. |
 | **Trade-off** | **Worst** Θ(n²) with bad pivots; mutates array unless copying; not for full leaderboard. |
 
-In **software and data systems**, quickselect answers **one rank question**: “What is the **median** priority score this month?” or “Which service has the **3rd-highest** throughput total on the network?”—without sorting 1,500 services. For **top 10 lists**, compare with **`heapq.nlargest`**. For **full archive exports**, use **pandas** `quantile` or `sort_values`.
+In **software and data systems**, quickselect answers **one rank question**: “What is the **median** priority score in this batch?” or “Which service has the **3rd-highest** throughput total on the network?”—without sorting 1,500 services. For **top 10 lists**, compare with **`heapq.nlargest`**. For **full table exports**, use **pandas** `quantile` or `sort_values`.
 
 This page is your **ready reference**: Lomuto and Hoare partition, iterative and recursive quickselect, randomized pivots, worked examples, complexity tables, pitfalls, and links to [Quicksort](../quicksort/index.md). For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
@@ -21,7 +21,7 @@ This page is your **ready reference**: Lomuto and Hoare partition, iterative and
 
 | Use case | k (0-based from smallest) | Operation |
 | --- | --- | --- |
-| **Median monthly score** | `n // 2` | `quickselect(values, k)` |
+| **Median batch score** | `n // 2` | `quickselect(values, k)` |
 | **3rd-highest amount** | `n - 3` from smallest | or `n - 1 - 2` for 3rd largest |
 | **75th percentile score** | `floor(0.75 * (n-1))` | one select |
 | **Lower quartile latency** | `n // 4` | order statistic |
@@ -110,10 +110,10 @@ class TaskItem:
  bytes_sent: int = 0
 
 @dataclass(frozen=True, slots=True)
-class LogEntry:
- entry_id: int
+class ServiceMetric:
+ service_id: int
  score: float
- latency: float
+ latency_ms: float
 ```
 
 ---
@@ -438,8 +438,8 @@ Pair with careful quickselect indexing—Lomuto is simpler for teaching.
 ### `quickselect(nums, k)` — iterative
 
 ```python
-daily_scores = [12.1, 28.4, 15.0, 22.3, 31.2]
-median = quickselect(daily_scores, k=len(daily_scores) // 2)
+sample_scores = [12.1, 28.4, 15.0, 22.3, 31.2]
+median = quickselect(sample_scores, k=len(sample_scores) // 2)
 ```
 
 | | |
@@ -447,7 +447,7 @@ median = quickselect(daily_scores, k=len(daily_scores) // 2)
 | **Time** | Θ(n) average |
 | **Space** | O(1) |
 
-**Warning:** mutates `daily_scores` order.
+**Warning:** mutates `sample_scores` order.
 
 ---
 
@@ -553,7 +553,7 @@ Sorted reference: `[-1.2, -0.3, -0.1, 0.0, 0.1, 0.2, 0.4, 0.5, 0.9]` → median 
 
 ## Application patterns with quickselect
 
-### Monthly median score among items
+### Batch median score among items
 
 ```python
 def median_score(items: list[TaskItem]) -> float:
@@ -574,7 +574,7 @@ Compare: `statistics.median(values)` sorts internally in C.
 
 ---
 
-### Percentile cutoff for extreme-event threshold (k-th rank)
+### Percentile cutoff for SLA breach (k-th rank)
 
 ```python
 def percentile_cutoff_score(scores: list[float], pct: float = 0.20) -> float:
@@ -670,9 +670,9 @@ import statistics
 import pandas as pd
 import numpy as np
 
-statistics.median(daily_scores)
+statistics.median(sample_scores)
 df["score"].quantile(0.75)
-arr = np.array(daily_scores)
+arr = np.array(sample_scores)
 np.partition(arr, k)[k]
 ```
 
@@ -713,7 +713,7 @@ flowchart TD
 
 | Use quickselect | Avoid quickselect |
 | --- | --- |
-| One median / percentile on list | Entire sorted archive |
+| One median / percentile on list | Entire sorted table |
 | In-memory items array | Need stable tie order |
 | Learning with quicksort | k large order stats → sort once |
 | Embedded O(1) space select | Already using pandas column |
@@ -771,6 +771,6 @@ np.partition(np.array(values), k)[k]
 
 1. **One median / cutoff** — quickselect or `quantile`.
 2. **Top 10 extremes** — `nlargest`, not repeated select.
-3. **Full archive ranks** — sort once.
+3. **Full table ranks** — sort once.
 4. **Copy before select** — partition scrambles order.
 5. **Sorted entry_id inputs** — randomize pivot.

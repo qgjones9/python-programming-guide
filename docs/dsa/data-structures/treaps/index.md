@@ -32,9 +32,9 @@ This page is your **ready reference**: structure, a complete Python implementati
 ```mermaid
 flowchart TB
   subgraph treap["Treap: BST on key, max-heap on priority"]
-    R["key=24 p=90<br/>sym_a"]
-    L["key=12 p=40<br/>sym_b"]
-    RR["key=31 p=55<br/>sym_c"]
+    R["key=24 p=90<br/>rec_A"]
+    L["key=12 p=40<br/>rec_B"]
+    RR["key=31 p=55<br/>rec_C"]
     R --> L
     R --> RR
   end
@@ -153,7 +153,7 @@ assert board.is_empty()
 ```python
 root = TreapNode(
     key=1,
-    value="sym_a",
+    value="rec_A",
     priority=random.randint(1, 10**9),
 )
 ```
@@ -175,9 +175,9 @@ def build_treap(items: list[tuple[K, V]]) -> TreapNode[K, V] | None:
     return root
 
 entries = [
-    (1, "sym_a"),
-    (2, "sym_b"),
-    (3, "sym_c"),
+    (1, "rec_A"),
+    (2, "rec_B"),
+    (3, "rec_C"),
 ]
 root = build_treap(entries)
 ```
@@ -205,7 +205,7 @@ for rank, sym in sorted_by_priority:
 
 ### 6. Merge two treaps (same key type, all keys in left < all in right)
 
-Classic use: combine “coastal region” treap with “inland region” treap when every coastal key is less than every inland key (e.g. composite key with region prefix).
+Classic use: combine two treaps when every key in the left treap is less than every key in the right (e.g. composite key with a partition prefix).
 
 | | |
 | --- | --- |
@@ -448,7 +448,7 @@ flowchart TB
   T --> S{"split(12)"}
   S --> L["Left: keys < 12"]
   S --> R["Right: keys ≥ 12"]
-  L --> M["merge after region combine"]
+  L --> M["merge after partition combine"]
   R --> M
   M --> T2["Combined board"]
 ```
@@ -465,7 +465,7 @@ flowchart TB
 ### `search(key)` — lookup record by composite rank key
 
 ```python
-rank_key = (1523, "rec_pdx")
+rank_key = (1523, "rec_D")
 row = treap.search(rank_key)
 ```
 
@@ -477,7 +477,7 @@ row = treap.search(rank_key)
 ### `insert(key, value)` — add index record
 
 ```python
-treap.insert((890, "rec_c"), IndexRecord("rec_c", "sym_c", 5, 890))
+treap.insert((890, "rec_C"), IndexRecord("rec_C", "rec_C", 5, 890))
 ```
 
 | | |

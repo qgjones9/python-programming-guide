@@ -11,7 +11,7 @@ A **divide-and-conquer** comparison sort: choose a **pivot**, **partition** so k
 | **In-place** | **Yes** (array partition). |
 | **When to use** | General in-memory sort when stability not required; foundation for [Quickselect](../quickselect/index.md). |
 
-**Practical lens:** quicksort is “split the array around a pivot **score**—values at or below the pivot to the left, larger values to the right—then sort each side.” CPython uses **Timsort** for `list.sort`, not pure quicksort, but quicksort still appears in libraries and interviews and powers **order statistics** via partitioning.
+**Practical lens:** quicksort is “split the array around a **pivot**—values at or below the pivot to the left, larger values to the right—then sort each side.” CPython uses **Timsort** for `list.sort`, not pure quicksort, but quicksort still appears in libraries and interviews and powers **order statistics** via partitioning.
 
 [Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
 
@@ -119,37 +119,36 @@ def quicksort_randomized(nums: list[float]) -> None:
 
 
 @dataclass(frozen=True, slots=True)
-class Record:
- record_id: int
- category: int
- score: float
+class TaskItem:
+ task_id: int
+ priority: int
  label: str
 
 
-def quicksort_records(
- records: list[Record],
+def quicksort_items(
+ items: list[TaskItem],
  lo: int = 0,
  hi: int | None = None,
  *,
- key=lambda r: r.score,
+ key=lambda t: t.priority,
 ) -> None:
  if hi is None:
- hi = len(records) - 1
+ hi = len(items) - 1
  if lo >= hi:
  return
- p = _partition_records(records, lo, hi, key=key)
- quicksort_records(records, lo, p - 1, key=key)
- quicksort_records(records, p + 1, hi, key=key)
+ p = _partition_items(items, lo, hi, key=key)
+ quicksort_items(items, lo, p - 1, key=key)
+ quicksort_items(items, p + 1, hi, key=key)
 
 
-def _partition_records(records, lo, hi, *, key):
- pivot = key(records[hi])
+def _partition_items(items, lo, hi, *, key):
+ pivot = key(items[hi])
  i = lo - 1
  for j in range(lo, hi):
- if key(records[j]) <= pivot:
+ if key(items[j]) <= pivot:
  i += 1
- records[i], records[j] = records[j], records[i]
- records[i + 1], records[hi] = records[hi], records[i + 1]
+ items[i], items[j] = items[j], items[i]
+ items[i + 1], items[hi] = items[hi], items[i + 1]
  return i + 1
 ```
 
@@ -162,19 +161,19 @@ def _partition_records(records, lo, hi, *, key):
 
 ---
 
-## Trace: partition four scores
+## Trace: partition four values
 
-`[0.4, -1.2, 1.0, 0.1]`, pivot = `0.1` (last)
+`[4, 2, 7, 1]`, pivot = `1` (last)
 
 | j | action | array (conceptual) |
 | ---: | --- | --- |
-| — | pivot 0.1 | `[0.4, -1.2, 1.0, 0.1]` |
-| 0 | 0.4 &gt; pivot | no swap |
-| 1 | -1.2 ≤ pivot | swap → `[-1.2, 0.4, 1.0, 0.1]` |
-| 2 | 1.0 &gt; pivot | no swap |
-| end | place pivot | `[-1.2, 0.1, 1.0, 0.4]` |
+| — | pivot 1 | `[4, 2, 7, 1]` |
+| 0 | 4 &gt; pivot | no swap |
+| 1 | 2 &gt; pivot | no swap |
+| 2 | 7 &gt; pivot | no swap |
+| end | place pivot | `[1, 2, 4, 7]` |
 
-Recurse left `[-1.2]`, right sort `[1.0, 0.4]` → full ascending order.
+Recurse left `[]`, right sort `[2, 4, 7]` → full ascending order.
 
 ---
 
@@ -188,7 +187,7 @@ Recurse left `[-1.2]`, right sort `[1.0, 0.4]` → full ascending order.
 | Cache | Good locality on arrays | Excellent on real data |
 
 ```python
-records.sort(key=lambda r: r["amount"], reverse=True)
+items.sort(key=lambda t: t.priority, reverse=True)
 ```
 
 Use **`heapq.nlargest`** when you only need the top 10 values, not full order.
@@ -199,9 +198,9 @@ Use **`heapq.nlargest`** when you only need the top 10 values, not full order.
 
 | Use | Avoid |
 | --- | --- |
-| Learning partition logic | Stable ties on equal scores |
+| Learning partition logic | Stable ties on equal keys |
 | Quickselect foundation | Adversarial inputs without randomization |
-| In-memory when library sort unavailable | Large pandas tables—`sort_values` |
+| In-memory when library sort unavailable | Large tables—use `list.sort` |
 
 ---
 
@@ -218,7 +217,7 @@ Use **`heapq.nlargest`** when you only need the top 10 values, not full order.
 
 | Pitfall | Fix |
 | --- | --- |
-| Sorted `record_id` + last pivot | Random or median-of-three |
+| Sorted input + last pivot | Random or median-of-three |
 | Deep recursion | Iterative stack or introsort |
 | Need stable sort | Merge sort / `sort` |
 | Equal keys clustered with `>` test | `<=` on left partition for balance |
@@ -239,10 +238,10 @@ Use **`heapq.nlargest`** when you only need the top 10 values, not full order.
 ## Quick reference
 
 ```python
-quicksort(scores)
-quicksort_randomized(scores)
-quicksort_records(batch)
-batch.sort(key=lambda r: r.score)
+quicksort(values)
+quicksort_randomized(values)
+quicksort_items(batch)
+batch.sort(key=lambda t: t.priority)
 ```
 
-**Quicksort:** in-place, fast on average, **unstable**, **Θ(n²) worst**—master partition; ship **Timsort/pandas** for large tables.
+**Quicksort:** in-place, fast on average, **unstable**, **Θ(n²) worst**—master partition; ship **`list.sort`** for large tables.

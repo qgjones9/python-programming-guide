@@ -161,18 +161,18 @@ def test_latest():
     dll = make_linked_list([1, 2, 3])
     assert dll.latest() == 3
 
-def test_oldest_in_window():
+def test_oldest_in_buffer():
     dll = make_linked_list([1, 2, 3])
-    assert dll.oldest_in_window() == 1
+    assert dll.oldest_in_buffer() == 1
 
 def test_current():
     dll = make_linked_list([1, 2, 3])
     assert dll.current() == 1
 
-def test_find_reading():
+def test_find_entry():
     dll = make_linked_list([1, 2, 3])
-    assert dll.find_reading(2) == 2
-    assert dll.find_reading(4) is None
+    assert dll.find_entry(2) == 2
+    assert dll.find_entry(4) is None
 
 def test_walk_forward_from():
     dll = make_linked_list([1, 2, 3])

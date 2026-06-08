@@ -33,7 +33,7 @@ For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 | --- | --- |
 | **What it is** | Each element has a parent pointer; `find(x)` returns set representative; `union(a,b)` merges sets. |
 | **When to use** | Dynamic **connectivity**, Kruskal MST, “same network component?” |
-| **Systems fit** | Hosts in the **same connected cluster**; merge peer groupings; detect if two nodes share a routing partition after merges. |
+| **Typical fit** | Hosts in the **same connected cluster**; merge peer groupings; detect if two nodes share a routing partition after merges. |
 
 ### Application: network connectivity
 
@@ -117,7 +117,7 @@ A **Bloom filter** is a **compact** bit array plus **k** hash functions. It supp
 | --- | --- |
 | **What it is** | Approximate set membership in O(k) bit ops; cannot delete without variants. |
 | **When to use** | “Probably seen this `event_id` before” with tiny RAM; pre-filter before disk. |
-| **Systems fit** | Stream millions of event IDs: skip disk lookup if filter says **definitely not** indexed. |
+| **Typical fit** | Stream millions of event IDs: skip disk lookup if filter says **definitely not** indexed. |
 
 ### Application: event-id prefilter
 
@@ -194,7 +194,7 @@ A **skip list** is a **sorted** linked structure with **express lanes**: level 0
 | --- | --- |
 | **What it is** | Tower of forward pointers per node; random level on insert. |
 | **When to use** | Ordered map in RAM when treap/RB feels heavy; Redis sorted-set internals (related ideas). |
-| **Systems fit** | Live **timestamp-sorted** priority leaderboard with fast `search` and `delete` by event key. |
+| **Typical fit** | Live **timestamp-sorted** priority leaderboard with fast `search` and `delete` by event key. |
 
 ### Structure (concept)
 

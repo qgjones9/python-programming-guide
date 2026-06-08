@@ -6,10 +6,10 @@ A linked list where the **last node's `next` points back to the first**—there 
 | --- | --- |
 | **What it is** | A chain that closes on itself: singly circular (`last.next → head`) or doubly circular (`head.prev → tail` and `tail.next → head`). |
 | **Core operations** | Rotate the “current” pointer, iterate with a stop at `head`, insert/delete with careful predecessor logic. |
-| **When to use** | Round-robin worker order, bounded metrics ring buffers, playlist carousel iteration, or any cycle where you advance a cursor without reallocating. |
+| **When to use** | Round-robin worker order, bounded play-history ring buffers, playlist carousel iteration, or any cycle where you advance a cursor without reallocating. |
 | **Trade-off** | Easy to loop forever if you forget a stop condition; no O(1) random access by index; extra pointer discipline vs a Python `list` modulo index. |
 
-A circular list is a natural model for **repeating cycles with no true end**: rotating through **tracks in a playlist carousel**, stepping **workers** in a fixed order on a dashboard, or a **fixed-size ring buffer** of the last *k* metric samples in a live feed where the oldest slot is overwritten when the ring wraps. You still store large archives in **pandas** or a **`list`**—the ring is for **bounded, repeating** order on small *n*.
+A circular list is a natural model for **repeating cycles with no true end**: rotating through **tracks in a playlist carousel**, stepping **workers** in a fixed order in a round-robin pool, or a **fixed-size ring buffer** of the last *k* playlist slots where the oldest entry is overwritten when the ring wraps. You still store full libraries in a **`list`** or database—the ring is for **bounded, repeating** order on small *n*.
 
 This page is your **ready reference**: singly and doubly circular variants, every way to create them in Python, a complete implementation, operation-by-operation examples with **time and space complexity**, and when to prefer stdlib tools. For Big-O notation and problem-scale *n*, see [Complexity analysis](../../complexity/index.md).
 
@@ -49,7 +49,7 @@ Throughout this page, **n** is the number of nodes in the ring (e.g. items in on
 | --- | --- | --- |
 | **Playlist rotation carousel** | Each node = track label; advance `current` each step | 12 |
 | **Round-robin worker rotation** | Fixed order of workers in a pool; wrap after last | 4–20 |
-| **Live metrics ring buffer** | Fixed *k* slots; overwrite oldest on wrap | *k* = 10–100 |
+| **Play-history ring buffer** | Fixed *k* slots; overwrite oldest track on wrap | *k* = 10–100 |
 | **Browser history carousel** | Cycle items in one buffer; no "end" in UI | items in buffer |
 | **Scheduler tick** | Advance pointer through time windows | slots per cycle |
 
@@ -246,9 +246,9 @@ Not a linked list, but the practical stdlib tool for fixed windows:
 ```python
 from collections import deque
 
-metrics_window: deque[float] = deque(maxlen=10)
-metrics_window.append(0.42)
-metrics_window.append(-1.1)
+recent_plays: deque[str] = deque(maxlen=10)
+recent_plays.append("Home")
+recent_plays.append("Docs")
 ```
 
 | | |
@@ -259,9 +259,9 @@ metrics_window.append(-1.1)
 ### 7. Python `list` + modulo index (static rotation table)
 
 ```python
-months = ["Jan", "Feb", "Mar", "Apr"]
+tracks = ["Home", "Docs", "Settings", "About"]
 i = 0
-current = months[i % len(months)]
+current = tracks[i % len(tracks)]
 i += 1
 ```
 
@@ -566,7 +566,7 @@ assert ring.get(0).track_id == 101
 
 ### `insert_after(pivot_data, data)` — splice after a known value
 
-**Application use:** Insert a **correction** after a specific day node in a custom history chain sketch.
+**Application use:** Insert a **reordered track** after a specific playlist item in a rotation sketch.
 
 ```python
 ring = SinglyCircularLinkedList([
@@ -670,7 +670,7 @@ flowchart LR
 
 ```python
 for entry in ring:
-    print(track.title)
+    print(entry.title)
 ```
 
 | | |
@@ -777,7 +777,7 @@ def has_cycle_floyd(head: CNode | None) -> bool:
 def next_entry(ring: SinglyCircularLinkedList) -> PlaylistTrack:
     entry = ring.pop_head()
     ring.append(entry)
-    return item
+    return entry
 ```
 
 Rotating by moving head to tail after serving is O(1) per tick—fair round-robin over workers or items in a small buffer.
@@ -801,7 +801,7 @@ Rotating by moving head to tail after serving is O(1) per tick—fair round-robi
 
 | Need | Prefer | Why |
 | --- | --- | --- |
-| Fixed metrics window | `collections.deque(maxlen=k)` | C-speed, no pointer bugs |
+| Fixed play-history window | `collections.deque(maxlen=k)` | C-speed, no pointer bugs |
 | Rotate static playlist order | `list` + `% len` | Simple, cache-friendly |
 | Round-robin without splices | `itertools.cycle` on a tuple | O(1) per yield, read-only |
 | Large persistent archive | pandas / `list` | Not a ring |
@@ -810,8 +810,8 @@ Rotating by moving head to tail after serving is O(1) per tick—fair round-robi
 ```python
 from itertools import cycle
 
-months = ("Jan", "Feb", "Mar", "Apr")
-rot = cycle(months)
+tracks = ("Home", "Docs", "Settings", "About")
+rot = cycle(tracks)
 next(rot)
 next(rot)
 ```
@@ -835,7 +835,7 @@ flowchart TD
 
 ## Common pitfalls
 
-| Pitfall | Why it hurts | Better aduration_msoach |
+| Pitfall | Why it hurts | Better approach |
 | --- | --- | --- |
 | Infinite `while cur = cur.next` | Never terminates on ring | Loop `for _ in range(len(ring))` or use `__iter__` |
 | Forgetting `tail.next = head` after edit | Ring breaks | Centralize `_close_ring()` |
@@ -885,7 +885,7 @@ Use a **circularly linked list** when the problem is literally a **cycle**: roun
 
 **Structure selection checklist**
 
-1. **Default** — Tabular data in pandas; rotation via index math or `cycle`.
-2. **Bounded live window** — `deque(maxlen=k)` for last *k* metric values.
+1. **Default** — Static playlist in a `list`; rotation via index math or `cycle`.
+2. **Bounded play-history window** — `deque(maxlen=k)` for last *k* rotation entries.
 3. **Custom history chain with splices** — Circular linked list (small *n*).
 4. **Traverse** — Always bound steps to `len(ring)`; never unbounded `next` walk.

@@ -6,10 +6,10 @@ A **tree keyed by characters (or tokens)** where each path from the root spells 
 | --- | --- |
 | **What it is** | Each edge labeled with one character; nodes mark end-of-word; search walks characters of the key. |
 | **Core operations** | Insert, exact search, prefix search, delete (with pruning). |
-| **When to use** | Autocomplete, prefix filters, name catalogs, airport-code suggestions. |
+| **When to use** | Autocomplete, prefix filters, product name search, URL route prefixes, command palettes. |
 | **Trade-off** | Space grows with alphabet × depth; hash map wins for exact key lookup only. |
 
-Tries shine when users **type ahead** on **names** (`"Sea"` → Seattle, Seaside, SeaTac), **short codes** (`"P"` → PDX, PHX, …), or **tags** with shared prefixes (`"error#"`). Exact `record_id` lookup stays in a [Hash table](../hash-table/index.md); tries complement hashes for **prefix** and **completion** UX.
+Tries shine when users **type ahead** on **product names** (`"Ana"` → Analytics, Analytics Pro, Analytics Lite), **URL path segments** (`"/api/v1"` → `/api/v1/users`, `/api/v1/orders`), or **command palette entries** (`"git "` → git status, git commit, git push). Exact `slug` lookup stays in a [Hash table](../hash-table/index.md); tries complement hashes for **prefix** and **completion** UX.
 
 This page is your **ready reference**: Python implementations (`dict`-of-children and `Trie` class), every operation with practical examples, complexity tables, pitfalls, and when `dict` beats trie. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
@@ -25,21 +25,25 @@ This page is your **ready reference**: Python implementations (`dict`-of-childre
 | **Prefix all matches** | O(L + k) | O(n) scan all keys | O(log n + k) |
 | **Autocomplete** | Natural | Slow scan | Possible |
 | **Space** | O(total chars) | O(n) keys | O(n) |
-| **Good fit** | Name/typeahead UI | `record_id` index | Leaderboards by name |
+| **Good fit** | Product/route/command UI | `slug` index | Leaderboards by name |
 
 ```mermaid
 flowchart TB
   R["root"]
-  R --> S["s"]
-  S --> E["e"]
-  E --> A["a"]
-  EA["end: seattle"] --- E
-  E --> T["t"]
-  T --> T2["t"]
-  TT["end: seattle"] --- T
-  E --> S2["s"]
-  S2 --> I["i"]
-  SI["end: seaside"] --- S2
+  R --> A["a"]
+  A --> N["n"]
+  N --> A2["a"]
+  A2 --> L["l"]
+  L --> Y["y"]
+  Y --> T["t"]
+  T --> I["i"]
+  I --> C["c"]
+  C --> S["s"]
+  EA["end: analytics"] --- S
+  S --> SP[" "]
+  SP --> P["p"]
+  P --> R2["r"]
+  PR["end: analytics pro"] --- R2
 ```
 
 **L** = key length (characters). **k** = number of matches returned.
@@ -50,10 +54,10 @@ flowchart TB
 
 | Use case | Trie keys | Operation |
 | --- | --- | --- |
-| **Search box** | `entry.name.lower()` | `starts_with("sea")` |
-| **Short code** | `"SEA"`, `"PDX"`, … | prefix as user types |
-| **Event tags** | `"error#"` shared prefix | group drills |
-| **Catalog by name** | `"Portland"` | insert full names |
+| **Product search** | `product.name.lower()` | `starts_with("ana")` |
+| **URL routing** | `"/api/v1/users"`, … | prefix as user types |
+| **Command palette** | `"git status"`, `"format document"` | shared prefix filter |
+| **Docs by slug** | `"getting-started"` | insert full slugs |
 | **Invalid token filter** | banned substring scan | prefix walk |
 
 ```python
@@ -61,21 +65,21 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class CatalogEntry:
-    entity_id: str
+class Product:
+    product_id: str
     name: str
     category: str
-    score: float
+    price: float
 
 
 @dataclass(frozen=True)
-class Region:
-    abbr: str
-    state: str
-    label: str
+class Route:
+    path: str
+    handler: str
+    methods: tuple[str, ...]
 ```
 
-Each leaf can store a `CatalogEntry` payload, not just the string key. `Trie` is defined in [Reference implementation](#reference-implementation-trie-with-full-api) below; later sections use `CatalogEntry` in operation examples.
+Each leaf can store a `Product` payload, not just the string key. `Trie` is defined in [Reference implementation](#reference-implementation-trie-with-full-api) below; later sections use `Product` in operation examples.
 
 ---
 
@@ -83,15 +87,15 @@ Each leaf can store a `CatalogEntry` payload, not just the string key. `Trie` is
 
 - **Root** — empty string prefix.
 - **Edge** — one character (or one token if word-level trie).
-- **`is_end`** — node completes a stored string; may also store `entity_id` payload.
+- **`is_end`** — node completes a stored string; may also store `product_id` payload.
 
 ```mermaid
 sequenceDiagram
   participant UI as search UI
   participant T as trie
-  UI->>T: starts_with("sea")
-  T->>T: walk s → e → a
-  T-->>UI: ["seattle", "seaside", ...]
+  UI->>T: starts_with("ana")
+  T->>T: walk a → n → a
+  T-->>UI: ["analytics", "analytics pro", ...]
 ```
 
 | Step | Cost driver |
@@ -122,13 +126,13 @@ class Trie:
 | **Time** | O(1) |
 | **Space** | O(1) |
 
-### 2. Insert catalog from iterable
+### 2. Insert products from iterable
 
 ```python
-def build_catalog_trie(entries):
+def build_product_trie(products):
     t = Trie()
-    for e in entries:
-        t.insert(e.name.lower(), e)
+    for p in products:
+        t.insert(p.name.lower(), p)
     return t
 ```
 
@@ -157,10 +161,10 @@ def make_node():
 
 Production Python services often use:
 
-- **Database** `LIKE 'sea%'` for large name catalogs.
+- **Database** `LIKE 'ana%'` for large product catalogs.
 - **Search engines** (Elasticsearch) for fuzzy match.
 
-Tries in pure Python excel in **medium** catalogs (thousands of names) and **teaching**.
+Tries in pure Python excel in **medium** catalogs (thousands of product names or routes) and **teaching**.
 
 ```mermaid
 flowchart TD
@@ -313,8 +317,8 @@ flowchart TB
 
 ```python
 trie = Trie()
-trie.insert("seattle", CatalogEntry("ent-001", "Seattle", "city", 56.0))
-trie.insert("seaside", CatalogEntry("ent-002", "Seaside", "city", 5.0))
+trie.insert("analytics", Product("prd-001", "Analytics", "saas", 49.0))
+trie.insert("analytics pro", Product("prd-002", "Analytics Pro", "saas", 99.0))
 ```
 
 | | |
@@ -334,7 +338,7 @@ sequenceDiagram
 ### `search(word)` — exact match
 
 ```python
-entry = trie.search("seattle")
+product = trie.search("analytics")
 ```
 
 | | |
@@ -342,7 +346,7 @@ entry = trie.search("seattle")
 | **Time** | O(L) |
 | **Space** | O(1) |
 
-Returns attached `CatalogEntry` or `None`.
+Returns attached `Product` or `None`.
 
 ---
 
@@ -358,7 +362,7 @@ Returns attached `CatalogEntry` or `None`.
 ### `starts_with(prefix)` — any word under prefix?
 
 ```python
-assert trie.starts_with("sea")
+assert trie.starts_with("ana")
 assert not trie.starts_with("zzz")
 ```
 
@@ -374,8 +378,8 @@ assert not trie.starts_with("zzz")
 ### `collect(prefix)` — all completions
 
 ```python
-matches = trie.collect("sea")
-# ["seaside", "seattle"] sorted by DFS order
+matches = trie.collect("ana")
+# ["analytics", "analytics pro"] sorted by DFS order
 ```
 
 | | |
@@ -388,7 +392,7 @@ matches = trie.collect("sea")
 ### `collect_values(prefix)` — payload objects
 
 ```python
-entries = trie.collect_values("po")
+products = trie.collect_values("ana")
 ```
 
 | | |
@@ -401,7 +405,7 @@ entries = trie.collect_values("po")
 ### `delete(word)`
 
 ```python
-trie.delete("seaside")
+trie.delete("analytics pro")
 ```
 
 | | |
@@ -417,9 +421,9 @@ Prune nodes that become useless branches.
 
 ```python
 t = Trie()
-for abbr in ["PDX", "PDT", "PDY"]:
-    t.insert(abbr.lower())
-# useful for detecting shared code prefixes in toy data
+for path in ["/api/v1/users", "/api/v1/orders", "/api/v2/users"]:
+    t.insert(path.lower())
+# useful for detecting shared route prefixes in toy data
 ```
 
 | | |
@@ -440,15 +444,15 @@ for abbr in ["PDX", "PDT", "PDY"]:
 
 ## Common patterns with tries
 
-### Autocomplete by name prefix
+### Autocomplete product names
 
 ```python
 def autocomplete(trie, partial, limit=10):
     partial = partial.lower().strip()
     if not partial:
         return []
-    entries = trie.collect_values(partial)
-    return entries[:limit]
+    products = trie.collect_values(partial)
+    return products[:limit]
 ```
 
 | | |
@@ -456,27 +460,58 @@ def autocomplete(trie, partial, limit=10):
 | **Time** | O(L + k) |
 | **Space** | O(k) |
 
-### Short-code typeahead
+### URL route prefix typeahead
 
 ```python
-CODES = ["ABQ", "ATL", "BOS", "DEN", "DFW", "HNL", "IAH", "JFK", "LAS",
-         "LAX", "MIA", "MSP", "ORD", "PDX", "PHX", "SAN", "SEA", "SFO",
-         "SLC", "TPA"]
+ROUTES = [
+    "/api/v1/users",
+    "/api/v1/orders",
+    "/api/v1/products",
+    "/api/v2/users",
+    "/docs",
+    "/docs/api",
+    "/docs/getting-started",
+]
 
-code_trie = Trie()
-for abbr in CODES:
-    code_trie.insert(abbr.lower(), abbr)
+route_trie = Trie()
+for path in ROUTES:
+    route_trie.insert(path.lower(), path)
 
-def suggest_code(prefix):
-    return [code_trie.search(w) for w in code_trie.collect(prefix.lower())]
+def suggest_routes(prefix):
+    return [route_trie.search(w) for w in route_trie.collect(prefix.lower())]
 ```
 
 | | |
 | --- | --- |
 | **Time** | O(L + k) |
-| **Space** | O(20) tiny |
+| **Space** | O(k) |
 
-For only a few dozen codes, a **sorted list + filter** is simpler—trie pays off when *n* is thousands (names in a large catalog).
+For only a few dozen routes, a **sorted list + filter** is simpler—trie pays off when *n* is thousands (products in a large catalog).
+
+### Command palette filter
+
+```python
+COMMANDS = [
+    "format document",
+    "format selection",
+    "find in files",
+    "git status",
+    "git commit",
+    "git push",
+]
+
+cmd_trie = Trie()
+for cmd in COMMANDS:
+    cmd_trie.insert(cmd.lower(), cmd)
+
+def suggest_commands(partial):
+    return cmd_trie.collect(partial.lower())[:10]
+```
+
+| | |
+| --- | --- |
+| **Time** | O(L + k) |
+| **Space** | O(k) |
 
 ### Prefix token filter on ingest logs
 
@@ -532,7 +567,7 @@ Let **L** = word length, **k** = matches, **N** = total stored characters across
 | `starts_with` | O(L) | O(1) |
 | `collect` / autocomplete | O(L + k + output) | O(k) stack |
 | `delete` | O(L) | O(L) stack |
-| Build n entries avg length L̄ | O(n · L̄) | O(N) total |
+| Build n products avg length L̄ | O(n · L̄) | O(N) total |
 | DFS all words | O(N) | O(output) |
 
 **Storage:** O(N) characters stored in tree structure plus node overhead.
@@ -543,17 +578,17 @@ Let **L** = word length, **k** = matches, **N** = total stored characters across
 
 | Need | Tool |
 | --- | --- |
-| Exact `record_id` | `dict[int, Record]` |
-| Few dozen codes | `list` + filter |
-| Thousands of name typeahead | `Trie` or DB `ILIKE` |
+| Exact `slug` | `dict[str, Product]` |
+| Few dozen routes | `list` + filter |
+| Thousands of product typeahead | `Trie` or DB `ILIKE` |
 | Fuzzy spelling | `difflib`, rapidfuzz, search engine |
-| Prefix in pandas | `df[df['name'].str.startswith('Sea')]` |
+| Prefix in pandas | `df[df['name'].str.startswith('Ana')]` |
 
 ```python
 import pandas as pd
 
-catalog = pd.read_csv("catalog.csv")
-hits = catalog[catalog["name"].str.lower().str.startswith("sea")]
+products = pd.read_csv("products.csv")
+hits = products[products["name"].str.lower().str.startswith("ana")]
 ```
 
 Vectorized pandas is often faster than pure Python trie for **batch** queries; trie wins for **interactive** single-prefix lookups in memory.
@@ -578,8 +613,8 @@ flowchart TD
 | Empty string insert | Define policy (usually skip) |
 | Huge alphabet Unicode | Use dict children, not array[65536] |
 | Duplicate insert same word | Decide overwrite vs ignore |
-| Trie for ~20 codes only | Overkill — use list |
-| Not attaching `entity_id` at leaf | Store payload in `value` |
+| Trie for ~20 routes only | Overkill — use list |
+| Not attaching `product_id` at leaf | Store payload in `value` |
 
 ---
 
@@ -607,13 +642,13 @@ class CaseInsensitiveTrie:
 | **Time** | O(L) per op |
 | **Space** | Same as inner trie |
 
-**Note:** User types `"SEA"` or `"sea"` — same completions.
+**Note:** User types `"/API/"` or `"/api/"` — same route completions.
 
 ---
 
 ## Array-based trie node (A–Z only)
 
-When keys are **uppercase codes** or A–Z only:
+When keys are **uppercase route segments** or A–Z only:
 
 ```python
 class AlphaTrieNode:
@@ -643,11 +678,11 @@ Use **`dict` children** for full names with mixed characters.
 sequenceDiagram
   participant T as Trie
   T->>T: start at root
-  loop each character in "seattle"
+  loop each character in "analytics"
     T->>T: create child if missing
     T->>T: descend
   end
-  T->>T: is_end=True, value=CatalogEntry(...)
+  T->>T: is_end=True, value=Product(...)
 ```
 
 ---
@@ -686,7 +721,7 @@ def find_word(board, word, trie):
 | **Time** | O(rows · cols · 4^L) naive |
 | **Space** | O(L) stack |
 
-**Note:** Toy for workbook puzzles—not production catalog search.
+**Note:** Toy for workbook puzzles—not production product search.
 
 ---
 
@@ -715,21 +750,21 @@ If the trie is **sparse** with long single-child chains, compress paths into one
 | --- | --- | --- |
 | Space | O(total chars) | O(nodes) smaller |
 | Implement | Easy in Python | Harder |
-| Name autocomplete | dict trie enough | optional at scale |
+| Product autocomplete | dict trie enough | optional at scale |
 
 ---
 
 ## Autocomplete API sketch (Flask-style)
 
 ```python
-def search_catalog(trie, q, limit=8):
+def search_products(trie, q, limit=8):
     q = q.strip().lower()
     if len(q) < 2:
         return []
-    entries = trie.collect_values(q)
+    products = trie.collect_values(q)
     return [
-        {"entity_id": e.entity_id, "name": e.name, "category": e.category}
-        for e in entries[:limit]
+        {"product_id": p.product_id, "name": p.name, "category": p.category}
+        for p in products[:limit]
     ]
 ```
 
@@ -746,9 +781,9 @@ sequenceDiagram
   participant UI
   participant API
   participant Trie
-  UI->>API: GET /search?q=sea
-  API->>Trie: collect_values("sea")
-  Trie-->>API: [CatalogEntry, ...]
+  UI->>API: GET /products?q=ana
+  API->>Trie: collect_values("ana")
+  Trie-->>API: [Product, ...]
   API-->>UI: JSON suggestions
 ```
 
@@ -759,15 +794,15 @@ sequenceDiagram
 ```python
 import csv
 
-def trie_from_catalog_csv(path):
+def trie_from_products_csv(path):
     t = Trie()
     with open(path, newline="") as f:
         for row in csv.DictReader(f):
             name = row.get("name", "")
-            eid = row["entity_id"]
+            pid = row["product_id"]
             category = row.get("category", "")
-            score = float(row.get("score", 0))
-            t.insert(name.lower(), CatalogEntry(eid, name, category, score))
+            price = float(row.get("price", 0))
+            t.insert(name.lower(), Product(pid, name, category, price))
     return t
 ```
 
@@ -776,7 +811,7 @@ def trie_from_catalog_csv(path):
 | **Time** | O(total name characters) |
 | **Space** | O(trie nodes) |
 
-Rebuild trie when the catalog updates, not on every HTTP request.
+Rebuild trie when the product catalog updates, not on every HTTP request.
 
 ---
 
@@ -784,9 +819,9 @@ Rebuild trie when the catalog updates, not on every HTTP request.
 
 | Query | Structure |
 | --- | --- |
-| Keys **starting with** `"sea"` | Trie |
-| Keys **containing** `"attle"` | Scan all keys O(n) or full-text index |
-| Exact `record_id` | `dict` |
+| Keys **starting with** `"ana"` | Trie |
+| Keys **containing** `"lytics"` | Scan all keys O(n) or full-text index |
+| Exact `slug` | `dict` |
 
 Document your search product: trie is **prefix-only**.
 
@@ -806,27 +841,27 @@ Document your search product: trie is **prefix-only**.
 
 ```python
 trie = Trie()
-trie.insert("seattle", entry_obj)
-trie.insert("seaside", other_entry)
+trie.insert("analytics", product_obj)
+trie.insert("analytics pro", other_product)
 
 # Exact
-e = trie.search("seattle")
+p = trie.search("analytics")
 
 # Prefix
-if trie.starts_with("sea"):
-    names = trie.collect("sea")
-    entries = trie.collect_values("sea")
+if trie.starts_with("ana"):
+    names = trie.collect("ana")
+    products = trie.collect_values("ana")
 
 # Remove
-trie.delete("seaside")
+trie.delete("analytics pro")
 ```
 
-Use a **trie** when **prefix queries** and **autocomplete** dominate—name search, shared tag prefixes, command palettes. Use **`dict`** for **`record_id`** and **`Counter`** for stats; use **pandas** for bulk filters.
+Use a **trie** when **prefix queries** and **autocomplete** dominate—product name search, URL route prefixes, command palettes. Use **`dict`** for **`slug`** and **`Counter`** for stats; use **pandas** for bulk filters.
 
 **Implementation checklist**
 
-1. **Exact record lookup** — `dict` or DataFrame index, not trie.
-2. **Name search UI** — trie on normalized `name.lower()`.
+1. **Exact slug lookup** — `dict` or DataFrame index, not trie.
+2. **Product search UI** — trie on normalized `name.lower()`.
 3. **Normalize** — case and diacritics policy at insert and query.
-4. **Size** — trie for thousands of strings; consider DB for full historical catalog search.
-5. **Return payload** — store `CatalogEntry` at `is_end` node, not just string.
+4. **Size** — trie for thousands of strings; consider DB for full product catalog search.
+5. **Return payload** — store `Product` at `is_end` node, not just string.

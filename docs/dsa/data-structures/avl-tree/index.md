@@ -1,6 +1,6 @@
 # AVL tree
 
-A **self-balancing binary search tree** where the **height difference** (balance factor) between left and right subtrees is at most **1** at every node. After each insert or delete, **rotations** restore that invariant so height stays **O(log n)**—guaranteed fast lookup even when scheduler entries arrive **sorted by timestamp** or **task ID**.
+A **self-balancing binary search tree** where the **height difference** (balance factor) between left and right subtrees is at most **1** at every node. After each insert or delete, **rotations** restore that invariant so height stays **O(log n)**—guaranteed fast lookup even when keys arrive **sorted by priority** or **record ID**.
 
 | | |
 | --- | --- |
@@ -10,7 +10,7 @@ A **self-balancing binary search tree** where the **height difference** (balance
 | **When to use** | Teaching strict balancing; guaranteed log height when plain BST would skew. |
 | **Trade-off** | More bookkeeping and rotations than [red–black](../red-black-tree/index.md); stricter balance → slightly fewer compares on lookup, more work on write. |
 
-An AVL tree models a **live ordered index** that stays balanced as you ingest `(timestamp, task_id, weight)` in **chronological or alphabetical order**—the case that breaks a plain BST. Use it to understand **rotations** before [red–black trees](../red-black-tree/index.md) (used in many language runtimes). For production Python, you still reach for **`dict`** or **`sortedcontainers`**; AVL is for **learning and interviews**.
+An AVL tree models a **live ordered index** that stays balanced as you insert `(priority, record_id, label)` pairs in **sorted or alphabetical order**—the case that breaks a plain BST. Use it to understand **rotations** before [red–black trees](../red-black-tree/index.md) (used in many language runtimes). For production Python, you still reach for **`dict`** or **`sortedcontainers`**; AVL is for **learning and interviews**.
 
 This page is your **ready reference**: balance factors, rotations, full Python implementation, practical examples, and complexity per operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
@@ -22,7 +22,7 @@ This page is your **ready reference**: balance factors, rotations, full Python i
 
 | Use case | AVL view | Why balance matters |
 | --- | --- | --- |
-| **Scheduler feed** | Insert `(timestamp, weight, task_id)` in time order | Plain BST becomes a chain; AVL stays log |
+| **Sorted key feed** | Insert `(priority, label, record_id)` in ascending order | Plain BST becomes a chain; AVL stays log |
 | **Symbol table by name** | Ordered key; frequent insert/remove | O(log n) guaranteed each update |
 | **Live score index** | Inorder = sorted; height log | Predictable latency during bursts |
 | **Merge two sorted streams** | Inorder merge of two AVLs | O(n + m) walk if both balanced |
@@ -31,7 +31,7 @@ This page is your **ready reference**: balance factors, rotations, full Python i
 
 ```mermaid
 flowchart TB
- subgraph before["BST skew — sorted timestamp insert"]
+ subgraph before["BST skew — sorted key insert"]
  direction TB
  D1["D1"] --> D2["D2"] --> D3["D3"] --> D4["D4"]
  end
@@ -75,10 +75,10 @@ from typing import Any, Iterator
 
 
 @dataclass(frozen=True, order=True)
-class ScheduleEntry:
- timestamp: int
- task_id: str
- weight: float = 0.0
+class MapEntry:
+ priority: int
+ record_id: str
+ label: str = ""
 
 
 @dataclass
@@ -226,14 +226,14 @@ tree = AVLTree()
 | **Time** | O(1) |
 | **Space** | O(1) |
 
-### 2. Insert sorted timestamps — stays O(log n) per insert
+### 2. Insert sorted keys — stays O(log n) per insert
 
-Unlike plain BST, inserting timestamps 1…365 in order keeps height logarithmic.
+Unlike plain BST, inserting priorities 1…365 in order keeps height logarithmic.
 
 ```python
 tree = AVLTree()
-for t in range(1, 366):
- tree.insert(ScheduleEntry(t, f"task{t}", t * 0.01))
+for p in range(1, 366):
+ tree.insert(MapEntry(p, f"rec{p}", f"entry{p}"))
 assert tree.height() <= 10
 ```
 
@@ -356,16 +356,16 @@ class AVLTree:
 
 ## Operations with ordered-map examples
 
-### Insert scheduler entries in sorted order
+### Insert map entries in sorted order
 
 ```python
 tree = AVLTree()
-for ts in range(1, 366):
- tree.insert_strict(ScheduleEntry(ts, "task01", ts * 0.025))
+for p in range(1, 366):
+ tree.insert_strict(MapEntry(p, "rec01", f"entry{p}"))
 assert len(tree) == 365
 assert tree.height() <= 10
-ordered_ts = [k.timestamp for k in tree.inorder()]
-assert ordered_ts == list(range(1, 366))
+ordered_p = [k.priority for k in tree.inorder()]
+assert ordered_p == list(range(1, 366))
 ```
 
 | | |
@@ -377,7 +377,7 @@ assert ordered_ts == list(range(1, 366))
 sequenceDiagram
  participant Feed as event stream
  participant AVL as AVLTree
- Feed->>AVL: insert T1..T365 in order
+ Feed->>AVL: insert K1..K365 in order
  loop each insert
  AVL->>AVL: descend O(log n)
  AVL->>AVL: rebalance with 0–1 rotations
@@ -387,17 +387,17 @@ sequenceDiagram
 
 ---
 
-### Search / delete — remove cancelled task from scheduler
+### Search / delete — remove entry from symbol table
 
 ```python
 tree = AVLTree()
-for t in [3, 1, 4, 2, 5]:
- tree.insert_strict(ScheduleEntry(t, "task07", t * 0.4))
+for p in [3, 1, 4, 2, 5]:
+ tree.insert_strict(MapEntry(p, "rec07", f"entry{p}"))
 
-assert tree.contains(ScheduleEntry(4, "task07"))
-tree.delete(ScheduleEntry(4, "task07"))
-assert not tree.contains(ScheduleEntry(4, "task07"))
-assert [k.timestamp for k in tree.inorder()] == [1, 2, 3, 5]
+assert tree.contains(MapEntry(4, "rec07"))
+tree.delete(MapEntry(4, "rec07"))
+assert not tree.contains(MapEntry(4, "rec07"))
+assert [k.priority for k in tree.inorder()] == [1, 2, 3, 5]
 ```
 
 | | |
@@ -407,17 +407,17 @@ assert [k.timestamp for k in tree.inorder()] == [1, 2, 3, 5]
 
 ---
 
-### Inorder — chronological scheduler report
+### Inorder — ascending key order
 
 Same as BST: **inorder** yields sorted keys.
 
 ```python
 tree = AVLTree()
-stats = [ScheduleEntry(150, "A", 0.9), ScheduleEntry(60, "B", 1.1), ScheduleEntry(240, "C", 0.7)]
-for s in stats:
- tree.insert_strict(s)
-for s in tree.inorder_iter():
- print(f"t={s.timestamp}: weight {s.weight:.1f}")
+entries = [MapEntry(150, "recA", "alpha"), MapEntry(60, "recB", "beta"), MapEntry(240, "recC", "gamma")]
+for entry in entries:
+ tree.insert_strict(entry)
+for entry in tree.inorder_iter():
+ print(f"{entry.record_id}: priority {entry.priority} — {entry.label}")
 ```
 
 | | |
@@ -427,35 +427,35 @@ for s in tree.inorder_iter():
 
 ---
 
-## Application: balanced task scheduler index
+## Application: balanced symbol table index
 
 ```python
-class TaskScheduleIndex:
+class SymbolTableIndex:
  def __init__(self) -> None:
  self._tree = AVLTree()
 
- def schedule(self, timestamp: int, task_id: str, weight: float) -> None:
- self._tree.insert_strict(ScheduleEntry(timestamp, task_id, weight))
+ def upsert(self, priority: int, record_id: str, label: str = "") -> None:
+ self._tree.insert_strict(MapEntry(priority, record_id, label))
 
- def tasks_for_id(self, task_id: str) -> list[ScheduleEntry]:
- return [k for k in self._tree.inorder() if k.task_id == task_id]
+ def entries_for_id(self, record_id: str) -> list[MapEntry]:
+ return [k for k in self._tree.inorder() if k.record_id == record_id]
 
- def report_through(self, max_ts: int) -> list[ScheduleEntry]:
- return [k for k in self._tree.inorder() if k.timestamp <= max_ts]
+ def range_up_to(self, max_priority: int) -> list[MapEntry]:
+ return [k for k in self._tree.inorder() if k.priority <= max_priority]
 
 
-idx = TaskScheduleIndex()
-for t in range(1, 11):
- idx.schedule(t, "task10", t * 0.08)
-through = idx.report_through(5)
+idx = SymbolTableIndex()
+for p in range(1, 11):
+ idx.upsert(p, "rec10", f"entry{p}")
+through = idx.range_up_to(5)
 assert len(through) == 5
 assert idx._tree.height() <= 5
 ```
 
 | Operation | Time | Space |
 | --- | --- | --- |
-| `schedule` | O(log n) | O(1) |
-| `report_through` | O(n) scan | O(output) |
+| `upsert` | O(log n) | O(1) |
+| `range_up_to` | O(n) scan | O(output) |
 
 ---
 
@@ -467,7 +467,7 @@ assert idx._tree.height() <= 5
 | Rotations on insert | Often more | Often fewer |
 | Lookup | Fewer compares (shorter) | Slightly more |
 | Typical use | Databases (some), teaching | `std::map`, Java `TreeMap` |
-| Ordered-map analogy | Strict scheduler with fairness guarantees | High-volume symbol-table index |
+| Ordered-map analogy | Strict balance for lookup-heavy indexes | High-volume symbol-table index |
 
 ---
 
@@ -530,9 +530,9 @@ flowchart TD
 
 ```python
 tree = AVLTree()
-tree.insert_strict(ScheduleEntry(150, "task01", 2.8))
-tree.search(ScheduleEntry(150, "task01"))
-tree.delete(ScheduleEntry(150, "task01"))
+tree.insert_strict(MapEntry(150, "rec01", "alpha"))
+tree.search(MapEntry(150, "rec01"))
+tree.delete(MapEntry(150, "rec01"))
 list(tree.inorder_iter())
 tree.height()
 ```

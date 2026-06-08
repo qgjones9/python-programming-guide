@@ -46,7 +46,7 @@ Throughout: **V** = \|vertices\|, **E** = \|edges\|, **deg(v)** = degree of vert
 | Undirected | Both ways | Optional | Mutual social connection |
 | Directed | One way | Optional | Manager → report |
 | Weighted | Either | On edge | Latency between datacenters |
-| Unweighted | Either | 1 | Linked in same ingest batch |
+| Unweighted | Either | 1 | Vertices in same connected component |
 | Acyclic DAG | Directed, no cycles | — | Pipeline prerequisite tree |
 | Bipartite | Two partitions | — | Users vs events |
 
@@ -321,13 +321,13 @@ order = org_tree.dfs("CEO")
 
 ```mermaid
 sequenceDiagram
- participant Analyst
+ participant App
  participant G as social graph
  App->>G: BFS from alice
- G-->>Analyst: layer 1 neighbors
- G-->>Analyst: layer 2 neighbors
+ G-->>App: layer 1 neighbors
+ G-->>App: layer 2 neighbors
  App->>G: DFS from CEO
- G-->>Analyst: deep org chain first
+ G-->>App: deep org chain first
 ```
 
 ---
@@ -555,7 +555,7 @@ wg.add_edge(u, v, weight=1.0)
 wg.dijkstra(src)
 ```
 
-Use a **graph** when questions are about **connections and paths**, not column means—use **SQL** or **pandas** for aggregations, **graphs** for topology.
+Use a **graph** when questions are about **connections and paths**, not aggregate statistics—use **SQL** or **pandas** for summaries, **graphs** for topology.
 
 **Implementation checklist**
 

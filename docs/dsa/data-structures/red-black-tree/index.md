@@ -10,7 +10,7 @@ A **self-balancing binary search tree** where every node is colored **red** or *
 | **When to use** | Understanding library map/set implementations; interview “design a sorted dictionary.” |
 | **Trade-off** | More cases than AVL on paper; excellent amortized behavior in practice. |
 
-Red–black trees are the **conceptual engine** behind **ordered maps** in other ecosystems: e.g. a `TreeMap<(timestamp, record_id), RecordInfo>` for chronologically sorted lookup with guaranteed log updates. In **Python**, you use **`dict`** for `id → record` (hash table) and **`sorted()` / SQL** for sorted reports—not an ordered map in stdlib. Learn red–black trees to **compare balancing strategies** and to read **CPython-adjacent** designs (some third-party sorted containers use similar ideas).
+Red–black trees are the **conceptual engine** behind **ordered maps** in other ecosystems: e.g. a `TreeMap<(priority, record_id), RecordInfo>` for sorted lookup with guaranteed log updates. In **Python**, you use **`dict`** for `id → record` (hash table) and **`sorted()` / SQL** for sorted reports—not an ordered map in stdlib. Learn red–black trees to **compare balancing strategies** and to read **CPython-adjacent** designs (some third-party sorted containers use similar ideas).
 
 This page is your **ready reference**: invariants, insert/delete fixups, Python teaching implementation, practical examples, and complexity tables. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
@@ -51,7 +51,7 @@ Throughout this page, **n** = node count.
 
 | Use case | Ordered-map view | Note |
 | --- | --- | --- |
-| **Chronological index** | Key `(timestamp, record_id)` → payload | Ordered iteration by time |
+| **Ordered key index** | Key `(priority, record_id)` → payload | Ordered iteration by key |
 | **Priority tier ladder** | Sorted unique score thresholds | Insert/delete with log guarantee |
 | **Event log index** | Sequence-ordered tree | Other langs; Python uses heap/list often |
 | **Compare to Python** | Mental model for Java/C++ maps | `dict` = hash, not comparison order |
@@ -342,7 +342,7 @@ assert [k.priority for k in tree.inorder()] == sorted([182, 121, 225, 150])
 
 ### 3. Sorted insert — still O(log n) height
 
-Unlike plain BST, inserting ascending `(timestamp, id)` stays balanced.
+Unlike plain BST, inserting ascending `(priority, id)` stays balanced.
 
 ```python
 tree = RedBlackTree()
@@ -388,27 +388,27 @@ for k in tree.inorder_iter():
 
 ---
 
-## Application: ordered chronology (conceptual)
+## Application: ordered map (conceptual)
 
 In Java/C++ you might write:
 
 ```text
-TreeMap<TimestampRecord, RecordInfo> chronology;
-chronology.put(new TimestampRecord(1, "rec01"), record);
+TreeMap<IndexKey, RecordInfo> ordered_map;
+ordered_map.put(new IndexKey(1, "rec01"), record);
 ```
 
 Python equivalent patterns:
 
 ```python
-records_by_id: dict[str, dict] = {"rec01": {"ts": 1, "symbol": "alpha"}}
+records_by_id: dict[str, dict] = {"rec01": {"priority": 1, "symbol": "alpha"}}
 
-records = sorted(records_by_id.values(), key=lambda r: (r["ts"], r.get("id", "")))
+records = sorted(records_by_id.values(), key=lambda r: (r["priority"], r.get("id", "")))
 
-schedule_rb = RedBlackTree()
-schedule_rb.insert(IndexKey(1, "rec01"))
+index_tree = RedBlackTree()
+index_tree.insert(IndexKey(1, "rec01"))
 ```
 
-| Approach | Lookup by id | Sorted by timestamp |
+| Approach | Lookup by id | Sorted by key |
 | --- | --- | --- |
 | `dict` | O(1) avg | Sort separately O(n log n) |
 | Red–black (other langs) | O(log n) | Inorder O(n) |

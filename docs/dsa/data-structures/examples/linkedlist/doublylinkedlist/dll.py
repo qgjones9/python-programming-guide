@@ -312,9 +312,9 @@ class DoublyLinkedList:
             return None # return None
         return self.tail.data # return the data from the tail node
 
-    def oldest_in_window(self): # helper method to return the oldest value in the window
+    def oldest_in_buffer(self): # helper method to return the oldest value in the buffer
         """
-        Return the oldest value in the window (head), or None if empty.
+        Return the oldest value in the buffer (head), or None if empty.
         """
         if self.is_empty(): # case: linked list is empty
             return None # return None
@@ -328,21 +328,21 @@ class DoublyLinkedList:
             return None # return None
         return self.head.data # return the data from the head node
 
-    def find_reading(self, reading_id): # helper method to find the reading with the given reading id
+    def find_entry(self, entry_id): # helper method to find the entry with the given entry id
         """
-        (1) If the reading id is not found, return None.
-        (2) Otherwise, return the reading with the given reading id.
+        (1) If the entry id is not found, return None.
+        (2) Otherwise, return the entry with the given entry id.
         """
         current = self.head # start at the head
         while current is not None: # iterate through the linked list
             data = current.data # get the data from the current node
-            if hasattr(data, "reading_id"): # case: data has a reading id
-                if data.reading_id == reading_id: # case: reading id is found
+            if hasattr(data, "entry_id"): # case: data has an entry id
+                if data.entry_id == entry_id: # case: entry id is found
                     return data # return the data
-            elif data == reading_id: # case: reading id is found
+            elif data == entry_id: # case: entry id is found
                 return data # return the data
             current = current.next # get the next node
-        return None # return None if the reading id is not found
+        return None # return None if the entry id is not found
 
     def walk_forward_from(self, node): # helper method to walk forward from the given node  
         """

@@ -462,4 +462,4 @@ users.copy()
 frozenset(users)
 ```
 
-Use **`set`** for **fast unique membership and algebra** on user or session ids—use **pandas** or SQL for **column-wide** archive tables.
+Use **`set`** for **fast unique membership and algebra** on user or session ids—use **pandas** or SQL for **column-wide** relational tables.

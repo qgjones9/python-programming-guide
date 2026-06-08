@@ -7,9 +7,9 @@ A linear collection stored as **nodes** that point to the next item—unlike a c
 | **What it is** | Nodes in a chain: each holds a value (e.g. one playlist track dict or `track_id`) and a link to the *next* node. The *head* is the entry to the list. |
 | **Core operations** | Insert or delete at the head in O(1); traverse from the head for everything else. |
 | **When to use** | Frequent insert/delete at the front (newest item arrives “at the top” of a working buffer), unknown or changing length, or algorithms defined as **rewiring** (reverse an entry chain, merge two sorted entry streams). |
-| **Trade-off** | Random access by index is O(n)—painful if you keep calling `get(i)` on thousands of table rows; extra memory per node for `next`. Multi-year archives and indexed lookups usually belong on a Python `list` or `dict`. |
+| **Trade-off** | Random access by index is O(n)—painful if you keep calling `get(i)` on thousands of playlist tracks or history entries; extra memory per node for `next`. Full catalogs and indexed lookups usually belong on a Python `list` or `dict`. |
 
-Python has **no built-in singly linked list type**. You either implement nodes yourself (the best way to learn the ADT) or reach for tools that solve similar problems—`collections.deque` for a live event queue, or a `list` when you need `items[i]` and vectorized pandas work. This page is your **ready reference** for singly linked lists in Python: structure, a complete implementation, every operation with examples, and **time and space complexity** on each. For Big-O notation and problem-scale *n*, see [Complexity analysis](../../complexity/index.md).
+Python has **no built-in singly linked list type**. You either implement nodes yourself (the best way to learn the ADT) or reach for tools that solve similar problems—`collections.deque` for a live event buffer, or a `list` when you need `tracks[i]` on a full playlist catalog. This page is your **ready reference** for singly linked lists in Python: structure, a complete implementation, every operation with examples, and **time and space complexity** on each. For Big-O notation and problem-scale *n*, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
@@ -25,9 +25,9 @@ Python has **no built-in singly linked list type**. You either implement nodes y
 | **Insert at tail** | O(1) with tail pointer; O(n) without | Amortized O(1) `append` |
 | **Insert in middle** | O(n) to find position; O(1) pointer rewiring once there | O(n) shift |
 | **Cache behavior** | Poor (nodes may be far apart in memory) | Good (sequential slots) |
-| **Example workload** | One playlist window chain | Full in-memory table, `items[i]`, `groupby`, export to parquet |
+| **Example workload** | One playlist buffer chain | Full playlist catalog, `tracks[i]`, bulk export to JSON |
 
-In CPython, `list` is always a dynamic array. A “linked list” in Python is **your own classes**, not a language primitive. Your large CSV belongs in a **`list` of dicts or a DataFrame**; a linked list is for **ordered chains** where pointer costs are the lesson or the algorithm (merge two sorted track-id chains without array shifts).
+In CPython, `list` is always a dynamic array. A “linked list” in Python is **your own classes**, not a language primitive. Your full playlist catalog belongs in a **`list` of dicts or a database table**; a linked list is for **ordered chains** where pointer costs are the lesson or the algorithm (merge two sorted track-id chains without array shifts).
 
 ```mermaid
 flowchart LR
@@ -44,7 +44,7 @@ flowchart LR
   end
 ```
 
-Throughout this page, **n** means the number of nodes in the list (e.g. items in one buffer). **i** means a zero-based index. In production apps, **n** per list is often small (one bounded buffer) while total table rows in an archive live in tables—do not confuse “linked list of one buffer” with “50k-row DataFrame.”
+Throughout this page, **n** means the number of nodes in the list (e.g. tracks in one playlist buffer, events in one ingest window). **i** means a zero-based index. In production apps, **n** per list is often small (one bounded buffer) while total tracks in a catalog live in databases—do not confuse “linked list of one buffer” with “50k-track catalog.”
 
 ---
 
@@ -57,7 +57,7 @@ Throughout this page, **n** means the number of nodes in the list (e.g. items in
 | **Delete when you hold a node reference** | O(n) to find predecessor; **copy-value hack** is an O(1) workaround with caveats | O(1) rewire `prev` and `next` | O(n) shift after removal |
 | **Access by index `i`** | O(n) from head only | O(n) from nearer end | O(1) |
 | **Memory** | Medium | Highest per element | Compact + cache-friendly |
-| **Typical fit** | Head-heavy live ingest, merge drills | Bidirectional history UI, both-end window | Full in-memory table |
+| **Typical fit** | Head-heavy event ingest, merge drills | Bidirectional browser history UI, both-end buffer | Full playlist catalog |
 
 The **copy-value hack** (detailed below) is the main singly linked workaround when you hold a node reference but not its predecessor. A [doubly linked list](../doubly-linked-list/index.md) avoids the hack entirely with a `prev` pointer.
 
@@ -70,11 +70,11 @@ You will rarely store an entire catalog in a hand-rolled `LinkedList`. The struc
 | Application idea | Linked-list view | Typical *n* |
 | --- | --- | --- |
 | **Items in one buffer** | Head = oldest item; `next` = next track in playlist order | ~7–31 |
-| **Live event buffer** | `prepend` newest tick; trim from tail when window exceeds *k* | window size *k* |
+| **Live event buffer** | `prepend` newest event; trim from tail when buffer exceeds *k* | buffer size *k* |
 | **Merge two sorted streams** | Each stream is a chain sorted by `(playlist_id, track_id)`; merge without shifting a whole array | *n* + *m* |
 | **Walk the chain** | Sum duration_ms, find first short track, detect cycle in bad test data | O(n) traverse |
 
-**Reach for a Python `list` or pandas** when you filter 50,000 table rows by key, sort records by a metric, or need `items[i]` in a loop. **Reach for a linked list (or `deque`)** when the problem is inherently **sequential** and **end-heavy**: stack of undo edits on a text editor, merge sorted linked chains in a streaming join sketch, or learning how `insert(0)` on a `list` differs from O(1) `prepend`.
+**Reach for a Python `list` or a database query** when you filter 50,000 history entries by URL, sort playlist tracks by duration, or need `tracks[i]` in a loop. **Reach for a linked list (or `deque`)** when the problem is inherently **sequential** and **end-heavy**: browser history scrubber, live event ingest buffer, merge sorted linked chains in a streaming join sketch, or learning how `insert(0)` on a `list` differs from O(1) `prepend`.
 
 ```python
 from dataclasses import dataclass
@@ -86,9 +86,17 @@ class PlaylistTrack:
     disc: int
     duration_ms: float
     title: str
+
+
+@dataclass
+class HistoryEntry:
+    entry_id: int
+    tab_id: int
+    duration_ms: float
+    title: str
 ```
 
-Each node's `data` can be a `PlaylistTrack`, a `track_id`, or a row dict. `LinkedList` is defined in [Reference implementation](#reference-implementation) below; later sections use `PlaylistTrack` in operation examples.
+Each node's `data` can be a `PlaylistTrack`, a `HistoryEntry`, a `track_id`, or an event dict. `LinkedList` is defined in [Reference implementation](#reference-implementation) below; later sections use `PlaylistTrack` and `HistoryEntry` in operation examples.
 
 ---
 
@@ -122,7 +130,7 @@ sequenceDiagram
 | --- | --- | --- | --- |
 | **Head change** | Rewire one or two pointers | `prepend`, `pop_head` | New live event pushed to front of a scratch buffer |
 | **Find position** | Walk up to *n* nodes | `get(i)`, `insert(i)`, `remove(value)` | “Third item in this buffer”—must walk from head |
-| **Rewire after find** | Constant pointer updates | splice after predecessor | Insert corrected sensor row after day 2 without shifting a whole array |
+| **Rewire after find** | Constant pointer updates | splice after predecessor | Insert corrected history entry after index 2 without shifting a whole array |
 
 ---
 
@@ -536,7 +544,7 @@ class LinkedList:
 
 ## All operations (with examples and complexity)
 
-Examples below use small integers or strings where the focus is pointer mechanics. In a application script, the same methods apply when `data` is a `PlaylistTrack`, a `track_id`, or a row dict—costs depend on **chain length**, not on whether `data` is a float or a dict.
+Examples below use small integers or strings where the focus is pointer mechanics. In an application script, the same methods apply when `data` is a `PlaylistTrack`, a `HistoryEntry`, or an event dict—costs depend on **chain length**, not on whether `data` is a dataclass or a dict.
 
 ```mermaid
 flowchart TB
@@ -586,10 +594,10 @@ ll.prepend(1)
 assert list(ll) == [1, 2, 3]
 
 buffer = LinkedList([
-    PlaylistTrack(201, 3, 0.2, "About"),
-    PlaylistTrack(202, 3, -0.5, "archive"),
+    PlaylistTrack(201, 3, 212000, "Neon Skyline"),
+    PlaylistTrack(202, 3, 198000, "Late Shift"),
 ])
-buffer.prepend(PlaylistTrack(200, 3, 0.0, "backfill"))
+buffer.prepend(PlaylistTrack(200, 3, 245000, "Opening Act"))
 ```
 
 | | |
@@ -597,7 +605,7 @@ buffer.prepend(PlaylistTrack(200, 3, 0.0, "backfill"))
 | **Time** | O(1) |
 | **Space** | O(1) auxiliary (one new node) |
 
-**Application note:** Prepending every item in a multi-year archive would still be Θ(n) nodes total; you are choosing O(1) **per prepend**, not O(1) for the whole dataset.
+**Application note:** Prepending every track in an entire playlist catalog would still be Θ(n) nodes total; you are choosing O(1) **per prepend**, not O(1) for the whole catalog.
 
 ```mermaid
 sequenceDiagram
@@ -621,9 +629,9 @@ ll.append("a")
 ll.append("b")
 assert list(ll) == ["a", "b"]
 
-series = LinkedList()
-series.append(PlaylistTrack(1, 1, 0.3, "draft"))
-series.append(PlaylistTrack(2, 1, 1.1, "Profile"))
+playlist = LinkedList()
+playlist.append(PlaylistTrack(1, 1, 212000, "Neon Skyline"))
+playlist.append(PlaylistTrack(2, 1, 198000, "Late Shift"))
 ```
 
 | | |
@@ -631,7 +639,7 @@ series.append(PlaylistTrack(2, 1, 1.1, "Profile"))
 | **Time** | O(1) with `tail`; O(n) if only `head` |
 | **Space** | O(1) auxiliary per append |
 
-**Application note:** Appending each row as a buffer grows matches live ingest: O(1) amortized per item **if** you keep `tail`, same idea as [array-based list](../array-based-lists/index.md) `append` on a growing table.
+**Application note:** Appending each event as a buffer grows matches live ingest: O(1) amortized per item **if** you keep `tail`, same idea as [array-based list](../array-based-lists/index.md) `append` on a growing playlist.
 
 ```mermaid
 flowchart LR
@@ -693,7 +701,7 @@ assert ll.get(1) == "B"
 | **Time** | O(n) worst case (index near end); O(i) for index `i` |
 | **Space** | O(1) |
 
-**Application note:** “Give me entry index 7 in this window” without a `list` backing store is O(i) pointer hops. If you need random day access repeatedly, materialize `series.to_list()` once or keep a Python `list` for that window.
+**Application note:** “Give me track index 7 in this playlist buffer” without a `list` backing store is O(i) pointer hops. If you need random index access repeatedly, materialize `playlist.to_list()` once or keep a Python `list` for that buffer.
 
 ---
 
@@ -879,12 +887,12 @@ ll = LinkedList([10, 20, 30])
 total = sum(x for x in ll)
 assert total == 60
 
-series = LinkedList([
-    PlaylistTrack(1, 1, 0.5, "a"),
-    PlaylistTrack(2, 1, -0.3, "b"),
-    PlaylistTrack(3, 1, 0.2, "c"),
+playlist = LinkedList([
+    PlaylistTrack(1, 1, 212000, "Neon Skyline"),
+    PlaylistTrack(2, 1, 198000, "Late Shift"),
+    PlaylistTrack(3, 1, 245000, "Opening Act"),
 ])
-series_anomaly = sum(r.duration_ms for r in series)
+total_duration = sum(r.duration_ms for r in playlist)
 ```
 
 | | |
@@ -892,7 +900,7 @@ series_anomaly = sum(r.duration_ms for r in series)
 | **Time** | O(n) full traversal |
 | **Space** | O(1) auxiliary |
 
-This is the right pattern for **aggregate on a chain** (sum duration_ms, count Docss). For **aggregate on a full archive**, traverse a table or column once—still O(n), but *n* is all table rows and the structure should be a `list`/DataFrame, not a linked list of 50k nodes.
+This is the right pattern for **aggregate on a chain** (sum `duration_ms`, count short tracks). For **aggregate on a full catalog**, query the database or traverse a `list` once—still O(n), but *n* is all tracks and the structure should be a `list` or indexed `dict`, not a linked list of 50k nodes.
 
 Manual walk (no wrapper class):
 
@@ -941,16 +949,16 @@ def delete_node_copy_hack(node: Node) -> None:
     node.next = node.next.next
 ```
 
-Application example: a history chain holds a `Node` for “Entry 102 — Docs”. You want to drop that day without scanning from the head; copy Entry 103’s data into Entry 102’s node, then unlink Entry 103.
+Application example: a browser history chain holds a `Node` for “Entry 102 — Docs”. You want to remove that entry without scanning from the head; copy Entry 103’s data into Entry 102’s node, then unlink Entry 103.
 
 ```python
-n3 = Node(PlaylistTrack(103, 2, 0.1, "Settings"))
-n2 = Node(PlaylistTrack(102, 2, -1.2, "Docs"), next=n3)
-n1 = Node(PlaylistTrack(101, 2, 0.4, "Home"), next=n2)
+n3 = Node(HistoryEntry(103, 2, 12000, "Settings"))
+n2 = Node(HistoryEntry(102, 2, 45000, "Docs"), next=n3)
+n1 = Node(HistoryEntry(101, 2, 8000, "Home"), next=n2)
 
 delete_node_copy_hack(n2)
 
-assert n1.next.data.track_id == 103
+assert n1.next.data.entry_id == 103
 assert n1.next.next is None
 ```
 
@@ -964,7 +972,7 @@ assert n1.next.next is None
 | **Tail node** | No `node.next` — hack fails; scan for predecessor or use a [doubly linked list](../doubly-linked-list/index.md) |
 | **Mutates data in place** | The node at that address keeps its identity but holds a different entry's data |
 | **Stale references** | After unlinking `node.next`, other pointers to that detached node are invalid |
-| **Production dashboards** | Prefer doubly linked `remove_node` or pass the predecessor explicitly |
+| **Production history UI** | Prefer doubly linked `remove_node` or pass the predecessor explicitly |
 
 ```mermaid
 sequenceDiagram
@@ -1007,7 +1015,7 @@ flowchart LR
 
 ## Master complexity table
 
-Let **n** = `len(ll)`, **i** = index. For linked-list work, map **n** to the chain you are holding (items in one buffer, nodes in a merge sketch)—not archive row count unless you mistakenly built one giant linked list.
+Let **n** = `len(ll)`, **i** = index. For linked-list work, map **n** to the chain you are holding (tracks in one playlist buffer, events in one ingest window, nodes in a merge sketch)—not catalog size unless you mistakenly built one giant linked list.
 
 | Operation | Time | Space (auxiliary) | Notes |
 | --- | --- | --- | --- |
@@ -1031,20 +1039,20 @@ Let **n** = `len(ll)`, **i** = index. For linked-list work, map **n** to the cha
 | `extend` (splice `LinkedList`) | O(1) | O(1) | reuses nodes from `other` |
 | `sort` | O(n log n) | O(n) | materialize + Timsort + rebuild |
 | `to_list` | O(n) | O(n) | |
-| Traverse all | O(n) | O(1) | sum duration_ms on one window chain |
+| Traverse all | O(n) | O(1) | sum `duration_ms` on one playlist chain |
 | Delete with node ref (copy-value hack) | O(1) | O(1) | fails on tail; mutates `node.data` |
 
-**Storage for the whole structure:** Θ(n) nodes, each O(1) extra for `next` (and object headers in CPython). Storing a full multi-year archive as nodes costs Θ(all table rows) memory with poor locality—use tabular storage instead.
+**Storage for the whole structure:** Θ(n) nodes, each O(1) extra for `next` (and object headers in CPython). Storing a full browser history export as nodes costs Θ(all entries) memory with poor locality—use indexed storage instead.
 
 ---
 
 ## Classic patterns (with complexity)
 
-These patterns appear in structure-heavy interview questions; they also describe **one-pass** logic you might apply to a **short** short chain (one bounded buffer, two merged event logs) before you reach for pandas.
+These patterns appear in structure-heavy interview questions; they also describe **one-pass** logic you might apply to a **short** chain (one playlist buffer, two merged event logs) before you reach for a database query.
 
 ### Two pointers: find middle
 
-Slow moves 1 step, fast moves 2; when fast hits end, slow is middle. On a entry chain, that is the middle **entry node** without knowing length ahead of time (still O(n); `size` on the class makes it O(1) if you trust cached length).
+Slow moves 1 step, fast moves 2; when fast hits end, slow is middle. On a history chain, that is the middle **entry node** without knowing length ahead of time (still O(n); `size` on the class makes it O(1) if you trust cached length).
 
 ```python
 def middle_node(head):
@@ -1082,7 +1090,7 @@ def has_cycle(head):
 
 ### Merge two sorted lists
 
-**Application use:** Two chains sorted by `track_id` (e.g. January and February rows already sorted) can be merged into one chronological chain in O(n + m) pointer steps—no array shifts. Production merges usually sort keys in pandas/SQL; the linked version teaches the combine step.
+**Application use:** Two chains sorted by `track_id` (e.g. two playlist chunks already sorted) can be merged into one chronological chain in O(n + m) pointer steps—no array shifts. Production merges usually sort keys in a database or `list`; the linked version teaches the combine step.
 
 ```python
 def merge_sorted(a, b):
@@ -1124,8 +1132,8 @@ sequenceDiagram
 | Need | Prefer | Why |
 | --- | --- | --- |
 | Fast indexing, slicing | `list` | O(1) index; cache-friendly |
-| Full in-memory archive | `list` / **pandas** / parquet | Random access, vectorized stats, joins by `pool_id` |
-| Queue / stack at both ends | `collections.deque` | O(1) `append` / `pop` both ends—live event queue, rolling window |
+| Full playlist catalog | `list` / **dict** / database | Random access, aggregate stats, joins by `playlist_id` |
+| Queue / stack at both ends | `collections.deque` | O(1) `append` / `pop` both ends—live event buffer, rolling history |
 | Lookup by id | `dict` | O(1) average after index build—not a linked list |
 | Ordered mapping | `dict` (3.7+ insertion order) | Ordered mapping sketches; not pointer chains |
 | Learning / interviews | `Node` + `LinkedList` (this page) | Pointer discipline |
@@ -1165,8 +1173,8 @@ flowchart TD
 | Prepend in a tight loop | O(1) each | O(n) per `insert(0)` |
 | Memory per element | Value + `next` + object overhead | One reference in array |
 | Merge sort on sequence | Natural for linked nodes | [Merge sort](../../algorithms/merge-sort/index.md) often uses arrays in Python |
-| Large aggregate queries | Wrong default structure | `DataFrame` / `list` of rows + `dict` indexes |
-| One month window, algorithm homework | Clear teaching model | Still fine to use `list` in prod for one window |
+| Large aggregate queries | Wrong default structure | Database query / `list` of tracks + `dict` indexes |
+| One playlist buffer, algorithm homework | Clear teaching model | Still fine to use `list` in prod for one buffer |
 
 ---
 
@@ -1181,9 +1189,9 @@ flowchart TD
 | Copy-value hack on tail node | No `node.next` to copy from | Scan for predecessor or use doubly linked list |
 | `extend` shares nodes with `other` | Mutating one list affects both | Copy data with `to_list()` + rebuild if isolation matters |
 | Using linked list for `xs[i]` hot paths | O(n) per access | `list` or array |
-| Storing full archive as nodes | Huge overhead, slow scans | Parquet/CSV → pandas; index items with `dict` |
-| `get(i)` for every item in every window | O(windows × days²) if nested wrong | Store window as `list` or one traverse per window |
-| Confusing chain *n* with table *n* | Mis-estimate Big-O | Name *n*: items in **this** list only |
+| Storing full catalog as nodes | Huge overhead, slow scans | JSON/CSV → `dict` index; keep chains bounded |
+| `get(i)` for every item in every buffer | O(buffers × entries²) if nested wrong | Store buffer as `list` or one traverse per buffer |
+| Confusing chain *n* with catalog *n* | Mis-estimate Big-O | Name *n*: items in **this** list only |
 
 ---
 
@@ -1221,12 +1229,12 @@ for entry in ll:
     ...
 ```
 
-Use a singly linked list when the **algorithm** is defined in terms of pointer rewiring (merge, reverse, cycle detection) or when inserts at the **head** dominate—often on **small** small chains (one bounded buffer, two sorted streams). Use Python’s `list`, **pandas**, or `deque` when the **machine and library** should carry archive-scale load.
+Use a singly linked list when the **algorithm** is defined in terms of pointer rewiring (merge, reverse, cycle detection) or when inserts at the **head** dominate—often on **small** chains (one event buffer, one playlist window, two sorted streams). Use Python’s `list`, a **database**, or `deque` when the **machine and library** should carry catalog-scale load.
 
 **Structure selection checklist**
 
-1. **Default** — Tabular data in pandas/`list`; item index in `dict`.
+1. **Default** — Playlist catalogs in `list`/database; track or entry index in `dict`.
 2. **Chain** — Use linked list (or `deque`) only when order and O(1) ends matter for a **bounded** buffer or exercise.
-3. **Count *n*** — Days in this window, not rows in the full archive file.
-4. **Hot loop** — Never `get(i)` inside `for each row in archive`; walk the chain once or vectorize.
+3. **Count *n*** — Tracks in this playlist buffer, not rows in the full catalog export.
+4. **Hot loop** — Never `get(i)` inside `for each track in catalog`; walk the chain once or query the database.
 5. **Delete with node ref** — Use copy-value hack only when mutation is OK; prefer doubly linked list in production timelines.

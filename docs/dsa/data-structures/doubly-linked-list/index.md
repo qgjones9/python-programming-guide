@@ -18,7 +18,7 @@ This page is your **ready reference**: structure, a complete Python implementati
 | **Ordered entry chain** | Head = oldest item in buffer; tail = latest | Walk backward from the current page to see the prior history entry |
 | **Browser history scrubber** | Current node = page on screen; `next` / `prev` = step forward/back | No full rescan from head for "previous page" |
 | **Recent history buffer** | Fixed window of last *k* entries; drop oldest from head while appending newest at tail | O(1) at both ends |
-| **Merge two sorted entry streams** | You have two sorted entry streams, each sorted by tab and entry id. | As you join them into one list, you can insert pieces in the middle (not just the ends) more easily, because each node links to both its next and previous neighbors. This makes reorganizing parts of the list quicker than with a singly linked list.
+| **Merge two sorted history chains** | Two visit logs, each sorted by `tab_id` then `entry_id` | Splice mid-chain without rebuilding `prev`—each node already links both ways |
 | **Undo stack on text editor** | Remove "current" edit and restore neighbor links | O(1) removal with node reference |
 
 **Use a Python `list` or DataFrame** when you filter 50,000 table rows, compute large aggregate queries, or need `items[i]` in a tight loop. **Use a doubly linked list (or `collections.deque`)** when the problem is a **mutable ordered chain** with heavy **both-end** or **bidirectional** traffic on a **small** *n* (one bounded buffer, one session chunk, one browser session).
@@ -49,12 +49,12 @@ Throughout this page, **n** is the number of nodes (e.g. pages in one browser se
 | **Delete node you hold** | O(1) rewire | O(n) unless copy-value hack | O(n) shift |
 | **Access by index `i`** | O(n) forward walk from head | O(n) from head only | O(1) |
 | **Memory** | Highest per element | Medium | Compact + cache-friendly |
-| **Typical fit** | Bidirectional history UI, both-end window | Head-heavy live ingest, merge drills | Full in-memory table |
+| **Typical fit** | Bidirectional history UI, both-end window | Undo/redo batches, merge sorted chains | Full in-memory table |
 
 ```mermaid
 sequenceDiagram
   participant Client
-  participant DLL as doubly linked series
+  participant DLL as doubly linked history chain
   Client->>DLL: go to current item (node ref)
   DLL-->>Client: prev — previous entry O(1)
   DLL-->>Client: next — next entry O(1)
@@ -75,7 +75,7 @@ from dataclasses import dataclass
 class HistoryEntry:
     entry_id: int
     tab_id: int
-    duration_ms: float
+    duration_ms: int
     title: str
 
 
@@ -127,8 +127,8 @@ class DoublyLinkedList:
         self.tail = None
         self.size = 0
 
-series = DoublyLinkedList()
-assert series.is_empty()
+history = DoublyLinkedList()
+assert history.is_empty()
 ```
 
 | | |
@@ -139,7 +139,7 @@ assert series.is_empty()
 ### 3. Single-node list
 
 ```python
-node = Node(HistoryEntry(101, 2, 0.4, "Home"))
+node = Node(HistoryEntry(101, 2, 120, "Home"))
 head = tail = node
 ```
 
@@ -150,7 +150,7 @@ head = tail = node
 
 ### 4. Build from iterable — append at tail (chronological item order)
 
-Preserves CSV / API order: entry 101 → 102 → 103.
+Preserves visit order (oldest → newest): page 101 → 102 → 103.
 
 ```python
 def from_iterable_tail(items):
@@ -167,9 +167,9 @@ def from_iterable_tail(items):
     return head, tail
 
 entries = [
-    HistoryEntry(101, 2, 0.4, "Home"),
-    HistoryEntry(102, 2, -1.2, "Docs"),
-    HistoryEntry(103, 2, 0.1, "Settings"),
+    HistoryEntry(101, 2, 120, "Home"),
+    HistoryEntry(102, 2, 340, "Docs"),
+    HistoryEntry(103, 2, 90, "Settings"),
 ]
 head, tail = from_iterable_tail(entries)
 ```
@@ -181,7 +181,7 @@ head, tail = from_iterable_tail(entries)
 
 ### 5. Build from iterable — push at head (reversed order)
 
-Useful when data arrives **newest-first** (live feed) and you want oldest at head after a later `reverse`, or when you intentionally want reverse chronological storage.
+Useful when pages arrive **newest-first** (bulk paste of a redo stack) and you want oldest at head after a later `reverse`, or when you intentionally want reverse chronological storage.
 
 ```python
 def from_iterable_head(items):
@@ -203,12 +203,12 @@ def from_iterable_head(items):
 ### 6. Build with `append` (recommended)
 
 ```python
-series = DoublyLinkedList()
+history = DoublyLinkedList()
 for entry in [
-    HistoryEntry(101, 2, 0.4, "Home"),
-    HistoryEntry(102, 2, -1.2, "Docs"),
+    HistoryEntry(101, 2, 120, "Home"),
+    HistoryEntry(102, 2, 340, "Docs"),
 ]:
-    series.append(entry)
+    history.append(entry)
 ```
 
 | | |
@@ -219,9 +219,9 @@ for entry in [
 ### 7. Manual wiring (tests, diagrams, interviews)
 
 ```python
-n1 = Node(HistoryEntry(101, 2, 0.4, "Home"))
-n2 = Node(HistoryEntry(102, 2, -1.2, "Docs"))
-n3 = Node(HistoryEntry(103, 2, 0.1, "Settings"))
+n1 = Node(HistoryEntry(101, 2, 120, "Home"))
+n2 = Node(HistoryEntry(102, 2, 340, "Docs"))
+n3 = Node(HistoryEntry(103, 2, 90, "Settings"))
 n1.next = n2
 n2.prev = n1
 n2.next = n3
@@ -238,11 +238,11 @@ head, tail = n1, n3
 
 ```python
 entries_list = [
-    HistoryEntry(201, 1, 0.2, "About"),
-    HistoryEntry(202, 1, 1.1, "Profile"),
+    HistoryEntry(201, 1, 200, "About"),
+    HistoryEntry(202, 1, 110, "Profile"),
 ]
-series = DoublyLinkedList()
-series.extend(entries_list)
+history = DoublyLinkedList()
+history.extend(entries_list)
 ```
 
 | | |
@@ -259,7 +259,7 @@ flowchart TD
   Empty -->|yes| E["DoublyLinkedList()"]
   Empty -->|no| Order{Order matters?}
   Order -->|chronological| Tail["append each entry — O(1) per item"]
-  Order -->|newest-first ingest| Head["push each — then maybe reverse"]
+  Order -->|newest-first paste| Head["push each — then maybe reverse"]
   Order -->|3–5 nodes in test| Manual["wire prev/next by hand"]
   E --> Done([ready])
   Tail --> Done
@@ -560,25 +560,25 @@ flowchart TB
 Helper used in several examples:
 
 ```python
-def make_series(entries):
-    series = DoublyLinkedList()
+def make_history_chain(entries):
+    history = DoublyLinkedList()
     for entry in entries:
-        series.append(entry)
-    return series
+        history.append(entry)
+    return history
 ```
 
-### `is_empty()` / `len(series)` / `series[i]`
+### `is_empty()` / `len(history)` / `history[i]`
 
-**`is_empty()`** checks `head is None`. **`__len__`** returns cached **`size`**. Bracket access **`series[i]`** delegates to **`get(i)`** and returns **data** (not a node).
+**`is_empty()`** checks `head is None`. **`__len__`** returns cached **`size`**. Bracket access **`history[i]`** delegates to **`get(i)`** and returns **data** (not a node).
 
 ```python
-series = DoublyLinkedList()
-assert series.is_empty()
-assert len(series) == 0
+history = DoublyLinkedList()
+assert history.is_empty()
+assert len(history) == 0
 
-series.append(HistoryEntry(101, 2, 0.4, "Home"))
-assert len(series) == 1
-assert series[0].entry_id == 101
+history.append(HistoryEntry(101, 2, 120, "Home"))
+assert len(history) == 1
+assert history[0].entry_id == 101
 ```
 
 | | |
@@ -592,12 +592,12 @@ assert series[0].entry_id == 101
 
 Create a node, wire `next`/`prev` to the current head (or set both `head` and `tail` when empty), increment `size`, and return **`self`**.
 
-Example: push a **backfilled observation** reclassified as the first row in a corrected entry chain.
+Example: push a **backfilled visit** so it becomes the oldest page in the undo chain.
 
 ```python
-series = make_series([HistoryEntry(102, 2, -1.2, "Docs")])
-series.push(HistoryEntry(101, 2, 0.4, "Home"))
-assert series.get(0).entry_id == 101
+history = make_history_chain([HistoryEntry(102, 2, 340, "Docs")])
+history.push(HistoryEntry(101, 2, 120, "Home"))
+assert history.get(0).entry_id == 101
 ```
 
 | | |
@@ -607,7 +607,7 @@ assert series.get(0).entry_id == 101
 
 ```mermaid
 sequenceDiagram
-  participant D as series
+  participant D as history
   participant New as new entry node
   participant Old as old head
   D->>New: create node; New.next = head
@@ -617,15 +617,15 @@ sequenceDiagram
 
 ---
 
-### `append(data)` — next item in the series
+### `append(data)` — next page in the chain
 
 Create a node, link it after `tail` (or set both `head` and `tail` when empty), and increment `size`. Does not return `self`.
 
 ```python
-series = DoublyLinkedList()
-series.append(HistoryEntry(101, 2, 0.4, "Home"))
-series.append(HistoryEntry(102, 2, -1.2, "Docs"))
-assert list(series)[-1].title == "Docs"
+history = DoublyLinkedList()
+history.append(HistoryEntry(101, 2, 120, "Home"))
+history.append(HistoryEntry(102, 2, 340, "Docs"))
+assert list(history)[-1].title == "Docs"
 ```
 
 | | |
@@ -635,20 +635,20 @@ assert list(series)[-1].title == "Docs"
 
 ---
 
-### `insert(index, data)` — insert an entry mid-series
+### `insert(index, data)` — insert a page mid-chain
 
 Valid indices are `0 … size` (inclusive upper bound). Index **`0`** delegates to **`push(data)`**. Otherwise **`_node_at(index - 1)`** finds the predecessor, splices the new node between it and its successor, increments `size`, and returns **`self`**.
 
-Insert a **corrected sensor spike** before the row currently at index 2.
+Insert a **restored undo step** before the page currently at index 2.
 
 ```python
-series = make_series([
-    HistoryEntry(101, 2, 0.4, "Home"),
-    HistoryEntry(102, 2, -1.2, "Docs"),
-    HistoryEntry(104, 2, 0.1, "About"),
+history = make_history_chain([
+    HistoryEntry(101, 2, 120, "Home"),
+    HistoryEntry(102, 2, 340, "Docs"),
+    HistoryEntry(104, 2, 150, "About"),
 ])
-series.insert(2, HistoryEntry(103, 2, 2.1, "correction"))
-ids = [s.entry_id for s in series]
+history.insert(2, HistoryEntry(103, 2, 210, "Settings (restored)"))
+ids = [s.entry_id for s in history]
 assert ids == [101, 102, 103, 104]
 ```
 
@@ -672,11 +672,11 @@ flowchart LR
 Both use **`_node_at(index)`**, which walks forward from the head and raises **`IndexError("index out of bounds")`** when **`index < 0`** or **`index >= size`**. **`set`** mutates **`node.data`** in place and returns **`self`**.
 
 ```python
-series = make_series([HistoryEntry(i, 1, 0.0, f"entry {i}") for i in range(10)])
-assert series.get(0).entry_id == 0
-assert series.get(9).entry_id == 9
-series.set(5, HistoryEntry(99, 1, 0.0, "replaced"))
-assert series.get(5).entry_id == 99
+history = make_history_chain([HistoryEntry(i, 1, 0, f"page {i}") for i in range(10)])
+assert history.get(0).entry_id == 0
+assert history.get(9).entry_id == 9
+history.set(5, HistoryEntry(99, 1, 0, "replaced"))
+assert history.get(5).entry_id == 99
 ```
 
 | | |
@@ -693,13 +693,13 @@ For thousands of table rows, store an index in a **`dict[entry_id, HistoryEntry]
 Head removal is handled by `remove(0)` (internally `_pop_head`).
 
 ```python
-series = make_series([
-    HistoryEntry(101, 2, 0.4, "Home"),
-    HistoryEntry(102, 2, -1.2, "Docs"),
+history = make_history_chain([
+    HistoryEntry(101, 2, 120, "Home"),
+    HistoryEntry(102, 2, 340, "Docs"),
 ])
-old_first = series.remove(0)
+old_first = history.remove(0)
 assert old_first.entry_id == 101
-assert series.get(0).entry_id == 102
+assert history.get(0).entry_id == 102
 ```
 
 | | |
@@ -714,13 +714,13 @@ assert series.get(0).entry_id == 102
 Removes the **tail** node, returns its **data**, and decrements **`size`**. On a one-node list, sets both **`head`** and **`tail`** to **`None`**. Singly linked lists need an O(n) scan for the predecessor; **doubly linked does not**.
 
 ```python
-series = make_series([
-    HistoryEntry(101, 2, 0.4, "Home"),
-    HistoryEntry(102, 2, -1.2, "Docs"),
+history = make_history_chain([
+    HistoryEntry(101, 2, 120, "Home"),
+    HistoryEntry(102, 2, 340, "Docs"),
 ])
-last = series.pop()
+last = history.pop()
 assert last.entry_id == 102
-assert len(series) == 1
+assert len(history) == 1
 ```
 
 | | |
@@ -730,7 +730,7 @@ assert len(series) == 1
 
 ```mermaid
 sequenceDiagram
-  participant D as series
+  participant D as history
   D->>D: read tail.data
   D->>D: tail = tail.prev; tail.next = None
   Note over D: Singly linked would walk n-1 steps
@@ -743,13 +743,13 @@ sequenceDiagram
 Returns the removed **data**. Index **`0`** calls **`_pop_head()`**; index **`size - 1`** delegates to **`pop()`**; otherwise rewire through the predecessor at **`index - 1`**. All three paths update `size` and fix `prev`/`next`.
 
 ```python
-series = make_series([
-    HistoryEntry(101, 2, 0.4, "Home"),
-    HistoryEntry(102, 2, -1.2, "Docs"),
-    HistoryEntry(103, 2, 0.1, "Settings"),
+history = make_history_chain([
+    HistoryEntry(101, 2, 120, "Home"),
+    HistoryEntry(102, 2, 340, "Docs"),
+    HistoryEntry(103, 2, 90, "Settings"),
 ])
-assert series.remove(1).entry_id == 102
-assert [s.entry_id for s in series] == [101, 103]
+assert history.remove(1).entry_id == 102
+assert [s.entry_id for s in history] == [101, 103]
 ```
 
 | | |
@@ -764,15 +764,15 @@ assert [s.entry_id for s in series] == [101, 103]
 `find_entry` returns the **data** (not the node). It matches objects with a `entry_id` attribute or raw values.
 
 ```python
-series = make_series([
-    HistoryEntry(101, 2, 0.4, "Home"),
-    HistoryEntry(102, 2, -1.2, "Docs"),
+history = make_history_chain([
+    HistoryEntry(101, 2, 120, "Home"),
+    HistoryEntry(102, 2, 340, "Docs"),
 ])
-entry = series.find_entry(102)
+entry = history.find_entry(102)
 assert entry is not None and entry.title == "Docs"
-assert series.contains(HistoryEntry(101, 2, 0.4, "Home"))
-assert series.index_of(HistoryEntry(102, 2, -1.2, "Docs")) == 1
-assert series.index_of(HistoryEntry(999, 1, 0.0, "missing")) == -1
+assert history.contains(HistoryEntry(101, 2, 120, "Home"))
+assert history.index_of(HistoryEntry(102, 2, 340, "Docs")) == 1
+assert history.index_of(HistoryEntry(999, 1, 0, "missing")) == -1
 ```
 
 | | |
@@ -784,19 +784,19 @@ assert series.index_of(HistoryEntry(999, 1, 0.0, "missing")) == -1
 
 ### Bidirectional iteration — `__iter__`, `walk_forward_from`, `walk_backward_from`
 
-Forward iteration uses **`__iter__`** (yields each node's **data** from head to tail). **`walk_forward_from(node)`** and **`walk_backward_from(node)`** take a **`Node`** reference (e.g. `series.head` or `series.tail`), follow `next` or `prev`, and return a **Python list of data**—not an iterator.
+Forward iteration uses **`__iter__`** (yields each node's **data** from head to tail). **`walk_forward_from(node)`** and **`walk_backward_from(node)`** take a **`Node`** reference (e.g. `history.head` or `history.tail`), follow `next` or `prev`, and return a **Python list of data**—not an iterator.
 
 ```python
-series = make_series([
-    HistoryEntry(101, 2, 0.4, "Home"),
-    HistoryEntry(102, 2, -1.2, "Docs"),
-    HistoryEntry(103, 2, 0.1, "Settings"),
+history = make_history_chain([
+    HistoryEntry(101, 2, 120, "Home"),
+    HistoryEntry(102, 2, 340, "Docs"),
+    HistoryEntry(103, 2, 90, "Settings"),
 ])
 
-forward_anomaly = [s.duration_ms for s in series]
-backward_anomaly = [s.duration_ms for s in series.walk_backward_from(series.tail)]
-assert forward_anomaly == [0.4, -1.2, 0.1]
-assert backward_anomaly == [0.1, -1.2, 0.4]
+forward_dwell = [s.duration_ms for s in history]
+backward_dwell = [s.duration_ms for s in history.walk_backward_from(history.tail)]
+assert forward_dwell == [120, 340, 90]
+assert backward_dwell == [90, 340, 120]
 ```
 
 | | |
@@ -816,9 +816,9 @@ assert backward_anomaly == [0.1, -1.2, 0.4]
 Sets **`head`**, **`tail`**, and **`size`** back to empty state. Returns **`self`**.
 
 ```python
-series = make_series([HistoryEntry(101, 2, 0.4, "Home")])
-series.clear()
-assert series.is_empty()
+history = make_history_chain([HistoryEntry(101, 2, 120, "Home")])
+history.clear()
+assert history.is_empty()
 ```
 
 | | |
@@ -828,14 +828,14 @@ assert series.is_empty()
 
 ---
 
-### `copy()` — duplicate chain for branch scenario
+### `copy()` — duplicate chain for a redo branch
 
 Shallow copy: new nodes, **same** `HistoryEntry` objects.
 
 ```python
-original = make_series([HistoryEntry(101, 2, 0.4, "Home")])
+original = make_history_chain([HistoryEntry(101, 2, 120, "Home")])
 branch = original.copy()
-branch.append(HistoryEntry(999, 2, 0.0, "branch scenario"))
+branch.append(HistoryEntry(999, 2, 0, "Redo branch"))
 assert len(original) == 1 and len(branch) == 2
 assert branch.head is not original.head
 ```
@@ -851,14 +851,14 @@ assert branch.head is not original.head
 
 Swaps each node's `next` and `prev`, then swaps `head` and `tail`. Raises **`IndexError("reverse empty list")`** on an empty list. Returns **`self`**.
 
-Useful after **push-heavy** ingest to get chronological order.
+Useful after **push-heavy** paste to get chronological visit order.
 
 ```python
-series = DoublyLinkedList()
+history = DoublyLinkedList()
 for pid in [103, 102, 101]:
-    series.push(HistoryEntry(pid, 2, 0.0, "x"))
-series.reverse()
-assert [s.entry_id for s in series] == [101, 102, 103]
+    history.push(HistoryEntry(pid, 2, 0, "x"))
+history.reverse()
+assert [s.entry_id for s in history] == [101, 102, 103]
 ```
 
 | | |
@@ -873,13 +873,13 @@ assert [s.entry_id for s in series] == [101, 102, 103]
 Exports values with **`to_list()`**, sorts in place with Python's **`list.sort()`** (data must be mutually comparable), clears the chain, and rebuilds with **`append`**. No-op when **`size < 2`**. Returns **`self`**.
 
 ```python
-series = make_series([
-    HistoryEntry(103, 2, 0.0, "c"),
-    HistoryEntry(101, 2, 0.0, "a"),
-    HistoryEntry(102, 2, 0.0, "b"),
+history = make_history_chain([
+    HistoryEntry(103, 2, 0, "c"),
+    HistoryEntry(101, 2, 0, "a"),
+    HistoryEntry(102, 2, 0, "b"),
 ])
-series.sort()
-assert [s.entry_id for s in series] == [101, 102, 103]
+history.sort()
+assert [s.entry_id for s in history] == [101, 102, 103]
 ```
 
 | | |
@@ -894,9 +894,9 @@ assert [s.entry_id for s in series] == [101, 102, 103]
 When **`items`** is another **`DoublyLinkedList`**: empty source is a no-op; if **`self`** is empty, adopt the other chain's **`head`**, **`tail`**, and **`size`**; otherwise splice at the tail in O(1). Any other iterable appends one item at a time. Returns **`self`**. **`to_list()`** walks head→tail and returns a Python list of data.
 
 ```python
-series = make_series([HistoryEntry(101, 2, 0.4, "Home")])
-series.extend([HistoryEntry(102, 2, -1.2, "Docs"), HistoryEntry(103, 2, 0.1, "Settings")])
-rows = series.to_list()
+history = make_history_chain([HistoryEntry(101, 2, 120, "Home")])
+history.extend([HistoryEntry(102, 2, 340, "Docs"), HistoryEntry(103, 2, 90, "Settings")])
+rows = history.to_list()
 assert len(rows) == 3
 ```
 
@@ -913,15 +913,15 @@ assert len(rows) == 3
 **`trim_front(count)`** loops up to **count** times, calling **`remove(0)`** until empty. **`trim_back(keep)`** loops **`pop()`** while **`size > keep`**. Both return **`self`**.
 
 ```python
-series = make_series([HistoryEntry(i, 1, 0.0, f"entry {i}") for i in range(10)])
-series.trim_front(5)
-assert len(series) == 5
-assert series.get(0).entry_id == 5
+history = make_history_chain([HistoryEntry(i, 1, 0, f"page {i}") for i in range(10)])
+history.trim_front(5)
+assert len(history) == 5
+assert history.get(0).entry_id == 5
 
-series2 = make_series([HistoryEntry(i, 1, 0.0, f"entry {i}") for i in range(10)])
-series2.trim_back(5)
-assert len(series2) == 5
-assert series2.get(4).entry_id == 4
+history2 = make_history_chain([HistoryEntry(i, 1, 0, f"page {i}") for i in range(10)])
+history2.trim_back(5)
+assert len(history2) == 5
+assert history2.get(4).entry_id == 4
 ```
 
 | Operation | Time | Space |
@@ -936,10 +936,10 @@ assert series2.get(4).entry_id == 4
 **`latest()`** returns **`tail.data`**; **`oldest_in_buffer()`** and **`current()`** both return **`head.data`**. Each returns **`None`** when the list is empty. These are fixed head/tail accessors—not a movable cursor (see **`HistoryNavigator`** below for prev/next scrubbing).
 
 ```python
-series = make_series([HistoryEntry(101, 2, 0.4, "a"), HistoryEntry(102, 2, -1.2, "b")])
-assert series.latest().entry_id == 102
-assert series.oldest_in_buffer().entry_id == 101
-assert series.current().entry_id == 101
+history = make_history_chain([HistoryEntry(101, 2, 120, "a"), HistoryEntry(102, 2, 340, "b")])
+assert history.latest().entry_id == 102
+assert history.oldest_in_buffer().entry_id == 101
+assert history.current().entry_id == 101
 ```
 
 | | |
@@ -969,11 +969,11 @@ class RecentHistory:
         return self._chain.oldest_in_buffer()
 
 
-feed = RecentHistory(max_entries=3)
+recent_buffer = RecentHistory(max_entries=3)
 for rid in range(10):
-    feed.push(HistoryEntry(rid, 1, 0.0, f"entry {rid}"))
-assert feed.latest().entry_id == 9
-assert feed.oldest_in_buffer().entry_id == 7
+    recent_buffer.push(HistoryEntry(rid, 1, 0, f"page {rid}"))
+assert recent_buffer.latest().entry_id == 9
+assert recent_buffer.oldest_in_buffer().entry_id == 7
 ```
 
 | Operation | Time | Space |
@@ -986,9 +986,9 @@ assert feed.oldest_in_buffer().entry_id == 7
 
 ```python
 class HistoryNavigator:
-    def __init__(self, series):
-        self._series = series
-        self._current = series.head
+    def __init__(self, history):
+        self._history = history
+        self._current = history.head
 
     def current(self):
         return None if self._current is None else self._current.data
@@ -1006,12 +1006,12 @@ class HistoryNavigator:
         return self._current.data
 
 
-series = make_series([
-    HistoryEntry(101, 2, 0.4, "Home"),
-    HistoryEntry(102, 2, -1.2, "Docs"),
-    HistoryEntry(103, 2, 0.1, "Settings"),
+history = make_history_chain([
+    HistoryEntry(101, 2, 120, "Home"),
+    HistoryEntry(102, 2, 340, "Docs"),
+    HistoryEntry(103, 2, 90, "Settings"),
 ])
-nav = HistoryNavigator(series)
+nav = HistoryNavigator(history)
 assert nav.current().entry_id == 101
 assert nav.next_entry().entry_id == 102
 assert nav.prev_entry().entry_id == 101
@@ -1031,14 +1031,14 @@ assert nav.prev_entry().entry_id == 101
 Simplify deletion near ends when you do not keep a full `DoublyLinkedList` class.
 
 ```python
-def remove_entries_with_negative_duration(head):
-    dummy = Node(HistoryEntry(0, 0, 0.0, "sentinel"))
+def remove_draft_entries(head):
+    dummy = Node(HistoryEntry(0, 0, 0, "sentinel"))
     dummy.next = head
     if head is not None:
         head.prev = dummy
     cur = dummy
     while cur.next is not None:
-        if cur.next.data.duration_ms < 0:
+        if cur.next.data.title == "":
             nxt = cur.next.next
             if nxt is not None:
                 nxt.prev = cur
@@ -1062,7 +1062,7 @@ Same pointer technique as singly linked merge; doubly linked lets you splice wit
 
 ```python
 def merge_by_entry_id(a, b):
-    dummy = Node(HistoryEntry(0, 0, 0.0, ""))
+    dummy = Node(HistoryEntry(0, 0, 0, ""))
     tail = dummy
     while a is not None and b is not None:
         if a.data.entry_id <= b.data.entry_id:
@@ -1111,8 +1111,8 @@ CPython's `deque` is implemented as a **block doubly linked list** at C level—
 from collections import deque
 
 recent = deque(maxlen=5)
-recent.append(HistoryEntry(101, 2, 0.4, "Home"))
-recent.appendleft(HistoryEntry(100, 2, 0.0, "backfill"))
+recent.append(HistoryEntry(101, 2, 120, "Home"))
+recent.appendleft(HistoryEntry(100, 2, 0, "backfill"))
 assert len(recent) <= 5
 ```
 
@@ -1129,7 +1129,7 @@ assert len(recent) <= 5
 
 ## Master complexity table
 
-Let **n** = `len(series)`, **i** = index.
+Let **n** = `len(history)`, **i** = index.
 
 | Operation | Time | Space (auxiliary) | Notes |
 | --- | --- | --- | --- |
@@ -1176,7 +1176,7 @@ flowchart TD
 | --- | --- |
 | Large aggregate queries | pandas, not linked list |
 | Bounded buffer, history prev/next | Doubly linked or `deque` + index |
-| Live "last 5 items" ticker | `deque(maxlen=5)` or `remove(0)` loop |
+| Last 5 pages in history scrubber | `deque(maxlen=5)` or `remove(0)` loop |
 | Merge sorted entry-id streams (exercise) | Doubly or singly linked merge |
 | Random access `items[412]` in loop | `list` |
 
@@ -1191,7 +1191,7 @@ flowchart TD
 | Forgetting to update `prev` on splice | Broken backward walk | Always set both `prev` and `next` |
 | Losing `head` / `tail` after delete | Orphan chain | Branch on whether node is head or tail |
 | Storing full archive in DLL | O(n) lookups, huge memory | DataFrame + optional small DLL per window |
-| Expecting `find_entry` to return a node | API returns data | Use `series.head` / `_node_at` when you need the node |
+| Expecting `find_entry` to return a node | API returns data | Use `history.head` / `_node_at` when you need the node |
 | Shallow copy shares `HistoryEntry` | Mutate one branch, affects other | `copy.deepcopy` if needed |
 | Using DLL for `items[i]` hot loop | O(n) per access | `list` or columnar store |
 
@@ -1212,30 +1212,30 @@ flowchart TD
 ## Quick reference card
 
 ```python
-series = DoublyLinkedList()
+history = DoublyLinkedList()
 for r in [entry1, entry2]:
-    series.append(r)
+    history.append(r)
 
-series.push(entry)
-series.append(entry)
-series.remove(0)
-series.pop()
-series.get(i)
-series[i]
-series.insert(i, entry)
-series.remove(i)
-series.find_entry(entry_id)
-
-
-for r in series: ...
-series.walk_forward_from(series.head)
-series.walk_backward_from(series.tail)
+history.push(entry)
+history.append(entry)
+history.remove(0)
+history.pop()
+history.get(i)
+history[i]
+history.insert(i, entry)
+history.remove(i)
+history.find_entry(entry_id)
 
 
-series.trim_front(3)
-series.trim_back(5)
-series.latest()
-series.oldest_in_buffer()
+for r in history: ...
+history.walk_forward_from(history.head)
+history.walk_backward_from(history.tail)
+
+
+history.trim_front(3)
+history.trim_back(5)
+history.latest()
+history.oldest_in_buffer()
 ```
 
 Use a **doubly linked list** when the problem is an **ordered chain** and you need **both ends** or **backward steps** without rescanning from the head—then reach for **`deque`** when you ship real production tooling.
