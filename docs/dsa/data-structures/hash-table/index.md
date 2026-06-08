@@ -6,12 +6,12 @@ A **key → value** map implemented by hashing keys into **bucket indices**, wit
 | --- | --- |
 | **What it is** | `hash(key) % buckets` picks a slot; collisions resolved by open addressing or chaining (CPython dict uses open addressing). |
 | **Core operations** | `get`, `set`, `delete`, membership; iteration over keys (insertion-ordered in dict 3.7+). |
-| **When to use** | Reading lookups by `reading_id`, station metadata, counting conditions, caches, deduplication, grouping. |
+| **When to use** | Key-value caches, session stores, deduplication, counting event types, grouping records by id. |
 | **Trade-off** | Keys must be hashable; worst-case O(n) if all keys collide; no cheap "sorted by key" without extra structure. |
 
-In **daily weather data analysis**, hash tables are the **default index layer**: map **`reading_id` → row dict**, **`station_id` → name**, climate-zone abbreviations, monthly **`Counter`** of conditions, and **`defaultdict`** aggregations. You rarely implement a hash table from scratch in production—you **use `dict` / `set` / `Counter` / `defaultdict`** and understand collisions, load factor, and hashability so debug sessions make sense.
+In **application code**, hash tables are the **default index layer**: map **`user_id` → profile dict**, **`session_id` → state**, route slugs, HTTP status **`Counter`** tallies, and **`defaultdict`** group-by aggregations. You rarely implement a hash table from scratch in production—you **use `dict` / `set` / `Counter` / `defaultdict`** and understand collisions, load factor, and hashability so debug sessions make sense.
 
-This page is your **ready reference**: Python built-ins, a teaching implementation, collision concepts, every common operation with weather examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: Python built-ins, a teaching implementation, collision concepts, every common operation with practical examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
@@ -24,29 +24,29 @@ This page is your **ready reference**: Python built-ins, a teaching implementati
 | **Find by key** | O(1) average | O(n) | O(log n) |
 | **Insert** | O(1) average | O(1) append; find O(n) | O(log n) |
 | **Ordered by key** | Insertion order only (dict) | Index order | Sorted order |
-| **Weather** | `readings[reading_id]` | scan all readings | seasonal leaders tree |
+| **Typical use** | `users[user_id]` | scan all records | sorted leaderboard tree |
 
 ```mermaid
 flowchart LR
-  K["key: reading_id 4021"] --> H["hash()"]
-  H --> I["index in bucket array"]
-  I --> V["value: DailyReading row"]
+ K["key: user_id 4021"] --> H["hash()"]
+ H --> I["index in bucket array"]
+ I --> V["value: User profile dict"]
 ```
 
 Throughout this page, **n** is the number of entries; **m** is bucket count (implementation detail in CPython).
 
 ---
 
-## Daily weather analysis: what a hash table models
+## Common applications: what a hash table models
 
-| Weather idea | Map type | Example key |
+| Application | Map type | Example key |
 | --- | --- | --- |
-| **Reading by id** | `dict[int, DailyReading]` | `reading_id` |
-| **Station name by id** | `dict[str, str]` | `"SEA-01"` |
-| **Station meta / elevation** | `dict[str, dict]` | `"DEN"` |
-| **Unique stations seen** | `set[str]` | `station_id` |
-| **Count days by condition** | `Counter[str]` | `"partly cloudy"` |
-| **Anomaly sum per station** | `defaultdict(float)` | `station_id` |
+| **User by id** | `dict[int, User]` | `user_id` |
+| **Slug → title** | `dict[str, str]` | `"getting-started"` |
+| **Route metadata** | `dict[str, dict]` | `"/api/v1/users"` |
+| **Unique ids seen** | `set[str]` | `session_id` |
+| **Count by status code** | `Counter[str]` | `"404"` |
+| **Sum per category** | `defaultdict(float)` | `category_id` |
 
 ```python
 from collections import Counter, defaultdict
@@ -54,19 +54,18 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class DailyReading:
-    reading_id: int
-    month: int
-    station_id: str
-    temp_anomaly: float
-    summary: str
+class User:
+ user_id: int
+ username: str
+ email: str
+ role: str
 
 
 @dataclass(frozen=True)
-class Station:
-    station_id: str
-    name: str
-    climate_zone: str
+class Route:
+ path: str
+ handler: str
+ methods: tuple[str, ...]
 ```
 
 ---
@@ -79,17 +78,17 @@ class Station:
 
 ```mermaid
 sequenceDiagram
-  participant Code
-  participant Dict as dict
-  Code->>Dict: d[reading_id] = reading
-  Dict->>Dict: hash(reading_id)
-  Dict->>Dict: find slot / probe
-  Dict-->>Code: stored
-  Code->>Dict: d[reading_id]
-  Dict-->>Code: reading O(1) avg
+ participant Code
+ participant Dict as dict
+ Code->>Dict: d[user_id] = user
+ Dict->>Dict: hash(user_id)
+ Dict->>Dict: find slot / probe
+ Dict-->>Code: stored
+ Code->>Dict: d[user_id]
+ Dict-->>Code: user O(1) avg
 ```
 
-| Concept | Meaning | Weather impact |
+| Concept | Meaning | Practical impact |
 | --- | --- | --- |
 | **Hashable key** | Immutable or defines `__hash__` | Use `int`, `str`, `tuple` of immutables |
 | **Load factor** | n/m; resize when too full | CPython resizes dict automatically |
@@ -102,7 +101,7 @@ sequenceDiagram
 ### 1. Empty `dict`
 
 ```python
-readings_by_id: dict[int, DailyReading] = {}
+users_by_id: dict[int, User] = {}
 ```
 
 | | |
@@ -113,24 +112,24 @@ readings_by_id: dict[int, DailyReading] = {}
 ### 2. Dict literal / comprehension
 
 ```python
-station_abbr = {"SEA": "Seattle", "DEN": "Denver", "PHX": "Phoenix"}
+slug_title = {"intro": "Introduction", "api": "API Reference", "faq": "FAQ"}
 
-readings = {
-    r.reading_id: r
-    for r in load_readings_from_csv("january.csv")
+users = {
+ u.user_id: u
+ for u in load_users_from_csv("users.csv")
 }
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(n) for n readings |
+| **Time** | O(n) for n records |
 | **Space** | O(n) |
 
 ### 3. `dict()` constructor
 
 ```python
-d = dict([("SEA", 3), ("DEN", 2)])
-d2 = dict(zip(station_ids, station_names))
+d = dict([("alice", 3), ("bob", 2)])
+d2 = dict(zip(user_ids, usernames))
 ```
 
 | | |
@@ -141,7 +140,7 @@ d2 = dict(zip(station_ids, station_names))
 ### 4. Empty `set`
 
 ```python
-seen_stations: set[str] = set()
+seen_sessions: set[str] = set()
 ```
 
 | | |
@@ -152,8 +151,8 @@ seen_stations: set[str] = set()
 ### 5. `defaultdict` — missing keys get default
 
 ```python
-anomaly_by_station: defaultdict[float] = defaultdict(float)
-anomaly_by_station["SEA-01"] += 1.2
+score_by_category: defaultdict[float] = defaultdict(float)
+score_by_category["electronics"] += 1.2
 ```
 
 | | |
@@ -164,8 +163,8 @@ anomaly_by_station["SEA-01"] += 1.2
 ### 6. `Counter` — multiset counts
 
 ```python
-condition_counts = Counter(["rain", "rain", "snow", "clear", "rain"])
-assert condition_counts["rain"] == 3
+status_counts = Counter(["404", "404", "200", "500", "404"])
+assert status_counts["404"] == 3
 ```
 
 | | |
@@ -176,8 +175,8 @@ assert condition_counts["rain"] == 3
 ### 7. Build index from list of rows (manual)
 
 ```python
-def index_readings(rows: list[dict]) -> dict[int, dict]:
-    return {row["reading_id"]: row for row in rows}
+def index_users(rows: list[dict]) -> dict[int, dict]:
+ return {row["user_id"]: row for row in rows}
 ```
 
 | | |
@@ -191,11 +190,11 @@ See [Reference implementation](#reference-implementation-separatechaininghashtab
 
 ```mermaid
 flowchart TD
-  Q([Need counts?])
-  Q -->|yes| C["Counter"]
-  Q -->|no| D{Default on miss?}
-  D -->|yes| DD["defaultdict"]
-  D -->|no| DI["dict / set"]
+ Q([Need counts?])
+ Q -->|yes| C["Counter"]
+ Q -->|no| D{Default on miss?}
+ D -->|yes| DD["defaultdict"]
+ D -->|no| DI["dict / set"]
 ```
 
 ---
@@ -208,10 +207,10 @@ flowchart TD
 | `tuple` of hashables | mutable custom objects unless `__hash__` defined |
 | `frozenset` | `bytearray` |
 
-**Weather:** Use `reading_id: int` or `(station_id, reading_id)` tuple as key—not a mutable row `dict` as key.
+**Rule:** Use `user_id: int` or `(tenant_id, user_id)` tuple as key—not a mutable row `dict` as key.
 
 ```python
-key = (row["station_id"], row["reading_id"])
+key = (row["tenant_id"], row["user_id"])
 index[key] = row
 ```
 
@@ -225,7 +224,7 @@ index[key] = row
 
 ```python
 def toy_hash(key: str, m: int) -> int:
-    return sum(ord(c) for c in key) % m
+ return sum(ord(c) for c in key) % m
 ```
 
 | Case | Time |
@@ -233,7 +232,7 @@ def toy_hash(key: str, m: int) -> int:
 | Average insert/lookup | O(1) |
 | Worst all collide | O(n) |
 
-You will not tune CPython's table in weather ETL; trust `dict` unless profiling shows pathological keys.
+You will not tune CPython's table in a typical ETL job; trust `dict` unless profiling shows pathological keys.
 
 ---
 
@@ -248,61 +247,61 @@ from typing import Any, Hashable, Iterator
 
 
 class SeparateChainingHashTable:
-    def __init__(self, capacity: int = 8) -> None:
-        self._capacity = max(4, capacity)
-        self._buckets: list[list[tuple[Hashable, Any]]] = [[] for _ in range(self._capacity)]
-        self._size = 0
+ def __init__(self, capacity: int = 8) -> None:
+ self._capacity = max(4, capacity)
+ self._buckets: list[list[tuple[Hashable, Any]]] = [[] for _ in range(self._capacity)]
+ self._size = 0
 
-    def _index(self, key: Hashable) -> int:
-        return hash(key) % self._capacity
+ def _index(self, key: Hashable) -> int:
+ return hash(key) % self._capacity
 
-    def __len__(self) -> int:
-        return self._size
+ def __len__(self) -> int:
+ return self._size
 
-    def __contains__(self, key: Hashable) -> bool:
-        return self.get(key, _missing := object()) is not _missing
+ def __contains__(self, key: Hashable) -> bool:
+ return self.get(key, _missing := object()) is not _missing
 
-    def get(self, key: Hashable, default: Any = None) -> Any:
-        bucket = self._buckets[self._index(key)]
-        for k, v in bucket:
-            if k == key:
-                return v
-        return default
+ def get(self, key: Hashable, default: Any = None) -> Any:
+ bucket = self._buckets[self._index(key)]
+ for k, v in bucket:
+ if k == key:
+ return v
+ return default
 
-    def set(self, key: Hashable, value: Any) -> None:
-        i = self._index(key)
-        bucket = self._buckets[i]
-        for j, (k, _) in enumerate(bucket):
-            if k == key:
-                bucket[j] = (key, value)
-                return
-        bucket.append((key, value))
-        self._size += 1
-        if self._size > self._capacity * 2:
-            self._resize(self._capacity * 2)
+ def set(self, key: Hashable, value: Any) -> None:
+ i = self._index(key)
+ bucket = self._buckets[i]
+ for j, (k, _) in enumerate(bucket):
+ if k == key:
+ bucket[j] = (key, value)
+ return
+ bucket.append((key, value))
+ self._size += 1
+ if self._size > self._capacity * 2:
+ self._resize(self._capacity * 2)
 
-    def delete(self, key: Hashable) -> bool:
-        i = self._index(key)
-        bucket = self._buckets[i]
-        for j, (k, _) in enumerate(bucket):
-            if k == key:
-                bucket.pop(j)
-                self._size -= 1
-                return True
-        return False
+ def delete(self, key: Hashable) -> bool:
+ i = self._index(key)
+ bucket = self._buckets[i]
+ for j, (k, _) in enumerate(bucket):
+ if k == key:
+ bucket.pop(j)
+ self._size -= 1
+ return True
+ return False
 
-    def keys(self) -> Iterator[Hashable]:
-        for bucket in self._buckets:
-            for k, _ in bucket:
-                yield k
+ def keys(self) -> Iterator[Hashable]:
+ for bucket in self._buckets:
+ for k, _ in bucket:
+ yield k
 
-    def _resize(self, new_cap: int) -> None:
-        old_items = [(k, v) for b in self._buckets for k, v in b]
-        self._capacity = new_cap
-        self._buckets = [[] for _ in range(self._capacity)]
-        self._size = 0
-        for k, v in old_items:
-            self.set(k, v)
+ def _resize(self, new_cap: int) -> None:
+ old_items = [(k, v) for b in self._buckets for k, v in b]
+ self._capacity = new_cap
+ self._buckets = [[] for _ in range(self._capacity)]
+ self._size = 0
+ for k, v in old_items:
+ self.set(k, v)
 ```
 
 | Operation | Average | Worst |
@@ -312,15 +311,15 @@ class SeparateChainingHashTable:
 
 ---
 
-## `dict` operations (with weather examples and complexity)
+## `dict` operations (with examples and complexity)
 
 ### `d[key] = value` / `setdefault`
 
 ```python
-readings: dict[int, DailyReading] = {}
-readings[4021] = DailyReading(4021, 1, "SEA-01", 0.5, "partly cloudy")
+users: dict[int, User] = {}
+users[4021] = User(4021, "alice", "alice@example.com", "admin")
 
-meta = readings.setdefault(4021, default_reading)
+meta = users.setdefault(4021, default_user)
 ```
 
 | | |
@@ -333,9 +332,9 @@ meta = readings.setdefault(4021, default_reading)
 ### `d[key]` / `get`
 
 ```python
-r = readings[4021]
-r2 = readings.get(9999)
-r3 = readings.get(9999, default_reading)
+u = users[4021]
+u2 = users.get(9999)
+u3 = users.get(9999, default_user)
 ```
 
 | | |
@@ -348,8 +347,8 @@ r3 = readings.get(9999, default_reading)
 ### `del d[key]` / `pop`
 
 ```python
-del readings[4021]
-removed = readings.pop(4022, None)
+del users[4021]
+removed = users.pop(4022, None)
 ```
 
 | | |
@@ -362,8 +361,8 @@ removed = readings.pop(4022, None)
 ### `key in d` / `len(d)`
 
 ```python
-if 4021 in readings:
-    ...
+if 4021 in users:
+ ...
 ```
 
 | | |
@@ -376,8 +375,8 @@ if 4021 in readings:
 ### Iteration: `keys`, `values`, `items`
 
 ```python
-for reading_id, reading in readings.items():
-    total_anomaly += reading.temp_anomaly
+for user_id, user in users.items():
+ admin_count += 1 if user.role == "admin" else 0
 ```
 
 | | |
@@ -385,15 +384,15 @@ for reading_id, reading in readings.items():
 | **Time** | O(n) full scan |
 | **Space** | O(1) iterator |
 
-**Weather:** Full scan is fine for **one month's readings**; for multi-year scale use **pandas** vectorization, not Python loops over giant dicts if avoidable.
+**Scale note:** Full scan is fine for **in-memory batches**; for millions of rows use **pandas** vectorization or a database index, not Python loops over giant dicts if avoidable.
 
 ---
 
 ### `update`, merge `|` (3.9+)
 
 ```python
-readings.update({5001: reading_a, 5002: reading_b})
-merged = readings_a | readings_b
+users.update({5001: user_a, 5002: user_b})
+merged = users_a | users_b
 ```
 
 | | |
@@ -406,7 +405,7 @@ merged = readings_a | readings_b
 ### `dict comprehension` — rebuild index
 
 ```python
-sea_only = {rid: r for rid, r in readings.items() if r.station_id == "SEA-01"}
+admins_only = {uid: u for uid, u in users.items() if u.role == "admin"}
 ```
 
 | | |
@@ -420,9 +419,9 @@ sea_only = {rid: r for rid, r in readings.items() if r.station_id == "SEA-01"}
 
 ```python
 seen: set[str] = set()
-seen.add("SEA-01")
-if "DEN-02" in seen:
-    ...
+seen.add("sess-abc123")
+if "sess-def456" in seen:
+ ...
 union = seen | other
 ```
 
@@ -431,42 +430,42 @@ union = seen | other
 | `add` / `remove` / `in` | O(1) |
 | `union` / `intersection` | O(len) |
 
-**Weather:** Unique stations that reported precipitation in a month.
+**Use case:** Deduplicate session ids or unique visitor tokens in a log batch.
 
 ---
 
 ## `Counter` and `defaultdict` patterns
 
-### Condition frequency
+### Status code frequency
 
 ```python
-conditions = Counter(row["summary"] for row in reading_rows)
-top3 = conditions.most_common(3)
+statuses = Counter(row["status"] for row in log_rows)
+top3 = statuses.most_common(3)
 ```
 
 | | |
 | --- | --- |
 | **Time** | O(n) over rows |
-| **Space** | O(unique conditions) |
+| **Space** | O(unique status codes) |
 
-### Anomaly by station without KeyError
+### Score by category without KeyError
 
 ```python
-station_anomaly: defaultdict[float] = defaultdict(float)
-for reading in readings.values():
-    station_anomaly[reading.station_id] += reading.temp_anomaly
+score_by_category: defaultdict[float] = defaultdict(float)
+for user in users.values():
+ score_by_category[user.role] += 1.0
 ```
 
 | | |
 | --- | --- |
 | **Time** | O(n) |
-| **Space** | O(stations) |
+| **Space** | O(categories) |
 
 ### `Counter` arithmetic
 
 ```python
-january = Counter({"rain": 20, "clear": 30})
-february = Counter({"rain": 18, "clear": 35})
+january = Counter({"404": 20, "200": 30})
+february = Counter({"404": 18, "200": 35})
 diff = january - february
 ```
 
@@ -477,26 +476,26 @@ diff = january - february
 
 ```mermaid
 sequenceDiagram
-  participant ETL
-  participant C as Counter
-  ETL->>C: update from each reading row
-  C-->>ETL: most_common(5) conditions
+ participant ETL
+ participant C as Counter
+ ETL->>C: update from each log row
+ C-->>ETL: most_common(5) status codes
 ```
 
 ---
 
-## Building weather indexes from CSV
+## Building indexes from CSV
 
 ```python
 import csv
 
-def load_reading_index(path: str) -> dict[int, dict]:
-    index: dict[int, dict] = {}
-    with open(path, newline="") as f:
-        for row in csv.DictReader(f):
-            rid = int(row["reading_id"])
-            index[rid] = row
-    return index
+def load_user_index(path: str) -> dict[int, dict]:
+ index: dict[int, dict] = {}
+ with open(path, newline="") as f:
+ for row in csv.DictReader(f):
+ uid = int(row["user_id"])
+ index[uid] = row
+ return index
 
 row = index[4021]
 ```
@@ -538,9 +537,9 @@ row = index[4021]
 ```python
 import pandas as pd
 
-observations = pd.read_parquet("readings.parquet")
-observations.set_index("reading_id", inplace=True)
-row = observations.loc[4021]
+users_df = pd.read_parquet("users.parquet")
+users_df.set_index("user_id", inplace=True)
+row = users_df.loc[4021]
 ```
 
 ---
@@ -549,10 +548,10 @@ row = observations.loc[4021]
 
 ```mermaid
 flowchart TD
-  Q([Lookup by reading_id?])
-  Q -->|many random| DICT["dict / DataFrame index"]
-  Q -->|scan all| DF["pandas filter"]
-  Q -->|persistent archive| DB["SQL with index"]
+ Q([Lookup by user_id?])
+ Q -->|many random| DICT["dict / DataFrame index"]
+ Q -->|scan all| DF["pandas filter"]
+ Q -->|persistent archive| DB["SQL with index"]
 ```
 
 | Pitfall | Fix |
@@ -567,22 +566,22 @@ flowchart TD
 
 ## `frozenset` — hashable set keys
 
-Use when you need a **set as dict key** (e.g. grouping station clusters):
+Use when you need a **set as dict key** (e.g. grouping permission bundles):
 
 ```python
-cluster = frozenset({"SEA-01", "SEA-02", "SEA-03"})
-cluster_anomaly: dict[frozenset[str], float] = {}
-cluster_anomaly[cluster] = 12.4
+perms = frozenset({"read", "write", "admin"})
+role_score: dict[frozenset[str], float] = {}
+role_score[perms] = 12.4
 ```
 
 | | |
 | --- | --- |
 | **Time** | O(1) average lookup |
-| **Space** | O(n) for frozenset of n station ids |
+| **Space** | O(n) for frozenset of n permission strings |
 
 ---
 
-## `functools.lru_cache` — memoize expensive weather queries
+## `functools.lru_cache` — memoize expensive lookups
 
 Hash table caches **function arguments** → return values:
 
@@ -590,8 +589,8 @@ Hash table caches **function arguments** → return values:
 from functools import lru_cache
 
 @lru_cache(maxsize=4096)
-def anomaly_for_station_year(station_id: str, year: int) -> float:
-    return load_and_sum(station_id, year)
+def profile_for_user(user_id: int) -> dict:
+ return load_profile(user_id)
 ```
 
 | | |
@@ -603,12 +602,12 @@ Keys must be **hashable**—use `str`, `int`, not mutable `dict`.
 
 ---
 
-## `defaultdict(list)` — group readings by month
+## `defaultdict(list)` — group records by category
 
 ```python
-by_month: defaultdict[list[dict]] = defaultdict(list)
-for row in reading_rows:
-    by_month[row["month"]].append(row)
+by_category: defaultdict[list[dict]] = defaultdict(list)
+for row in log_rows:
+ by_category[row["category"]].append(row)
 ```
 
 | | |
@@ -622,25 +621,25 @@ Same pattern as `pandas.groupby` on a smaller scale in pure Python.
 
 ## `dict` methods reference (extended)
 
-| Method | Time avg | Weather example |
+| Method | Time avg | Example |
 | --- | --- | --- |
-| `keys()` | O(1) view | iterate reading ids |
-| `values()` | O(1) view | all DailyReading objects |
-| `items()` | O(1) view | id + reading pairs |
-| `get(k, default)` | O(1) | safe lookup missing reading |
-| `setdefault(k, v)` | O(1) | init station bucket |
-| `pop(k)` | O(1) | remove stale cache |
+| `keys()` | O(1) view | iterate user ids |
+| `values()` | O(1) view | all User objects |
+| `items()` | O(1) view | id + user pairs |
+| `get(k, default)` | O(1) | safe lookup missing user |
+| `setdefault(k, v)` | O(1) | init cache bucket |
+| `pop(k)` | O(1) | remove stale cache entry |
 | `popitem()` | O(1) | LIFO eviction policy |
-| `clear()` | O(1) | reset month cache |
+| `clear()` | O(1) | reset session cache |
 | `copy()` | O(n) | shallow fork index |
-| `fromkeys(keys, v)` | O(n) | init all stations to 0 |
+| `fromkeys(keys, v)` | O(n) | init all routes to None |
 | `dict \| dict` (3.9+) | O(n) | merge indexes |
 
 ```mermaid
 flowchart TD
-  CSV["CSV rows"] --> B["build dict reading_id → row"]
-  B --> L["O(1) lookup in analysis loop"]
-  L --> OUT["charts / anomaly sums"]
+ CSV["CSV rows"] --> B["build dict user_id → row"]
+ B --> L["O(1) lookup in request loop"]
+ L --> OUT["aggregates / reports"]
 ```
 
 ---
@@ -660,12 +659,12 @@ You cannot switch CPython's policy; understanding collisions explains rare worst
 
 ```python
 @dataclass(frozen=True)
-class ReadingKey:
-    station_id: str
-    reading_id: int
+class SessionKey:
+ tenant_id: str
+ user_id: int
 
-index: dict[ReadingKey, DailyReading] = {}
-index[ReadingKey("SEA-01", 4021)] = reading
+index: dict[SessionKey, User] = {}
+index[SessionKey("acme", 4021)] = user
 ```
 
 | | |
@@ -677,19 +676,19 @@ Frozen dataclasses generate `__hash__` automatically when `eq=True`.
 
 ---
 
-## `Counter` — advanced weather stats
+## `Counter` — advanced aggregation
 
 ```python
 from collections import Counter
 
-month_condition = Counter(
-    (row["month"], row["summary"])
-    for row in reading_rows
+month_status = Counter(
+ (row["month"], row["status"])
+ for row in log_rows
 )
 
-anomaly_weights = Counter()
-for row in reading_rows:
-    anomaly_weights[row["summary"]] += float(row["temp_anomaly"])
+latency_weights = Counter()
+for row in log_rows:
+ latency_weights[row["status"]] += float(row["latency_ms"])
 ```
 
 | Operation | Time |
@@ -709,58 +708,58 @@ for row in reading_rows:
 | Repeated SQL filters | database with B-tree index |
 
 ```python
-month_readings = {int(r["reading_id"]): r for r in rows}
+user_index = {int(r["user_id"]): r for r in rows}
 
 import pandas as pd
-archive = pd.read_parquet("readings.parquet")
-reading = archive.loc[4021]
+archive = pd.read_parquet("users.parquet")
+user = archive.loc[4021]
 ```
 
 ---
 
-## Set algebra for station logic
+## Set algebra for tag logic
 
 ```python
-pacific_stations = {"SEA-01", "SEA-02", "PDX-01"}
-mountain_stations = {"SEA-02", "DEN-01", "DEN-02"}
+beta_users = {"u-101", "u-102", "u-103"}
+premium_users = {"u-102", "u-201", "u-202"}
 
-both_regions = pacific_stations & mountain_stations
-either = pacific_stations | mountain_stations
-pacific_only = pacific_stations - mountain_stations
-symmetric = pacific_stations ^ mountain_stations
+both_tiers = beta_users & premium_users
+either = beta_users | premium_users
+beta_only = beta_users - premium_users
+symmetric = beta_users ^ premium_users
 ```
 
 | Operation | Time avg |
 | --- | --- |
 | `&` `\|` `-` `^` | O(len(smaller)) roughly |
 
-**Weather:** Stations that appear in multiple climate-zone groupings, or unique to one region.
+**Use case:** Users in multiple feature-flag groups, or unique to one tier.
 
 ---
 
-## Inverting index: station → list of reading_ids
+## Inverting index: category → list of user_ids
 
 ```python
-station_readings: defaultdict[list[int]] = defaultdict(list)
-for rid, reading in readings_by_id.items():
-    station_readings[reading.station_id].append(rid)
+category_users: defaultdict[list[int]] = defaultdict(list)
+for uid, user in users_by_id.items():
+ category_users[user.role].append(uid)
 ```
 
-| Build | Lookup readings for station |
+| Build | Lookup users for category |
 | --- | --- |
-| O(n) | O(1) get list + O(k) scan k readings |
+| O(n) | O(1) get list + O(k) scan k users |
 
-Pair with [Tries](../tries/index.md) when the UI searches **station names**; use **dict** when the key is already `station_id`.
+Pair with [Tries](../tries/index.md) when the UI searches **product names** or **URL prefixes**; use **dict** when the key is already `user_id`.
 
 ---
 
 ## Load factor and resize (intuition)
 
-When a CPython `dict` grows past ~2/3 full, it **resizes** to a larger table—occasional O(n) rehash, **amortized O(1)** insert. You see a one-time hitch when a dict jumps from thousands to millions of reading keys; pre-size with comprehension from known CSV row count if profiling shows resize spikes.
+When a CPython `dict` grows past ~2/3 full, it **resizes** to a larger table—occasional O(n) rehash, **amortized O(1)** insert. You see a one-time hitch when a dict jumps from thousands to millions of keys; pre-size with comprehension from known CSV row count if profiling shows resize spikes.
 
 ```python
-n_readings = 365
-readings_by_id = {int(r["reading_id"]): r for r in rows}
+n_users = 10_000
+users_by_id = {int(r["user_id"]): r for r in rows}
 ```
 
 ---
@@ -781,24 +780,24 @@ readings_by_id = {int(r["reading_id"]): r for r in rows}
 ```python
 from collections import Counter, defaultdict
 
-readings: dict[int, DailyReading] = {r.reading_id: r for r in load()}
-r = readings[4021]
+users: dict[int, User] = {u.user_id: u for u in load()}
+u = users[4021]
 
 seen: set[str] = set()
-seen.add(station_id)
+seen.add(session_id)
 
-cnt = Counter(row["summary"] for row in rows)
+cnt = Counter(row["status"] for row in rows)
 
-station_anomaly: defaultdict[float] = defaultdict(float)
-station_anomaly[station_id] += temp_anomaly
+score_by_category: defaultdict[float] = defaultdict(float)
+score_by_category[category_id] += score
 ```
 
-Use **`dict` / `set` / `Counter` / `defaultdict`** for virtually all weather hash-table needs in Python. Implement chaining only to **learn** collisions; ship production code with **`dict`** and **pandas indexes**.
+Use **`dict` / `set` / `Counter` / `defaultdict`** for virtually all hash-table needs in Python. Implement chaining only to **learn** collisions; ship production code with **`dict`** and **database or DataFrame indexes**.
 
-**Weather pipeline checklist**
+**Implementation checklist**
 
-1. **Load once** — Build `reading_id → row` map per month or archive file.
-2. **Keys** — `int`, `str`, `(station_id, reading_id)` tuples.
-3. **Counts** — `Counter` on categorical columns (summary, condition).
-4. **Aggregates** — `defaultdict` or `groupby` for anomaly sums.
-5. **Scale** — Move heavy loops to pandas when n > ~10⁵ in pure Python.
+1. **Load once** — Build `user_id → row` map per batch or file.
+2. **Keys** — `int`, `str`, `(tenant_id, user_id)` tuples.
+3. **Counts** — `Counter` on categorical columns (status, event type).
+4. **Aggregates** — `defaultdict` or `groupby` for per-category sums.
+5. **Scale** — Move heavy loops to pandas or SQL when n > ~10⁵ in pure Python.

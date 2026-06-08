@@ -13,9 +13,9 @@ How cost grows as input size grows—so you can compare structures and algorithm
 In NFL pipelines, **input size** is whatever you scale with—not always “number of players.”
 
 - **Input size** — Usually *n*, but name the unit:
-  - *n* = number of **plays** in a slice (one game, one week, full season export).
-  - *m* = number of **players** on rosters you join against.
-  - *g* = number of **games** when you aggregate per-game rows.
+ - *n* = number of **plays** in a slice (one game, one week, full season export).
+ - *m* = number of **players** on rosters you join against.
+ - *g* = number of **games** when you aggregate per-game rows.
 - **Time complexity** — How comparisons, dictionary lookups, and group-by passes grow as those counts grow (e.g. one full scan of *n* plays is O(n)).
 - **Space complexity** — **Extra** memory beyond the raw table: a player-id index, a merge buffer for sorting, recursion stack. Storing the play-by-play file itself is not counted as auxiliary space.
 
@@ -74,26 +74,26 @@ The patterns below use generic names; read **values** as a column (e.g. `air_yar
 
 ```python
 def max_air_yards(plays: list[dict]) -> float:
-    best = plays[0]["air_yards"]
-    for snap in plays[1:]:
-        yards = snap["air_yards"]
-        if yards > best:
-            best = yards
-    return best
+ best = plays[0]["air_yards"]
+ for snap in plays[1:]:
+ yards = snap["air_yards"]
+ if yards > best:
+ best = yards
+ return best
 ```
 
 **Nested loops, each up to *n*** — O(n²): did two plays share the same `(game_id, play_id)`?
 
 ```python
 def duplicate_play_keys(plays: list[dict]) -> bool:
-    for i in range(len(plays)):
-        for j in range(i + 1, len(plays)):
-            if (
-                plays[i]["game_id"] == plays[j]["game_id"]
-                and plays[i]["play_id"] == plays[j]["play_id"]
-            ):
-                return True
-    return False
+ for i in range(len(plays)):
+ for j in range(i + 1, len(plays)):
+ if (
+ plays[i]["game_id"] == plays[j]["game_id"]
+ and plays[i]["play_id"] == plays[j]["play_id"]
+ ):
+ return True
+ return False
 ```
 
 For deduplication at scale, sort by `(game_id, play_id)` and scan once—O(n log n)—or use a set of keys—O(n) average space and time.
@@ -102,16 +102,16 @@ For deduplication at scale, sort by `(game_id, play_id)` and scan once—O(n log
 
 ```python
 def week_index(sorted_weeks: list[int], target: int) -> int | None:
-    lo, hi = 0, len(sorted_weeks) - 1
-    while lo <= hi:
-        mid = (lo + hi) // 2
-        if sorted_weeks[mid] == target:
-            return mid
-        if sorted_weeks[mid] < target:
-            lo = mid + 1
-        else:
-            hi = mid - 1
-    return None
+ lo, hi = 0, len(sorted_weeks) - 1
+ while lo <= hi:
+ mid = (lo + hi) // 2
+ if sorted_weeks[mid] == target:
+ return mid
+ if sorted_weeks[mid] < target:
+ lo = mid + 1
+ else:
+ hi = mid - 1
+ return None
 ```
 
 **Recursion** — Multiply **depth** by **work per level**. Merge-sorting *m* players by total yards: Θ(log m) levels, Θ(m) work per level → Θ(m log m) time and O(m) auxiliary space for the merge buffer (unless in place). See [recursion](../recursion/index.md) for stack depth when you recurse over drive trees or play hierarchies.

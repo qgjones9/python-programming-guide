@@ -6,12 +6,12 @@ A **double-ended queue** (“deck”): insert and remove at **both** front and b
 | --- | --- |
 | **What it is** | Push/pop at left and right; in Python, `collections.deque` is the standard realization. |
 | **Core operations** | `append`, `appendleft`, `pop`, `popleft`, plus `extend`, `rotate`, `maxlen`. |
-| **When to use** | Sliding anomaly windows, palindrome checks, BFS with push-front, steal-from-both-ends algorithms, bounded live buffers. |
+| **When to use** | Sliding metric windows, palindrome checks, BFS with push-front, steal-from-both-ends algorithms, bounded live buffers. |
 | **Note** | Pronounced “deck.” Not the verb *dequeue* alone—that usually means remove from a [queue](../queue/index.md). |
 
-In **daily weather data analysis**, `deque` is the workhorse for **bounded memory**: last *k* days’ temp anomalies, rolling precipitation windows, a **queue** of export jobs at the back while high-priority backfills `appendleft`, or rotating a small list of **station candidates** on a dashboard. You get O(1) at both ends without implementing a [doubly linked list](../doubly-linked-list/index.md) in pure Python.
+In **stream processing and task pipelines**, `deque` is the workhorse for **bounded memory**: last *k* samples in a sliding window, rolling sums over fixed windows, a **queue** of export jobs at the back while high-priority backfills `appendleft`, or rotating a small list of **dashboard items**. You get O(1) at both ends without implementing a [doubly linked list](../doubly-linked-list/index.md) in pure Python.
 
-This page is your **ready reference**: full `collections.deque` API with weather examples, hand-rolled deque ADT, complexity on every operation, and when deque beats `list`. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: full `collections.deque` API with application examples, hand-rolled deque ADT, complexity on every operation, and when deque beats `list`. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
@@ -26,32 +26,32 @@ This page is your **ready reference**: full `collections.deque` API with weather
 | **Index `d[i]`** | O(n) | O(1) | O(n) |
 | **Slice** | No | Yes | No |
 | **maxlen ring** | Built-in | Manual | Manual |
-| **Weather default** | Live windows, FIFO | Column access, stats | Teaching / interviews |
+| **Typical fit** | Live windows, FIFO | Column access, stats | Teaching / interviews |
 
 ```mermaid
 flowchart LR
-  LF["left front"] <--> D["deque blocks"]
-  D <--> RR["right rear"]
-  AL["appendleft"] --> LF
-  AR["append"] --> RR
-  PL["popleft"] --> LF
-  PR["pop"] --> RR
+ LF["left front"] <--> D["deque blocks"]
+ D <--> RR["right rear"]
+ AL["appendleft"] --> LF
+ AR["append"] --> RR
+ PL["popleft"] --> LF
+ PR["pop"] --> RR
 ```
 
 Throughout this page, **n** is `len(d)`.
 
 ---
 
-## Daily weather analysis: what a deque models
+## Application patterns: what a deque models
 
-| Weather idea | Deque pattern | API sketch |
+| Use case | Deque pattern | API sketch |
 | --- | --- | --- |
-| **Last 10 days anomaly** | `deque(maxlen=10)` | auto-drop oldest on `append` |
-| **FIFO reading queue** | `append` + `popleft` | [Queue](../queue/index.md) |
+| **Last 10 samples** | `deque(maxlen=10)` | auto-drop oldest on `append` |
+| **FIFO task queue** | `append` + `popleft` | [Queue](../queue/index.md) |
 | **Undo at stack end** | `append` + `pop` | [Stack](../stacks/index.md) |
 | **Insert urgent backfill front** | `appendleft` | priority front without full heap |
-| **Rotate station list** | `rotate(1)` | climatology UI carousel |
-| **Palindrome condition sequence** | pop both ends | `"dry-wet-wet-dry"` style checks |
+| **Rotate item list** | `rotate(1)` | dashboard carousel |
+| **Palindrome token sequence** | pop both ends | `"a-b-b-a"` style checks |
 
 ```python
 from collections import deque
@@ -59,16 +59,16 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class DailyReading:
-    reading_id: int
-    temp_anomaly: float
-    summary: str
+class DataRecord:
+ record_id: int
+ value: float
+ label: str
 
 
 @dataclass(frozen=True)
-class Station:
-    station_id: str
-    name: str
+class NamedItem:
+ item_id: str
+ name: str
 ```
 
 ---
@@ -80,7 +80,7 @@ class Station:
 ```python
 from collections import deque
 
-d: deque[DailyReading] = deque()
+d: deque[DataRecord] = deque()
 ```
 
 | | |
@@ -88,12 +88,12 @@ d: deque[DailyReading] = deque()
 | **Time** | O(1) |
 | **Space** | O(1) empty |
 
-### 2. From iterable (readings in chronological order)
+### 2. From iterable (records in chronological order)
 
 ```python
 d = deque([
-    DailyReading(1, 0.1, "light rain"),
-    DailyReading(2, 0.8, "partly cloudy"),
+ DataRecord(1, 0.1, "sample_a"),
+ DataRecord(2, 0.8, "sample_b"),
 ])
 ```
 
@@ -105,9 +105,9 @@ d = deque([
 ### 3. Bounded `maxlen` — ring buffer
 
 ```python
-anomaly_last_5: deque[float] = deque(maxlen=5)
-for anomaly in [0.1, -0.3, 0.9, 0.2, 1.1, 0.0]:
-    anomaly_last_5.append(anomaly)
+window_last_5: deque[float] = deque(maxlen=5)
+for value in [0.1, -0.3, 0.9, 0.2, 1.1, 0.0]:
+ window_last_5.append(value)
 ```
 
 | | |
@@ -136,10 +136,10 @@ See [Reference implementation](#reference-implementation-dequeadt) — wraps `co
 
 ```mermaid
 flowchart TD
-  C([Create deque])
-  C --> B{Bounded window?}
-  B -->|yes| M["deque(maxlen=k)"]
-  B -->|no| U["deque() or deque(iterable)"]
+ C([Create deque])
+ C --> B{Bounded window?}
+ B -->|yes| M["deque(maxlen=k)"]
+ B -->|no| U["deque() or deque(iterable)"]
 ```
 
 ---
@@ -150,18 +150,18 @@ Official docs: [collections.deque](https://docs.python.org/3/library/collections
 
 ### Adding elements
 
-| Method | Side | Time | Weather example |
+| Method | Side | Time | Example |
 | --- | --- | --- | --- |
-| `append(x)` | right | O(1) | New reading enters processing queue |
+| `append(x)` | right | O(1) | New record enters processing queue |
 | `appendleft(x)` | left | O(1) | Urgent backfill inserted at front |
-| `extend(iterable)` | right | O(k) | Bulk enqueue k readings |
+| `extend(iterable)` | right | O(k) | Bulk enqueue k records |
 | `extendleft(iterable)` | left | O(k) | Note: reverses order of iterable |
 
 ```python
 jobs: deque[str] = deque()
-jobs.append("export_STN01_anomaly")
+jobs.append("export_node01_metrics")
 jobs.appendleft("backfill_4021_now")
-jobs.extend(["export_STN02", "export_STN03"])
+jobs.extend(["export_node02", "export_node03"])
 ```
 
 ```python
@@ -185,7 +185,7 @@ list(d)
 | `clear()` | all | O(n) | — |
 
 ```python
-reading = jobs.popleft()
+job = jobs.popleft()
 last = jobs.pop()
 ```
 
@@ -199,9 +199,9 @@ last = jobs.pop()
 ### Inspecting without removal
 
 ```python
-d = deque([DailyReading(1, 0.0, "clear"), DailyReading(2, 0.1, "overcast")])
-assert d[0].reading_id == 1
-assert d[-1].reading_id == 2
+d = deque([DataRecord(1, 0.0, "idle"), DataRecord(2, 0.1, "busy")])
+assert d[0].record_id == 1
+assert d[-1].record_id == 2
 len(d)
 ```
 
@@ -216,22 +216,22 @@ Use `d[0]` and `d[-1]` for peek front/rear in O(1) in practice for ends.
 ### Rotation
 
 ```python
-stations: deque[str] = deque(["STN01", "STN02", "STN03", "STN04"])
-stations.rotate(1)
-stations.rotate(-1)
+items: deque[str] = deque(["ITEM01", "ITEM02", "ITEM03", "ITEM04"])
+items.rotate(1)
+items.rotate(-1)
 ```
 
 | `rotate(k)` | **Time** | **Space** |
 | --- | --- | --- |
 | | O(k) or O(min(k, n-k)) in CPython | O(1) |
 
-**Weather:** Rotate **featured station** in a sidebar without rebuilding the list.
+**Example:** Rotate **featured items** in a sidebar without rebuilding the list.
 
 ```mermaid
 sequenceDiagram
-  participant D as deque stations
-  D->>D: rotate(1)
-  Note over D: right end becomes left — carousel step
+ participant D as deque items
+ D->>D: rotate(1)
+ Note over D: right end becomes left — carousel step
 ```
 
 ---
@@ -254,7 +254,7 @@ list(window)
 | **Time** | O(1) |
 | **Space** | O(maxlen) |
 
-**Weather:** Rolling **temp anomaly** or precipitation rate for the last *k* days in a month window.
+**Example:** Rolling **metric values** or throughput rate for the last *k* samples in a bounded window.
 
 ---
 
@@ -275,8 +275,8 @@ list(window)
 ### Iteration and copying
 
 ```python
-for reading in d:
-    ...
+for record in d:
+ ...
 reversed_d = deque(reversed(d))
 d_copy = deque(d)
 ```
@@ -291,8 +291,8 @@ d_copy = deque(d)
 ### `remove(value)` and `count(value)`
 
 ```python
-d.remove(DailyReading(2, 0.1, "overcast"))
-d.count(DailyReading(2, 0.1, "overcast"))
+d.remove(DataRecord(2, 0.1, "busy"))
+d.count(DataRecord(2, 0.1, "busy"))
 ```
 
 | | |
@@ -300,7 +300,7 @@ d.count(DailyReading(2, 0.1, "overcast"))
 | **Time** | O(n) |
 | **Space** | O(1) |
 
-Equality must match; frozen `DailyReading` dataclasses work if same fields.
+Equality must match; frozen `DataRecord` dataclasses work if same fields.
 
 ---
 
@@ -316,52 +316,52 @@ from typing import Any, Iterable, Iterator
 
 
 class DequeADT:
-    def __init__(self, items: Iterable[Any] | None = None, maxlen: int | None = None) -> None:
-        self._d: deque[Any] = deque(items, maxlen=maxlen)
+ def __init__(self, items: Iterable[Any] | None = None, maxlen: int | None = None) -> None:
+ self._d: deque[Any] = deque(items, maxlen=maxlen)
 
-    def __len__(self) -> int:
-        return len(self._d)
+ def __len__(self) -> int:
+ return len(self._d)
 
-    def is_empty(self) -> bool:
-        return len(self._d) == 0
+ def is_empty(self) -> bool:
+ return len(self._d) == 0
 
-    def push_back(self, item: Any) -> None:
-        self._d.append(item)
+ def push_back(self, item: Any) -> None:
+ self._d.append(item)
 
-    def push_front(self, item: Any) -> None:
-        self._d.appendleft(item)
+ def push_front(self, item: Any) -> None:
+ self._d.appendleft(item)
 
-    def pop_back(self) -> Any:
-        if not self._d:
-            raise IndexError("pop from empty deque")
-        return self._d.pop()
+ def pop_back(self) -> Any:
+ if not self._d:
+ raise IndexError("pop from empty deque")
+ return self._d.pop()
 
-    def pop_front(self) -> Any:
-        if not self._d:
-            raise IndexError("popleft from empty deque")
-        return self._d.popleft()
+ def pop_front(self) -> Any:
+ if not self._d:
+ raise IndexError("popleft from empty deque")
+ return self._d.popleft()
 
-    def peek_back(self) -> Any:
-        if not self._d:
-            raise IndexError("peek back empty")
-        return self._d[-1]
+ def peek_back(self) -> Any:
+ if not self._d:
+ raise IndexError("peek back empty")
+ return self._d[-1]
 
-    def peek_front(self) -> Any:
-        if not self._d:
-            raise IndexError("peek front empty")
-        return self._d[0]
+ def peek_front(self) -> Any:
+ if not self._d:
+ raise IndexError("peek front empty")
+ return self._d[0]
 
-    def rotate(self, n: int = 1) -> None:
-        self._d.rotate(n)
+ def rotate(self, n: int = 1) -> None:
+ self._d.rotate(n)
 
-    def clear(self) -> None:
-        self._d.clear()
+ def clear(self) -> None:
+ self._d.clear()
 
-    def __iter__(self) -> Iterator[Any]:
-        yield from self._d
+ def __iter__(self) -> Iterator[Any]:
+ yield from self._d
 
-    def to_list(self) -> list[Any]:
-        return list(self._d)
+ def to_list(self) -> list[Any]:
+ return list(self._d)
 ```
 
 ---
@@ -378,28 +378,28 @@ Pick one convention per module and document it.
 
 ```mermaid
 flowchart TB
-  subgraph fifo["FIFO queue"]
-    A1["append → rear"] --> PL["popleft ← front"]
-  end
-  subgraph lifo["LIFO stack"]
-    A2["append → top"] --> P2["pop ← top"]
-  end
+ subgraph fifo["FIFO queue"]
+ A1["append → rear"] --> PL["popleft ← front"]
+ end
+ subgraph lifo["LIFO stack"]
+ A2["append → top"] --> P2["pop ← top"]
+ end
 ```
 
 ---
 
-## Weather patterns with deque
+## Application patterns with deque
 
-### Rolling anomaly window (maxlen)
+### Rolling score window (maxlen)
 
 ```python
-def rolling_mean(anomalies: Iterable[float], k: int) -> list[float]:
-    window: deque[float] = deque(maxlen=k)
-    means: list[float] = []
-    for x in anomalies:
-        window.append(x)
-        means.append(sum(window) / len(window))
-    return means
+def rolling_mean(scores: Iterable[float], k: int) -> list[float]:
+ window: deque[float] = deque(maxlen=k)
+ means: list[float] = []
+ for x in scores:
+ window.append(x)
+ means.append(sum(window) / len(window))
+ return means
 ```
 
 | | |
@@ -411,22 +411,22 @@ def rolling_mean(anomalies: Iterable[float], k: int) -> list[float]:
 
 ```python
 def bfs_zero(grid: list[list[int]], start: tuple[int, int]) -> int:
-    rows, cols = len(grid), len(grid[0])
-    q: deque[tuple[int, int]] = deque([start])
-    grid[start[0]][start[1]] = 1
-    dist = 0
-    while q:
-        for _ in range(len(q)):
-            r, c = q.popleft()
-            if grid[r][c] == 9:
-                return dist
-            for dr, dc in ((0, 1), (0, -1), (1, 0), (-1, 0)):
-                nr, nc = r + dr, c + dc
-                if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 0:
-                    grid[nr][nc] = 1
-                    q.append((nr, nc))
-        dist += 1
-    return -1
+ rows, cols = len(grid), len(grid[0])
+ q: deque[tuple[int, int]] = deque([start])
+ grid[start[0]][start[1]] = 1
+ dist = 0
+ while q:
+ for _ in range(len(q)):
+ r, c = q.popleft()
+ if grid[r][c] == 9:
+ return dist
+ for dr, dc in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+ nr, nc = r + dr, c + dc
+ if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 0:
+ grid[nr][nc] = 1
+ q.append((nr, nc))
+ dist += 1
+ return -1
 ```
 
 | | |
@@ -434,17 +434,17 @@ def bfs_zero(grid: list[list[int]], start: tuple[int, int]) -> int:
 | **Time** | O(rows · cols) |
 | **Space** | O(frontier) |
 
-### Palindrome condition sequence (both ends)
+### Palindrome token sequence (both ends)
 
 ```python
-def is_palindrome_conditions(conditions: deque[str]) -> bool:
-    while len(conditions) > 1:
-        if conditions.popleft() != conditions.pop():
-            return False
-    return True
+def is_palindrome_tokens(tokens: deque[str]) -> bool:
+ while len(tokens) > 1:
+ if tokens.popleft() != tokens.pop():
+ return False
+ return True
 
-d = deque(["dry", "wet", "wet", "dry"])
-assert is_palindrome_conditions(d)
+d = deque(["a", "b", "b", "a"])
+assert is_palindrome_tokens(d)
 ```
 
 | | |
@@ -452,21 +452,21 @@ assert is_palindrome_conditions(d)
 | **Time** | O(n) |
 | **Space** | O(1) extra |
 
-### Monotonic deque — sliding window maximum anomaly
+### Monotonic deque — sliding window maximum score
 
 ```python
-def sliding_max(anomalies: list[float], k: int) -> list[float]:
-    dq: deque[int] = deque()
-    out: list[float] = []
-    for i, x in enumerate(anomalies):
-        while dq and anomalies[dq[-1]] <= x:
-            dq.pop()
-        dq.append(i)
-        if dq[0] <= i - k:
-            dq.popleft()
-        if i >= k - 1:
-            out.append(anomalies[dq[0]])
-    return out
+def sliding_max(scores: list[float], k: int) -> list[float]:
+ dq: deque[int] = deque()
+ out: list[float] = []
+ for i, x in enumerate(scores):
+ while dq and scores[dq[-1]] <= x:
+ dq.pop()
+ dq.append(i)
+ if dq[0] <= i - k:
+ dq.popleft()
+ if i >= k - 1:
+ out.append(scores[dq[0]])
+ return out
 ```
 
 | | |
@@ -499,7 +499,7 @@ def sliding_max(anomalies: list[float], k: int) -> list[float]:
 
 | Need | Use |
 | --- | --- |
-| Production weather scripts | `collections.deque` |
+| Production application scripts | `collections.deque` |
 | Interview “implement deque” | Doubly linked nodes + head/tail |
 | Random access by index in hot loop | `list` |
 | Sorted archive table | pandas |
@@ -510,10 +510,10 @@ def sliding_max(anomalies: list[float], k: int) -> list[float]:
 
 ```mermaid
 flowchart TD
-  Q([Both ends active?])
-  Q -->|yes| DQ["collections.deque"]
-  Q -->|no, index i| L["list"]
-  Q -->|threads blocking| PQ["queue.Queue"]
+ Q([Both ends active?])
+ Q -->|yes| DQ["collections.deque"]
+ Q -->|no, index i| L["list"]
+ Q -->|threads blocking| PQ["queue.Queue"]
 ```
 
 | Pitfall | Fix |
@@ -526,33 +526,33 @@ flowchart TD
 
 ---
 
-## Worked example: month replay buffer
+## Worked example: replay buffer
 
-Model the last **20** readings of a month window with automatic eviction:
+Model the last **20** records of a stream with automatic eviction:
 
 ```python
 from collections import deque
 
-month_replay: deque[DailyReading] = deque(maxlen=20)
+replay_buffer: deque[DataRecord] = deque(maxlen=20)
 
-def on_new_reading(reading: DailyReading) -> None:
-    month_replay.append(reading)
+def on_new_record(record: DataRecord) -> None:
+ replay_buffer.append(record)
 
-def last_k_anomaly(k: int) -> list[float]:
-    return [r.temp_anomaly for r in list(month_replay)[-k:]]
+def last_k_values(k: int) -> list[float]:
+ return [r.value for r in list(replay_buffer)[-k:]]
 ```
 
 | Step | `len` | Oldest retained |
 | --- | --- | --- |
-| append 21st reading | 20 | 2nd reading dropped |
+| append 21st record | 20 | 2nd record dropped |
 
 ```mermaid
 sequenceDiagram
-  participant Feed
-  participant D as deque maxlen=20
-  Feed->>D: append(reading_21)
-  D->>D: drop reading_1 from left
-  Note over D: O(1) — no manual index
+ participant Feed
+ participant D as deque maxlen=20
+ Feed->>D: append(record_21)
+ D->>D: drop record_1 from left
+ Note over D: O(1) — no manual index
 ```
 
 ---
@@ -575,20 +575,20 @@ sequenceDiagram
 
 ## Chaining two bounded windows
 
-Precipitation-condition window plus anomaly window:
+Label window plus value window:
 
 ```python
-conditions: deque[str] = deque(maxlen=50)
-anomalies: deque[float] = deque(maxlen=50)
+tags: deque[str] = deque(maxlen=50)
+values: deque[float] = deque(maxlen=50)
 
-def ingest(reading: DailyReading) -> None:
-    conditions.append("wet" if "rain" in reading.summary.lower() else "dry")
-    anomalies.append(reading.temp_anomaly)
+def ingest(record: DataRecord) -> None:
+ tags.append("active" if record.value > 0.5 else "idle")
+ values.append(record.value)
 
-def wet_rate() -> float:
-    if not conditions:
-        return 0.0
-    return sum(1 for c in conditions if c == "wet") / len(conditions)
+def active_rate() -> float:
+ if not tags:
+ return 0.0
+ return sum(1 for t in tags if t == "active") / len(tags)
 ```
 
 | | |
@@ -603,10 +603,10 @@ Maintain running counts if you need O(1) rate after each ingest.
 ## `extend` vs loop `append`
 
 ```python
-d: deque[DailyReading] = deque()
-d.extend(readings_from_month)
-for r in readings_from_month:
-    d.append(r)
+d: deque[DataRecord] = deque()
+d.extend(records_from_batch)
+for r in records_from_batch:
+ d.append(r)
 ```
 
 | | |
@@ -628,9 +628,9 @@ for r in readings_from_month:
 
 ---
 
-## Weather export job deque with `maxlen` on pending
+## Export job deque with `maxlen` on pending
 
-Cap pending charts so a slow renderer does not exhaust RAM:
+Cap pending jobs so a slow renderer does not exhaust RAM:
 
 ```python
 from dataclasses import dataclass
@@ -638,13 +638,13 @@ from collections import deque
 
 
 @dataclass(frozen=True)
-class ExportJob:
-    station_id: str
-    year: int
-    chart: str
+class RenderJob:
+ target_id: str
+ batch: int
+ chart: str
 
-pending: deque[ExportJob] = deque(maxlen=100)
-pending.append(ExportJob("STN05", 2024, "precip_anomaly"))
+pending: deque[RenderJob] = deque(maxlen=100)
+pending.append(RenderJob("node05", 2024, "latency_chart"))
 ```
 
 | Policy | Behavior |
@@ -655,36 +655,36 @@ pending.append(ExportJob("STN05", 2024, "precip_anomaly"))
 
 ---
 
-## Side-by-side: `list` vs `deque` for weather ingest
+## Side-by-side: `list` vs `deque` for stream ingest
 
 | Action | `list` | `deque` |
 | --- | --- | --- |
-| Add newest reading at end | `append` O(1) | `append` O(1) |
+| Add newest record at end | `append` O(1) | `append` O(1) |
 | Process oldest first | `pop(0)` **O(n)** | `popleft` O(1) |
 | Insert urgent at front | `insert(0, x)` **O(n)** | `appendleft` O(1) |
-| Index `readings[i]` in loop | O(1) | O(n) at ends only fast |
-| Slice `readings[10:20]` | Yes | No slice on deque |
+| Index `records[i]` in loop | O(1) | O(n) at ends only fast |
+| Slice `records[10:20]` | Yes | No slice on deque |
 
 ```python
-def drain_list_bad(q: list[DailyReading]) -> None:
-    while q:
-        process(q.pop(0))
+def drain_list_bad(q: list[DataRecord]) -> None:
+ while q:
+ process(q.pop(0))
 
-def drain_deque_good(q: deque[DailyReading]) -> None:
-    while q:
-        process(q.popleft())
+def drain_deque_good(q: deque[DataRecord]) -> None:
+ while q:
+ process(q.popleft())
 ```
 
 ---
 
-## `rotate` and station carousel (detailed)
+## `rotate` and carousel rotation (detailed)
 
 ```python
-station_rotation: deque[str] = deque(
-    ["STN01", "STN02", "STN03", "STN04"]
+item_rotation: deque[str] = deque(
+ ["ITEM01", "ITEM02", "ITEM03", "ITEM04"]
 )
-station_rotation.rotate(1)
-station_rotation.rotate(-1)
+item_rotation.rotate(1)
+item_rotation.rotate(-1)
 ```
 
 | `rotate(n)` | Effect |
@@ -693,14 +693,14 @@ station_rotation.rotate(-1)
 | `n < 0` | Left rotation |
 | `n == 0` | No-op |
 
-For **n** stations, `rotate(k)` is O(k); use `k %= len(d)` mentally when k can be huge.
+For **n** items, `rotate(k)` is O(k); use `k %= len(d)` mentally when k can be huge.
 
 ```mermaid
 flowchart LR
-  A["STN01"] --> B["STN02"] --> C["STN03"] --> D["STN04"]
-  D --> A
-  rotate1["rotate(1)"] --> A2["STN04"] --> B2["STN01"] --> C2["STN02"] --> D2["STN03"]
-  D2 --> A2
+ A["ITEM01"] --> B["ITEM02"] --> C["ITEM03"] --> D["ITEM04"]
+ D --> A
+ rotate1["rotate(1)"] --> A2["ITEM04"] --> B2["ITEM01"] --> C2["ITEM02"] --> D2["ITEM03"]
+ D2 --> A2
 ```
 
 ---
@@ -714,8 +714,8 @@ history: deque[LabelEdit] = deque()
 history.append(edit)
 history.pop()
 
-fifo: deque[DailyReading] = deque()
-fifo.append(reading)
+fifo: deque[DataRecord] = deque()
+fifo.append(record)
 fifo.popleft()
 ```
 
@@ -726,9 +726,9 @@ Mixing both patterns on the **same** deque without discipline causes subtle bugs
 ## `__getitem__` and slicing limitations
 
 ```python
-d = deque([DailyReading(i, 0.0, "overcast") for i in range(5)])
-assert d[0].reading_id == 0
-assert d[-1].reading_id == 4
+d = deque([DataRecord(i, 0.0, "idle") for i in range(5)])
+assert d[0].record_id == 0
+assert d[-1].record_id == 4
 middle = list(d)[1:3]
 ```
 
@@ -738,13 +738,13 @@ middle = list(d)[1:3]
 | `d[i]` middle | O(n) |
 | slice | Not supported — materialize `list(d)` |
 
-For weather replay UIs that need **random access** to reading index *i* in a month window, keep a **`list`** alongside a `deque` window, or use only `list` for the month.
+For replay UIs that need **random access** to record index *i* in a buffer, keep a **`list`** alongside a `deque` window, or use only `list` for the full batch.
 
 ---
 
 ## Official documentation
 
-Python’s deque is documented in the standard library: [collections.deque](https://docs.python.org/3/library/collections.html#collections.deque). Prefer that page for edge cases (thread safety notes, version changes) alongside this guide’s weather-oriented patterns.
+Python’s deque is documented in the standard library: [collections.deque](https://docs.python.org/3/library/collections.html#collections.deque). Prefer that page for edge cases (thread safety notes, version changes) alongside this guide’s application-oriented patterns.
 
 | Doc topic | Why read it |
 | --- | --- |
@@ -770,27 +770,27 @@ Python’s deque is documented in the standard library: [collections.deque](http
 ```python
 from collections import deque
 
-q: deque[DailyReading] = deque()
-q.append(reading)
+q: deque[DataRecord] = deque()
+q.append(record)
 p = q.popleft()
 
 w: deque[float] = deque(maxlen=10)
-w.append(reading.temp_anomaly)
+w.append(record.value)
 
-d = deque(["STN01", "STN02"])
-d.appendleft("STN03")
+d = deque(["ITEM01", "ITEM02"])
+d.appendleft("ITEM03")
 d.rotate(1)
 
-st: deque[DailyReading] = deque()
-st.append(reading)
+st: deque[DataRecord] = deque()
+st.append(record)
 st.pop()
 ```
 
-Use **`collections.deque`** whenever you need **O(1) at both ends**—queues, stacks, rolling weather windows, rotations, and BFS. Avoid **`list.pop(0)`** and **`list.insert(0, ...)`** in performance-sensitive ingest paths.
+Use **`collections.deque`** whenever you need **O(1) at both ends**—queues, stacks, rolling sliding windows, rotations, and BFS. Avoid **`list.pop(0)`** and **`list.insert(0, ...)`** in performance-sensitive ingest paths.
 
-**Weather pipeline checklist**
+**Application checklist**
 
 1. **Rolling metrics** — `deque(maxlen=k)`.
-2. **Reading queue** — `append` + `popleft`.
+2. **FIFO queue** — `append` + `popleft`.
 3. **Urgent front insert** — `appendleft` once, not `list.insert(0)`.
-4. **Carousel** — `rotate` on small station deques.
+4. **Carousel** — `rotate` on small item deques.

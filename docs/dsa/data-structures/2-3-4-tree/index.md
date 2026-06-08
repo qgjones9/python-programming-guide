@@ -9,21 +9,21 @@ A **2-3-4 tree** is a **B-tree of order 4**: every **internal** node has **2, 3,
 | **When to use** | Pedagogy, **disk/page-oriented** indexes, understanding red–black **isomorphism**. |
 | **Trade-off** | More complex node cases than BST; excellent **cache/page** fit (many keys per node). |
 
-In **daily weather data analysis**, treat a 2-3-4 tree as the conceptual model behind a **reading database index**: each **page** (disk block) holds up to **3 keys** and **4 child pointers**, like looking up `reading_id` in a multi-year archive without scanning every daily row. You will query real data with **SQL / Parquet / pandas**—this structure explains **why indexes are shallow and wide**.
+Treat a 2-3-4 tree as the conceptual model behind a **database index**: each **page** (disk block) holds up to **3 keys** and **4 child pointers**, like looking up `record_id` in a large table without scanning every row. You will query real data with **SQL** or an on-disk store—this structure explains **why indexes are shallow and wide**.
 
-This page is your **ready reference**: node types, search/insert/delete, Python teaching implementation, Mermaid node diagrams, daily weather **reading DB** examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: node types, search/insert/delete, Python teaching implementation, Mermaid node diagrams, database **index** examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How 2-3-4 trees fit daily weather analysis
+## How 2-3-4 trees fit ordered-map problems
 
-| Weather analysis idea | 2-3-4 view | Why it maps |
+| Use case | 2-3-4 view | Why it maps |
 | --- | --- | --- |
-| **Daily reading index** | Keys = `reading_id`; 3 keys per page | Fewer pointer hops than binary tree |
-| **Archive file on SSD** | Wide nodes = one read fetches many keys | B-tree family matches storage |
-| **Anomaly bucket ranges** | 3 separators partition anomaly tiers | Range search by branching |
+| **Record index** | Keys = `record_id`; 3 keys per page | Fewer pointer hops than binary tree |
+| **On-disk symbol table** | Wide nodes = one read fetches many keys | B-tree family matches storage |
+| **Score bucket ranges** | 3 separators partition priority tiers | Range search by branching |
 | **Red–black mental model** | 2-3-4 node ↔ black node clusters | Interview bridge |
 | **Guaranteed balance** | All leaves same depth | No skewed “sorted insert” BST |
 
@@ -46,7 +46,7 @@ Throughout: **n** = number of keys stored, **h** = tree height = O(log₄ n) = O
 
 ## Node types (2-node, 3-node, 4-node)
 
-| Node type | Keys | Children | Weather page analogy |
+| Node type | Keys | Children | Disk page analogy |
 | --- | --- | --- | --- |
 | **2-node** | 1 | 2 | Thin page after splits |
 | **3-node** | 2 | 3 | Medium index block |
@@ -78,16 +78,16 @@ flowchart LR
 | | **2-3-4** | [BST](../binary-search-tree/index.md) | [Red–black](../red-black-tree/index.md) | B-tree (order m) |
 | --- | --- | --- | --- | --- |
 | **Keys per node** | 1–3 | 1 | 1 | up to m−1 |
-| **Balance** | Perfect leaf depth | Can skew | station rules | Generalization |
+| **Balance** | Perfect leaf depth | Can skew | color rules | Generalization |
 | **Height** | O(log n) base 4 | O(n) worst | O(log n) | O(log_m n) |
 | **Disk fit** | Excellent pedagogy | Poor (many hops) | Used in RAM libs | Database standard |
-| **Weather reading index** | Teaching model | Not used at scale | `dict`/`set` RAM | Production DB |
+| **Database index** | Teaching model | Not used at scale | `dict`/`set` RAM | Production DB |
 
 ---
 
 ## Search
 
-Compare `reading_id` against 1–3 keys in the node; descend the correct child; repeat until leaf or hit.
+Compare `record_id` against 1–3 keys in the node; descend the correct child; repeat until leaf or hit.
 
 ```python
 def search_234(node, key):
@@ -159,12 +159,12 @@ class Tree234:
         self.root = None
 ```
 
-### 3. Insert keys one by one from unsorted readings
+### 3. Insert keys one by one from unsorted records
 
 ```python
 t = Tree234()
-for reading_id in [105, 42, 9001, 17, 88]:
-    t.insert(reading_id)
+for record_id in [105, 42, 9001, 17, 88]:
+    t.insert(record_id)
 ```
 
 | | |
@@ -172,7 +172,7 @@ for reading_id in [105, 42, 9001, 17, 88]:
 | **Time** | O(k log k) for k inserts |
 | **Space** | O(k) |
 
-### 4. Sorted reading ids (still balanced)
+### 4. Sorted record ids (still balanced)
 
 Unlike BST, sorted insert does **not** degenerate height—splits keep leaves level.
 
@@ -295,13 +295,13 @@ Deletion in 2-3-4 trees is **more intricate** than insert (borrow/merge from sib
 | Key in internal node | Replace with predecessor/successor from leaf | O(h) |
 | Underflow in child | Borrow or merge with sibling | O(h) |
 
-**Weather teaching note:** reading DB indexes **rarely delete** historical daily rows; inserts dominate—same as many append-heavy logs.
+**Index note:** database indexes **rarely delete** historical rows; inserts dominate—same as many append-heavy logs.
 
 ---
 
-## Daily weather application: reading database index analogy
+## Application: database index analogy
 
-Imagine a **multi-year reading table** keyed by `reading_id`:
+Imagine a **large record table** keyed by `record_id`:
 
 | DB concept | 2-3-4 concept |
 | --- | --- |
@@ -311,22 +311,22 @@ Imagine a **multi-year reading table** keyed by `reading_id`:
 | **Range scan** | In-order leaf walk |
 
 ```python
-reading_index = Tree234()
-for row in ingest_readings_csv():
-    reading_index.insert(row["reading_id"])
+record_index = Tree234()
+for row in load_records():
+    record_index.insert(row["record_id"])
 
-assert reading_index.search(4128791)
-ordered_ids = reading_index.inorder()
+assert record_index.search(4128791)
+ordered_ids = record_index.inorder()
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(log n) lookup per reading |
+| **Time** | O(log n) lookup per record |
 | **Space** | O(n) index entries |
 
 ```mermaid
 flowchart TB
-  DB["Reading DB on disk"]
+  DB["Record DB on disk"]
   DB --> P1["Page: keys 1000,2000,3000"]
   P1 --> P2["Child page 1000–2000"]
   P1 --> P3["Child page 2000–3000"]
@@ -360,23 +360,23 @@ Every **2-3-4 tree** corresponds to a **red–black tree** with the same keys (c
 
 ---
 
-## When to pick which structure (weather context)
+## When to pick which structure (ordered-map context)
 
 ```mermaid
 flowchart TD
   Q([Indexed lookups?])
   Q --> RAM{In-memory Python?}
   RAM -->|yes| D["dict / set hash"]
-  RAM -->|ordered| station["red-black / treap"]
+  RAM -->|ordered| RB["red-black / treap"]
   Q --> DISK{Disk / page oriented?}
   DISK --> B["B-tree / 2-3-4 mental model"]
 ```
 
 | Scenario | Best tool |
 | --- | --- |
-| In-memory station lookup | `dict` |
+| In-memory key lookup | `dict` |
 | Learn DB index pages | 2-3-4 tree |
-| Production SQL readings | Database B-tree (implementation detail) |
+| Production SQL tables | Database B-tree (implementation detail) |
 | Interview balance proof | 2-3-4 → red–black |
 
 ---
@@ -409,9 +409,9 @@ flowchart TD
 
 ```python
 t = Tree234()
-t.insert(reading_id)
-t.search(reading_id)
+t.insert(record_id)
+t.search(record_id)
 t.inorder()
 ```
 
-Use a **2-3-4 tree** to understand **wide, shallow indexes** on weather-scale reading data—use **`dict`** and **real databases** when you ship queries.
+Use a **2-3-4 tree** to understand **wide, shallow indexes** on large-scale data—use **`dict`** and **real databases** when you ship queries.

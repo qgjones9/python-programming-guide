@@ -1,6 +1,6 @@
 # Binary search tree
 
-A **binary tree** where, for every node, all keys in the **left** subtree are **strictly smaller** and all keys in the **right** subtree are **strictly greater**. That ordering lets you **search**, **insert**, and **delete** by walking one branch at each level—like a filing cabinet sorted by station id or day number.
+A **binary tree** where, for every node, all keys in the **left** subtree are **strictly smaller** and all keys in the **right** subtree are **strictly greater**. That ordering lets you **search**, **insert**, and **delete** by walking one branch at each level—like a filing cabinet sorted by key or timestamp.
 
 | | |
 | --- | --- |
@@ -10,38 +10,39 @@ A **binary tree** where, for every node, all keys in the **left** subtree are **
 | **When to use** | Ordered lookup, range queries, and sorted iteration when you control shape or will upgrade to AVL/red–black. |
 | **Trade-off** | Simple and teachable; **unbalanced** input degrades to linked-list speed. |
 
-In **daily weather data analysis**, a BST is the right mental model for **ranking and range queries on ordered readings**: store `(temp_anomaly, station_id)` pairs, walk left/right to find an anomaly threshold, or run **inorder traversal** to print the station leaderboard in ascending order. For a full multi-year archive you will still use **pandas** or **`sorted()`**—implement a BST to learn the invariant, to support **range scans** (all stations between +0.5°C and +1.2°C anomaly), and as the foundation for [AVL](../avl-tree/index.md) and [red–black](../red-black-tree/index.md) trees.
+A BST is the right mental model for **ordered maps**—**symbol tables**, **indexes**, and **schedulers** where keys have a total order: store `(priority, record_id)` pairs, walk left/right to find a cutoff, or run **inorder traversal** to list entries in ascending key order. For a large static dataset you will still use **`sorted()`** or a database index—implement a BST to learn the invariant, to support **range scans** (all records between two key bounds), and as the foundation for [AVL](../avl-tree/index.md) and [red–black](../red-black-tree/index.md) trees.
 
-This page is your **ready reference**: structure, a complete Python implementation, every way to create it, every method with daily weather data examples, and **time and space complexity** on each operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: structure, a complete Python implementation, every way to create it, every method with ordered-map examples, and **time and space complexity** on each operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How a BST fits daily weather analysis
+## How a BST fits ordered-map problems
 
-| Weather analysis idea | BST view | Why ordering helps |
+| Use case | BST view | Why ordering helps |
 | --- | --- | --- |
-| **Anomaly leaderboard** | Key = `(temp_anomaly, station_id)`; inorder = ascending rank | O(n) sorted walk without separate sort step |
-| **Find station at anomaly cutoff** | Search for `(0.9, ?)` or nearest neighbor | O(h) descent vs O(n) linear scan |
-| **Day-of-year schedule lookup** | Key = `(day_of_year, reading_id)` | Range query: all readings in days 120–150 |
-| **Heat-threshold filter** | Insert daily anomalies; query "who exceeded +2°C?" | Left = below, right = above |
-| **Hourly observation index** | Key = `(hour_utc, reading_id)` | Ordered replay scrubber on one storm event |
+| **Symbol table** | Key = `(name, scope_id)`; inorder = lexicographic walk | O(n) sorted walk without separate sort step |
+| **Score index** | Key = `(priority, record_id)`; inorder = ascending rank | O(n) sorted walk without separate sort step |
+| **Find cutoff entry** | Search for `(90, ?)` or nearest neighbor | O(h) descent vs O(n) linear scan |
+| **Scheduler lookup** | Key = `(timestamp, task_id)` | Range query: all tasks in a time window |
+| **Threshold filter** | Insert scored records; query "who exceeded priority 200?" | Left = below, right = above |
+| **Event log index** | Key = `(sequence, record_id)` | Ordered replay of append-only log |
 
-**Use pandas / `dict` / `sorted()`** when you load 20,000 daily rows once and filter in vectorized code. **Use a BST** when the problem is **incremental ordered inserts**, **online** nearest/range queries on a **moderate** *n*, or when you are **learning balancing** on top of this base.
+**Use `dict` / `sorted()`** when you load a large table once and filter in bulk. **Use a BST** when the problem is **incremental ordered inserts**, **online** nearest/range queries on a **moderate** *n*, or when you are **learning balancing** on top of this base.
 
 ```mermaid
 flowchart TB
-  subgraph bst["BST keyed by temp anomaly"]
-    R["(+1.2, STN_A)"]
-    L["(+0.8, STN_B)"]
-    RR["(+1.5, STN_C)"]
-    RL["(+1.3, STN_D)"]
-    R --> L
-    R --> RR
-    RR --> RL
-  end
-  note["inorder: STN_B → STN_A → STN_D → STN_C"]
+ subgraph bst["BST keyed by priority"]
+ R["(120, rec_A)"]
+ L["(80, rec_B)"]
+ RR["(150, rec_C)"]
+ RL["(130, rec_D)"]
+ R --> L
+ R --> RR
+ RR --> RL
+ end
+ note["inorder: rec_B → rec_A → rec_D → rec_C"]
 ```
 
 Throughout this page, **n** is the number of nodes. **h** is tree height.
@@ -50,25 +51,25 @@ Throughout this page, **n** is the number of nodes. **h** is tree height.
 
 ## BST vs balanced trees vs Python builtins
 
-| | **BST (this page)** | [AVL tree](../avl-tree/index.md) | [Red–black tree](../red-black-tree/index.md) | **`dict` / `set`** | **`sorted()` / pandas** |
+| | **BST (this page)** | [AVL tree](../avl-tree/index.md) | [Red–black tree](../red-black-tree/index.md) | **`dict` / `set`** | **`sorted()` / SQL** |
 | --- | --- | --- | --- | --- | --- |
 | **Search** | O(h) | O(log n) guaranteed | O(log n) guaranteed | O(1) avg hash | O(log n) if sorted list + bisect |
 | **Insert** | O(h) | O(log n) + rotations | O(log n) + recolor/rotate | O(1) avg | O(n) resort or O(log n) bisect insert |
 | **Sorted iteration** | O(n) inorder | O(n) inorder | O(n) inorder | O(n) arbitrary order | O(n) already sorted |
 | **Ordering** | Total order on keys | Same | Same | Keys hashable; **not** sorted | Sort any column |
-| **Weather fit** | Teach ordered search | Guaranteed log for live feed | Library map theory | `station_id → reading` lookup | Multi-year tables, climatology ranks |
+| **Typical fit** | Teach ordered search | Guaranteed log for live feed | Library map theory | `id → record` lookup | Bulk tables, one-shot sorts |
 
 !!! note "Python `dict` is not a BST"
-    CPython **`dict`** and **`set`** use **hash tables**, not binary search trees. Average O(1) lookup by key; **no** in-order traversal of keys by value order unless you sort separately. Ordered **insertion** since 3.7 is by **insertion order**, not by key comparison.
+ CPython **`dict`** and **`set`** use **hash tables**, not binary search trees. Average O(1) lookup by key; **no** in-order traversal of keys by value order unless you sort separately. Ordered **insertion** since 3.7 is by **insertion order**, not by key comparison.
 
 ```mermaid
 sequenceDiagram
-  participant Analyst
-  participant BST as anomaly BST
-  Analyst->>BST: search (+1.1, ?)
-  BST->>BST: compare at root +1.2 — go left
-  BST->>BST: compare at +0.8 — go right
-  BST-->>Analyst: found or nearest O(h)
+ participant Client
+ participant BST as priority BST
+ Client->>BST: search (110, ?)
+ BST->>BST: compare at root 120 — go left
+ BST->>BST: compare at 80 — go right
+ BST-->>Client: found or nearest O(h)
 ```
 
 ---
@@ -85,18 +86,18 @@ from typing import Any, Iterator
 
 
 @dataclass(frozen=True, order=True)
-class StationReading:
-    temp_anomaly: float
-    station_id: str
-    summary: str = ""
+class MapEntry:
+ priority: int
+ record_id: str
+ label: str = ""
 
 
 @dataclass
 class BSTNode:
-    key: Any
-    left: BSTNode | None = None
-    right: BSTNode | None = None
-    payload: Any = None
+ key: Any
+ left: BSTNode | None = None
+ right: BSTNode | None = None
+ payload: Any = None
 ```
 
 | | |
@@ -106,13 +107,13 @@ class BSTNode:
 
 ```mermaid
 flowchart TB
-  subgraph node["BSTNode"]
-    K["key: StationReading"]
-    L["left"]
-    R["right"]
-  end
-  L --- K
-  K --- R
+ subgraph node["BSTNode"]
+ K["key: MapEntry"]
+ L["left"]
+ R["right"]
+ end
+ L --- K
+ K --- R
 ```
 
 ---
@@ -134,9 +135,9 @@ root: BSTNode | None = None
 
 ```python
 class BinarySearchTree:
-    def __init__(self) -> None:
-        self.root: BSTNode | None = None
-        self._size = 0
+ def __init__(self) -> None:
+ self.root: BSTNode | None = None
+ self._size = 0
 
 tree = BinarySearchTree()
 assert tree.is_empty()
@@ -150,7 +151,7 @@ assert tree.is_empty()
 ### 3. Single-node tree
 
 ```python
-root = BSTNode(StationReading(1.2, "STN01", "warm spell"))
+root = BSTNode(MapEntry(120, "rec01", "high priority"))
 ```
 
 | | |
@@ -164,22 +165,22 @@ Preserves **BST shape** depends on **insert order**—same keys, different order
 
 ```python
 def insert_bst(root: BSTNode | None, key: Any) -> BSTNode:
-    if root is None:
-        return BSTNode(key)
-    if key < root.key:
-        root.left = insert_bst(root.left, key)
-    elif key > root.key:
-        root.right = insert_bst(root.right, key)
-    return root
+ if root is None:
+ return BSTNode(key)
+ if key < root.key:
+ root.left = insert_bst(root.left, key)
+ elif key > root.key:
+ root.right = insert_bst(root.right, key)
+ return root
 
-readings = [
-    StationReading(1.2, "STN01"),
-    StationReading(0.8, "STN02"),
-    StationReading(1.5, "STN03"),
+entries = [
+ MapEntry(120, "rec01"),
+ MapEntry(80, "rec02"),
+ MapEntry(150, "rec03"),
 ]
 root = None
-for r in readings:
-    root = insert_bst(root, r)
+for entry in entries:
+ root = insert_bst(root, entry)
 ```
 
 | | |
@@ -189,13 +190,13 @@ for r in readings:
 
 ### 5. Build from **sorted** list — degenerates to a chain
 
-Inserting strictly increasing `(temp_anomaly, id)` mimics **sorted daily CSV** row-by-row: every insert goes right → **h = n**.
+Inserting strictly increasing `(priority, id)` mimics **sorted bulk import** row-by-row: every insert goes right → **h = n**.
 
 ```python
-sorted_anomalies = [StationReading(a / 10, f"S{a}") for a in range(10, 200, 10)]
+sorted_keys = [MapEntry(a, f"rec{a}") for a in range(10, 200, 10)]
 root = None
-for r in sorted_anomalies:
-    root = insert_bst(root, r)
+for entry in sorted_keys:
+ root = insert_bst(root, entry)
 ```
 
 | | |
@@ -208,11 +209,11 @@ for r in sorted_anomalies:
 ```python
 import random
 
-shuffled = readings[:]
+shuffled = entries[:]
 random.shuffle(shuffled)
 root = None
 for r in shuffled:
-    root = insert_bst(root, r)
+ root = insert_bst(root, r)
 ```
 
 | | |
@@ -224,170 +225,170 @@ for r in shuffled:
 
 ## Full implementation: `BinarySearchTree`
 
-The class below implements **search**, **insert**, **delete**, **min/max**, **inorder/preorder/postorder**, **size**, **height**, and **range query**—enough for weather anomaly drills and interview follow-ups.
+The class below implements **search**, **insert**, **delete**, **min/max**, **inorder/preorder/postorder**, **size**, **height**, and **range query**—enough for ordered-map drills and interview follow-ups.
 
 ```python
 class BinarySearchTree:
-    def __init__(self) -> None:
-        self.root: BSTNode | None = None
-        self._size = 0
+ def __init__(self) -> None:
+ self.root: BSTNode | None = None
+ self._size = 0
 
-    def is_empty(self) -> bool:
-        return self.root is None
+ def is_empty(self) -> bool:
+ return self.root is None
 
-    def __len__(self) -> int:
-        return self._size
+ def __len__(self) -> int:
+ return self._size
 
-    def search(self, key: Any) -> BSTNode | None:
-        cur = self.root
-        while cur is not None:
-            if key == cur.key:
-                return cur
-            cur = cur.left if key < cur.key else cur.right
-        return None
+ def search(self, key: Any) -> BSTNode | None:
+ cur = self.root
+ while cur is not None:
+ if key == cur.key:
+ return cur
+ cur = cur.left if key < cur.key else cur.right
+ return None
 
-    def contains(self, key: Any) -> bool:
-        return self.search(key) is not None
+ def contains(self, key: Any) -> bool:
+ return self.search(key) is not None
 
-    def insert(self, key: Any, payload: Any = None) -> None:
-        if self.root is None:
-            self.root = BSTNode(key, payload=payload)
-            self._size += 1
-            return
-        cur = self.root
-        while True:
-            if key < cur.key:
-                if cur.left is None:
-                    cur.left = BSTNode(key, payload=payload)
-                    self._size += 1
-                    return
-                cur = cur.left
-            elif key > cur.key:
-                if cur.right is None:
-                    cur.right = BSTNode(key, payload=payload)
-                    self._size += 1
-                    return
-                cur = cur.right
-            else:
-                cur.payload = payload
-                return
+ def insert(self, key: Any, payload: Any = None) -> None:
+ if self.root is None:
+ self.root = BSTNode(key, payload=payload)
+ self._size += 1
+ return
+ cur = self.root
+ while True:
+ if key < cur.key:
+ if cur.left is None:
+ cur.left = BSTNode(key, payload=payload)
+ self._size += 1
+ return
+ cur = cur.left
+ elif key > cur.key:
+ if cur.right is None:
+ cur.right = BSTNode(key, payload=payload)
+ self._size += 1
+ return
+ cur = cur.right
+ else:
+ cur.payload = payload
+ return
 
-    def delete(self, key: Any) -> bool:
-        self.root, deleted = self._delete_rec(self.root, key)
-        if deleted:
-            self._size -= 1
-        return deleted
+ def delete(self, key: Any) -> bool:
+ self.root, deleted = self._delete_rec(self.root, key)
+ if deleted:
+ self._size -= 1
+ return deleted
 
-    def _delete_rec(
-        self, node: BSTNode | None, key: Any
-    ) -> tuple[BSTNode | None, bool]:
-        if node is None:
-            return None, False
-        if key < node.key:
-            node.left, deleted = self._delete_rec(node.left, key)
-            return node, deleted
-        if key > node.key:
-            node.right, deleted = self._delete_rec(node.right, key)
-            return node, deleted
-        if node.left is None:
-            return node.right, True
-        if node.right is None:
-            return node.left, True
-        succ = self._min_node(node.right)
-        node.key = succ.key
-        node.payload = succ.payload
-        node.right, _ = self._delete_rec(node.right, succ.key)
-        return node, True
+ def _delete_rec(
+ self, node: BSTNode | None, key: Any
+ ) -> tuple[BSTNode | None, bool]:
+ if node is None:
+ return None, False
+ if key < node.key:
+ node.left, deleted = self._delete_rec(node.left, key)
+ return node, deleted
+ if key > node.key:
+ node.right, deleted = self._delete_rec(node.right, key)
+ return node, deleted
+ if node.left is None:
+ return node.right, True
+ if node.right is None:
+ return node.left, True
+ succ = self._min_node(node.right)
+ node.key = succ.key
+ node.payload = succ.payload
+ node.right, _ = self._delete_rec(node.right, succ.key)
+ return node, True
 
-    def _min_node(self, node: BSTNode) -> BSTNode:
-        while node.left is not None:
-            node = node.left
-        return node
+ def _min_node(self, node: BSTNode) -> BSTNode:
+ while node.left is not None:
+ node = node.left
+ return node
 
-    def minimum(self) -> Any | None:
-        if self.root is None:
-            return None
-        return self._min_node(self.root).key
+ def minimum(self) -> Any | None:
+ if self.root is None:
+ return None
+ return self._min_node(self.root).key
 
-    def maximum(self) -> Any | None:
-        if self.root is None:
-            return None
-        cur = self.root
-        while cur.right is not None:
-            cur = cur.right
-        return cur.key
+ def maximum(self) -> Any | None:
+ if self.root is None:
+ return None
+ cur = self.root
+ while cur.right is not None:
+ cur = cur.right
+ return cur.key
 
-    def inorder(self) -> list[Any]:
-        out: list[Any] = []
-        self._inorder_rec(self.root, out)
-        return out
+ def inorder(self) -> list[Any]:
+ out: list[Any] = []
+ self._inorder_rec(self.root, out)
+ return out
 
-    def _inorder_rec(self, node: BSTNode | None, out: list[Any]) -> None:
-        if node is None:
-            return
-        self._inorder_rec(node.left, out)
-        out.append(node.key)
-        self._inorder_rec(node.right, out)
+ def _inorder_rec(self, node: BSTNode | None, out: list[Any]) -> None:
+ if node is None:
+ return
+ self._inorder_rec(node.left, out)
+ out.append(node.key)
+ self._inorder_rec(node.right, out)
 
-    def inorder_iter(self) -> Iterator[Any]:
-        stack: list[BSTNode] = []
-        cur = self.root
-        while stack or cur is not None:
-            while cur is not None:
-                stack.append(cur)
-                cur = cur.left
-            cur = stack.pop()
-            yield cur.key
-            cur = cur.right
+ def inorder_iter(self) -> Iterator[Any]:
+ stack: list[BSTNode] = []
+ cur = self.root
+ while stack or cur is not None:
+ while cur is not None:
+ stack.append(cur)
+ cur = cur.left
+ cur = stack.pop()
+ yield cur.key
+ cur = cur.right
 
-    def preorder(self) -> list[Any]:
-        out: list[Any] = []
-        self._preorder_rec(self.root, out)
-        return out
+ def preorder(self) -> list[Any]:
+ out: list[Any] = []
+ self._preorder_rec(self.root, out)
+ return out
 
-    def _preorder_rec(self, node: BSTNode | None, out: list[Any]) -> None:
-        if node is None:
-            return
-        out.append(node.key)
-        self._preorder_rec(node.left, out)
-        self._preorder_rec(node.right, out)
+ def _preorder_rec(self, node: BSTNode | None, out: list[Any]) -> None:
+ if node is None:
+ return
+ out.append(node.key)
+ self._preorder_rec(node.left, out)
+ self._preorder_rec(node.right, out)
 
-    def postorder(self) -> list[Any]:
-        out: list[Any] = []
-        self._postorder_rec(self.root, out)
-        return out
+ def postorder(self) -> list[Any]:
+ out: list[Any] = []
+ self._postorder_rec(self.root, out)
+ return out
 
-    def _postorder_rec(self, node: BSTNode | None, out: list[Any]) -> None:
-        if node is None:
-            return
-        self._postorder_rec(node.left, out)
-        self._postorder_rec(node.right, out)
-        out.append(node.key)
+ def _postorder_rec(self, node: BSTNode | None, out: list[Any]) -> None:
+ if node is None:
+ return
+ self._postorder_rec(node.left, out)
+ self._postorder_rec(node.right, out)
+ out.append(node.key)
 
-    def height(self) -> int:
-        return self._height_rec(self.root)
+ def height(self) -> int:
+ return self._height_rec(self.root)
 
-    def _height_rec(self, node: BSTNode | None) -> int:
-        if node is None:
-            return -1
-        return 1 + max(self._height_rec(node.left), self._height_rec(node.right))
+ def _height_rec(self, node: BSTNode | None) -> int:
+ if node is None:
+ return -1
+ return 1 + max(self._height_rec(node.left), self._height_rec(node.right))
 
-    def range_query(self, lo: Any, hi: Any) -> list[Any]:
-        out: list[Any] = []
-        self._range_rec(self.root, lo, hi, out)
-        return out
+ def range_query(self, lo: Any, hi: Any) -> list[Any]:
+ out: list[Any] = []
+ self._range_rec(self.root, lo, hi, out)
+ return out
 
-    def _range_rec(
-        self, node: BSTNode | None, lo: Any, hi: Any, out: list[Any]
-    ) -> None:
-        if node is None:
-            return
-        if lo < node.key:
-            self._range_rec(node.left, lo, hi, out)
-        if lo <= node.key <= hi:
-            out.append(node.key)
-        if hi > node.key:
-            self._range_rec(node.right, lo, hi, out)
+ def _range_rec(
+ self, node: BSTNode | None, lo: Any, hi: Any, out: list[Any]
+ ) -> None:
+ if node is None:
+ return
+ if lo < node.key:
+ self._range_rec(node.left, lo, hi, out)
+ if lo <= node.key <= hi:
+ out.append(node.key)
+ if hi > node.key:
+ self._range_rec(node.right, lo, hi, out)
 ```
 
 | | |
@@ -397,18 +398,18 @@ class BinarySearchTree:
 
 ---
 
-## Operations reference (with weather examples)
+## Operations reference (with ordered-map examples)
 
-### `search` / `contains` — find a station by `(temp_anomaly, id)`
+### `search` / `contains` — find a record by `(priority, id)`
 
 ```python
 tree = BinarySearchTree()
-tree.insert(StationReading(1.2, "STN01", "warm spell"))
-tree.insert(StationReading(0.8, "STN02", "cold front"))
+tree.insert(MapEntry(120, "rec01", "alpha"))
+tree.insert(MapEntry(80, "rec02", "beta"))
 
-node = tree.search(StationReading(0.8, "STN02"))
-assert node is not None and node.key.summary == "cold front"
-assert tree.contains(StationReading(9.9, "X")) is False
+node = tree.search(MapEntry(80, "rec02"))
+assert node is not None and node.key.label == "beta"
+assert tree.contains(MapEntry(999, "X")) is False
 ```
 
 | | |
@@ -418,24 +419,24 @@ assert tree.contains(StationReading(9.9, "X")) is False
 
 ```mermaid
 flowchart TD
-  Start([search key K]) --> R{root None?}
-  R -->|yes| NF([return None])
-  R -->|no| C{K vs node.key}
-  C -->|K == node| Found([return node])
-  C -->|K < node| L([go left])
-  C -->|K > node| RI([go right])
-  L --> R
-  RI --> R
+ Start([search key K]) --> R{root None?}
+ R -->|yes| NF([return None])
+ R -->|no| C{K vs node.key}
+ C -->|K == node| Found([return node])
+ C -->|K < node| L([go left])
+ C -->|K > node| RI([go right])
+ L --> R
+ RI --> R
 ```
 
 ---
 
-### `insert` — add daily reading
+### `insert` — add symbol-table entry
 
 ```python
 tree = BinarySearchTree()
-for anomaly, sid, summary in [(1.1, "STN01", "A"), (0.95, "STN02", "B"), (1.3, "STN03", "C")]:
-    tree.insert(StationReading(anomaly, sid, summary))
+for priority, rid, label in [(110, "rec01", "A"), (95, "rec02", "B"), (130, "rec03", "C")]:
+ tree.insert(MapEntry(priority, rid, label))
 assert len(tree) == 3
 ```
 
@@ -446,22 +447,22 @@ assert len(tree) == 3
 
 ---
 
-### `delete` — remove decommissioned station from active index
+### `delete` — remove retired entry from active index
 
 Three cases: **no left child**, **no right child**, **two children** (replace with inorder successor from right subtree).
 
 ```python
 tree = BinarySearchTree()
-for r in [
-    StationReading(1.2, "STN01"),
-    StationReading(0.8, "STN02"),
-    StationReading(1.5, "STN03"),
-    StationReading(1.3, "STN04"),
+for entry in [
+ MapEntry(120, "rec01"),
+ MapEntry(80, "rec02"),
+ MapEntry(150, "rec03"),
+ MapEntry(130, "rec04"),
 ]:
-    tree.insert(r)
+ tree.insert(entry)
 
-tree.delete(StationReading(1.2, "STN01"))
-assert tree.search(StationReading(1.2, "STN01")) is None
+tree.delete(MapEntry(120, "rec01"))
+assert tree.search(MapEntry(120, "rec01")) is None
 assert len(tree) == 3
 ordered = tree.inorder()
 assert ordered == sorted(ordered)
@@ -480,29 +481,29 @@ assert ordered == sorted(ordered)
 
 ```mermaid
 flowchart TD
-  D([delete key K]) --> F{found?}
-  F -->|no| X([done False])
-  F -->|yes| A{children?}
-  A -->|0 or 1| S([splice child])
-  A -->|2| SU([copy min of right subtree then delete it])
-  S --> OK([done True])
-  SU --> OK
+ D([delete key K]) --> F{found?}
+ F -->|no| X([done False])
+ F -->|yes| A{children?}
+ A -->|0 or 1| S([splice child])
+ A -->|2| SU([copy min of right subtree then delete it])
+ S --> OK([done True])
+ SU --> OK
 ```
 
 ---
 
-### `inorder` — sorted anomaly leaderboard
+### `inorder` — sorted index walk
 
-**Inorder** (left → node → right) visits keys in **ascending** order—the BST's superpower for "print every station sorted by anomaly."
+**Inorder** (left → node → right) visits keys in **ascending** order—the BST's superpower for "print every entry sorted by priority."
 
 ```python
 tree = BinarySearchTree()
-stats = [(1.05, "STN01"), (0.89, "STN02"), (1.4, "STN03"), (1.1, "STN04")]
-for anomaly, sid in stats:
-    tree.insert(StationReading(anomaly, sid))
+stats = [(105, "rec01"), (89, "rec02"), (140, "rec03"), (110, "rec04")]
+for priority, rid in stats:
+ tree.insert(MapEntry(priority, rid))
 
-leaderboard = [k.temp_anomaly for k in tree.inorder()]
-assert leaderboard == [0.89, 1.05, 1.1, 1.4]
+ordered = [k.priority for k in tree.inorder()]
+assert ordered == [89, 105, 110, 140]
 ```
 
 | | |
@@ -512,20 +513,20 @@ assert leaderboard == [0.89, 1.05, 1.1, 1.4]
 
 ```mermaid
 flowchart LR
-  L["left subtree sorted"] --> N["node"] --> R["right subtree sorted"]
-  N --> OUT["full inorder = ascending anomaly"]
+ L["left subtree sorted"] --> N["node"] --> R["right subtree sorted"]
+ N --> OUT["full inorder = ascending priority"]
 ```
 
 ---
 
-### `minimum` / `maximum` — floor / ceiling of anomaly
+### `minimum` / `maximum` — floor / ceiling of priority
 
 ```python
 tree = BinarySearchTree()
-for a in [0.9, 1.2, 1.5]:
-    tree.insert(StationReading(a, f"S{a}"))
-assert tree.minimum().temp_anomaly == 0.9
-assert tree.maximum().temp_anomaly == 1.5
+for p in [90, 120, 150]:
+ tree.insert(MapEntry(p, f"rec{p}"))
+assert tree.minimum().priority == 90
+assert tree.maximum().priority == 150
 ```
 
 | | |
@@ -535,16 +536,16 @@ assert tree.maximum().temp_anomaly == 1.5
 
 ---
 
-### `range_query` — stations with +0.9°C to +1.2°C anomaly
+### `range_query` — entries with priority 90–120
 
 ```python
 tree = BinarySearchTree()
-for anomaly, sid in [(0.8, "a"), (0.95, "b"), (1.1, "c"), (1.3, "d")]:
-    tree.insert(StationReading(anomaly, sid))
+for priority, rid in [(80, "a"), (95, "b"), (110, "c"), (130, "d")]:
+ tree.insert(MapEntry(priority, rid))
 
-band = tree.range_query(StationReading(0.9, ""), StationReading(1.2, "zzz"))
-anomalies = [k.temp_anomaly for k in band]
-assert anomalies == [0.95, 1.1]
+band = tree.range_query(MapEntry(90, ""), MapEntry(120, "zzz"))
+priorities = [k.priority for k in band]
+assert priorities == [95, 110]
 ```
 
 | | |
@@ -559,7 +560,7 @@ assert anomalies == [0.95, 1.1]
 ```python
 tree = BinarySearchTree()
 for i in range(10):
-    tree.insert(StationReading(i / 10, f"S{i}"))
+ tree.insert(MapEntry(i * 10, f"rec{i}"))
 assert tree.height() == 9
 ```
 
@@ -570,74 +571,74 @@ assert tree.height() == 9
 
 ---
 
-## Weather application: live anomaly leaderboard
+## Application: live score index
 
 ```python
-class AnomalyLeaderboard:
-    def __init__(self) -> None:
-        self._tree = BinarySearchTree()
+class ScoreIndex:
+ def __init__(self) -> None:
+ self._tree = BinarySearchTree()
 
-    def add_reading(self, station_id: str, summary: str, anomaly: float) -> None:
-        node = self._tree.search(StationReading(0.0, station_id))
-        if node is None:
-            self._tree.insert(StationReading(anomaly, station_id, summary))
-        else:
-            old = node.key
-            self._tree.delete(old)
-            self._tree.insert(
-                StationReading(old.temp_anomaly + anomaly, station_id, summary or old.summary)
-            )
+ def upsert(self, record_id: str, label: str, priority: int) -> None:
+ node = self._tree.search(MapEntry(0, record_id))
+ if node is None:
+ self._tree.insert(MapEntry(priority, record_id, label))
+ else:
+ old = node.key
+ self._tree.delete(old)
+ self._tree.insert(
+ MapEntry(old.priority + priority, record_id, label or old.label)
+ )
 
-    def top_report(self, min_anomaly: float, max_anomaly: float) -> list[StationReading]:
-        return self._tree.range_query(
-            StationReading(min_anomaly, ""),
-            StationReading(max_anomaly, "\uffff"),
-        )
+ def range_report(self, min_priority: int, max_priority: int) -> list[MapEntry]:
+ return self._tree.range_query(
+ MapEntry(min_priority, ""),
+ MapEntry(max_priority, "\uffff"),
+ )
 
-    def print_standings(self) -> None:
-        for key in self._tree.inorder_iter():
-            print(f"{key.station_id}: {key.temp_anomaly:+.1f}°C — {key.summary}")
+ def print_ranked(self) -> None:
+ for key in self._tree.inorder_iter():
+ print(f"{key.record_id}: priority {key.priority} — {key.label}")
 
 
-board = AnomalyLeaderboard()
-board.add_reading("STN01", "warm spell", 0.85)
-board.add_reading("STN02", "cold front", 1.2)
-board.add_reading("STN01", "warm spell", 0.4)
-mid = board.top_report(1.0, 2.0)
+index = ScoreIndex()
+index.upsert("rec01", "alpha", 85)
+index.upsert("rec02", "beta", 120)
+index.upsert("rec01", "alpha", 40)
+mid = index.range_report(100, 200)
 assert len(mid) == 2
 ```
 
 | Operation | Time | Space |
 | --- | --- | --- |
-| `add_reading` | O(h) search + delete + insert | O(1) aux |
-| `top_report` | O(n) worst; O(log n + k) balanced | O(k) |
-| `print_standings` | O(n) | O(h) stack |
+| `upsert` | O(h) search + delete + insert | O(1) aux |
+| `range_report` | O(n) worst; O(log n + k) balanced | O(k) |
+| `print_ranked` | O(n) | O(h) stack |
 
 ---
 
-## Weather application: schedule by `(day_of_year, reading_id)`
+## Application: scheduler by `(timestamp, task_id)`
 
 ```python
 @dataclass(frozen=True, order=True)
-class ObservationSlot:
-    day_of_year: int
-    reading_id: str
-    summary: str = ""
+class ScheduleSlot:
+ timestamp: int
+ task_id: str
+ label: str = ""
 
 
 schedule = BinarySearchTree()
-schedule.insert(ObservationSlot(120, "R001", "spring warm-up"))
-schedule.insert(ObservationSlot(120, "R002", "coastal fog"))
-schedule.insert(ObservationSlot(150, "R041", "heat wave onset"))
+schedule.insert(ScheduleSlot(1200, "task01", "compile"))
+schedule.insert(ScheduleSlot(1200, "task02", "link"))
+schedule.insert(ScheduleSlot(1500, "task41", "deploy"))
 
-day120 = schedule.range_query(ObservationSlot(120, ""), ObservationSlot(120, "\uffff"))
-assert len(day120) == 2
+at_1200 = schedule.range_query(ScheduleSlot(1200, ""), ScheduleSlot(1200, "\uffff"))
+assert len(at_1200) == 2
 ```
 
 | Operation | Time | Notes |
 | --- | --- | --- |
-| Insert reading | O(h) | |
-| Readings on day *d* | O(log n + k) balanced | k = readings that day |
+| Insert task | O(h) | |
+| Tasks at time *t* | O(log n + k) balanced | k = tasks at that timestamp |
 
 ---
 
@@ -645,19 +646,17 @@ assert len(day120) == 2
 
 | Need | Stdlib / ecosystem | vs hand-rolled BST |
 | --- | --- | --- |
-| Key → reading lookup | `dict[str, dict]` | O(1) avg; no sorted walk |
-| Sort once, query many | `sorted(rows, key=...)` + bisect | Simpler for static daily CSV |
+| Key → record lookup | `dict[str, dict]` | O(1) avg; no sorted walk |
+| Sort once, query many | `sorted(rows, key=...)` + bisect | Simpler for static bulk import |
 | Ordered multiset | `sortedcontainers.SortedList` (third party) | Production-grade balanced structure |
 | Unique sorted keys | `set` + `sorted()` | Not incremental O(log n) unless bisect on list |
 
 ```python
-import pandas as pd
-
-df = pd.read_csv("daily_anomalies_2024.csv")
-top = df[(df["temp_anomaly"] >= 0.9) & (df["temp_anomaly"] <= 1.2)].sort_values("temp_anomaly")
+rows = [{"id": "rec01", "priority": 95}, {"id": "rec02", "priority": 110}]
+top = sorted(r for r in rows if 90 <= r["priority"] <= 120, key=lambda r: r["priority"])
 ```
 
-**Rule of thumb:** implement **`BinarySearchTree`** to learn and interview; use **pandas / dict / sorted list** for real multi-year pipelines unless you need **online** ordered structure semantics.
+**Rule of thumb:** implement **`BinarySearchTree`** to learn and interview; use **`dict` / sorted list** for bulk static data unless you need **online** ordered structure semantics.
 
 ---
 
@@ -682,27 +681,27 @@ Let **n** = `len(tree)`, **h** = height.
 
 ---
 
-## When to pick which structure (weather context)
+## When to pick which structure (ordered-map context)
 
 ```mermaid
 flowchart TD
-  Q([Ordered data problem?])
-  Q --> S{Static multi-year CSV?}
-  S -->|yes| P["pandas sort / dict lookup"]
-  S -->|no| I{Need guaranteed log n?}
-  I -->|yes| B["AVL or red–black"]
-  I -->|no| T["Plain BST or sorted list + bisect"]
-  T --> R{Insert order random?}
-  R -->|yes| BST["BST OK expected log n"]
-  R -->|no sorted| BAD["BST chain — balance or sort"]
+ Q([Ordered data problem?])
+ Q --> S{Static bulk import?}
+ S -->|yes| P["sorted() / dict lookup"]
+ S -->|no| I{Need guaranteed log n?}
+ I -->|yes| B["AVL or red–black"]
+ I -->|no| T["Plain BST or sorted list + bisect"]
+ T --> R{Insert order random?}
+ R -->|yes| BST["BST OK expected log n"]
+ R -->|no sorted| BAD["BST chain — balance or sort"]
 ```
 
 | Scenario | Best tool |
 | --- | --- |
-| One-time climatology rank | pandas `sort_values` |
-| Live incremental anomaly + sorted walk | BST → upgrade to AVL |
-| Station ID → daily log | `dict`, not BST |
-| Day range on observation schedule | BST range query or SQL `WHERE day BETWEEN` |
+| One-time bulk sort | `sorted()` or SQL `ORDER BY` |
+| Live incremental index + sorted walk | BST → upgrade to AVL |
+| Record ID → payload | `dict`, not BST |
+| Time range on scheduler | BST range query or SQL `WHERE ts BETWEEN` |
 | Interview "implement map" | BST / red–black discussion |
 
 ---
@@ -712,7 +711,7 @@ flowchart TD
 | Pitfall | Why it hurts | Fix |
 | --- | --- | --- |
 | Sorted insert order | O(n) height, O(n) search | Shuffle, AVL, or sort-then-build |
-| Duplicate keys undefined | Second insert may noop or overwrite | Document policy; use `(temp_anomaly, station_id)` tuple |
+| Duplicate keys undefined | Second insert may noop or overwrite | Document policy; use `(priority, record_id)` tuple |
 | Confusing `dict` with BST | Expect sorted keys from `{}` | Sort keys explicitly or use BST/SortedList |
 | Delete two-child bug | Orphan subtree or broken order | Copy **successor** from right, not predecessor only |
 | Range query wrong bounds | Miss edge keys | Use inclusive `lo <= key <= hi` and prune correctly |
@@ -737,9 +736,9 @@ flowchart TD
 
 ```python
 tree = BinarySearchTree()
-tree.insert(StationReading(1.2, "STN01", "warm spell"))
+tree.insert(MapEntry(120, "rec01", "alpha"))
 
-tree.search(StationReading(1.2, "STN01"))
+tree.search(MapEntry(120, "rec01"))
 tree.contains(key)
 tree.delete(key)
 tree.insert(key)
@@ -748,10 +747,10 @@ list(tree.inorder_iter())
 tree.minimum()
 tree.maximum()
 
-tree.range_query(StationReading(0.9, ""), StationReading(1.2, "\uffff"))
+tree.range_query(MapEntry(90, ""), MapEntry(120, "\uffff"))
 
 len(tree)
 tree.height()
 ```
 
-Use a **binary search tree** when you need **ordered keys** with **search, insert, delete, and inorder iteration**—then move to **[AVL](../avl-tree/index.md)** or **[red–black](../red-black-tree/index.md)** when **worst-case O(log n)** must be guaranteed for live weather feeds and large *n*.
+Use a **binary search tree** when you need **ordered keys** with **search, insert, delete, and inorder iteration**—then move to **[AVL](../avl-tree/index.md)** or **[red–black](../red-black-tree/index.md)** when **worst-case O(log n)** must be guaranteed for live indexes and large *n*.

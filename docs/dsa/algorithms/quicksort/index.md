@@ -11,7 +11,7 @@ A **divide-and-conquer** comparison sort: choose a **pivot**, **partition** so k
 | **In-place** | **Yes** (array partition). |
 | **When to use** | General in-memory sort when stability not required; foundation for [Quickselect](../quickselect/index.md). |
 
-**Daily weather lens:** quicksort is “split the month around a pivot day’s **temp anomaly**—cooler or equal readings to the left, warmer to the right—then sort each side.” CPython uses **Timsort** for `list.sort`, not pure quicksort, but quicksort still appears in libraries and interviews and powers **order statistics** via partitioning.
+**Practical lens:** quicksort is “split the array around a pivot **score**—values at or below the pivot to the left, larger values to the right—then sort each side.” CPython uses **Timsort** for `list.sort`, not pure quicksort, but quicksort still appears in libraries and interviews and powers **order statistics** via partitioning.
 
 [Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
 
@@ -42,22 +42,22 @@ A **divide-and-conquer** comparison sort: choose a **pivot**, **partition** so k
 
 ```mermaid
 flowchart TD
-  QS([quicksort A, lo, hi]) --> Check{lo < hi?}
-  Check -->|no| Done([return])
-  Check -->|yes| P[p = partition A, lo, hi]
-  P --> L[quicksort lo, p-1]
-  L --> R[quicksort p+1, hi]
-  R --> Done
+ QS([quicksort A, lo, hi]) --> Check{lo < hi?}
+ Check -->|no| Done([return])
+ Check -->|yes| P[p = partition A, lo, hi]
+ P --> L[quicksort lo, p-1]
+ L --> R[quicksort p+1, hi]
+ R --> Done
 ```
 
 ```mermaid
 sequenceDiagram
-  participant A as array
-  Note over A: pivot = last temp_anomaly
-  loop j from lo to hi-1
-    A->>A: if A[j] <= pivot, expand <= region
-  end
-  A->>A: place pivot at boundary
+ participant A as array
+ Note over A: pivot = last element
+ loop j from lo to hi-1
+ A->>A: if A[j] <= pivot, expand <= region
+ end
+ A->>A: place pivot at boundary
 ```
 
 ---
@@ -66,21 +66,21 @@ sequenceDiagram
 
 ```text
 QUICKSORT(A, lo, hi):
-    if lo >= hi:
-        return
-    p = PARTITION(A, lo, hi)
-    QUICKSORT(A, lo, p - 1)
-    QUICKSORT(A, p + 1, hi)
+ if lo >= hi:
+ return
+ p = PARTITION(A, lo, hi)
+ QUICKSORT(A, lo, p - 1)
+ QUICKSORT(A, p + 1, hi)
 
 PARTITION(A, lo, hi):
-    pivot = A[hi]
-    i = lo - 1
-    for j = lo to hi - 1:
-        if A[j] <= pivot:
-            i += 1
-            swap A[i], A[j]
-    swap A[i + 1], A[hi]
-    return i + 1
+ pivot = A[hi]
+ i = lo - 1
+ for j = lo to hi - 1:
+ if A[j] <= pivot:
+ i += 1
+ swap A[i], A[j]
+ swap A[i + 1], A[hi]
+ return i + 1
 ```
 
 ---
@@ -93,64 +93,64 @@ from dataclasses import dataclass
 
 
 def quicksort(nums: list[float], lo: int = 0, hi: int | None = None) -> None:
-    if hi is None:
-        hi = len(nums) - 1
-    if lo >= hi:
-        return
-    p = _partition(nums, lo, hi)
-    quicksort(nums, lo, p - 1)
-    quicksort(nums, p + 1, hi)
+ if hi is None:
+ hi = len(nums) - 1
+ if lo >= hi:
+ return
+ p = _partition(nums, lo, hi)
+ quicksort(nums, lo, p - 1)
+ quicksort(nums, p + 1, hi)
 
 
 def _partition(nums: list[float], lo: int, hi: int) -> int:
-    pivot = nums[hi]
-    i = lo - 1
-    for j in range(lo, hi):
-        if nums[j] <= pivot:
-            i += 1
-            nums[i], nums[j] = nums[j], nums[i]
-    nums[i + 1], nums[hi] = nums[hi], nums[i + 1]
-    return i + 1
+ pivot = nums[hi]
+ i = lo - 1
+ for j in range(lo, hi):
+ if nums[j] <= pivot:
+ i += 1
+ nums[i], nums[j] = nums[j], nums[i]
+ nums[i + 1], nums[hi] = nums[hi], nums[i + 1]
+ return i + 1
 
 
 def quicksort_randomized(nums: list[float]) -> None:
-    random.shuffle(nums)
-    quicksort(nums)
+ random.shuffle(nums)
+ quicksort(nums)
 
 
 @dataclass(frozen=True, slots=True)
-class DailyReading:
-    reading_id: int
-    month: int
-    temp_anomaly: float
-    summary: str
+class Record:
+ record_id: int
+ category: int
+ score: float
+ label: str
 
 
-def quicksort_readings(
-    readings: list[DailyReading],
-    lo: int = 0,
-    hi: int | None = None,
-    *,
-    key=lambda r: r.temp_anomaly,
+def quicksort_records(
+ records: list[Record],
+ lo: int = 0,
+ hi: int | None = None,
+ *,
+ key=lambda r: r.score,
 ) -> None:
-    if hi is None:
-        hi = len(readings) - 1
-    if lo >= hi:
-        return
-    p = _partition_readings(readings, lo, hi, key=key)
-    quicksort_readings(readings, lo, p - 1, key=key)
-    quicksort_readings(readings, p + 1, hi, key=key)
+ if hi is None:
+ hi = len(records) - 1
+ if lo >= hi:
+ return
+ p = _partition_records(records, lo, hi, key=key)
+ quicksort_records(records, lo, p - 1, key=key)
+ quicksort_records(records, p + 1, hi, key=key)
 
 
-def _partition_readings(readings, lo, hi, *, key):
-    pivot = key(readings[hi])
-    i = lo - 1
-    for j in range(lo, hi):
-        if key(readings[j]) <= pivot:
-            i += 1
-            readings[i], readings[j] = readings[j], readings[i]
-    readings[i + 1], readings[hi] = readings[hi], readings[i + 1]
-    return i + 1
+def _partition_records(records, lo, hi, *, key):
+ pivot = key(records[hi])
+ i = lo - 1
+ for j in range(lo, hi):
+ if key(records[j]) <= pivot:
+ i += 1
+ records[i], records[j] = records[j], records[i]
+ records[i + 1], records[hi] = records[hi], records[i + 1]
+ return i + 1
 ```
 
 | | |
@@ -162,7 +162,7 @@ def _partition_readings(readings, lo, hi, *, key):
 
 ---
 
-## Trace: partition four temp anomalies
+## Trace: partition four scores
 
 `[0.4, -1.2, 1.0, 0.1]`, pivot = `0.1` (last)
 
@@ -188,10 +188,10 @@ Recurse left `[-1.2]`, right sort `[1.0, 0.4]` → full ascending order.
 | Cache | Good locality on arrays | Excellent on real data |
 
 ```python
-readings.sort(key=lambda r: r["precip_mm"], reverse=True)
+records.sort(key=lambda r: r["amount"], reverse=True)
 ```
 
-Use **`heapq.nlargest`** when you only need the top 10 wettest days, not full order.
+Use **`heapq.nlargest`** when you only need the top 10 values, not full order.
 
 ---
 
@@ -199,7 +199,7 @@ Use **`heapq.nlargest`** when you only need the top 10 wettest days, not full or
 
 | Use | Avoid |
 | --- | --- |
-| Learning partition logic | Stable ties on equal anomalies |
+| Learning partition logic | Stable ties on equal scores |
 | Quickselect foundation | Adversarial inputs without randomization |
 | In-memory when library sort unavailable | Large pandas tables—`sort_values` |
 
@@ -218,7 +218,7 @@ Use **`heapq.nlargest`** when you only need the top 10 wettest days, not full or
 
 | Pitfall | Fix |
 | --- | --- |
-| Sorted `reading_id` + last pivot | Random or median-of-three |
+| Sorted `record_id` + last pivot | Random or median-of-three |
 | Deep recursion | Iterative stack or introsort |
 | Need stable sort | Merge sort / `sort` |
 | Equal keys clustered with `>` test | `<=` on left partition for balance |
@@ -239,10 +239,10 @@ Use **`heapq.nlargest`** when you only need the top 10 wettest days, not full or
 ## Quick reference
 
 ```python
-quicksort(anomalies)
-quicksort_randomized(anomalies)
-quicksort_readings(window)
-window.sort(key=lambda r: r.temp_anomaly)
+quicksort(scores)
+quicksort_randomized(scores)
+quicksort_records(batch)
+batch.sort(key=lambda r: r.score)
 ```
 
-**Quicksort:** in-place, fast on average, **unstable**, **Θ(n²) worst**—master partition; ship **Timsort/pandas** for daily weather tables.
+**Quicksort:** in-place, fast on average, **unstable**, **Θ(n²) worst**—master partition; ship **Timsort/pandas** for large tables.

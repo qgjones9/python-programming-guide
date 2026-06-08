@@ -1,6 +1,6 @@
 # AVL tree
 
-A **self-balancing binary search tree** where the **height difference** (balance factor) between left and right subtrees is at most **1** at every node. After each insert or delete, **rotations** restore that invariant so height stays **O(log n)**—guaranteed fast lookup even when daily readings arrive **sorted by day of year** or **station ID**.
+A **self-balancing binary search tree** where the **height difference** (balance factor) between left and right subtrees is at most **1** at every node. After each insert or delete, **rotations** restore that invariant so height stays **O(log n)**—guaranteed fast lookup even when scheduler entries arrive **sorted by timestamp** or **task ID**.
 
 | | |
 | --- | --- |
@@ -10,38 +10,38 @@ A **self-balancing binary search tree** where the **height difference** (balance
 | **When to use** | Teaching strict balancing; guaranteed log height when plain BST would skew. |
 | **Trade-off** | More bookkeeping and rotations than [red–black](../red-black-tree/index.md); stricter balance → slightly fewer compares on lookup, more work on write. |
 
-In **daily weather data analysis**, an AVL tree models a **live anomaly board** that stays balanced as you ingest `(day_of_year, station_id, temp_anomaly)` in **chronological or alphabetical order**—the case that breaks a plain BST. Use it to understand **rotations** before [red–black trees](../red-black-tree/index.md) (used in many language runtimes). For production Python, you still reach for **`dict`**, **pandas**, or **`sortedcontainers`**; AVL is for **learning and interviews**.
+An AVL tree models a **live ordered index** that stays balanced as you ingest `(timestamp, task_id, weight)` in **chronological or alphabetical order**—the case that breaks a plain BST. Use it to understand **rotations** before [red–black trees](../red-black-tree/index.md) (used in many language runtimes). For production Python, you still reach for **`dict`** or **`sortedcontainers`**; AVL is for **learning and interviews**.
 
-This page is your **ready reference**: balance factors, rotations, full Python implementation, daily weather data examples, and complexity per operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: balance factors, rotations, full Python implementation, practical examples, and complexity per operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How an AVL tree fits daily weather analysis
+## How an AVL tree fits ordered-map problems
 
-| Weather analysis idea | AVL view | Why balance matters |
+| Use case | AVL view | Why balance matters |
 | --- | --- | --- |
-| **Daily anomaly feed** | Insert `(day_of_year, anomaly, station)` in day order | Plain BST becomes a chain; AVL stays log |
-| **Sensor priority list by id** | Ordered key; frequent insert/remove | O(log n) guaranteed each update |
-| **Season-long anomaly rank** | Inorder = sorted; height log | Predictable latency during storm events |
-| **Merge two station streams** | Inorder merge of two AVLs | O(n + m) walk if both balanced |
+| **Scheduler feed** | Insert `(timestamp, weight, task_id)` in time order | Plain BST becomes a chain; AVL stays log |
+| **Symbol table by name** | Ordered key; frequent insert/remove | O(log n) guaranteed each update |
+| **Live score index** | Inorder = sorted; height log | Predictable latency during bursts |
+| **Merge two sorted streams** | Inorder merge of two AVLs | O(n + m) walk if both balanced |
 
-**Use pandas** for batch multi-year archives. **Use AVL** when you implement **ordered maps** yourself or need to **explain rotations** on a whiteboard.
+**Use bulk `sorted()`** for static archives. **Use AVL** when you implement **ordered maps** yourself or need to **explain rotations** on a whiteboard.
 
 ```mermaid
 flowchart TB
-  subgraph before["BST skew — sorted day insert"]
-    direction TB
-    D1["D1"] --> D2["D2"] --> D3["D3"] --> D4["D4"]
-  end
-  subgraph after["AVL — same keys, rebalanced"]
-    D2a["D2"]
-    D2a --> D1a["D1"]
-    D2a --> D4a["D4"]
-    D4a --> D3a["D3"]
-  end
-  before -->|"rotations"| after
+ subgraph before["BST skew — sorted timestamp insert"]
+ direction TB
+ D1["D1"] --> D2["D2"] --> D3["D3"] --> D4["D4"]
+ end
+ subgraph after["AVL — same keys, rebalanced"]
+ D2a["D2"]
+ D2a --> D1a["D1"]
+ D2a --> D4a["D4"]
+ D4a --> D3a["D3"]
+ end
+ before -->|"rotations"| after
 ```
 
 Throughout this page, **n** = nodes, **h** = O(log n) guaranteed.
@@ -56,10 +56,10 @@ Throughout this page, **n** = nodes, **h** = O(log n) guaranteed.
 | **Insert/delete** | O(log n), more rotations | O(h) | O(log n), fewer rotations | O(1) avg |
 | **Balance** | Stricter (BF ∈ {−1,0,1}) | None | Relaxed via color rules | N/A |
 | **Lookup-heavy** | Slightly favored | Skew risk | Industry default for maps | Hash, unordered |
-| **Weather teaching** | Rotation drills | Baseline invariant | "Why not RB in Python dict" | `station_id` lookup |
+| **Teaching fit** | Rotation drills | Baseline invariant | "Why not RB in Python dict" | `id` lookup |
 
 !!! note "Python `dict` uses hashing, not AVL"
-    CPython **`dict`** is a **hash table** (open addressing with perturbation). It does **not** keep keys in sorted order by comparison. For sorted maps in Python ecosystems, see **`sortedcontainers`**, **`bisect`** on a list, or databases with indexes.
+ CPython **`dict`** is a **hash table** (open addressing with perturbation). It does **not** keep keys in sorted order by comparison. For sorted maps in Python ecosystems, see **`sortedcontainers`**, **`bisect`** on a list, or databases with indexes.
 
 ---
 
@@ -75,18 +75,18 @@ from typing import Any, Iterator
 
 
 @dataclass(frozen=True, order=True)
-class DayStat:
-    day_of_year: int
-    station_id: str
-    temp_anomaly: float = 0.0
+class ScheduleEntry:
+ timestamp: int
+ task_id: str
+ weight: float = 0.0
 
 
 @dataclass
 class AVLNode:
-    key: Any
-    height: int = 1
-    left: AVLNode | None = None
-    right: AVLNode | None = None
+ key: Any
+ height: int = 1
+ left: AVLNode | None = None
+ right: AVLNode | None = None
 ```
 
 | | |
@@ -104,58 +104,58 @@ When left subtree is too tall (**LL** or **LR** case after rebalance at child).
 
 ```mermaid
 flowchart LR
-  subgraph before["Left-heavy"]
-    Y["y"]
-    X["x"]
-    T["T"]
-    Y --> X
-    Y --> Z["z"]
-    X --> T
-  end
-  subgraph after["After right_rotate(y)"]
-    X2["x"]
-    Y2["y"]
-    T2["T"]
-    X2 --> T2
-    X2 --> Y2
-    Y2 --> Z2["z"]
-  end
-  before --> after
+ subgraph before["Left-heavy"]
+ Y["y"]
+ X["x"]
+ T["T"]
+ Y --> X
+ Y --> Z["z"]
+ X --> T
+ end
+ subgraph after["After right_rotate(y)"]
+ X2["x"]
+ Y2["y"]
+ T2["T"]
+ X2 --> T2
+ X2 --> Y2
+ Y2 --> Z2["z"]
+ end
+ before --> after
 ```
 
 ```python
 def _height(node: AVLNode | None) -> int:
-    return 0 if node is None else node.height
+ return 0 if node is None else node.height
 
 
 def _update_height(node: AVLNode) -> None:
-    node.height = 1 + max(_height(node.left), _height(node.right))
+ node.height = 1 + max(_height(node.left), _height(node.right))
 
 
 def _balance_factor(node: AVLNode) -> int:
-    return _height(node.left) - _height(node.right)
+ return _height(node.left) - _height(node.right)
 
 
 def _right_rotate(y: AVLNode) -> AVLNode:
-    x = y.left
-    assert x is not None
-    t2 = x.right
-    x.right = y
-    y.left = t2
-    _update_height(y)
-    _update_height(x)
-    return x
+ x = y.left
+ assert x is not None
+ t2 = x.right
+ x.right = y
+ y.left = t2
+ _update_height(y)
+ _update_height(x)
+ return x
 
 
 def _left_rotate(x: AVLNode) -> AVLNode:
-    y = x.right
-    assert y is not None
-    t2 = y.left
-    y.left = x
-    x.right = t2
-    _update_height(x)
-    _update_height(y)
-    return y
+ y = x.right
+ assert y is not None
+ t2 = y.left
+ y.left = x
+ x.right = t2
+ _update_height(x)
+ _update_height(y)
+ return y
 ```
 
 | | |
@@ -176,29 +176,29 @@ Four cases from balance factor at node **z**:
 
 ```mermaid
 flowchart TD
-  I([insert/delete changed heights]) --> U[update height up the path]
-  U --> C{abs BF > 1?}
-  C -->|no| Done([done])
-  C -->|yes| LL{LL / LR / RR / RL}
-  LL --> R[apply 1–2 rotations]
-  R --> Done
+ I([insert/delete changed heights]) --> U[update height up the path]
+ U --> C{abs BF > 1?}
+ C -->|no| Done([done])
+ C -->|yes| LL{LL / LR / RR / RL}
+ LL --> R[apply 1–2 rotations]
+ R --> Done
 ```
 
 ```python
 def _rebalance(node: AVLNode) -> AVLNode:
-    _update_height(node)
-    bf = _balance_factor(node)
-    if bf > 1:
-        assert node.left is not None
-        if _balance_factor(node.left) < 0:
-            node.left = _left_rotate(node.left)
-        return _right_rotate(node)
-    if bf < -1:
-        assert node.right is not None
-        if _balance_factor(node.right) > 0:
-            node.right = _right_rotate(node.right)
-        return _left_rotate(node)
-    return node
+ _update_height(node)
+ bf = _balance_factor(node)
+ if bf > 1:
+ assert node.left is not None
+ if _balance_factor(node.left) < 0:
+ node.left = _left_rotate(node.left)
+ return _right_rotate(node)
+ if bf < -1:
+ assert node.right is not None
+ if _balance_factor(node.right) > 0:
+ node.right = _right_rotate(node.right)
+ return _left_rotate(node)
+ return node
 ```
 
 | | |
@@ -214,9 +214,9 @@ def _rebalance(node: AVLNode) -> AVLNode:
 
 ```python
 class AVLTree:
-    def __init__(self) -> None:
-        self.root: AVLNode | None = None
-        self._size = 0
+ def __init__(self) -> None:
+ self.root: AVLNode | None = None
+ self._size = 0
 
 tree = AVLTree()
 ```
@@ -226,14 +226,14 @@ tree = AVLTree()
 | **Time** | O(1) |
 | **Space** | O(1) |
 
-### 2. Insert sorted days — stays O(log n) per insert
+### 2. Insert sorted timestamps — stays O(log n) per insert
 
-Unlike plain BST, inserting days 1…365 in order keeps height logarithmic.
+Unlike plain BST, inserting timestamps 1…365 in order keeps height logarithmic.
 
 ```python
 tree = AVLTree()
-for d in range(1, 366):
-    tree.insert(DayStat(d, f"S{d}", d * 0.01))
+for t in range(1, 366):
+ tree.insert(ScheduleEntry(t, f"task{t}", t * 0.01))
 assert tree.height() <= 10
 ```
 
@@ -248,103 +248,103 @@ assert tree.height() <= 10
 
 ```python
 class AVLTree:
-    def __init__(self) -> None:
-        self.root: AVLNode | None = None
-        self._size = 0
+ def __init__(self) -> None:
+ self.root: AVLNode | None = None
+ self._size = 0
 
-    def __len__(self) -> int:
-        return self._size
+ def __len__(self) -> int:
+ return self._size
 
-    def is_empty(self) -> bool:
-        return self.root is None
+ def is_empty(self) -> bool:
+ return self.root is None
 
-    def height(self) -> int:
-        return _height(self.root)
+ def height(self) -> int:
+ return _height(self.root)
 
-    def search(self, key: Any) -> AVLNode | None:
-        cur = self.root
-        while cur is not None:
-            if key == cur.key:
-                return cur
-            cur = cur.left if key < cur.key else cur.right
-        return None
+ def search(self, key: Any) -> AVLNode | None:
+ cur = self.root
+ while cur is not None:
+ if key == cur.key:
+ return cur
+ cur = cur.left if key < cur.key else cur.right
+ return None
 
-    def contains(self, key: Any) -> bool:
-        return self.search(key) is not None
+ def contains(self, key: Any) -> bool:
+ return self.search(key) is not None
 
-    def insert(self, key: Any) -> None:
-        self.insert_strict(key)
+ def insert(self, key: Any) -> None:
+ self.insert_strict(key)
 
-    def insert_strict(self, key: Any) -> bool:
-        before = self._size
-        self.root = self._insert_rec_strict(self.root, key)
-        return self._size > before
+ def insert_strict(self, key: Any) -> bool:
+ before = self._size
+ self.root = self._insert_rec_strict(self.root, key)
+ return self._size > before
 
-    def _insert_rec_strict(self, node: AVLNode | None, key: Any) -> AVLNode:
-        if node is None:
-            self._size += 1
-            return AVLNode(key)
-        if key < node.key:
-            node.left = self._insert_rec_strict(node.left, key)
-        elif key > node.key:
-            node.right = self._insert_rec_strict(node.right, key)
-        return _rebalance(node)
+ def _insert_rec_strict(self, node: AVLNode | None, key: Any) -> AVLNode:
+ if node is None:
+ self._size += 1
+ return AVLNode(key)
+ if key < node.key:
+ node.left = self._insert_rec_strict(node.left, key)
+ elif key > node.key:
+ node.right = self._insert_rec_strict(node.right, key)
+ return _rebalance(node)
 
-    def delete(self, key: Any) -> bool:
-        self.root, deleted = self._delete_rec(self.root, key)
-        if deleted:
-            self._size -= 1
-        return deleted
+ def delete(self, key: Any) -> bool:
+ self.root, deleted = self._delete_rec(self.root, key)
+ if deleted:
+ self._size -= 1
+ return deleted
 
-    def _delete_rec(
-        self, node: AVLNode | None, key: Any
-    ) -> tuple[AVLNode | None, bool]:
-        if node is None:
-            return None, False
-        if key < node.key:
-            node.left, deleted = self._delete_rec(node.left, key)
-        elif key > node.key:
-            node.right, deleted = self._delete_rec(node.right, key)
-        else:
-            if node.left is None:
-                return node.right, True
-            if node.right is None:
-                return node.left, True
-            succ = self._min_node(node.right)
-            node.key = succ.key
-            node.right, _ = self._delete_rec(node.right, succ.key)
-            deleted = True
-        if node is None:
-            return None, deleted
-        return _rebalance(node), deleted
+ def _delete_rec(
+ self, node: AVLNode | None, key: Any
+ ) -> tuple[AVLNode | None, bool]:
+ if node is None:
+ return None, False
+ if key < node.key:
+ node.left, deleted = self._delete_rec(node.left, key)
+ elif key > node.key:
+ node.right, deleted = self._delete_rec(node.right, key)
+ else:
+ if node.left is None:
+ return node.right, True
+ if node.right is None:
+ return node.left, True
+ succ = self._min_node(node.right)
+ node.key = succ.key
+ node.right, _ = self._delete_rec(node.right, succ.key)
+ deleted = True
+ if node is None:
+ return None, deleted
+ return _rebalance(node), deleted
 
-    def _min_node(self, node: AVLNode) -> AVLNode:
-        while node.left is not None:
-            node = node.left
-        return node
+ def _min_node(self, node: AVLNode) -> AVLNode:
+ while node.left is not None:
+ node = node.left
+ return node
 
-    def inorder(self) -> list[Any]:
-        out: list[Any] = []
-        self._inorder_rec(self.root, out)
-        return out
+ def inorder(self) -> list[Any]:
+ out: list[Any] = []
+ self._inorder_rec(self.root, out)
+ return out
 
-    def _inorder_rec(self, node: AVLNode | None, out: list[Any]) -> None:
-        if node is None:
-            return
-        self._inorder_rec(node.left, out)
-        out.append(node.key)
-        self._inorder_rec(node.right, out)
+ def _inorder_rec(self, node: AVLNode | None, out: list[Any]) -> None:
+ if node is None:
+ return
+ self._inorder_rec(node.left, out)
+ out.append(node.key)
+ self._inorder_rec(node.right, out)
 
-    def inorder_iter(self) -> Iterator[Any]:
-        stack: list[AVLNode] = []
-        cur = self.root
-        while stack or cur is not None:
-            while cur is not None:
-                stack.append(cur)
-                cur = cur.left
-            cur = stack.pop()
-            yield cur.key
-            cur = cur.right
+ def inorder_iter(self) -> Iterator[Any]:
+ stack: list[AVLNode] = []
+ cur = self.root
+ while stack or cur is not None:
+ while cur is not None:
+ stack.append(cur)
+ cur = cur.left
+ cur = stack.pop()
+ yield cur.key
+ cur = cur.right
 ```
 
 | | |
@@ -354,18 +354,18 @@ class AVLTree:
 
 ---
 
-## Operations with weather examples
+## Operations with ordered-map examples
 
-### Insert daily stats in sorted order
+### Insert scheduler entries in sorted order
 
 ```python
 tree = AVLTree()
-for day in range(1, 366):
-    tree.insert_strict(DayStat(day, "STN01", day * 0.025))
+for ts in range(1, 366):
+ tree.insert_strict(ScheduleEntry(ts, "task01", ts * 0.025))
 assert len(tree) == 365
 assert tree.height() <= 10
-ordered_days = [k.day_of_year for k in tree.inorder()]
-assert ordered_days == list(range(1, 366))
+ordered_ts = [k.timestamp for k in tree.inorder()]
+assert ordered_ts == list(range(1, 366))
 ```
 
 | | |
@@ -375,29 +375,29 @@ assert ordered_days == list(range(1, 366))
 
 ```mermaid
 sequenceDiagram
-  participant Feed as daily CSV
-  participant AVL as AVLTree
-  Feed->>AVL: insert D1..D365 in order
-  loop each insert
-    AVL->>AVL: descend O(log n)
-    AVL->>AVL: rebalance with 0–1 rotations
-  end
-  AVL-->>Feed: height O(log n) not 365
+ participant Feed as event stream
+ participant AVL as AVLTree
+ Feed->>AVL: insert T1..T365 in order
+ loop each insert
+ AVL->>AVL: descend O(log n)
+ AVL->>AVL: rebalance with 0–1 rotations
+ end
+ AVL-->>Feed: height O(log n) not 365
 ```
 
 ---
 
-### Search / delete — drop station day after sensor offline
+### Search / delete — remove cancelled task from scheduler
 
 ```python
 tree = AVLTree()
-for d in [3, 1, 4, 2, 5]:
-    tree.insert_strict(DayStat(d, "STN07", d * 0.4))
+for t in [3, 1, 4, 2, 5]:
+ tree.insert_strict(ScheduleEntry(t, "task07", t * 0.4))
 
-assert tree.contains(DayStat(4, "STN07"))
-tree.delete(DayStat(4, "STN07"))
-assert not tree.contains(DayStat(4, "STN07"))
-assert [k.day_of_year for k in tree.inorder()] == [1, 2, 3, 5]
+assert tree.contains(ScheduleEntry(4, "task07"))
+tree.delete(ScheduleEntry(4, "task07"))
+assert not tree.contains(ScheduleEntry(4, "task07"))
+assert [k.timestamp for k in tree.inorder()] == [1, 2, 3, 5]
 ```
 
 | | |
@@ -407,17 +407,17 @@ assert [k.day_of_year for k in tree.inorder()] == [1, 2, 3, 5]
 
 ---
 
-### Inorder — chronological day report
+### Inorder — chronological scheduler report
 
 Same as BST: **inorder** yields sorted keys.
 
 ```python
 tree = AVLTree()
-stats = [DayStat(150, "A", 0.9), DayStat(60, "B", 1.1), DayStat(240, "C", 0.7)]
+stats = [ScheduleEntry(150, "A", 0.9), ScheduleEntry(60, "B", 1.1), ScheduleEntry(240, "C", 0.7)]
 for s in stats:
-    tree.insert_strict(s)
+ tree.insert_strict(s)
 for s in tree.inorder_iter():
-    print(f"Day {s.day_of_year}: {s.temp_anomaly:+.1f}°C")
+ print(f"t={s.timestamp}: weight {s.weight:.1f}")
 ```
 
 | | |
@@ -427,35 +427,35 @@ for s in tree.inorder_iter():
 
 ---
 
-## Weather application: balanced live anomaly index
+## Application: balanced task scheduler index
 
 ```python
-class DailyAnomalyIndex:
-    def __init__(self) -> None:
-        self._tree = AVLTree()
+class TaskScheduleIndex:
+ def __init__(self) -> None:
+ self._tree = AVLTree()
 
-    def record(self, day_of_year: int, station_id: str, temp_anomaly: float) -> None:
-        self._tree.insert_strict(DayStat(day_of_year, station_id, temp_anomaly))
+ def schedule(self, timestamp: int, task_id: str, weight: float) -> None:
+ self._tree.insert_strict(ScheduleEntry(timestamp, task_id, weight))
 
-    def days_for_station(self, station_id: str) -> list[DayStat]:
-        return [k for k in self._tree.inorder() if k.station_id == station_id]
+ def tasks_for_id(self, task_id: str) -> list[ScheduleEntry]:
+ return [k for k in self._tree.inorder() if k.task_id == task_id]
 
-    def report_through_day(self, max_day: int) -> list[DayStat]:
-        return [k for k in self._tree.inorder() if k.day_of_year <= max_day]
+ def report_through(self, max_ts: int) -> list[ScheduleEntry]:
+ return [k for k in self._tree.inorder() if k.timestamp <= max_ts]
 
 
-idx = DailyAnomalyIndex()
-for d in range(1, 11):
-    idx.record(d, "STN10", d * 0.08)
-through = idx.report_through_day(5)
+idx = TaskScheduleIndex()
+for t in range(1, 11):
+ idx.schedule(t, "task10", t * 0.08)
+through = idx.report_through(5)
 assert len(through) == 5
 assert idx._tree.height() <= 5
 ```
 
 | Operation | Time | Space |
 | --- | --- | --- |
-| `record` | O(log n) | O(1) |
-| `report_through_day` | O(n) scan | O(output) |
+| `schedule` | O(log n) | O(1) |
+| `report_through` | O(n) scan | O(output) |
 
 ---
 
@@ -467,7 +467,7 @@ assert idx._tree.height() <= 5
 | Rotations on insert | Often more | Often fewer |
 | Lookup | Fewer compares (shorter) | Slightly more |
 | Typical use | Databases (some), teaching | `std::map`, Java `TreeMap` |
-| Weather analogy | Precise sensor priority queue with strict fairness | High-volume observation index |
+| Ordered-map analogy | Strict scheduler with fairness guarantees | High-volume symbol-table index |
 
 ---
 
@@ -490,14 +490,14 @@ assert idx._tree.height() <= 5
 
 ```mermaid
 flowchart TD
-  Q([Need sorted map?])
-  Q --> G{Guaranteed worst-case log?}
-  G -->|yes| W{Write-heavy?}
-  W -->|no lookup-heavy| AVL["AVL tree"]
-  W -->|yes| RB["Red–black tree"]
-  G -->|no| BST["BST if random input"]
-  Q --> H{Python production?}
-  H -->|yes| D["dict / DB / sortedcontainers"]
+ Q([Need sorted map?])
+ Q --> G{Guaranteed worst-case log?}
+ G -->|yes| W{Write-heavy?}
+ W -->|no lookup-heavy| AVL["AVL tree"]
+ W -->|yes| RB["Red–black tree"]
+ G -->|no| BST["BST if random input"]
+ Q --> H{Python production?}
+ H -->|yes| D["dict / DB / sortedcontainers"]
 ```
 
 ---
@@ -530,9 +530,9 @@ flowchart TD
 
 ```python
 tree = AVLTree()
-tree.insert_strict(DayStat(150, "STN01", 2.8))
-tree.search(DayStat(150, "STN01"))
-tree.delete(DayStat(150, "STN01"))
+tree.insert_strict(ScheduleEntry(150, "task01", 2.8))
+tree.search(ScheduleEntry(150, "task01"))
+tree.delete(ScheduleEntry(150, "task01"))
 list(tree.inorder_iter())
 tree.height()
 ```

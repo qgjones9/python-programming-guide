@@ -7,32 +7,32 @@ A **graph** is a set of **vertices** (nodes) and **edges** (links). Edges may be
 | **What it is** | G = (V, E); vertices are entities, edges are connections with optional weight. |
 | **Representations** | Adjacency list (sparse), adjacency matrix (dense), edge list (compact storage). |
 | **Core algorithms** | BFS, DFS, topological sort, shortest paths, minimum spanning tree, connected components. |
-| **When to use** | Station networks, pipeline dependencies, travel between observatories, forecast state transitions. |
+| **When to use** | Social graphs, service dependencies, URL routing, CDN topology, job pipeline state machines. |
 
-In **daily weather data analysis**, graphs appear as **station relationship networks** (who shares a mesonet link), **climate-region connectivity**, **office reporting lines**, and **pipeline state transitions** (raw → QC → derived). You will still aggregate stats in **pandas**—graphs excel when the question is **reachability**, **shortest path**, or **connectivity**.
+In **application code**, graphs appear as **social follow networks**, **microservice dependency DAGs**, **org reporting lines**, and **pipeline state transitions** (pending → running → done). You will still aggregate stats in **SQL** or **pandas**—graphs excel when the question is **reachability**, **shortest path**, or **connectivity**.
 
-This page is your **ready reference**: representations, a complete Python adjacency-list implementation, traversals with Mermaid, every common operation with daily weather examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: representations, a complete Python adjacency-list implementation, traversals with Mermaid, every common operation with practical examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How graphs fit daily weather analysis
+## Practical applications
 
-| Weather idea | Graph model | Typical algorithm |
+| Use case | Graph model | Typical algorithm |
 | --- | --- | --- |
-| **Mesonet links** | Vertices = stations; edge = shared data feed | Degree count, neighbor lists |
-| **Office hierarchy** | Directed tree | DFS, topological order |
-| **Travel: SEA → PDX** | Weighted cities | Dijkstra / A* |
-| **Pattern similarity chain** | Directed edges “next likely regime” | BFS layers |
-| **Climate-region connectivity** | Undirected stations in same region component | Union-Find / DFS |
-| **Correlated station pairs** | Undirected unweighted | Set of edges |
+| **Social follows** | Vertices = users; edge = follows | Degree count, neighbor lists |
+| **Org hierarchy** | Directed tree | DFS, topological order |
+| **Route: NYC → LAX** | Weighted cities | Dijkstra / A* |
+| **State machine** | Directed edges "next allowed state" | BFS layers |
+| **Connected components** | Undirected users in same cluster | Union-Find / DFS |
+| **Mutual connections** | Undirected unweighted | Set of edges |
 
 ```mermaid
 flowchart LR
-  SEA["SEA"] --- PDX["PDX"]
-  SEA --- SFO["SFO"]
-  PDX --- BOI["BOI"]
+  A["alice"] --- B["bob"]
+  A --- C["carol"]
+  B --- D["dave"]
 ```
 
 Throughout: **V** = \|vertices\|, **E** = \|edges\|, **deg(v)** = degree of vertex v.
@@ -41,14 +41,14 @@ Throughout: **V** = \|vertices\|, **E** = \|edges\|, **deg(v)** = degree of vert
 
 ## Graph types
 
-| Type | Edge direction | Weight | Weather example |
+| Type | Edge direction | Weight | Example |
 | --- | --- | --- | --- |
-| Undirected | Both ways | Optional | Mutual mesonet neighbor |
-| Directed | One way | Optional | Office → field station |
-| Weighted | Either | On edge | Miles between observatories |
+| Undirected | Both ways | Optional | Mutual social connection |
+| Directed | One way | Optional | Manager → report |
+| Weighted | Either | On edge | Latency between datacenters |
 | Unweighted | Either | 1 | Linked in same ingest batch |
 | Acyclic DAG | Directed, no cycles | — | Pipeline prerequisite tree |
-| Bipartite | Two partitions | — | Stations vs observation events |
+| Bipartite | Two partitions | — | Users vs events |
 
 ---
 
@@ -56,18 +56,18 @@ Throughout: **V** = \|vertices\|, **E** = \|edges\|, **deg(v)** = degree of vert
 
 | Representation | Space | Edge query (u,v)? | Neighbors of u | Best when |
 | --- | --- | --- | --- | --- |
-| **Adjacency list** | O(V + E) | O(deg(u)) scan | O(deg(u)) | Sparse station networks |
-| **Adjacency matrix** | O(V²) | O(1) | O(V) | Dense tiny V (regional mesh still OK) |
+| **Adjacency list** | O(V + E) | O(deg(u)) scan | O(deg(u)) | Sparse social networks |
+| **Adjacency matrix** | O(V²) | O(1) | O(V) | Dense tiny V (small cluster mesh) |
 | **Edge list** | O(E) | O(E) | O(E) | Kruskal MST, storage |
 
 ```mermaid
 flowchart TB
-  subgraph list["Adjacency list for SEA"]
-    SEA2["SEA → PDX, SFO, BOI"]
+  subgraph list["Adjacency list for alice"]
+    A2["alice → bob, carol, dave"]
   end
   subgraph matrix["Matrix snippet"]
-    M["M[SEA][PDX] = 1"]
-  end
+    M["M[alice][bob] = 1"]
+ end
 ```
 
 ---
@@ -84,18 +84,18 @@ graph = {}
 
 ```python
 class Graph:
-    def __init__(self, directed=False):
-        self.directed = directed
-        self.adj = {}
+ def __init__(self, directed=False):
+ self.directed = directed
+ self.adj = {}
 ```
 
-### 3. From edge list — mesonet links
+### 3. From edge list — social follows
 
 ```python
 edges = [
-    ("SEA", "PDX"),
-    ("PDX", "BOI"),
-    ("SEA", "SFO"),
+ ("alice", "bob"),
+ ("bob", "dave"),
+ ("alice", "carol"),
 ]
 g = Graph.from_edges(edges, directed=False)
 ```
@@ -109,9 +109,9 @@ g = Graph.from_edges(edges, directed=False)
 
 ```python
 g = Graph.from_adjacency({
-    "SEA": ["PDX", "SFO"],
-    "PDX": ["SEA"],
-    "SFO": ["SEA"],
+ "alice": ["bob", "carol"],
+ "bob": ["alice"],
+ "carol": ["alice"],
 })
 ```
 
@@ -119,7 +119,7 @@ g = Graph.from_adjacency({
 
 ```python
 wg = WeightedGraph()
-wg.add_edge("SEA", "PDX", weight=175)
+wg.add_edge("nyc", "lax", weight=175)
 ```
 
 ---
@@ -133,125 +133,125 @@ from dataclasses import dataclass
 
 @dataclass
 class Edge:
-    u: str
-    v: str
-    weight: float = 1.0
+ u: str
+ v: str
+ weight: float = 1.0
 
 
 class Graph:
-    def __init__(self, directed=False):
-        self.directed = directed
-        self.adj = {}
+ def __init__(self, directed=False):
+ self.directed = directed
+ self.adj = {}
 
-    @classmethod
-    def from_edges(cls, edges, directed=False):
-        g = cls(directed=directed)
-        for u, v in edges:
-            g.add_edge(u, v)
-        return g
+ @classmethod
+ def from_edges(cls, edges, directed=False):
+ g = cls(directed=directed)
+ for u, v in edges:
+ g.add_edge(u, v)
+ return g
 
-    @classmethod
-    def from_adjacency(cls, adj, directed=False):
-        g = cls(directed=directed)
-        g.adj = {u: list(neighbors) for u, neighbors in adj.items()}
-        for u in adj:
-            g.adj.setdefault(u, [])
-            for v in adj[u]:
-                g.adj.setdefault(v, [])
-        return g
+ @classmethod
+ def from_adjacency(cls, adj, directed=False):
+ g = cls(directed=directed)
+ g.adj = {u: list(neighbors) for u, neighbors in adj.items()}
+ for u in adj:
+ g.adj.setdefault(u, [])
+ for v in adj[u]:
+ g.adj.setdefault(v, [])
+ return g
 
-    def add_vertex(self, v):
-        self.adj.setdefault(v, [])
+ def add_vertex(self, v):
+ self.adj.setdefault(v, [])
 
-    def add_edge(self, u, v):
-        self.add_vertex(u)
-        self.add_vertex(v)
-        self.adj[u].append(v)
-        if not self.directed:
-            self.adj[v].append(u)
-        else:
-            self.adj.setdefault(v, [])
+ def add_edge(self, u, v):
+ self.add_vertex(u)
+ self.add_vertex(v)
+ self.adj[u].append(v)
+ if not self.directed:
+ self.adj[v].append(u)
+ else:
+ self.adj.setdefault(v, [])
 
-    def neighbors(self, v):
-        return self.adj.get(v, [])
+ def neighbors(self, v):
+ return self.adj.get(v, [])
 
-    def vertices(self):
-        return list(self.adj.keys())
+ def vertices(self):
+ return list(self.adj.keys())
 
-    def edges_undirected_count(self):
-        return sum(len(nbs) for nbs in self.adj.values()) // (
-            1 if self.directed else 2
-        )
+ def edges_undirected_count(self):
+ return sum(len(nbs) for nbs in self.adj.values()) // (
+ 1 if self.directed else 2
+ )
 
-    def bfs(self, start):
-        order = []
-        seen = {start}
-        q = deque([start])
-        while q:
-            v = q.popleft()
-            order.append(v)
-            for w in self.neighbors(v):
-                if w not in seen:
-                    seen.add(w)
-                    q.append(w)
-        return order
+ def bfs(self, start):
+ order = []
+ seen = {start}
+ q = deque([start])
+ while q:
+ v = q.popleft()
+ order.append(v)
+ for w in self.neighbors(v):
+ if w not in seen:
+ seen.add(w)
+ q.append(w)
+ return order
 
-    def dfs(self, start):
-        order = []
-        seen = set()
+ def dfs(self, start):
+ order = []
+ seen = set()
 
-        def visit(v):
-            seen.add(v)
-            order.append(v)
-            for w in self.neighbors(v):
-                if w not in seen:
-                    visit(w)
+ def visit(v):
+ seen.add(v)
+ order.append(v)
+ for w in self.neighbors(v):
+ if w not in seen:
+ visit(w)
 
-        visit(start)
-        return order
+ visit(start)
+ return order
 
-    def connected_components(self):
-        seen = set()
-        comps = []
-        for v in self.vertices():
-            if v in seen:
-                continue
-            comp = self.bfs(v)
-            comps.append(comp)
-            seen.update(comp)
-        return comps
+ def connected_components(self):
+ seen = set()
+ comps = []
+ for v in self.vertices():
+ if v in seen:
+ continue
+ comp = self.bfs(v)
+ comps.append(comp)
+ seen.update(comp)
+ return comps
 
-    def has_path(self, src, dst):
-        return dst in set(self.bfs(src))
+ def has_path(self, src, dst):
+ return dst in set(self.bfs(src))
 
 
 class WeightedGraph:
-    def __init__(self, directed=False):
-        self.directed = directed
-        self.adj = {}
+ def __init__(self, directed=False):
+ self.directed = directed
+ self.adj = {}
 
-    def add_edge(self, u, v, weight=1.0):
-        self.adj.setdefault(u, []).append((v, weight))
-        if not self.directed:
-            self.adj.setdefault(v, []).append((u, weight))
-        else:
-            self.adj.setdefault(v, [])
+ def add_edge(self, u, v, weight=1.0):
+ self.adj.setdefault(u, []).append((v, weight))
+ if not self.directed:
+ self.adj.setdefault(v, []).append((u, weight))
+ else:
+ self.adj.setdefault(v, [])
 
-    def dijkstra(self, src):
-        import heapq
+ def dijkstra(self, src):
+ import heapq
 
-        dist = {src: 0.0}
-        pq = [(0.0, src)]
-        while pq:
-            d, u = heapq.heappop(pq)
-            if d > dist.get(u, float("inf")):
-                continue
-            for v, w in self.adj.get(u, []):
-                nd = d + w
-                if nd < dist.get(v, float("inf")):
-                    dist[v] = nd
-                    heapq.heappush(pq, (nd, v))
-        return dist
+ dist = {src: 0.0}
+ pq = [(0.0, src)]
+ while pq:
+ d, u = heapq.heappop(pq)
+ if d > dist.get(u, float("inf")):
+ continue
+ for v, w in self.adj.get(u, []):
+ nd = d + w
+ if nd < dist.get(v, float("inf")):
+ dist[v] = nd
+ heapq.heappush(pq, (nd, v))
+ return dist
 ```
 
 | | |
@@ -266,13 +266,13 @@ class WeightedGraph:
 
 ```mermaid
 flowchart TB
-  S["Start SEA"] --> L1["PDX, SFO"]
-  L1 --> L2["BOI via PDX"]
+ S["Start alice"] --> L1["bob, carol"]
+ L1 --> L2["dave via bob"]
 ```
 
 ```python
-network = Graph.from_edges([("SEA", "PDX"), ("PDX", "BOI"), ("SEA", "SFO")])
-order = network.bfs("SEA")
+network = Graph.from_edges([("alice", "bob"), ("bob", "dave"), ("alice", "carol")])
+order = network.bfs("alice")
 ```
 
 | | |
@@ -280,7 +280,7 @@ order = network.bfs("SEA")
 | **Time** | O(V + E) |
 | **Space** | O(V) queue + seen |
 
-**Weather use:** fewest **hops** in a mesonet graph; dashboard “stations within 2 degrees of SEA.”
+**Use case:** fewest **hops** in a social graph; dashboard "users within 2 degrees of alice."
 
 ---
 
@@ -290,15 +290,15 @@ order = network.bfs("SEA")
 
 ```mermaid
 flowchart TB
-  HQ --> REGION --> FIELD --> SENSOR
-  HQ --> OTHER
+ CEO --> VP --> MGR --> IC
+ HQ --> OTHER
 ```
 
 ```python
 org_tree = Graph(directed=True)
-org_tree.add_edge("HQ", "REGION")
-org_tree.add_edge("REGION", "FIELD")
-order = org_tree.dfs("HQ")
+org_tree.add_edge("CEO", "VP")
+org_tree.add_edge("VP", "MGR")
+order = org_tree.dfs("CEO")
 ```
 
 | | |
@@ -306,7 +306,7 @@ order = org_tree.dfs("HQ")
 | **Time** | O(V + E) |
 | **Space** | O(V) stack (recursion or explicit) |
 
-**Weather use:** detect cycles in dependency graph; enumerate office subtree.
+**Use case:** detect cycles in dependency graph; enumerate office subtree.
 
 ---
 
@@ -317,28 +317,28 @@ order = org_tree.dfs("HQ")
 | **Structure** | Queue | Stack / recursion |
 | **Shortest unweighted path** | Yes | No |
 | **Memory on wide graph** | Can be large frontier | Linear path depth |
-| **Weather metaphor** | Ripple through mesonet | Drill into one branch |
+| **Analogy** | Ripple through social network | Drill into one branch |
 
 ```mermaid
 sequenceDiagram
-  participant Analyst
-  participant G as station network
-  Analyst->>G: BFS from SEA
-  G-->>Analyst: layer 1 neighbors
-  G-->>Analyst: layer 2 neighbors
-  Analyst->>G: DFS from HQ
-  G-->>Analyst: deep org chain first
+ participant Analyst
+ participant G as social graph
+ App->>G: BFS from alice
+ G-->>Analyst: layer 1 neighbors
+ G-->>Analyst: layer 2 neighbors
+ App->>G: DFS from CEO
+ G-->>Analyst: deep org chain first
 ```
 
 ---
 
-## All operations (weather examples + complexity)
+## All operations (practical examples + complexity)
 
 ### `add_vertex` / `add_edge`
 
 ```python
 g = Graph()
-g.add_edge("SEA", "PDX")
+g.add_edge("alice", "bob")
 ```
 
 | | |
@@ -346,7 +346,7 @@ g.add_edge("SEA", "PDX")
 | **Time** | O(1) amortized append |
 | **Space** | O(1) new edge storage |
 
-### `neighbors(v)` — neighbors of SEA
+### `neighbors(v)` — neighbors of alice
 
 | | |
 | --- | --- |
@@ -368,7 +368,7 @@ comps = network.connected_components()
 | **Time** | O(V + E) |
 | **Space** | O(V) |
 
-### `has_path` — can we reach PDX from SEA?
+### `has_path` — can we reach dave from alice?
 
 | | |
 | --- | --- |
@@ -378,8 +378,8 @@ comps = network.connected_components()
 ### Dijkstra — weighted travel
 
 ```python
-dist = wg.dijkstra("SEA")
-miles_to_pdx = dist.get("PDX", float("inf"))
+dist = wg.dijkstra("nyc")
+latency_to_lax = dist.get("lax", float("inf"))
 ```
 
 | | |
@@ -389,19 +389,19 @@ miles_to_pdx = dist.get("PDX", float("inf"))
 
 ---
 
-## Weather application: station relationship graph
+## Application: social relationship graph
 
-Vertices = stations; undirected edge if they share a mesonet link in the catalog.
+Vertices = users; undirected edge if they are mutual connections.
 
 ```python
-def build_network_graph(links):
+def build_social_graph(links):
     g = Graph(directed=False)
     for row in links:
-        g.add_edge(row["station_a"], row["station_b"])
+        g.add_edge(row["user_a"], row["user_b"])
     return g
 
-g = build_network_graph(mesonet_rows)
-sea_neighbors = g.neighbors("SEA")
+g = build_social_graph(connection_rows)
+alice_neighbors = g.neighbors("alice")
 ```
 
 | | |
@@ -411,15 +411,15 @@ sea_neighbors = g.neighbors("SEA")
 
 ---
 
-## Weather application: pipeline state machine (directed)
+## Application: pipeline state machine (directed)
 
-Vertices = `(stage, bucket)`; edge = allowed transition after QC step.
+Vertices = `(stage, status)`; edge = allowed transition after a step completes.
 
 ```python
 pipeline = Graph(directed=True)
-pipeline.add_edge(("raw", "ok"), ("qc", "pending"))
-pipeline.add_edge(("qc", "pending"), ("derived", "ready"))
-path_exists = pipeline.has_path(("raw", "ok"), ("derived", "ready"))
+pipeline.add_edge(("pending", "ok"), ("running", "active"))
+pipeline.add_edge(("running", "active"), ("done", "success"))
+path_exists = pipeline.has_path(("pending", "ok"), ("done", "success"))
 ```
 
 ---
@@ -430,22 +430,22 @@ When edges mean “stage A before stage B” in a teaching DAG:
 
 ```python
 def topological_sort(g):
-    indeg = {v: 0 for v in g.vertices()}
-    for u in g.vertices():
-        for w in g.neighbors(u):
-            indeg[w] = indeg.get(w, 0) + 1
-    q = deque([v for v, d in indeg.items() if d == 0])
-    order = []
-    while q:
-        v = q.popleft()
-        order.append(v)
-        for w in g.neighbors(v):
-            indeg[w] -= 1
-            if indeg[w] == 0:
-                q.append(w)
-    if len(order) != len(indeg):
-        raise ValueError("cycle in graph")
-    return order
+ indeg = {v: 0 for v in g.vertices()}
+ for u in g.vertices():
+ for w in g.neighbors(u):
+ indeg[w] = indeg.get(w, 0) + 1
+ q = deque([v for v, d in indeg.items() if d == 0])
+ order = []
+ while q:
+ v = q.popleft()
+ order.append(v)
+ for w in g.neighbors(v):
+ indeg[w] -= 1
+ if indeg[w] == 0:
+ q.append(w)
+ if len(order) != len(indeg):
+ raise ValueError("cycle in graph")
+ return order
 ```
 
 | | |
@@ -468,11 +468,11 @@ def topological_sort(g):
 import networkx as nx
 
 G = nx.Graph()
-G.add_edge("SEA", "PDX")
-nx.shortest_path(G, "SEA", "BOI")
+G.add_edge("alice", "bob")
+nx.shortest_path(G, "alice", "dave")
 ```
 
-**Rule of thumb:** learn with **`Graph` class** above; use **networkx** for centrality, community detection, and large weather-network studies.
+**Rule of thumb:** learn with **`Graph` class** above; use **networkx** for centrality, community detection, and large network studies.
 
 ---
 
@@ -491,25 +491,25 @@ nx.shortest_path(G, "SEA", "BOI")
 
 ---
 
-## When to pick which representation (weather context)
+## When to pick which representation (practical context)
 
 ```mermaid
 flowchart TD
-  Q([Relationship query?])
-  Q --> S{Sparse E vs regional mesh?}
-  S -->|sparse| AL["Adjacency list"]
-  S -->|need all-pairs| AM["Matrix V×V"]
-  Q --> P{Shortest path weighted?}
-  P -->|yes| D["WeightedGraph + Dijkstra"]
-  P -->|no| B["BFS unweighted"]
+ Q([Relationship query?])
+ Q --> S{Sparse E vs dense mesh?}
+ S -->|sparse| AL["Adjacency list"]
+ S -->|need all-pairs| AM["Matrix V×V"]
+ Q --> P{Shortest path weighted?}
+ P -->|yes| D["WeightedGraph + Dijkstra"]
+ P -->|no| B["BFS unweighted"]
 ```
 
 | Scenario | Best tool |
 | --- | --- |
-| Regional mesonet edges | Adjacency list |
-| All-pairs small region | V×V matrix OK |
-| Office tree | Directed DFS |
-| Observatory miles | Weighted + Dijkstra |
+| Sparse social edges | Adjacency list |
+| All-pairs small cluster | V×V matrix OK |
+| Org tree | Directed DFS |
+| Datacenter latency | Weighted + Dijkstra |
 
 ---
 
@@ -541,7 +541,7 @@ flowchart TD
 
 ```python
 g = Graph()
-g = Graph.from_edges([("SEA", "PDX")], directed=False)
+g = Graph.from_edges([("alice", "bob")], directed=False)
 
 g.add_edge(u, v)
 g.neighbors(v)
@@ -555,12 +555,12 @@ wg.add_edge(u, v, weight=1.0)
 wg.dijkstra(src)
 ```
 
-Use a **graph** when weather questions are about **connections and paths**, not column means—use **pandas** for aggregations, **graphs** for topology.
+Use a **graph** when questions are about **connections and paths**, not column means—use **SQL** or **pandas** for aggregations, **graphs** for topology.
 
-**Weather pipeline checklist**
+**Implementation checklist**
 
-1. **Default** — Tabular readings in pandas; aggregates via `groupby`.
-2. **Reachability / hops** — Adjacency list + BFS on station mesh.
-3. **Weighted routes** — `WeightedGraph` + Dijkstra for miles or latency.
-4. **Pipeline order** — DAG + topological sort for stage dependencies.
+1. **Default** — Tabular records in SQL or pandas; aggregates via `groupby`.
+2. **Reachability / hops** — Adjacency list + BFS on social or CDN mesh.
+3. **Weighted routes** — `WeightedGraph` + Dijkstra for latency or distance.
+4. **Pipeline order** — DAG + topological sort for build dependencies.
 5. **Large networks** — Learn with `Graph` class; ship **networkx** for production metrics.

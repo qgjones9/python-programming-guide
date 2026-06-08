@@ -1,6 +1,6 @@
 # Honorable mention ADT
 
-Classic **abstract data types** that appear in DSA courses, interviews, and production systems but do not have a dedicated subpage in this guide’s main table. This page collects **mini ready-references**—each with weather-data analysis use, Python code, complexity, and pitfalls.
+Classic **abstract data types** that appear in DSA courses, interviews, and production systems but do not have a dedicated subpage in this guide’s main table. This page collects **mini ready-references**—each with a systems use case, Python code, complexity, and pitfalls.
 
 | | |
 | --- | --- |
@@ -32,59 +32,59 @@ For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 | | |
 | --- | --- |
 | **What it is** | Each element has a parent pointer; `find(x)` returns set representative; `union(a,b)` merges sets. |
-| **When to use** | Dynamic **connectivity**, Kruskal MST, “same climate region component?” |
-| **Weather fit** | Stations in the **same connected sensor network**; merge regional groupings; detect if two sites share a data-pipeline cluster after merges. |
+| **When to use** | Dynamic **connectivity**, Kruskal MST, “same network component?” |
+| **Systems fit** | Hosts in the **same connected cluster**; merge peer groupings; detect if two nodes share a routing partition after merges. |
 
-### Weather application: regional connectivity
+### Application: network connectivity
 
-Vertices = weather stations; union stations when they share a telemetry link (or same climate-zone tag).
+Vertices = hosts or routers; union nodes when they share a network link (or same cluster tag).
 
 ```python
 class UnionFind:
-    def __init__(self, items: list[str]) -> None:
-        self.parent = {x: x for x in items}
-        self.rank = {x: 0 for x in items}
+ def __init__(self, items: list[str]) -> None:
+ self.parent = {x: x for x in items}
+ self.rank = {x: 0 for x in items}
 
-    def find(self, x: str) -> str:
-        while self.parent[x] != x:
-            self.parent[x] = self.parent[self.parent[x]]
-            x = self.parent[x]
-        return x
+ def find(self, x: str) -> str:
+ while self.parent[x] != x:
+ self.parent[x] = self.parent[self.parent[x]]
+ x = self.parent[x]
+ return x
 
-    def union(self, a: str, b: str) -> bool:
-        ra, rb = self.find(a), self.find(b)
-        if ra == rb:
-            return False
-        if self.rank[ra] < self.rank[rb]:
-            ra, rb = rb, ra
-        self.parent[rb] = ra
-        if self.rank[ra] == self.rank[rb]:
-            self.rank[ra] += 1
-        return True
+ def union(self, a: str, b: str) -> bool:
+ ra, rb = self.find(a), self.find(b)
+ if ra == rb:
+ return False
+ if self.rank[ra] < self.rank[rb]:
+ ra, rb = rb, ra
+ self.parent[rb] = ra
+ if self.rank[ra] == self.rank[rb]:
+ self.rank[ra] += 1
+ return True
 
-    def connected(self, a: str, b: str) -> bool:
-        return self.find(a) == self.find(b)
+ def connected(self, a: str, b: str) -> bool:
+ return self.find(a) == self.find(b)
 
 
-uf = UnionFind(["SEA", "PDX", "SFO", "LAX"])
-uf.union("SEA", "PDX")
-uf.union("SFO", "LAX")
-assert uf.connected("SEA", "PDX")
-assert not uf.connected("SEA", "LAX")
+uf = UnionFind(["host-a", "host-b", "host-c", "host-d"])
+uf.union("host-a", "host-b")
+uf.union("host-c", "host-d")
+assert uf.connected("host-a", "host-b")
+assert not uf.connected("host-a", "host-d")
 ```
 
 ```mermaid
 flowchart TB
-  subgraph before["Before union SEA–PDX"]
-    A["{SEA}"]
-    B["{PDX}"]
-    C["{SFO,LAX}"]
-  end
-  subgraph after["After union"]
-    D["{SEA,PDX}"]
-    E["{SFO,LAX}"]
-  end
-  before --> after
+ subgraph before["Before union host-a–host-b"]
+ A["{host-a}"]
+ B["{host-b}"]
+ C["{host-c,host-d}"]
+ end
+ subgraph after["After union"]
+ D["{host-a,host-b}"]
+ E["{host-c,host-d}"]
+ end
+ before --> after
 ```
 
 | Operation | Time (amortized) | Space |
@@ -93,7 +93,7 @@ flowchart TB
 | `union` | O(α(n)) | O(1) |
 | Build from E edges | O(E α(V)) | O(V) |
 
-**α(n)** is so slow-growing it is effectively a small constant for any realistic weather network **V ≤ 10³** or national archive **V ≤ 10⁴**.
+**α(n)** is so slow-growing it is effectively a small constant for any realistic network **V ≤ 10³** or large cluster **V ≤ 10⁴**.
 
 ### Pitfalls (Union-Find)
 
@@ -116,53 +116,53 @@ A **Bloom filter** is a **compact** bit array plus **k** hash functions. It supp
 | | |
 | --- | --- |
 | **What it is** | Approximate set membership in O(k) bit ops; cannot delete without variants. |
-| **When to use** | “Probably seen this `reading_id` before” with tiny RAM; pre-filter before disk. |
-| **Weather fit** | Stream millions of hourly observations: skip disk lookup if filter says **definitely not** indexed. |
+| **When to use** | “Probably seen this `event_id` before” with tiny RAM; pre-filter before disk. |
+| **Systems fit** | Stream millions of event IDs: skip disk lookup if filter says **definitely not** indexed. |
 
-### Weather application: reading-id prefilter
+### Application: event-id prefilter
 
 ```python
 import hashlib
 
 
 class BloomFilter:
-    def __init__(self, size: int = 1 << 20, num_hashes: int = 7) -> None:
-        self.size = size
-        self.num_hashes = num_hashes
-        self.bits = bytearray((size + 7) // 8)
+ def __init__(self, size: int = 1 << 20, num_hashes: int = 7) -> None:
+ self.size = size
+ self.num_hashes = num_hashes
+ self.bits = bytearray((size + 7) // 8)
 
-    def _hashes(self, key: str) -> list[int]:
-        digests = []
-        for i in range(self.num_hashes):
-            h = hashlib.md5(f"{key}:{i}".encode()).hexdigest()
-            digests.append(int(h, 16) % self.size)
-        return digests
+ def _hashes(self, key: str) -> list[int]:
+ digests = []
+ for i in range(self.num_hashes):
+ h = hashlib.md5(f"{key}:{i}".encode()).hexdigest()
+ digests.append(int(h, 16) % self.size)
+ return digests
 
-    def add(self, key: str) -> None:
-        for idx in self._hashes(key):
-            self.bits[idx // 8] |= 1 << (idx % 8)
+ def add(self, key: str) -> None:
+ for idx in self._hashes(key):
+ self.bits[idx // 8] |= 1 << (idx % 8)
 
-    def might_contain(self, key: str) -> bool:
-        return all(
-            self.bits[idx // 8] & (1 << (idx % 8))
-            for idx in self._hashes(key)
-        )
+ def might_contain(self, key: str) -> bool:
+ return all(
+ self.bits[idx // 8] & (1 << (idx % 8))
+ for idx in self._hashes(key)
+ )
 
 
 seen = BloomFilter()
-seen.add("reading_9001")
-if seen.might_contain("reading_9001"):
-    maybe_load_from_db("reading_9001")
-if not seen.might_contain("reading_9999"):
-    pass
+seen.add("event_9001")
+if seen.might_contain("event_9001"):
+ maybe_load_from_db("event_9001")
+if not seen.might_contain("event_9999"):
+ pass
 ```
 
 ```mermaid
 flowchart LR
-  RID["reading_id"] --> H["k hashes"]
-  H --> B["bit array"]
-  B --> Y["might_contain → maybe"]
-  B --> N["all bits 0 → definitely not"]
+ EID["event_id"] --> H["k hashes"]
+ H --> B["bit array"]
+ B --> Y["might_contain → maybe"]
+ B --> N["all bits 0 → definitely not"]
 ```
 
 | Operation | Time | Space |
@@ -194,16 +194,16 @@ A **skip list** is a **sorted** linked structure with **express lanes**: level 0
 | --- | --- |
 | **What it is** | Tower of forward pointers per node; random level on insert. |
 | **When to use** | Ordered map in RAM when treap/RB feels heavy; Redis sorted-set internals (related ideas). |
-| **Weather fit** | Live **timestamp-sorted** station leaderboard with fast `search` and `delete` by station key. |
+| **Systems fit** | Live **timestamp-sorted** priority leaderboard with fast `search` and `delete` by event key. |
 
 ### Structure (concept)
 
 ```mermaid
 flowchart LR
-  H["head"] --> N1["10"]
-  H -.-> N2["20"]
-  N1 --> N3["20"]
-  N1 --> N4["30"]
+ H["head"] --> N1["10"]
+ H -.-> N2["20"]
+ N1 --> N3["20"]
+ N1 --> N4["30"]
 ```
 
 | Operation | Expected time | Worst time | Space |
@@ -221,33 +221,33 @@ from dataclasses import dataclass, field
 
 @dataclass
 class SkipNode:
-    key: int
-    value: str
-    forward: list[SkipNode | None] = field(default_factory=list)
+ key: int
+ value: str
+ forward: list[SkipNode | None] = field(default_factory=list)
 
 
 class SkipList:
-    def __init__(self, p: float = 0.5, max_level: int = 16) -> None:
-        self.p = p
-        self.max_level = max_level
-        self.head = SkipNode(key=-1, value="", forward=[None] * max_level)
-        self.level = 0
+ def __init__(self, p: float = 0.5, max_level: int = 16) -> None:
+ self.p = p
+ self.max_level = max_level
+ self.head = SkipNode(key=-1, value="", forward=[None] * max_level)
+ self.level = 0
 
-    def _random_level(self) -> int:
-        lvl = 0
-        while random.random() < self.p and lvl < self.max_level - 1:
-            lvl += 1
-        return lvl
+ def _random_level(self) -> int:
+ lvl = 0
+ while random.random() < self.p and lvl < self.max_level - 1:
+ lvl += 1
+ return lvl
 
-    def search(self, key: int) -> str | None:
-        cur = self.head
-        for i in range(self.level, -1, -1):
-            while cur.forward[i] and cur.forward[i].key < key:
-                cur = cur.forward[i]
-        cur = cur.forward[0]
-        if cur and cur.key == key:
-            return cur.value
-        return None
+ def search(self, key: int) -> str | None:
+ cur = self.head
+ for i in range(self.level, -1, -1):
+ while cur.forward[i] and cur.forward[i].key < key:
+ cur = cur.forward[i]
+ cur = cur.forward[0]
+ if cur and cur.key == key:
+ return cur.value
+ return None
 ```
 
 **Full insert/delete** follows the same tower logic as CLRS; for a complete ordered-map implementation see [Treaps](../treaps/index.md) or [Red–black tree](../red-black-tree/index.md) in this guide.
@@ -264,13 +264,13 @@ class SkipList:
 
 ## Multiset (bag) — brief
 
-Counts **how many** of each element—useful for **readings per sky condition** or **alert frequency by severity**.
+Counts **how many** of each element—useful for **requests per status code** or **alert frequency by severity**.
 
 ```python
 from collections import Counter
 
-readings_by_condition = Counter(row["sky_code"] for row in observations)
-assert readings_by_condition["CLR"] >= 1
+requests_by_status = Counter(row["status_code"] for row in log_entries)
+assert requests_by_status[200] >= 1
 ```
 
 | Operation | Time | Space |
@@ -282,52 +282,52 @@ assert readings_by_condition["CLR"] >= 1
 
 ## Bitset — brief
 
-Fixed-universe **set** as bits—see [Sets](../sets/index.md) bitset note for station-id masks.
+Fixed-universe **set** as bits—see [Sets](../sets/index.md) bitset note for user-id masks.
 
 ---
 
 ## Segment tree / Fenwick tree — pointer only
 
-For **range queries** on arrays (e.g. cumulative temperature anomaly over day-index ranges), use:
+For **range queries** on arrays (e.g. cumulative request count over time-index ranges), use:
 
 - **Fenwick (BIT):** O(log n) prefix sum update/query, O(n) space
 - **Segment tree:** O(log n) range query/updates, O(n) space
 
-Not expanded here; weather season analytics often use **pandas rolling** or **prefix sums** on sorted arrays instead.
+Not expanded here; production metrics often use **rolling windows** or **prefix sums** on sorted arrays instead.
 
 ---
 
 ## Master comparison (honorable ADTs)
 
-| ADT | Ordered? | Exact membership? | Weather example |
+| ADT | Ordered? | Exact membership? | Example |
 | --- | --- | --- | --- |
-| Union-Find | No | Same component | Sensor-network connectivity |
-| Bloom filter | No | Approximate | Reading-id stream prefilter |
-| Skip list | Yes | Exact | Timestamp-sorted station board |
-| Counter (multiset) | No | Exact counts | Sky-condition frequency |
-| Bitset | No | Exact (small V) | Station-id bitmask |
+| Union-Find | No | Same component | Network-cluster connectivity |
+| Bloom filter | No | Approximate | Event-id stream prefilter |
+| Skip list | Yes | Exact | Timestamp-sorted priority board |
+| Counter (multiset) | No | Exact counts | HTTP status-code frequency |
+| Bitset | No | Exact (small V) | User-id bitmask |
 
 ---
 
-## When to pick which (weather context)
+## When to pick which
 
 ```mermaid
 flowchart TD
-  Q([What question?])
-  Q --> C{Connectivity merges?}
-  C -->|yes| UF["Union-Find"]
-  C -->|no| M{Exact membership RAM?}
-  M -->|yes ordered| SL["Skip list / treap"]
-  M -->|yes unordered| ST["set"]
-  M -->|approx, huge stream| BF["Bloom filter"]
+ Q([What question?])
+ Q --> C{Connectivity merges?}
+ C -->|yes| UF["Union-Find"]
+ C -->|no| M{Exact membership RAM?}
+ M -->|yes ordered| SL["Skip list / treap"]
+ M -->|yes unordered| ST["set"]
+ M -->|approx, huge stream| BF["Bloom filter"]
 ```
 
 | Scenario | ADT |
 | --- | --- |
-| Same regional cluster after hypothetical merges | Union-Find |
-| Billions of reading_ids, RAM tight | Bloom then DB |
-| Sorted mutable station leaderboard | Skip list or treap |
-| Count observations per sky code | `Counter` |
+| Same cluster after hypothetical merges | Union-Find |
+| Billions of event_ids, RAM tight | Bloom then DB |
+| Sorted mutable priority leaderboard | Skip list or treap |
+| Count requests per status code | `Counter` |
 
 ---
 
@@ -336,7 +336,7 @@ flowchart TD
 | Pitfall | ADT | Fix |
 | --- | --- | --- |
 | Using Bloom when false positive costly | Bloom | Exact `set` after filter |
-| Union-Find without initializing all stations | UF | `parent` for every vertex |
+| Union-Find without initializing all vertices | UF | `parent` for every vertex |
 | Skip list without cap on level | Skip list | `max_level = 32` typical |
 | Reimplementing deque | Deque | [deque page](../dequeue-deque/index.md) |
 
@@ -357,17 +357,17 @@ flowchart TD
 ## Quick reference card
 
 ```python
-uf = UnionFind(stations)
-uf.union("SEA", "PDX")
-uf.connected("SEA", "PDX")
+uf = UnionFind(hosts)
+uf.union("host-a", "host-b")
+uf.connected("host-a", "host-b")
 
 bf = BloomFilter()
-bf.add(reading_id)
-bf.might_contain(reading_id)
+bf.add(event_id)
+bf.might_contain(event_id)
 
 sl.search(timestamp_rank)
 
-Counter(sky_codes)
+Counter(status_codes)
 ```
 
-These **honorable mention** ADTs fill gaps next to the main structure pages—use **Union-Find** for **merging sensor-network connectivity**, **Bloom filters** for **cheap reading-id screens**, and **skip lists** when you want **sorted order** without red–black code.
+These **honorable mention** ADTs fill gaps next to the main structure pages—use **Union-Find** for **merging network connectivity**, **Bloom filters** for **cheap event-id screens**, and **skip lists** when you want **sorted order** without red–black code.

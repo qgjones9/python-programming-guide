@@ -9,9 +9,9 @@ A **non-comparison** sort that orders keys **digit by digit** (or by fixed-width
 | **Space** | O(n + k) per digit pass for counting sort auxiliary. |
 | **Stability** | **Stable** when each digit pass is stable (counting sort). |
 | **In-place** | **No** (typical counting-sort radix). |
-| **When to use** | Fixed-width integers: **station codes**, **reading_id** (bounded range), millisecond **observation timestamps** encoded as ints—not arbitrary floats without scaling. |
+| **When to use** | Fixed-width integers: **product codes**, **record_id** (bounded range), millisecond **timestamps** encoded as ints—not arbitrary floats without scaling. |
 
-In **daily weather data analysis**, radix sort shines when you sort **32-bit reading_id** or **station codes 00–99** in linear passes over digits—think “sort every station in the network by code without comparing full strings.” For **floating anomalies**, you normally scale to integers or use comparison sort / `sort_values`.
+Radix sort shines when you sort **32-bit record_id** or **product codes 00–99** in linear passes over digits—think “sort every item in a catalog by code without comparing full strings.” For **floating scores**, you normally scale to integers or use comparison sort / `sort_values`.
 
 [Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
 
@@ -31,17 +31,17 @@ In **daily weather data analysis**, radix sort shines when you sort **32-bit rea
 
 ## How LSD radix sort works
 
-1. Pad keys to fixed width if needed (e.g. station code always two digits conceptually).
+1. Pad keys to fixed width if needed (e.g. product code always two digits conceptually).
 2. For digit position `d` from **least** to **most** significant:
-   - **Counting sort** on digit `d` (stable).
+ - **Counting sort** on digit `d` (stable).
 3. After last digit, array is sorted.
 
 ```mermaid
 flowchart TD
-  Start([digits d0..d_{w-1} LSD first]) --> Pos{more positions?}
-  Pos -->|no| Done([Sorted])
-  Pos -->|yes| Count[stable counting sort on current digit]
-  Count --> Next[next position] --> Pos
+ Start([digits d0..d_{w-1} LSD first]) --> Pos{more positions?}
+ Pos -->|no| Done([Sorted])
+ Pos -->|yes| Count[stable counting sort on current digit]
+ Count --> Next[next position] --> Pos
 ```
 
 ---
@@ -50,18 +50,18 @@ flowchart TD
 
 ```text
 RADIX_SORT_LSD(A, w):
-    for digit = 0 to w - 1:
-        COUNTING_SORT_BY_DIGIT(A, digit)
+ for digit = 0 to w - 1:
+ COUNTING_SORT_BY_DIGIT(A, digit)
 ```
 
 ```text
 COUNTING_SORT_BY_DIGIT(A, digit):
-    count[0..9] = 0
-    for x in A:
-        count[digit_value(x, digit)] += 1
-    prefix sum count
-    build output stable by scanning A backward
-    copy output to A
+ count[0..9] = 0
+ for x in A:
+ count[digit_value(x, digit)] += 1
+ prefix sum count
+ build output stable by scanning A backward
+ copy output to A
 ```
 
 ---
@@ -75,50 +75,50 @@ from dataclasses import dataclass
 
 
 def counting_sort_by_digit(nums: list[int], exp: int) -> None:
-    n = len(nums)
-    output = [0] * n
-    count = [0] * 10
-    for x in nums:
-        count[(x // exp) % 10] += 1
-    for i in range(1, 10):
-        count[i] += count[i - 1]
-    for i in range(n - 1, -1, -1):
-        d = (nums[i] // exp) % 10
-        count[d] -= 1
-        output[count[d]] = nums[i]
-    nums[:] = output
+ n = len(nums)
+ output = [0] * n
+ count = [0] * 10
+ for x in nums:
+ count[(x // exp) % 10] += 1
+ for i in range(1, 10):
+ count[i] += count[i - 1]
+ for i in range(n - 1, -1, -1):
+ d = (nums[i] // exp) % 10
+ count[d] -= 1
+ output[count[d]] = nums[i]
+ nums[:] = output
 
 
 def radix_sort_lsd(nums: list[int]) -> None:
-    if not nums:
-        return
-    max_val = max(nums)
-    exp = 1
-    while max_val // exp > 0:
-        counting_sort_by_digit(nums, exp)
-        exp *= 10
+ if not nums:
+ return
+ max_val = max(nums)
+ exp = 1
+ while max_val // exp > 0:
+ counting_sort_by_digit(nums, exp)
+ exp *= 10
 
 
 @dataclass(frozen=True, slots=True)
-class Station:
-    name: str
-    station_code: int
+class Product:
+ name: str
+ product_code: int
 
 
-def radix_sort_station_code(stations: list[Station]) -> None:
-    for exp in (1, 10):
-        n = len(stations)
-        out: list[Station | None] = [None] * n
-        count = [0] * 10
-        for s in stations:
-            count[(s.station_code // exp) % 10] += 1
-        for i in range(1, 10):
-            count[i] += count[i - 1]
-        for i in range(n - 1, -1, -1):
-            d = (stations[i].station_code // exp) % 10
-            count[d] -= 1
-            out[count[d]] = stations[i]
-        stations[:] = [s for s in out if s is not None]
+def radix_sort_product_code(products: list[Product]) -> None:
+ for exp in (1, 10):
+ n = len(products)
+ out: list[Product | None] = [None] * n
+ count = [0] * 10
+ for p in products:
+ count[(p.product_code // exp) % 10] += 1
+ for i in range(1, 10):
+ count[i] += count[i - 1]
+ for i in range(n - 1, -1, -1):
+ d = (products[i].product_code // exp) % 10
+ count[d] -= 1
+ out[count[d]] = products[i]
+ products[:] = [p for p in out if p is not None]
 ```
 
 | | |
@@ -128,11 +128,11 @@ def radix_sort_station_code(stations: list[Station]) -> None:
 
 ---
 
-## Trace: station codes LSD
+## Trace: product codes LSD
 
-Sort `[89, 12, 12, 45]` by station code (two decimal digits).
+Sort `[89, 12, 12, 45]` by product code (two decimal digits).
 
-**exp = 1** (ones): buckets → stable order by ones digit  
+**exp = 1** (ones): buckets → stable order by ones digit 
 **exp = 10** (tens): complete sort → `[12, 12, 45, 89]`
 
 Equal codes **12** stay in input order → **stable**.
@@ -143,12 +143,12 @@ Equal codes **12** stay in input order → **stable**.
 
 | | Radix | `sort` |
 | --- | --- | --- |
-| Float anomalies | Needs fixed-point scaling | Native |
+| Float scores | Needs fixed-point scaling | Native |
 | Bounded ints | Linear in digits | O(n log n) |
-| Strings (station names) | MSD radix on chars | `sort` |
+| Strings (product names) | MSD radix on chars | `sort` |
 
 ```python
-df.sort_values("station_code")
+df.sort_values("product_code")
 ```
 
 ---
@@ -157,12 +157,12 @@ df.sort_values("station_code")
 
 | Use | Avoid |
 | --- | --- |
-| Fixed-width `reading_id` ints | Arbitrary anomaly floats without quantization |
+| Fixed-width `record_id` ints | Arbitrary float scores without quantization |
 | Millions of keys, small digit count | Small *n* (overhead) |
 | Stable digit passes needed | Negative floats without offset handling |
 
 ```python
-anomaly_micro = (df["temp_anomaly"] * 1_000_000).astype("int64")
+score_micro = (df["score"] * 1_000_000).astype("int64")
 ```
 
 ---
@@ -201,9 +201,9 @@ anomaly_micro = (df["temp_anomaly"] * 1_000_000).astype("int64")
 ## Quick reference
 
 ```python
-radix_sort_lsd(station_code_ints)
-radix_sort_station_code(network)
-df.sort_values("station_code")
+radix_sort_lsd(product_code_ints)
+radix_sort_product_code(catalog)
+df.sort_values("product_code")
 ```
 
-**Radix sort:** stable, non-comparison, **Θ(d·n)** for fixed digits—ideal for **bounded weather integers**, not raw **float leaderboards** without scaling.
+**Radix sort:** stable, non-comparison, **Θ(d·n)** for fixed digits—ideal for **bounded integers**, not raw **float leaderboards** without scaling.

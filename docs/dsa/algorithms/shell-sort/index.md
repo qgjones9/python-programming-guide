@@ -9,9 +9,9 @@ A generalization of **insertion sort** that sorts elements **far apart** first (
 | **Space** | O(1). |
 | **Stability** | **Not stable** (long-gap swaps move equals). |
 | **In-place** | **Yes**. |
-| **When to use** | Medium *n* in-memory when you want in-place better than insertion; rarely chosen over `list.sort` in Python weather pipelines. |
+| **When to use** | Medium *n* in-memory when you want in-place better than insertion; rarely chosen over `list.sort` in Python production pipelines. |
 
-**Daily weather lens:** shell sort is like coarse **pre-ordering** daily readings by **week gaps** (every 7th day) before fine-sorting within each week—early passes move a cold-front day from index 0 near index 30 in one swap when the gap is large.
+**Intuition:** shell sort is like coarse **pre-ordering** by wide **gaps** (every 7th index) before fine-sorting within each subsequence—early passes move a low score from index 0 near index 30 in one shift when the gap is large.
 
 [Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
 
@@ -46,11 +46,11 @@ Common gap sequences:
 
 ```mermaid
 flowchart TD
-  Start([g = largest gap]) --> Gaps{g >= 1?}
-  Gaps -->|no| Done([Sorted])
-  Gaps -->|yes| Off[for i in 0..g-1]
-  Off --> Ins[gapped insertion on i, i+g, ...]
-  Ins --> NextG[g = next smaller gap] --> Gaps
+ Start([g = largest gap]) --> Gaps{g >= 1?}
+ Gaps -->|no| Done([Sorted])
+ Gaps -->|yes| Off[for i in 0..g-1]
+ Off --> Ins[gapped insertion on i, i+g, ...]
+ Ins --> NextG[g = next smaller gap] --> Gaps
 ```
 
 ---
@@ -59,17 +59,17 @@ flowchart TD
 
 ```text
 SHELL_SORT(A):
-    n = length(A)
-    g = n // 2
-    while g >= 1:
-        for i = g to n - 1:
-            temp = A[i]
-            j = i
-            while j >= g and A[j - g] > temp:
-                A[j] = A[j - g]
-                j -= g
-            A[j] = temp
-        g = g // 2   # Shell sequence; prefer Knuth/Sedgewick
+ n = length(A)
+ g = n // 2
+ while g >= 1:
+ for i = g to n - 1:
+ temp = A[i]
+ j = i
+ while j >= g and A[j - g] > temp:
+ A[j] = A[j - g]
+ j -= g
+ A[j] = temp
+ g = g // 2 # Shell sequence; prefer Knuth/Sedgewick
 ```
 
 ---
@@ -81,72 +81,72 @@ from dataclasses import dataclass
 
 
 def shell_sort(nums: list[float]) -> None:
-    n = len(nums)
-    g = n // 2
-    while g > 0:
-        for i in range(g, n):
-            temp = nums[i]
-            j = i
-            while j >= g and nums[j - g] > temp:
-                nums[j] = nums[j - g]
-                j -= g
-            nums[j] = temp
-        g //= 2
+ n = len(nums)
+ g = n // 2
+ while g > 0:
+ for i in range(g, n):
+ temp = nums[i]
+ j = i
+ while j >= g and nums[j - g] > temp:
+ nums[j] = nums[j - g]
+ j -= g
+ nums[j] = temp
+ g //= 2
 
 
 def knuth_gaps(n: int) -> list[int]:
-    gaps: list[int] = []
-    k = 1
-    while (3**k - 1) // 2 < n:
-        gaps.append((3**k - 1) // 2)
-        k += 1
-    return list(reversed(gaps)) or [1]
+ gaps: list[int] = []
+ k = 1
+ while (3**k - 1) // 2 < n:
+ gaps.append((3**k - 1) // 2)
+ k += 1
+ return list(reversed(gaps)) or [1]
 
 
 def shell_sort_knuth(nums: list[float]) -> None:
-    for g in knuth_gaps(len(nums)):
-        for i in range(g, len(nums)):
-            temp = nums[i]
-            j = i
-            while j >= g and nums[j - g] > temp:
-                nums[j] = nums[j - g]
-                j -= g
-            nums[j] = temp
+ for g in knuth_gaps(len(nums)):
+ for i in range(g, len(nums)):
+ temp = nums[i]
+ j = i
+ while j >= g and nums[j - g] > temp:
+ nums[j] = nums[j - g]
+ j -= g
+ nums[j] = temp
 
 
 @dataclass(frozen=True, slots=True)
-class DailyReading:
-    reading_id: int
-    month: int
-    temp_anomaly: float
-    summary: str
+class Record:
+ record_id: int
+ timestamp: float
+ score: float
+ label: str
 
 
-def shell_sort_readings(
-    readings: list[DailyReading], *, key=lambda r: r.temp_anomaly
+def shell_sort_records(
+ records: list[Record], *, key=lambda r: r.score
 ) -> None:
-    n = len(readings)
-    for g in knuth_gaps(n):
-        for i in range(g, n):
-            current = readings[i]
-            k = key(current)
-            j = i
-            while j >= g and key(readings[j - g]) > k:
-                readings[j] = readings[j - g]
-                j -= g
-            readings[j] = current
+ n = len(records)
+ for g in knuth_gaps(n):
+ for i in range(g, n):
+ current = records[i]
+ k = key(current)
+ j = i
+ while j >= g and key(records[j - g]) > k:
+ records[j] = records[j - g]
+ j -= g
+ records[j] = current
 ```
 
 ---
 
-## Trace: temp anomalies with gap 2 then 1
+## Trace: scores with gap 2 then 1
 
-`[1.0, -1.2, 0.4, 0.1]` (four daily readings)
+`[1.0, -1.2, 0.4, 0.1]` (four numeric scores)
 
 **g = 2:** subarrays indices `(0,2)` and `(1,3)`
 
 - Sort `(1.0, 0.4)` → `(0.4, 1.0)`
-- Sort `(-1.2, 0.1)` → `(-1.2, 0.1)`  
+- Sort `(-1.2, 0.1)` → `(-1.2, 0.1)` 
 → `[0.4, -1.2, 1.0, 0.1]`
 
 **g = 1:** insertion sort → `[-1.2, 0.1, 0.4, 1.0]`
@@ -155,7 +155,7 @@ def shell_sort_readings(
 
 ## Versus `list.sort()` / `sorted()` / `heapq`
 
-- **`list.sort`:** Always prefer for weather tables—Timsort with Θ(n log n) worst guarantee and stability.
+- **`list.sort`:** Always prefer for large tables—Timsort with Θ(n log n) worst guarantee and stability.
 - **Shell sort:** Historical / educational bridge between insertion and O(n log n).
 - **`heapq`:** Partial selection, not gap-based full sort.
 
@@ -166,11 +166,11 @@ def shell_sort_readings(
 | Use | Avoid |
 | --- | --- |
 | Algorithms course | Production pandas |
-| Embedded systems lore | Stable anomaly ties |
+| Embedded systems lore | Stable score ties |
 | Compare gap sequences in homework | Large multi-year archives |
 
 ```python
-daily.sort_values("temp_anomaly", ascending=True)
+events.sort_values("score", ascending=True)
 ```
 
 ---
@@ -212,10 +212,10 @@ daily.sort_values("temp_anomaly", ascending=True)
 ## Quick reference
 
 ```python
-shell_sort(anomalies)
-shell_sort_knuth(anomalies)
-shell_sort_readings(window)
-window.sort(key=lambda r: r.temp_anomaly)
+shell_sort(scores)
+shell_sort_knuth(scores)
+shell_sort_records(window)
+window.sort(key=lambda r: r.score)
 ```
 
-**Shell sort:** in-place gap insertion—faster than bare insertion on medium *n*, **unstable**, still beat by **`list.sort`** for daily weather data at scale.
+**Shell sort:** in-place gap insertion—faster than bare insertion on medium *n*, **unstable**, still beat by **`list.sort`** for large datasets at scale.

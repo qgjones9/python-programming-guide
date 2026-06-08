@@ -9,39 +9,39 @@ A **binary search tree** ordered by **key**, where each node also carries a **ra
 | **When to use** | Teaching randomized balance, mergeable ordered sets, competitive-programming split/join, or when you want simpler code than red–black with similar expected performance. |
 | **Trade-off** | Expected—not worst-case—O(log n) height; randomness required; not in CPython’s `dict`/`set` (those use hash tables). |
 
-In **daily weather data analysis**, a treap is a strong mental model for a **mutable ordered leaderboard**: stations ranked by monthly anomaly with fast insert/delete as new readings arrive, or a **station priority list** where you split “above-threshold anomalies” vs “below threshold” by a cutoff value. You will still use **pandas** for multi-year tables—treaps shine for **dynamic ordered sets** where you also want **split/merge** drills (e.g. “all stations with rank ≤ 12” vs the rest).
+A treap is a strong mental model for a **mutable ordered index**: records ranked by priority with fast insert/delete as new entries arrive, or a **scheduler priority list** where you split “above cutoff” vs “below cutoff” by a pivot key. For bulk static data use **`sorted()`**—treaps shine for **dynamic ordered sets** where you also want **split/merge** drills (e.g. “all entries with rank ≤ 12” vs the rest).
 
-This page is your **ready reference**: structure, a complete Python implementation, every way to create it, every method with daily weather examples, and **time and space complexity** on each operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: structure, a complete Python implementation, every way to create it, every method with ordered-map examples, and **time and space complexity** on each operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How treaps fit daily weather analysis
+## How treaps fit ordered-map problems
 
-| Weather analysis idea | Treap view | Why treap helps |
+| Use case | Treap view | Why treap helps |
 | --- | --- | --- |
-| **Monthly anomaly leaderboard** | Keys = `(anomaly, station_id)`; values = row | Expected O(log n) insert as new readings land |
-| **Station priority board** | Keys = rank; split at station #N | Split separates top-N vs rest in O(log n) expected |
-| **Cost-tier station index** | Keys = maintenance cost; range = “under budget” | Walk in-order for budget planning slice |
-| **Merge two regional rankings** | Two treaps sorted by anomaly | `merge` combines ordered sets if priorities are re-drawn |
+| **Score index** | Keys = `(priority, record_id)`; values = row | Expected O(log n) insert as new entries land |
+| **Scheduler priority board** | Keys = rank; split at rank N | Split separates top-N vs rest in O(log n) expected |
+| **Cost-tier symbol table** | Keys = cost; range = “under budget” | Walk in-order for budget planning slice |
+| **Merge two sorted indexes** | Two treaps sorted by priority | `merge` combines ordered sets if priorities are re-drawn |
 | **Randomized balance lesson** | Same keys, different random priorities → different shapes, same expected depth | Explains why “random BST” is O(log n) on average |
 
-**Use pandas or a sorted `list`** when you run one bulk sort per month and rarely insert mid-season. **Use a treap (or `sortedcontainers`, red–black tree)** when the set **changes often** and you need **order statistics** or **split** at a key boundary.
+**Use a sorted `list`** when you run one bulk sort and rarely insert mid-stream. **Use a treap (or `sortedcontainers`, red–black tree)** when the set **changes often** and you need **order statistics** or **split** at a key boundary.
 
 ```mermaid
 flowchart TB
   subgraph treap["Treap: BST on key, max-heap on priority"]
-    R["key=24 p=90<br/>KSEA"]
-    L["key=12 p=40<br/>KPDX"]
-    RR["key=31 p=55<br/>KBOI"]
+    R["key=24 p=90<br/>sym_a"]
+    L["key=12 p=40<br/>sym_b"]
+    RR["key=31 p=55<br/>sym_c"]
     R --> L
     R --> RR
   end
   note["In-order keys ↑; parent priority ≥ children"]
 ```
 
-Throughout this page, **n** is the number of nodes (e.g. stations on a treap). **h** is height; for a treap, **E[h] = O(log n)**.
+Throughout this page, **n** is the number of nodes (e.g. entries on a treap). **h** is height; for a treap, **E[h] = O(log n)**.
 
 ---
 
@@ -54,16 +54,16 @@ Throughout this page, **n** is the number of nodes (e.g. stations on a treap). *
 | **Expected search** | O(log n) | O(log n) if random insert | O(log n) | O(1) average |
 | **Split / merge** | Natural teaching path | Awkward | Harder | Not ordered |
 | **Ordered iteration** | O(n) in-order | O(n) | O(n) | N/A for plain `set` |
-| **Weather fit** | Dynamic anomaly splits | Unbalanced if sorted insert | Library-grade maps | `station_id` membership |
+| **Typical fit** | Dynamic priority splits | Unbalanced if sorted insert | Library-grade maps | `id` membership |
 
 ```mermaid
 sequenceDiagram
-  participant Analyst as weather analyst
-  participant T as station treap
-  Analyst->>T: split at rank 12
-  T-->>Analyst: left = top 12 stations
-  T-->>Analyst: right = rest of board
-  Analyst->>T: merge after region combine
+  participant Client
+  participant T as priority treap
+  Client->>T: split at rank 12
+  T-->>Client: left = top 12 entries
+  T-->>Client: right = rest of index
+  Client->>T: merge after partition combine
 ```
 
 ---
@@ -84,11 +84,11 @@ V = TypeVar("V")
 
 
 @dataclass
-class DailyReading:
-    reading_id: str
-    station: str
-    month: int
-    temp_anomaly: float
+class IndexRecord:
+    record_id: str
+    symbol: str
+    sequence: int
+    priority: int
 
 
 @dataclass
@@ -123,7 +123,7 @@ flowchart LR
 ### 1. Empty treap — root is `None`
 
 ```python
-root: TreapNode[str, DailyReading] | None = None
+root: TreapNode[str, IndexRecord] | None = None
 ```
 
 | | |
@@ -153,7 +153,7 @@ assert board.is_empty()
 ```python
 root = TreapNode(
     key=1,
-    value="KSEA",
+    value="sym_a",
     priority=random.randint(1, 10**9),
 )
 ```
@@ -174,12 +174,12 @@ def build_treap(items: list[tuple[K, V]]) -> TreapNode[K, V] | None:
         root = treap_insert(root, key, value)
     return root
 
-stations = [
-    (1, "KSEA"),
-    (2, "KPDX"),
-    (3, "KBOI"),
+entries = [
+    (1, "sym_a"),
+    (2, "sym_b"),
+    (3, "sym_c"),
 ]
-root = build_treap(stations)
+root = build_treap(entries)
 ```
 
 | | |
@@ -192,10 +192,10 @@ root = build_treap(stations)
 Each insert draws a **new random priority** and rotates; expected height stays logarithmic unlike a naive BST on sorted ranks.
 
 ```python
-sorted_by_anomaly = sorted(stations, key=lambda s: (-s.temp_anomaly, s.reading_id))
-treap = Treap[tuple[int, str], DailyReading]()
-for s in sorted_by_anomaly:
-    treap.insert((s.temp_anomaly, s.reading_id), s)
+sorted_by_priority = sorted(entries, key=lambda e: (-e[0], e[1]))
+treap = Treap[tuple[int, str], IndexRecord]()
+for rank, sym in sorted_by_priority:
+    treap.insert((rank, sym), IndexRecord(sym, sym, rank, rank))
 ```
 
 | | |
@@ -440,11 +440,11 @@ class Treap(Generic[K, V]):
 
 ## Split and merge (concept)
 
-**Split** at station rank 12: left treap = ranks 1–11, right = 12+.
+**Split** at rank 12: left treap = ranks 1–11, right = 12+.
 
 ```mermaid
 flowchart TB
-  T["Full station treap"]
+  T["Full priority treap"]
   T --> S{"split(12)"}
   S --> L["Left: keys < 12"]
   S --> R["Right: keys ≥ 12"]
@@ -460,13 +460,13 @@ flowchart TB
 
 ---
 
-## All operations (daily weather examples + complexity)
+## All operations (ordered-map examples + complexity)
 
-### `search(key)` — lookup station by composite rank key
+### `search(key)` — lookup record by composite rank key
 
 ```python
-anomaly_key = (1523, "R-pdx")
-row = treap.search(anomaly_key)
+rank_key = (1523, "rec_pdx")
+row = treap.search(rank_key)
 ```
 
 | | |
@@ -474,10 +474,10 @@ row = treap.search(anomaly_key)
 | **Time** | O(h) worst; **O(log n)** expected |
 | **Space** | O(1) iterative |
 
-### `insert(key, value)` — add month 5 reading
+### `insert(key, value)` — add index record
 
 ```python
-treap.insert((890, "R-boi"), DailyReading("R-boi", "KBOI", 5, 890))
+treap.insert((890, "rec_c"), IndexRecord("rec_c", "sym_c", 5, 890))
 ```
 
 | | |
@@ -485,18 +485,18 @@ treap.insert((890, "R-boi"), DailyReading("R-boi", "KBOI", 5, 890))
 | **Time** | O(log n) expected (rotations along path) |
 | **Space** | O(1) new node + O(log n) recursion if recursive |
 
-### `delete(key)` — station removed from active set
+### `delete(key)` — entry removed from active set
 
 | | |
 | --- | --- |
 | **Time** | O(log n) expected |
 | **Space** | O(log n) stack if recursive |
 
-### In-order iteration — print anomaly leaderboard
+### In-order iteration — print priority index
 
 ```python
-for (anomaly, rid), row in treap:
-    print(f"{row.station}: {anomaly}")
+for (priority, rid), row in treap:
+    print(f"{row.symbol}: {priority}")
 ```
 
 | | |
@@ -504,7 +504,7 @@ for (anomaly, rid), row in treap:
 | **Time** | Θ(n) |
 | **Space** | O(h) stack |
 
-### `split(rank)` — “top 12 stations” vs rest
+### `split(rank)` — “top 12 entries” vs rest
 
 ```python
 top12, rest = board.split(12)
@@ -531,20 +531,20 @@ top12, rest = board.split(12)
 
 ---
 
-## Daily weather application: randomized station priority treap
+## Application: randomized scheduler priority treap
 
-Model each analyst’s **active stations** as a treap keyed by **priority rank**. On selection, `delete(key)`. To show “next 5 highest-priority stations”, walk from `min_key` in-order five steps.
+Model **active tasks** as a treap keyed by **priority rank**. On dispatch, `delete(key)`. To show “next 5 highest-priority tasks”, walk from `min_key` in-order five steps.
 
 ```python
 available = Treap[int, str]()
-for rank, station in load_station_csv():
-    available.insert(rank, station)
+for rank, task_id in load_scheduler():
+    available.insert(rank, task_id)
 
 selected = 12
 available.delete(selected)
 next_up = []
-for rank, station in available:
-    next_up.append(station)
+for rank, task_id in available:
+    next_up.append(task_id)
     if len(next_up) == 5:
         break
 ```
@@ -556,15 +556,15 @@ for rank, station in available:
 
 ---
 
-## Daily weather application: live anomaly leaderboard
+## Application: live score index
 
-Keys `(temp_anomaly, reading_id)` keep anomaly primary and break ties by id. Updates each month: `delete` old key, `insert` new anomaly.
+Keys `(priority, record_id)` keep priority primary and break ties by id. On update: `delete` old key, `insert` new priority.
 
 ```python
-leaders = Treap[tuple[int, str], DailyReading]()
-def update_station(row: DailyReading) -> None:
-    old = leaders.search((row.temp_anomaly, row.reading_id))
-    leaders.insert((row.temp_anomaly, row.reading_id), row)
+leaders = Treap[tuple[int, str], IndexRecord]()
+def update_record(row: IndexRecord) -> None:
+    old = leaders.search((row.priority, row.record_id))
+    leaders.insert((row.priority, row.record_id), row)
 ```
 
 | | |
@@ -586,13 +586,11 @@ CPython has **no treap** in the standard library. Practical mappings:
 | Interview / learning | This page’s `Treap` |
 
 ```python
-import pandas as pd
-
-df = pd.read_csv("monthly_anomalies.csv")
-top = df.sort_values("temp_anomaly", ascending=False).head(10)
+records = [{"id": "rec01", "priority": 95}, {"id": "rec02", "priority": 110}]
+top = sorted(records, key=lambda r: r["priority"], reverse=True)[:10]
 ```
 
-**Rule of thumb:** ship **pandas** for weather season tables; implement **treap** to learn randomized BSTs and **split/merge**.
+**Rule of thumb:** ship **`sorted()`** for bulk static tables; implement **treap** to learn randomized BSTs and **split/merge**.
 
 ---
 
@@ -616,7 +614,7 @@ Let **n** = number of nodes.
 
 ---
 
-## When to pick which structure (weather context)
+## When to pick which structure (ordered-map context)
 
 ```mermaid
 flowchart TD
@@ -630,9 +628,9 @@ flowchart TD
 
 | Scenario | Best tool |
 | --- | --- |
-| Season CSV, one sort per month | pandas |
-| Split at station rank N | Treap split |
-| Station id lookup only | `dict` |
+| Bulk CSV, one sort | `sorted()` |
+| Split at rank N | Treap split |
+| Id lookup only | `dict` |
 | Guaranteed worst-case log | Red–black, not treap alone |
 
 ---
@@ -642,10 +640,10 @@ flowchart TD
 | Pitfall | Why it hurts | Fix |
 | --- | --- | --- |
 | Forgetting random priority on insert | Degenerates to BST on sorted ranks | Always `random.randint` per node |
-| Using treap for 50k-row analytics | Slower than vectorized sort | pandas |
+| Using treap for 50k-row analytics | Slower than vectorized sort | `sorted()` |
 | Split without `<` / `≥` convention | Duplicates at wrong side | Document tie-breaking |
 | Assuming worst-case O(log n) | Adversarial priorities rare but possible | Use RB-tree if guarantee required |
-| Storing mutable list in value | Aliasing bugs | Store immutable `DailyReading` |
+| Storing mutable list in value | Aliasing bugs | Store immutable `IndexRecord` |
 
 ---
 
@@ -665,7 +663,7 @@ flowchart TD
 
 ```python
 t = Treap()
-t = Treap([(rank, station), ...])
+t = Treap([(rank, task_id), ...])
 
 t.insert(key, value)
 t.search(key)
@@ -681,4 +679,4 @@ t.min_key()
 t.max_key()
 ```
 
-Use a **treap** when you want **BST order** with **simple randomized balance** and **split/merge**—then reach for **pandas** when you ship full-season weather tables.
+Use a **treap** when you want **BST order** with **simple randomized balance** and **split/merge**—then reach for **`sorted()`** when you ship bulk static tables.

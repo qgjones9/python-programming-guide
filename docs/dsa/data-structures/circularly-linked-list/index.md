@@ -1,17 +1,17 @@
 # Circularly linked list
 
-A linked list where the **last node’s `next` points back to the first**—there is no `None` at the “end” in the forward direction. The structure is a **ring**: one pointer walk eventually returns to where you started. In **daily weather data analysis**, that closed loop shows up when you **rotate through a fixed window** (days in one month, stations on a map, months in a climatology view) without a natural end.
+A linked list where the **last node's `next` points back to the first**—there is no `None` at the "end" in the forward direction. The structure is a **ring**: one pointer walk eventually returns to where you started. That closed loop shows up when you **rotate through a fixed window** (tracks in a playlist, workers in a pool, slots in a round-robin buffer) without a natural end.
 
 | | |
 | --- | --- |
 | **What it is** | A chain that closes on itself: singly circular (`last.next → head`) or doubly circular (`head.prev → tail` and `tail.next → head`). |
 | **Core operations** | Rotate the “current” pointer, iterate with a stop at `head`, insert/delete with careful predecessor logic. |
-| **When to use** | Round-robin station order, bounded anomaly ring buffers, timeline carousel iteration, or any cycle where you advance a cursor without reallocating. |
+| **When to use** | Round-robin worker order, bounded metrics ring buffers, playlist carousel iteration, or any cycle where you advance a cursor without reallocating. |
 | **Trade-off** | Easy to loop forever if you forget a stop condition; no O(1) random access by index; extra pointer discipline vs a Python `list` modulo index. |
 
-In **daily weather data analysis**, a circular list is a natural model for **repeating cycles with no true end**: rotating through **months in a climatology carousel**, stepping **stations** in a fixed order on a dashboard, or a **fixed-size ring buffer** of the last *k* hourly anomalies in a live feed where the oldest slot is overwritten when the ring wraps. You still store multi-year archives in **pandas** or a **`list`**—the ring is for **bounded, repeating** order on small *n*.
+A circular list is a natural model for **repeating cycles with no true end**: rotating through **tracks in a playlist carousel**, stepping **workers** in a fixed order on a dashboard, or a **fixed-size ring buffer** of the last *k* metric samples in a live feed where the oldest slot is overwritten when the ring wraps. You still store large archives in **pandas** or a **`list`**—the ring is for **bounded, repeating** order on small *n*.
 
-This page is your **ready reference**: singly and doubly circular variants, every way to create them in Python, a complete implementation, operation-by-operation examples with daily weather data and **time and space complexity**, and when to prefer stdlib tools. For Big-O notation and weather-scale *n*, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: singly and doubly circular variants, every way to create them in Python, a complete implementation, operation-by-operation examples with **time and space complexity**, and when to prefer stdlib tools. For Big-O notation and problem-scale *n*, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
@@ -26,7 +26,7 @@ This page is your **ready reference**: singly and doubly circular variants, ever
 | **Traverse all *n*** | Stop when back at start | Stop at `None` | Stop when back at start; can walk backward |
 | **Rotate “current”** | O(1) advance `cur = cur.next` | N/A (linear end) | O(1) forward or backward |
 | **Delete tail (singly)** | O(n) — need predecessor | O(n) | O(1) with `prev` |
-| **Weather fit** | Round-robin station cursor, ring of month slots | Drive chain with clear end | Bidirectional timeline scrubber on a loop |
+| **Typical fit** | Round-robin worker cursor, ring of buffer slots | Drive chain with clear end | Bidirectional history scrubber on a loop |
 
 ```mermaid
 flowchart LR
@@ -39,32 +39,32 @@ flowchart LR
   end
 ```
 
-Throughout this page, **n** is the number of nodes in the ring (e.g. days in one analysis window, stations in a rotation, or buffer capacity). **i** is a zero-based index from an arbitrary start (usually `head`). In production weather pipelines, **n** per ring is often small (one month window, one dashboard session) while total daily rows in an archive live in tables.
+Throughout this page, **n** is the number of nodes in the ring (e.g. items in one buffer, slots in a rotation, or buffer capacity). **i** is a zero-based index from an arbitrary start (usually `head`). In production apps, **n** per ring is often small (one bounded buffer, one dashboard session) while total table rows in an archive live in tables.
 
 ---
 
-## Daily weather analysis: what a circular list models
+## Practical applications: what a circular list models
 
-| Weather analysis idea | Circular view | Typical *n* |
+| Application idea | Circular view | Typical *n* |
 | --- | --- | --- |
-| **Month climatology carousel** | Each node = month label; advance `current` each step | 12 |
-| **Station rotation** | Fixed order of stations on a map; wrap after last | 4–20 |
-| **Live anomaly ring buffer** | Fixed *k* slots; overwrite oldest on wrap | *k* = 10–100 |
-| **Timeline carousel** | Cycle days in one window; no “end” in UI | days in window |
-| **Forecast tick** | Advance pointer through time windows | hours per day |
+| **Playlist rotation carousel** | Each node = track label; advance `current` each step | 12 |
+| **Round-robin worker rotation** | Fixed order of workers in a pool; wrap after last | 4–20 |
+| **Live metrics ring buffer** | Fixed *k* slots; overwrite oldest on wrap | *k* = 10–100 |
+| **Browser history carousel** | Cycle items in one buffer; no "end" in UI | items in buffer |
+| **Scheduler tick** | Advance pointer through time windows | slots per cycle |
 
-**Reach for `list` + modulo** (`months[i % 12]`) when you only need index math on a static table. **Reach for a circular linked list** when the ADT is **cursor + splice** (insert after current, rotate, delete current) or you are learning pointer cycles. **Reach for `collections.deque(maxlen=k)`** when you need a production ring buffer without hand-rolled nodes.
+**Reach for `list` + modulo** (`tracks[i % len(tracks)]`) when you only need index math on a static table. **Reach for a circular linked list** when the ADT is **cursor + splice** (insert after current, rotate, delete current) or you are learning pointer cycles. **Reach for `collections.deque(maxlen=k)`** when you need a production ring buffer without hand-rolled nodes.
 
 ```python
 from dataclasses import dataclass
 
 
 @dataclass
-class DailyReading:
-    reading_id: int
-    month: int
-    temp_anomaly: float
-    summary: str
+class PlaylistTrack:
+    track_id: int
+    disc: int
+    duration_ms: float
+    title: str
 ```
 
 ---
@@ -84,21 +84,21 @@ class DailyReading:
 
 ```mermaid
 sequenceDiagram
-  participant Analyst
-  participant Ring as circular readings
-  Analyst->>Ring: current = head
-  Ring-->>Analyst: current.data.summary = "partly cloudy"
-  Analyst->>Ring: rotate_forward()
-  Ring-->>Analyst: current.data.summary = "cold front"
-  Note over Analyst,Ring: After n steps you return to start — stop with a counter or visited flag
+  participant Client
+  participant Ring as circular entries
+  Client->>Ring: current = head
+  Ring-->>Client: current.data.title = "Home"
+  Client->>Ring: rotate_forward()
+  Ring-->>Client: current.data.title = "Docs"
+  Note over Client,Ring: After n steps you return to start — stop with a counter or visited flag
 ```
 
-| Kind | What you pay for | Circular examples | Weather-flavored example |
+| Kind | What you pay for | Circular examples | Application example |
 | --- | --- | --- | --- |
-| **Rotate cursor** | O(1) one `next` hop | `rotate_forward()` | Next day in dashboard carousel |
-| **Traverse all** | O(n) with stop at head | `__iter__` | List all days in one window once |
-| **Insert after cursor** | O(1) if you hold cursor | splice | Insert corrected reading after current day |
-| **Find by value** | O(n) worst case | `index_of` | Locate `DailyReading(102, …)` in ring |
+| **Rotate cursor** | O(1) one `next` hop | `rotate_forward()` | Next item in dashboard carousel |
+| **Traverse all** | O(n) with stop at head | `__iter__` | List all items in one buffer once |
+| **Insert after cursor** | O(1) if you hold cursor | splice | Insert corrected entry after current item |
+| **Find by value** | O(n) worst case | `index_of` | Locate `PlaylistTrack(102, …)` in ring |
 
 ---
 
@@ -189,7 +189,7 @@ assert ring.is_empty()
 ### 3. Single-node ring (degenerate circle)
 
 ```python
-node = CNode(DailyReading(101, 2, 0.4, "partly cloudy"))
+node = CNode(PlaylistTrack(101, 2, 0.4, "Home"))
 node.next = node
 head = tail = node
 ```
@@ -210,13 +210,13 @@ def ring_from_iterable(items: Iterable[Any]) -> SinglyCircularLinkedList:
         ring.append(item)
     return ring
 
-february_window = [
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(102, 2, -1.2, "cold front"),
-    DailyReading(103, 2, 0.1, "light rain"),
-    DailyReading(104, 2, 0.2, "overcast"),
+sample_tracks = [
+    PlaylistTrack(101, 2, 0.4, "Home"),
+    PlaylistTrack(102, 2, -1.2, "Docs"),
+    PlaylistTrack(103, 2, 0.1, "Settings"),
+    PlaylistTrack(104, 2, 0.2, "About"),
 ]
-rotation = ring_from_iterable(february_window)
+rotation = ring_from_iterable(sample_tracks)
 ```
 
 | | |
@@ -227,7 +227,7 @@ rotation = ring_from_iterable(february_window)
 ### 5. Build by linking last to first manually
 
 ```python
-nodes = [CNode(r) for r in february_window]
+nodes = [CNode(r) for r in sample_tracks]
 for i in range(len(nodes) - 1):
     nodes[i].next = nodes[i + 1]
 nodes[-1].next = nodes[0]
@@ -241,14 +241,14 @@ head, tail = nodes[0], nodes[-1]
 
 ### 6. `collections.deque` as a practical ring buffer
 
-Not a linked list, but the practical weather tool for fixed windows:
+Not a linked list, but the practical stdlib tool for fixed windows:
 
 ```python
 from collections import deque
 
-anomaly_window: deque[float] = deque(maxlen=10)
-anomaly_window.append(0.42)
-anomaly_window.append(-1.1)
+metrics_window: deque[float] = deque(maxlen=10)
+metrics_window.append(0.42)
+metrics_window.append(-1.1)
 ```
 
 | | |
@@ -484,7 +484,7 @@ class SinglyCircularLinkedList:
 
 ---
 
-## All operations (weather examples + complexity)
+## All operations (examples + complexity)
 
 ```mermaid
 flowchart TB
@@ -509,7 +509,7 @@ flowchart TB
 ```python
 ring = SinglyCircularLinkedList()
 assert ring.is_empty()
-ring.append(DailyReading(101, 2, 0.4, "partly cloudy"))
+ring.append(PlaylistTrack(101, 2, 0.4, "Home"))
 assert len(ring) == 1
 ```
 
@@ -524,8 +524,8 @@ assert len(ring) == 1
 
 ```python
 ring = SinglyCircularLinkedList()
-ring.append(DailyReading(101, 2, 0.4, "partly cloudy"))
-ring.append(DailyReading(102, 2, -1.2, "cold front"))
+ring.append(PlaylistTrack(101, 2, 0.4, "Home"))
+ring.append(PlaylistTrack(102, 2, -1.2, "Docs"))
 assert len(ring) == 2
 assert ring.tail.next is ring.head
 ```
@@ -552,9 +552,9 @@ sequenceDiagram
 ### `prepend(data)` — insert before head
 
 ```python
-ring = SinglyCircularLinkedList([DailyReading(102, 2, -1.2, "cold front")])
-ring.prepend(DailyReading(101, 2, 0.4, "partly cloudy"))
-assert ring.get(0).reading_id == 101
+ring = SinglyCircularLinkedList([PlaylistTrack(102, 2, -1.2, "Docs")])
+ring.prepend(PlaylistTrack(101, 2, 0.4, "Home"))
+assert ring.get(0).track_id == 101
 ```
 
 | | |
@@ -566,16 +566,16 @@ assert ring.get(0).reading_id == 101
 
 ### `insert_after(pivot_data, data)` — splice after a known value
 
-**Weather use:** Insert a **sensor correction** after a specific day node in a custom timeline sketch.
+**Application use:** Insert a **correction** after a specific day node in a custom history chain sketch.
 
 ```python
 ring = SinglyCircularLinkedList([
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(103, 2, 0.1, "light rain"),
+    PlaylistTrack(101, 2, 0.4, "Home"),
+    PlaylistTrack(103, 2, 0.1, "Settings"),
 ])
 ring.insert_after(
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(102, 2, -1.2, "cold front"),
+    PlaylistTrack(101, 2, 0.4, "Home"),
+    PlaylistTrack(102, 2, -1.2, "Docs"),
 )
 ```
 
@@ -626,18 +626,18 @@ assert len(ring) == 2
 
 ### `rotate_forward(steps)` / `rotate_backward(steps)`
 
-**Weather use:** Advance **current day on a carousel** without rebuilding the list.
+**Application use:** Advance **current item on a carousel** without rebuilding the list.
 
 ```python
 ring = SinglyCircularLinkedList([
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(102, 2, -1.2, "cold front"),
-    DailyReading(103, 2, 0.1, "light rain"),
+    PlaylistTrack(101, 2, 0.4, "Home"),
+    PlaylistTrack(102, 2, -1.2, "Docs"),
+    PlaylistTrack(103, 2, 0.1, "Settings"),
 ])
 ring.rotate_forward(1)
-assert ring.get(0).reading_id == 102
+assert ring.get(0).track_id == 102
 ring.rotate_forward(3)
-assert ring.get(0).reading_id == 101
+assert ring.get(0).track_id == 101
 ```
 
 | | |
@@ -647,11 +647,11 @@ assert ring.get(0).reading_id == 101
 
 ```mermaid
 flowchart LR
-  H1["head: day 101"] --> B1["day 102"] --> S1["day 103"]
+  H1["head: entry 101"] --> B1["entry 102"] --> S1["entry 103"]
   S1 --> H1
-  H2["after rotate 1"] --> S2["day 103"]
-  S2 --> H2b["day 101"]
-  H2b --> B2["day 102"]
+  H2["after rotate 1"] --> S2["entry 103"]
+  S2 --> H2b["entry 101"]
+  H2b --> B2["entry 102"]
   B2 --> H2
 ```
 
@@ -669,8 +669,8 @@ flowchart LR
 ### `clear()` / `extend` / `to_list` / iteration
 
 ```python
-for reading in ring:
-    print(reading.summary)
+for entry in ring:
+    print(track.title)
 ```
 
 | | |
@@ -774,13 +774,13 @@ def has_cycle_floyd(head: CNode | None) -> bool:
 ### Round-robin fair scheduler
 
 ```python
-def next_reading(ring: SinglyCircularLinkedList) -> DailyReading:
-    reading = ring.pop_head()
-    ring.append(reading)
-    return reading
+def next_entry(ring: SinglyCircularLinkedList) -> PlaylistTrack:
+    entry = ring.pop_head()
+    ring.append(entry)
+    return item
 ```
 
-Rotating by moving head to tail after serving is O(1) per tick—fair round-robin over stations or days in a small window.
+Rotating by moving head to tail after serving is O(1) per tick—fair round-robin over workers or items in a small buffer.
 
 | | |
 | --- | --- |
@@ -801,10 +801,10 @@ Rotating by moving head to tail after serving is O(1) per tick—fair round-robi
 
 | Need | Prefer | Why |
 | --- | --- | --- |
-| Fixed hourly anomaly window | `collections.deque(maxlen=k)` | C-speed, no pointer bugs |
-| Rotate static month order | `list` + `% len` | Simple, cache-friendly |
+| Fixed metrics window | `collections.deque(maxlen=k)` | C-speed, no pointer bugs |
+| Rotate static playlist order | `list` + `% len` | Simple, cache-friendly |
 | Round-robin without splices | `itertools.cycle` on a tuple | O(1) per yield, read-only |
-| Multi-year daily archive | pandas / `list` | Not a ring |
+| Large persistent archive | pandas / `list` | Not a ring |
 | Learning pointer cycles | `SinglyCircularLinkedList` | Interview / ADT clarity |
 
 ```python
@@ -835,7 +835,7 @@ flowchart TD
 
 ## Common pitfalls
 
-| Pitfall | Why it hurts | Better atemp_anomalyoach |
+| Pitfall | Why it hurts | Better aduration_msoach |
 | --- | --- | --- |
 | Infinite `while cur = cur.next` | Never terminates on ring | Loop `for _ in range(len(ring))` or use `__iter__` |
 | Forgetting `tail.next = head` after edit | Ring breaks | Centralize `_close_ring()` |
@@ -863,29 +863,29 @@ flowchart TD
 
 ```python
 ring = SinglyCircularLinkedList([
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(102, 2, -1.2, "cold front"),
+    PlaylistTrack(101, 2, 0.4, "Home"),
+    PlaylistTrack(102, 2, -1.2, "Docs"),
 ])
 
-ring.append(DailyReading(103, 2, 0.1, "light rain"))
-ring.prepend(DailyReading(100, 2, 0.0, "backfill"))
+ring.append(PlaylistTrack(103, 2, 0.1, "Settings"))
+ring.prepend(PlaylistTrack(100, 2, 0.0, "backfill"))
 
 ring.rotate_forward(1)
 
-ring.index_of(DailyReading(102, 2, -1.2, "cold front"))
+ring.index_of(PlaylistTrack(102, 2, -1.2, "Docs"))
 ring.get(2)
 
-readings = ring.to_list()
+tracks = ring.to_list()
 
 for r in ring:
     ...
 ```
 
-Use a **circularly linked list** when the problem is literally a **cycle**: round-robin, rotating cursor, or variable-size ring with pointer splices. Use **`deque(maxlen=k)`**, **`itertools.cycle`**, or **`list` + modulo** for most weather pipelines where the ring is just “wrap the index.”
+Use a **circularly linked list** when the problem is literally a **cycle**: round-robin, rotating cursor, or variable-size ring with pointer splices. Use **`deque(maxlen=k)`**, **`itertools.cycle`**, or **`list` + modulo** for most production apps where the ring is just “wrap the index.”
 
-**Weather pipeline checklist**
+**Structure selection checklist**
 
 1. **Default** — Tabular data in pandas; rotation via index math or `cycle`.
-2. **Bounded live window** — `deque(maxlen=k)` for last *k* anomaly values.
-3. **Custom timeline with splices** — Circular linked list (small *n*).
+2. **Bounded live window** — `deque(maxlen=k)` for last *k* metric values.
+3. **Custom history chain with splices** — Circular linked list (small *n*).
 4. **Traverse** — Always bound steps to `len(ring)`; never unbounded `next` walk.

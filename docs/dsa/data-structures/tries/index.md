@@ -6,12 +6,12 @@ A **tree keyed by characters (or tokens)** where each path from the root spells 
 | --- | --- |
 | **What it is** | Each edge labeled with one character; nodes mark end-of-word; search walks characters of the key. |
 | **Core operations** | Insert, exact search, prefix search, delete (with pruning). |
-| **When to use** | Autocomplete, prefix filters, dictionaries of station names, region-code suggestions. |
+| **When to use** | Autocomplete, prefix filters, name catalogs, airport-code suggestions. |
 | **Trade-off** | Space grows with alphabet × depth; hash map wins for exact key lookup only. |
 
-In **daily weather data analysis**, tries shine when users **type ahead** on **station names** (`"Sea"` → Seattle, Seaside, SeaTac), **region abbreviations** (`"P"` → PDX, PHX, …), or **event tags** with shared prefixes (`"ColdFront#"`). Exact `reading_id` lookup stays in a [Hash table](../hash-table/index.md); tries complement hashes for **prefix** and **completion** UX.
+Tries shine when users **type ahead** on **names** (`"Sea"` → Seattle, Seaside, SeaTac), **short codes** (`"P"` → PDX, PHX, …), or **tags** with shared prefixes (`"error#"`). Exact `record_id` lookup stays in a [Hash table](../hash-table/index.md); tries complement hashes for **prefix** and **completion** UX.
 
-This page is your **ready reference**: Python implementations (`dict`-of-children and `Trie` class), every operation with daily weather examples, complexity tables, pitfalls, and when `dict` beats trie. For Big-O notation and weather-scale *n*, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: Python implementations (`dict`-of-children and `Trie` class), every operation with practical examples, complexity tables, pitfalls, and when `dict` beats trie. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
@@ -25,7 +25,7 @@ This page is your **ready reference**: Python implementations (`dict`-of-childre
 | **Prefix all matches** | O(L + k) | O(n) scan all keys | O(log n + k) |
 | **Autocomplete** | Natural | Slow scan | Possible |
 | **Space** | O(total chars) | O(n) keys | O(n) |
-| **Weather fit** | Name/typeahead UI | `reading_id` index | Leaderboards by station name |
+| **Good fit** | Name/typeahead UI | `record_id` index | Leaderboards by name |
 
 ```mermaid
 flowchart TB
@@ -46,14 +46,14 @@ flowchart TB
 
 ---
 
-## Daily weather analysis: what a trie models
+## What a trie models
 
-| Weather idea | Trie keys | Operation |
+| Use case | Trie keys | Operation |
 | --- | --- | --- |
-| **Station search box** | `station.name.lower()` | `starts_with("sea")` |
-| **Region abbrev** | `"SEA"`, `"PDX"`, … | prefix as user types |
-| **Event tags** | `"ColdFront#"` shared prefix | group drills |
-| **Catalog by city name** | `"Portland"` | insert full names |
+| **Search box** | `entry.name.lower()` | `starts_with("sea")` |
+| **Short code** | `"SEA"`, `"PDX"`, … | prefix as user types |
+| **Event tags** | `"error#"` shared prefix | group drills |
+| **Catalog by name** | `"Portland"` | insert full names |
 | **Invalid token filter** | banned substring scan | prefix walk |
 
 ```python
@@ -61,11 +61,11 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Station:
-    station_id: str
+class CatalogEntry:
+    entity_id: str
     name: str
-    region: str
-    elevation_m: float
+    category: str
+    score: float
 
 
 @dataclass(frozen=True)
@@ -75,7 +75,7 @@ class Region:
     label: str
 ```
 
-Each leaf can store a `Station` payload, not just the string key. `Trie` is defined in [Reference implementation](#reference-implementation-trie-with-full-api) below; later sections use `Station` in operation examples.
+Each leaf can store a `CatalogEntry` payload, not just the string key. `Trie` is defined in [Reference implementation](#reference-implementation-trie-with-full-api) below; later sections use `CatalogEntry` in operation examples.
 
 ---
 
@@ -83,7 +83,7 @@ Each leaf can store a `Station` payload, not just the string key. `Trie` is defi
 
 - **Root** — empty string prefix.
 - **Edge** — one character (or one token if word-level trie).
-- **`is_end`** — node completes a stored string; may also store `station_id` payload.
+- **`is_end`** — node completes a stored string; may also store `entity_id` payload.
 
 ```mermaid
 sequenceDiagram
@@ -125,10 +125,10 @@ class Trie:
 ### 2. Insert catalog from iterable
 
 ```python
-def build_station_trie(stations):
+def build_catalog_trie(entries):
     t = Trie()
-    for s in stations:
-        t.insert(s.name.lower(), s)
+    for e in entries:
+        t.insert(e.name.lower(), e)
     return t
 ```
 
@@ -157,10 +157,10 @@ def make_node():
 
 Production Python services often use:
 
-- **Database** `LIKE 'sea%'` for large station catalogs.
+- **Database** `LIKE 'sea%'` for large name catalogs.
 - **Search engines** (Elasticsearch) for fuzzy match.
 
-Tries in pure Python excel in **medium** catalogs (thousands of station names) and **teaching**.
+Tries in pure Python excel in **medium** catalogs (thousands of names) and **teaching**.
 
 ```mermaid
 flowchart TD
@@ -313,8 +313,8 @@ flowchart TB
 
 ```python
 trie = Trie()
-trie.insert("seattle", Station("USW00024233", "Seattle", "WA", 56.0))
-trie.insert("seaside", Station("USW00024234", "Seaside", "OR", 5.0))
+trie.insert("seattle", CatalogEntry("ent-001", "Seattle", "city", 56.0))
+trie.insert("seaside", CatalogEntry("ent-002", "Seaside", "city", 5.0))
 ```
 
 | | |
@@ -334,7 +334,7 @@ sequenceDiagram
 ### `search(word)` — exact match
 
 ```python
-s = trie.search("seattle")
+entry = trie.search("seattle")
 ```
 
 | | |
@@ -342,7 +342,7 @@ s = trie.search("seattle")
 | **Time** | O(L) |
 | **Space** | O(1) |
 
-Returns attached `Station` or `None`.
+Returns attached `CatalogEntry` or `None`.
 
 ---
 
@@ -367,7 +367,7 @@ assert not trie.starts_with("zzz")
 | **Time** | O(L) |
 | **Space** | O(1) |
 
-**Weather UI:** Enable autocomplete dropdown after user types 3+ chars.
+**UI note:** Enable autocomplete dropdown after user types 3+ chars.
 
 ---
 
@@ -388,7 +388,7 @@ matches = trie.collect("sea")
 ### `collect_values(prefix)` — payload objects
 
 ```python
-stations = trie.collect_values("po")
+entries = trie.collect_values("po")
 ```
 
 | | |
@@ -419,7 +419,7 @@ Prune nodes that become useless branches.
 t = Trie()
 for abbr in ["PDX", "PDT", "PDY"]:
     t.insert(abbr.lower())
-# useful for detecting shared region-code prefixes in toy data
+# useful for detecting shared code prefixes in toy data
 ```
 
 | | |
@@ -438,17 +438,17 @@ for abbr in ["PDX", "PDT", "PDY"]:
 
 ---
 
-## Weather patterns with tries
+## Common patterns with tries
 
-### Autocomplete station names
+### Autocomplete by name prefix
 
 ```python
 def autocomplete(trie, partial, limit=10):
     partial = partial.lower().strip()
     if not partial:
         return []
-    stations = trie.collect_values(partial)
-    return stations[:limit]
+    entries = trie.collect_values(partial)
+    return entries[:limit]
 ```
 
 | | |
@@ -456,19 +456,19 @@ def autocomplete(trie, partial, limit=10):
 | **Time** | O(L + k) |
 | **Space** | O(k) |
 
-### Region abbreviation typeahead
+### Short-code typeahead
 
 ```python
-REGIONS = ["ABQ", "ATL", "BOS", "DEN", "DFW", "HNL", "IAH", "JFK", "LAS",
-           "LAX", "MIA", "MSP", "ORD", "PDX", "PHX", "SAN", "SEA", "SFO",
-           "SLC", "TPA"]
+CODES = ["ABQ", "ATL", "BOS", "DEN", "DFW", "HNL", "IAH", "JFK", "LAS",
+         "LAX", "MIA", "MSP", "ORD", "PDX", "PHX", "SAN", "SEA", "SFO",
+         "SLC", "TPA"]
 
-region_trie = Trie()
-for abbr in REGIONS:
-    region_trie.insert(abbr.lower(), abbr)
+code_trie = Trie()
+for abbr in CODES:
+    code_trie.insert(abbr.lower(), abbr)
 
-def suggest_region(prefix):
-    return [region_trie.search(w) for w in region_trie.collect(prefix.lower())]
+def suggest_code(prefix):
+    return [code_trie.search(w) for w in code_trie.collect(prefix.lower())]
 ```
 
 | | |
@@ -476,7 +476,7 @@ def suggest_region(prefix):
 | **Time** | O(L + k) |
 | **Space** | O(20) tiny |
 
-For only a few dozen region codes, a **sorted list + filter** is simpler—trie pays off when *n* is thousands (station names in a national catalog).
+For only a few dozen codes, a **sorted list + filter** is simpler—trie pays off when *n* is thousands (names in a large catalog).
 
 ### Prefix token filter on ingest logs
 
@@ -517,7 +517,7 @@ def has_banned_prefix(token):
 | **Space** | O(active children) | O(26) per node always |
 | **Lookup child** | O(1) hash | O(1) index |
 | **Alphabet** | Unicode / arbitrary | Restricted |
-| **Station names** | Preferred (mixed case normalized) | Only if A–Z enforced |
+| **Mixed-case names** | Preferred (normalized) | Only if A–Z enforced |
 
 ---
 
@@ -532,7 +532,7 @@ Let **L** = word length, **k** = matches, **N** = total stored characters across
 | `starts_with` | O(L) | O(1) |
 | `collect` / autocomplete | O(L + k + output) | O(k) stack |
 | `delete` | O(L) | O(L) stack |
-| Build n stations avg length L̄ | O(n · L̄) | O(N) total |
+| Build n entries avg length L̄ | O(n · L̄) | O(N) total |
 | DFS all words | O(N) | O(output) |
 
 **Storage:** O(N) characters stored in tree structure plus node overhead.
@@ -543,17 +543,17 @@ Let **L** = word length, **k** = matches, **N** = total stored characters across
 
 | Need | Tool |
 | --- | --- |
-| Exact `reading_id` | `dict[int, DailyReading]` |
-| Few dozen region codes | `list` + filter |
-| Thousands of station typeahead | `Trie` or DB `ILIKE` |
+| Exact `record_id` | `dict[int, Record]` |
+| Few dozen codes | `list` + filter |
+| Thousands of name typeahead | `Trie` or DB `ILIKE` |
 | Fuzzy spelling | `difflib`, rapidfuzz, search engine |
 | Prefix in pandas | `df[df['name'].str.startswith('Sea')]` |
 
 ```python
 import pandas as pd
 
-stations = pd.read_csv("stations.csv")
-hits = stations[stations["name"].str.lower().str.startswith("sea")]
+catalog = pd.read_csv("catalog.csv")
+hits = catalog[catalog["name"].str.lower().str.startswith("sea")]
 ```
 
 Vectorized pandas is often faster than pure Python trie for **batch** queries; trie wins for **interactive** single-prefix lookups in memory.
@@ -578,8 +578,8 @@ flowchart TD
 | Empty string insert | Define policy (usually skip) |
 | Huge alphabet Unicode | Use dict children, not array[65536] |
 | Duplicate insert same word | Decide overwrite vs ignore |
-| Trie for ~20 region codes only | Overkill — use list |
-| Not attaching `station_id` at leaf | Store payload in `value` |
+| Trie for ~20 codes only | Overkill — use list |
+| Not attaching `entity_id` at leaf | Store payload in `value` |
 
 ---
 
@@ -607,13 +607,13 @@ class CaseInsensitiveTrie:
 | **Time** | O(L) per op |
 | **Space** | Same as inner trie |
 
-**Weather:** User types `"SEA"` or `"sea"` — same completions.
+**Note:** User types `"SEA"` or `"sea"` — same completions.
 
 ---
 
 ## Array-based trie node (A–Z only)
 
-When keys are **uppercase region codes** or A–Z only:
+When keys are **uppercase codes** or A–Z only:
 
 ```python
 class AlphaTrieNode:
@@ -633,7 +633,7 @@ class AlphaTrieNode:
 | **Time** | O(1) child index |
 | **Space** | 26 pointers per node (sparse waste) |
 
-Use **`dict` children** for full station names with mixed characters.
+Use **`dict` children** for full names with mixed characters.
 
 ---
 
@@ -647,14 +647,14 @@ sequenceDiagram
     T->>T: create child if missing
     T->>T: descend
   end
-  T->>T: is_end=True, value=Station(...)
+  T->>T: is_end=True, value=CatalogEntry(...)
 ```
 
 ---
 
-## Word search on acronym grid (toy)
+## Word search on letter grid (toy)
 
-Given a 2D grid of letters, find if a weather acronym exists (DFS + trie):
+Given a 2D grid of letters, find if a target word exists (DFS + trie):
 
 ```python
 def find_word(board, word, trie):
@@ -686,7 +686,7 @@ def find_word(board, word, trie):
 | **Time** | O(rows · cols · 4^L) naive |
 | **Space** | O(L) stack |
 
-**Weather:** Toy for workbook puzzles—not production station-catalog search.
+**Note:** Toy for workbook puzzles—not production catalog search.
 
 ---
 
@@ -709,27 +709,27 @@ def find_word(board, word, trie):
 
 ## Radix / Patricia (compressed) — when space matters
 
-If the trie is **sparse** with long single-child chains, compress paths into one edge labeled with a substring. Python rarely needs this for station tries (≈ few thousand nodes); routing tables and DNA-style keys benefit more.
+If the trie is **sparse** with long single-child chains, compress paths into one edge labeled with a substring. Python rarely needs this for name tries (≈ few thousand nodes); routing tables and DNA-style keys benefit more.
 
 | | Standard trie | Radix tree |
 | --- | --- | --- |
 | Space | O(total chars) | O(nodes) smaller |
 | Implement | Easy in Python | Harder |
-| Weather autocomplete | dict trie enough | optional at scale |
+| Name autocomplete | dict trie enough | optional at scale |
 
 ---
 
 ## Autocomplete API sketch (Flask-style)
 
 ```python
-def search_stations(trie, q, limit=8):
+def search_catalog(trie, q, limit=8):
     q = q.strip().lower()
     if len(q) < 2:
         return []
-    stations = trie.collect_values(q)
+    entries = trie.collect_values(q)
     return [
-        {"station_id": s.station_id, "name": s.name, "region": s.region}
-        for s in stations[:limit]
+        {"entity_id": e.entity_id, "name": e.name, "category": e.category}
+        for e in entries[:limit]
     ]
 ```
 
@@ -746,28 +746,28 @@ sequenceDiagram
   participant UI
   participant API
   participant Trie
-  UI->>API: GET /stations?q=sea
+  UI->>API: GET /search?q=sea
   API->>Trie: collect_values("sea")
-  Trie-->>API: [Station, ...]
+  Trie-->>API: [CatalogEntry, ...]
   API-->>UI: JSON suggestions
 ```
 
 ---
 
-## Bulk build from station CSV
+## Bulk build from CSV
 
 ```python
 import csv
 
-def trie_from_station_csv(path):
+def trie_from_catalog_csv(path):
     t = Trie()
     with open(path, newline="") as f:
         for row in csv.DictReader(f):
-            name = row.get("station_name") or row.get("name", "")
-            sid = row["station_id"]
-            region = row.get("state", "")
-            elev = float(row.get("elevation_m", 0))
-            t.insert(name.lower(), Station(sid, name, region, elev))
+            name = row.get("name", "")
+            eid = row["entity_id"]
+            category = row.get("category", "")
+            score = float(row.get("score", 0))
+            t.insert(name.lower(), CatalogEntry(eid, name, category, score))
     return t
 ```
 
@@ -776,7 +776,7 @@ def trie_from_station_csv(path):
 | **Time** | O(total name characters) |
 | **Space** | O(trie nodes) |
 
-Rebuild trie when the station catalog updates, not on every HTTP request.
+Rebuild trie when the catalog updates, not on every HTTP request.
 
 ---
 
@@ -786,7 +786,7 @@ Rebuild trie when the station catalog updates, not on every HTTP request.
 | --- | --- |
 | Keys **starting with** `"sea"` | Trie |
 | Keys **containing** `"attle"` | Scan all keys O(n) or full-text index |
-| Exact `reading_id` | `dict` |
+| Exact `record_id` | `dict` |
 
 Document your search product: trie is **prefix-only**.
 
@@ -806,27 +806,27 @@ Document your search product: trie is **prefix-only**.
 
 ```python
 trie = Trie()
-trie.insert("seattle", station_obj)
-trie.insert("seaside", other_station)
+trie.insert("seattle", entry_obj)
+trie.insert("seaside", other_entry)
 
 # Exact
-s = trie.search("seattle")
+e = trie.search("seattle")
 
 # Prefix
 if trie.starts_with("sea"):
     names = trie.collect("sea")
-    stations = trie.collect_values("sea")
+    entries = trie.collect_values("sea")
 
 # Remove
 trie.delete("seaside")
 ```
 
-Use a **trie** when **prefix queries** and **autocomplete** dominate—station search, shared event-tag prefixes, command palettes. Use **`dict`** for **`reading_id`** and **`Counter`** for stats; use **pandas** for bulk season filters.
+Use a **trie** when **prefix queries** and **autocomplete** dominate—name search, shared tag prefixes, command palettes. Use **`dict`** for **`record_id`** and **`Counter`** for stats; use **pandas** for bulk filters.
 
-**Weather pipeline checklist**
+**Implementation checklist**
 
-1. **Exact reading lookup** — `dict` or DataFrame index, not trie.
+1. **Exact record lookup** — `dict` or DataFrame index, not trie.
 2. **Name search UI** — trie on normalized `name.lower()`.
 3. **Normalize** — case and diacritics policy at insert and query.
 4. **Size** — trie for thousands of strings; consider DB for full historical catalog search.
-5. **Return payload** — store `Station` at `is_end` node, not just string.
+5. **Return payload** — store `CatalogEntry` at `is_end` node, not just string.

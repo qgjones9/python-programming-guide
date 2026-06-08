@@ -6,10 +6,10 @@ A **first-in, first-out (FIFO)** collection: the **oldest** enqueued item is the
 | --- | --- |
 | **What it is** | Enqueue at the **rear**, dequeue from the **front**; optional peek at front. |
 | **Core operations** | `enqueue`, `dequeue`, `front` / `peek`. |
-| **When to use** | Reading ingest pipelines, BFS on graphs, job workers, buffering streams, level-order tree walks. |
+| **When to use** | Event ingest pipelines, BFS on graphs, job workers, buffering streams, level-order tree walks. |
 | **Trade-off** | No LIFO at one end only; `list.pop(0)` is O(n)—use `deque` or a proper queue. |
 
-In **daily weather data analysis**, queues model **arrival order**: readings from a live feed hit the **back** and analysts or workers take them from the **front**; BFS layers **months or station hops** when exploring a graph of observation sites; a **job queue** exports charts for each station without starving early requests. Multi-year archive tables are not a queue—they are random-access storage ([Array-based lists](../array-based-lists/index.md)).
+Queues model **arrival order**: events from a live feed hit the **back** and workers take them from the **front**; BFS layers **graph hops** when exploring an unweighted network; a **job queue** runs background tasks without starving early requests. Large archive tables are not a queue—they are random-access storage ([Array-based lists](../array-based-lists/index.md)).
 
 This page is your **ready reference**: every way to build a FIFO queue in Python, list vs linked vs `deque`, full implementations, operation-level complexity, and why **`list.pop(0)` fails** at scale. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
@@ -24,31 +24,31 @@ This page is your **ready reference**: every way to build a FIFO queue in Python
 | **Remove** | Oldest (front) | Newest (top) | Either end O(1) |
 | **Insert for FIFO** | Rear | Top | `append` rear, `appendleft` if reversing |
 | **Python default** | `deque` or `Queue` | `list` | `collections.deque` |
-| **Weather** | Reading processing order | Undo labels | Sliding anomaly window + FIFO |
+| **Example** | Event processing order | Undo edits | Sliding window + FIFO |
 
 ```mermaid
 flowchart LR
-  ENQ["enqueue rear"] --> R["rear"]
-  F["front"] --> DEQ["dequeue front"]
-  subgraph order["Order preserved"]
-    P1["Reading 101"] --> P2["Reading 102"] --> P3["Reading 103"]
-  end
-  F --- P1
-  R --- P3
+ ENQ["enqueue rear"] --> R["rear"]
+ F["front"] --> DEQ["dequeue front"]
+ subgraph order["Order preserved"]
+ P1["Event 101"] --> P2["Event 102"] --> P3["Event 103"]
+ end
+ F --- P1
+ R --- P3
 ```
 
 Throughout this page, **n** is the queue length.
 
 ---
 
-## Daily weather analysis: what a queue models
+## What a queue models
 
-| Weather idea | Queue view | Notes |
+| Use case | Queue view | Notes |
 | --- | --- | --- |
-| **Live reading feed** | Producer `enqueue`; consumer `dequeue` | Preserves midnight → midnight order |
-| **BFS on station graph** | Queue of `(station, depth)` | Shortest path in unweighted graph |
-| **Export jobs** | “Render station X chart” tasks | Fair worker pool |
-| **Timeline replay line** | Readings watched in broadcast order | Not the same as stack undo |
+| **Live event feed** | Producer `enqueue`; consumer `dequeue` | Preserves arrival order |
+| **BFS on graph** | Queue of `(node, depth)` | Shortest path in unweighted graph |
+| **Background jobs** | “Run report for task X” | Fair worker pool |
+| **Timeline replay** | Events played in broadcast order | Not the same as stack undo |
 | **Level-order tree** | Schedule tree nodes by depth | Queue + children |
 
 ```python
@@ -56,19 +56,19 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class DailyReading:
-    reading_id: int
-    station_id: str
-    month: int
-    summary: str
-    temp_anomaly: float
+class LogEvent:
+ event_id: int
+ source: str
+ priority: int
+ message: str
+ score: float
 
 
 @dataclass(frozen=True)
-class ExportJob:
-    station_id: str
-    year: int
-    chart: str
+class Job:
+ task_id: str
+ run_id: int
+ report: str
 ```
 
 ---
@@ -79,19 +79,19 @@ class ExportJob:
 
 ```mermaid
 sequenceDiagram
-  participant Feed as live feed
-  participant Q as reading queue
-  participant Worker as anomaly worker
-  Feed->>Q: enqueue(Reading 901)
-  Feed->>Q: enqueue(Reading 902)
-  Worker->>Q: dequeue() → 901
-  Worker->>Q: dequeue() → 902
+ participant Feed as live feed
+ participant Q as event queue
+ participant Worker as processor
+ Feed->>Q: enqueue(Event 901)
+ Feed->>Q: enqueue(Event 902)
+ Worker->>Q: dequeue() → 901
+ Worker->>Q: dequeue() → 902
 ```
 
-| Operation | FIFO meaning | Weather example |
+| Operation | FIFO meaning | Example |
 | --- | --- | --- |
-| `enqueue` | Join the line at rear | New reading arrives from API |
-| `dequeue` | Serve front | Worker computes anomaly for oldest pending |
+| `enqueue` | Join the line at rear | New event arrives from API |
+| `dequeue` | Serve front | Worker handles oldest pending item |
 | `peek` | Look at front, keep queue | Check next without removing |
 
 ---
@@ -103,9 +103,9 @@ sequenceDiagram
 ```python
 from collections import deque
 
-reading_queue: deque[DailyReading] = deque()
-reading_queue.append(new_reading)
-nxt = reading_queue.popleft()
+event_queue: deque[LogEvent] = deque()
+event_queue.append(new_event)
+nxt = event_queue.popleft()
 ```
 
 | | |
@@ -118,8 +118,8 @@ nxt = reading_queue.popleft()
 ```python
 from queue import Queue
 
-q: Queue[DailyReading] = Queue()
-q.put(reading)
+q: Queue[LogEvent] = Queue()
+q.put(event)
 p = q.get()
 ```
 
@@ -133,8 +133,8 @@ p = q.get()
 ```python
 from queue import SimpleQueue
 
-sq: SimpleQueue[ExportJob] = SimpleQueue()
-sq.put(ExportJob("STN01", 2024, "temp_anomaly_bar"))
+sq: SimpleQueue[Job] = SimpleQueue()
+sq.put(Job("task-01", 2024, "latency_report"))
 job = sq.get()
 ```
 
@@ -146,8 +146,8 @@ job = sq.get()
 ### 4. Python `list` — enqueue `append`, dequeue `pop(0)` ⚠️
 
 ```python
-q: list[DailyReading] = []
-q.append(reading)
+q: list[LogEvent] = []
+q.append(event)
 p = q.pop(0)
 ```
 
@@ -156,15 +156,15 @@ p = q.pop(0)
 | **Time** | O(1) enqueue; **O(n) dequeue** |
 | **Space** | O(n) |
 
-**Do not** use `pop(0)` in a hot loop over thousands of readings per month.
+**Do not** use `pop(0)` in a hot loop over thousands of events per batch.
 
 ### 5. `ListQueue` wrapper (deque inside)
 
 ```python
 class ListQueue:
-    def __init__(self) -> None:
-        from collections import deque
-        self._dq: deque[Any] = deque()
+ def __init__(self) -> None:
+ from collections import deque
+ self._dq: deque[Any] = deque()
 ```
 
 ### 6. Linked-list queue (maintain `head` + `tail`)
@@ -177,9 +177,9 @@ See [Reference implementation](#reference-implementation-linkedqueue) below.
 import asyncio
 
 async def main() -> None:
-    aq: asyncio.Queue[DailyReading] = asyncio.Queue()
-    await aq.put(DailyReading(1, "STN01", 1, "clear", 0.0))
-    p = await aq.get()
+ aq: asyncio.Queue[LogEvent] = asyncio.Queue()
+ await aq.put(LogEvent(1, "api-01", 1, "request_ok", 0.0))
+ p = await aq.get()
 ```
 
 | | |
@@ -189,12 +189,12 @@ async def main() -> None:
 
 ```mermaid
 flowchart TD
-  Q([FIFO in Python?])
-  Q --> A{Async coroutines?}
-  A -->|yes| AS["asyncio.Queue"]
-  A -->|no| T{Threads?}
-  T -->|yes| PQ["queue.Queue"]
-  T -->|no| DQ["collections.deque"]
+ Q([FIFO in Python?])
+ Q --> A{Async coroutines?}
+ A -->|yes| AS["asyncio.Queue"]
+ A -->|no| T{Threads?}
+ T -->|yes| PQ["queue.Queue"]
+ T -->|no| DQ["collections.deque"]
 ```
 
 ---
@@ -208,29 +208,29 @@ CPython `list` is a **dynamic array**. Index `0` is the front. Removing it **shi
 | 100 | O(100) | O(1) |
 | 10,000 | O(10,000) | O(1) |
 
-Processing **every reading** in a month with `list.pop(0)` costs **O(n²)** over the month. `deque` uses a **block chain** in C: pops from the left without shifting the whole sequence.
+Processing **every event** in a batch with `list.pop(0)` costs **O(n²)** over the batch. `deque` uses a **block chain** in C: pops from the left without shifting the whole sequence.
 
 ```python
-readings: list[DailyReading] = []
-readings.append(incoming)
-while readings:
-    process(readings.pop(0))
+events: list[LogEvent] = []
+events.append(incoming)
+while events:
+ process(events.pop(0))
 
 from collections import deque
-readings_q: deque[DailyReading] = deque()
-readings_q.append(incoming)
-while readings_q:
-    process(readings_q.popleft())
+events_q: deque[LogEvent] = deque()
+events_q.append(incoming)
+while events_q:
+ process(events_q.popleft())
 ```
 
 ```mermaid
 sequenceDiagram
-  participant L as list
-  participant D as deque
-  Note over L: pop(0) shifts n-1 refs
-  L->>L: O(n) per dequeue
-  Note over D: popleft drops left block
-  D->>D: O(1) per dequeue
+ participant L as list
+ participant D as deque
+ Note over L: pop(0) shifts n-1 refs
+ L->>L: O(n) per dequeue
+ Note over D: popleft drops left block
+ D->>D: O(1) per dequeue
 ```
 
 ---
@@ -247,47 +247,47 @@ from typing import Any, Iterable, Iterator
 
 
 class DequeQueue:
-    def __init__(self, items: Iterable[Any] | None = None) -> None:
-        self._items: deque[Any] = deque(items) if items is not None else deque()
+ def __init__(self, items: Iterable[Any] | None = None) -> None:
+ self._items: deque[Any] = deque(items) if items is not None else deque()
 
-    def __len__(self) -> int:
-        return len(self._items)
+ def __len__(self) -> int:
+ return len(self._items)
 
-    def is_empty(self) -> bool:
-        return len(self._items) == 0
+ def is_empty(self) -> bool:
+ return len(self._items) == 0
 
-    def enqueue(self, item: Any) -> None:
-        self._items.append(item)
+ def enqueue(self, item: Any) -> None:
+ self._items.append(item)
 
-    def dequeue(self) -> Any:
-        if not self._items:
-            raise IndexError("dequeue from empty queue")
-        return self._items.popleft()
+ def dequeue(self) -> Any:
+ if not self._items:
+ raise IndexError("dequeue from empty queue")
+ return self._items.popleft()
 
-    def front(self) -> Any:
-        if not self._items:
-            raise IndexError("front from empty queue")
-        return self._items[0]
+ def front(self) -> Any:
+ if not self._items:
+ raise IndexError("front from empty queue")
+ return self._items[0]
 
-    def try_front(self) -> Any | None:
-        return self._items[0] if self._items else None
+ def try_front(self) -> Any | None:
+ return self._items[0] if self._items else None
 
-    def rear(self) -> Any:
-        if not self._items:
-            raise IndexError("rear from empty queue")
-        return self._items[-1]
+ def rear(self) -> Any:
+ if not self._items:
+ raise IndexError("rear from empty queue")
+ return self._items[-1]
 
-    def clear(self) -> None:
-        self._items.clear()
+ def clear(self) -> None:
+ self._items.clear()
 
-    def contains(self, item: Any) -> bool:
-        return item in self._items
+ def contains(self, item: Any) -> bool:
+ return item in self._items
 
-    def extend_enqueue(self, items: Iterable[Any]) -> None:
-        self._items.extend(items)
+ def extend_enqueue(self, items: Iterable[Any]) -> None:
+ self._items.extend(items)
 
-    def __iter__(self) -> Iterator[Any]:
-        yield from self._items
+ def __iter__(self) -> Iterator[Any]:
+ yield from self._items
 ```
 
 ---
@@ -301,49 +301,49 @@ from typing import Any
 
 @dataclass
 class QNode:
-    data: Any
-    next: QNode | None = None
+ data: Any
+ next: QNode | None = None
 
 
 class LinkedQueue:
-    def __init__(self) -> None:
-        self._head: QNode | None = None
-        self._tail: QNode | None = None
-        self._size = 0
+ def __init__(self) -> None:
+ self._head: QNode | None = None
+ self._tail: QNode | None = None
+ self._size = 0
 
-    def __len__(self) -> int:
-        return self._size
+ def __len__(self) -> int:
+ return self._size
 
-    def is_empty(self) -> bool:
-        return self._head is None
+ def is_empty(self) -> bool:
+ return self._head is None
 
-    def enqueue(self, item: Any) -> None:
-        node = QNode(item)
-        if self._tail is None:
-            self._head = self._tail = node
-        else:
-            self._tail.next = node
-            self._tail = node
-        self._size += 1
+ def enqueue(self, item: Any) -> None:
+ node = QNode(item)
+ if self._tail is None:
+ self._head = self._tail = node
+ else:
+ self._tail.next = node
+ self._tail = node
+ self._size += 1
 
-    def dequeue(self) -> Any:
-        if self._head is None:
-            raise IndexError("dequeue from empty queue")
-        data = self._head.data
-        self._head = self._head.next
-        if self._head is None:
-            self._tail = None
-        self._size -= 1
-        return data
+ def dequeue(self) -> Any:
+ if self._head is None:
+ raise IndexError("dequeue from empty queue")
+ data = self._head.data
+ self._head = self._head.next
+ if self._head is None:
+ self._tail = None
+ self._size -= 1
+ return data
 
-    def front(self) -> Any:
-        if self._head is None:
-            raise IndexError("front from empty queue")
-        return self._head.data
+ def front(self) -> Any:
+ if self._head is None:
+ raise IndexError("front from empty queue")
+ return self._head.data
 
-    def clear(self) -> None:
-        self._head = self._tail = None
-        self._size = 0
+ def clear(self) -> None:
+ self._head = self._tail = None
+ self._size = 0
 ```
 
 | Implementation | `enqueue` | `dequeue` | Notes |
@@ -358,24 +358,24 @@ class LinkedQueue:
 
 ```mermaid
 flowchart TB
-  subgraph o1["O(1) with deque / linked"]
-    enqueue
-    dequeue
-    front
-    len_op["len / is_empty"]
-  end
-  subgraph on["O(n)"]
-    contains
-    list_pop0["list.pop(0) dequeue"]
-  end
+ subgraph o1["O(1) with deque / linked"]
+ enqueue
+ dequeue
+ front
+ len_op["len / is_empty"]
+ end
+ subgraph on["O(n)"]
+ contains
+ list_pop0["list.pop(0) dequeue"]
+ end
 ```
 
 ### `enqueue(item)` — add at rear
 
 ```python
 q = DequeQueue()
-q.enqueue(DailyReading(101, "STN01", 1, "light rain", 0.2))
-q.enqueue(DailyReading(102, "STN01", 1, "cold front", 1.1))
+q.enqueue(LogEvent(101, "api-01", 1, "retry", 0.2))
+q.enqueue(LogEvent(102, "api-01", 1, "timeout", 1.1))
 ```
 
 | | |
@@ -389,7 +389,7 @@ q.enqueue(DailyReading(102, "STN01", 1, "cold front", 1.1))
 
 ```python
 first = q.dequeue()
-assert first.reading_id == 101
+assert first.event_id == 101
 ```
 
 | | |
@@ -397,7 +397,7 @@ assert first.reading_id == 101
 | **Time** | O(1) `deque` / linked; **O(n)** `list.pop(0)` |
 | **Space** | O(1) |
 
-**Weather:** Worker always processes the **oldest unprocessed** reading in the buffer.
+**FIFO rule:** Worker always processes the **oldest unprocessed** item in the buffer.
 
 ---
 
@@ -435,8 +435,8 @@ nxt = q.front()
 ### `clear()` / `extend_enqueue` / iteration
 
 ```python
-for reading in q:
-    print(reading.reading_id)
+for event in q:
+ print(event.event_id)
 ```
 
 | | |
@@ -446,17 +446,17 @@ for reading in q:
 
 ---
 
-## Weather patterns with queues
+## Practical patterns with queues
 
-### Live reading processor
+### Live event processor
 
 ```python
-def drain_readings(q: DequeQueue, max_batch: int = 50) -> list[float]:
-    anomalies: list[float] = []
-    for _ in range(min(max_batch, len(q))):
-        reading = q.dequeue()
-        anomalies.append(reading.temp_anomaly)
-    return anomalies
+def drain_events(q: DequeQueue, max_batch: int = 50) -> list[float]:
+ scores: list[float] = []
+ for _ in range(min(max_batch, len(q))):
+ event = q.dequeue()
+ scores.append(event.score)
+ return scores
 ```
 
 | | |
@@ -464,19 +464,19 @@ def drain_readings(q: DequeQueue, max_batch: int = 50) -> list[float]:
 | **Time** | O(batch) |
 | **Space** | O(batch) |
 
-### BFS — shortest path on unweighted station graph
+### BFS — shortest path on unweighted graph
 
 ```python
 def bfs(start: str, adj: dict[str, list[str]]) -> dict[str, int]:
-    dist = {start: 0}
-    q: deque[str] = deque([start])
-    while q:
-        u = q.popleft()
-        for v in adj.get(u, []):
-            if v not in dist:
-                dist[v] = dist[u] + 1
-                q.append(v)
-    return dist
+ dist = {start: 0}
+ q: deque[str] = deque([start])
+ while q:
+ u = q.popleft()
+ for v in adj.get(u, []):
+ if v not in dist:
+ dist[v] = dist[u] + 1
+ q.append(v)
+ return dist
 ```
 
 | | |
@@ -484,22 +484,22 @@ def bfs(start: str, adj: dict[str, list[str]]) -> dict[str, int]:
 | **Time** | O(V + E) |
 | **Space** | O(V) |
 
-**Weather:** Nodes might be stations; edges shared basins or transfer paths—BFS gives minimum **number of hops** in a path sketch (not geographic distance).
+BFS gives minimum **number of hops** in an unweighted graph (not weighted path cost).
 
-### Level-order traversal of reading category tree
+### Level-order traversal of tree
 
 ```python
 def level_order(root: QNode | None) -> list[Any]:
-    if root is None:
-        return []
-    out: list[Any] = []
-    q: deque[QNode] = deque([root])
-    while q:
-        node = q.popleft()
-        out.append(node.data)
-        if node.next:
-            q.append(node.next)
-    return out
+ if root is None:
+ return []
+ out: list[Any] = []
+ q: deque[QNode] = deque([root])
+ while q:
+ node = q.popleft()
+ out.append(node.data)
+ if node.next:
+ q.append(node.next)
+ return out
 ```
 
 | | |
@@ -515,27 +515,27 @@ Useful when buffer size is **fixed** (ring buffer). Indices wrap with modulo.
 
 ```python
 class CircularArrayQueue:
-    def __init__(self, capacity: int) -> None:
-        self._cap = capacity
-        self._data: list[Any | None] = [None] * capacity
-        self._head = 0
-        self._tail = 0
-        self._size = 0
+ def __init__(self, capacity: int) -> None:
+ self._cap = capacity
+ self._data: list[Any | None] = [None] * capacity
+ self._head = 0
+ self._tail = 0
+ self._size = 0
 
-    def enqueue(self, item: Any) -> None:
-        if self._size == self._cap:
-            raise OverflowError("queue full")
-        self._data[self._tail] = item
-        self._tail = (self._tail + 1) % self._cap
-        self._size += 1
+ def enqueue(self, item: Any) -> None:
+ if self._size == self._cap:
+ raise OverflowError("queue full")
+ self._data[self._tail] = item
+ self._tail = (self._tail + 1) % self._cap
+ self._size += 1
 
-    def dequeue(self) -> Any:
-        if self._size == 0:
-            raise IndexError("dequeue from empty queue")
-        item = self._data[self._head]
-        self._head = (self._head + 1) % self._cap
-        self._size -= 1
-        return item
+ def dequeue(self) -> Any:
+ if self._size == 0:
+ raise IndexError("dequeue from empty queue")
+ item = self._data[self._head]
+ self._head = (self._head + 1) % self._cap
+ self._size -= 1
+ return item
 ```
 
 | | |
@@ -570,7 +570,7 @@ For variable size in Python, prefer `deque` over manual rings unless you are imp
 | Multi-thread workers | `queue.Queue` |
 | Async consumers | `asyncio.Queue` |
 | Process pools | `multiprocessing.Queue` |
-| Priority by month | [Priority queue](../priority-queue/index.md) — not FIFO |
+| Priority by rank | [Priority queue](../priority-queue/index.md) — not FIFO |
 
 ---
 
@@ -578,20 +578,20 @@ For variable size in Python, prefer `deque` over manual rings unless you are imp
 
 ```mermaid
 flowchart TD
-  Q([Ordering?])
-  Q --> F{FIFO fair order?}
-  F -->|yes| QU["deque Queue"]
-  F -->|no| S{LIFO?}
-  S -->|yes| ST["stack"]
-  S -->|no| D["deque both ends"]
+ Q([Ordering?])
+ Q --> F{FIFO fair order?}
+ F -->|yes| QU["deque Queue"]
+ F -->|no| S{LIFO?}
+ S -->|yes| ST["stack"]
+ S -->|no| D["deque both ends"]
 ```
 
 | Scenario | Queue | Alternative |
 | --- | --- | --- |
-| Reading ingest | `deque` FIFO | — |
+| Event ingest | `deque` FIFO | — |
 | Undo edits | Stack | — |
-| Last-k anomaly window | `deque(maxlen=k)` | [Deque page](../dequeue-deque/index.md) |
-| Sort archive by anomaly | Not queue | `sorted` / pandas |
+| Last-k sliding window | `deque(maxlen=k)` | [Deque page](../dequeue-deque/index.md) |
+| Sort archive by score | Not queue | `sorted` / pandas |
 
 ---
 
@@ -599,7 +599,7 @@ flowchart TD
 
 | Pitfall | Why it hurts | Fix |
 | --- | --- | --- |
-| `list.pop(0)` in hot path | O(n²) per month | `deque.popleft()` |
+| `list.pop(0)` in hot path | O(n²) per batch | `deque.popleft()` |
 | `deque.pop()` instead of `popleft` | LIFO not FIFO | `popleft` = dequeue |
 | Unbounded queue on fast feed | Memory exhaustion | `maxlen` or drop policy |
 | `Queue.get` without timeout | Blocks forever | `get(timeout=...)` |
@@ -614,9 +614,9 @@ flowchart TD
 
 ```python
 lq = LinkedQueue()
-lq.enqueue(DailyReading(1, "STN01", 1, "clear", 0.0))
-lq.enqueue(DailyReading(2, "STN01", 1, "overcast", 0.1))
-assert lq.rear().reading_id == 2
+lq.enqueue(LogEvent(1, "api-01", 1, "ok", 0.0))
+lq.enqueue(LogEvent(2, "api-01", 1, "warn", 0.1))
+assert lq.rear().event_id == 2
 ```
 
 | | |
@@ -629,9 +629,9 @@ assert lq.rear().reading_id == 2
 ### `extend_enqueue` — bulk append at rear
 
 ```python
-batch = [DailyReading(i, "STN01", 1, "overcast", 0.0) for i in range(100, 110)]
+batch = [LogEvent(i, "api-01", 1, "batch", 0.0) for i in range(100, 110)]
 for r in batch:
-    lq.enqueue(r)
+ lq.enqueue(r)
 ```
 
 | | |
@@ -650,7 +650,7 @@ for r in batch:
 
 ---
 
-## Threading and async queues (weather workers)
+## Threading and async queues
 
 ### `queue.Queue` — blocking producer/consumer
 
@@ -658,19 +658,19 @@ for r in batch:
 from queue import Queue
 from threading import Thread
 
-def producer(q: Queue[DailyReading], readings: list[DailyReading]) -> None:
-    for r in readings:
-        q.put(r)
+def producer(q: Queue[LogEvent], events: list[LogEvent]) -> None:
+ for e in events:
+ q.put(e)
 
-def consumer(q: Queue[DailyReading]) -> None:
-    while True:
-        r = q.get()
-        if r is None:
-            break
-        q.task_done()
+def consumer(q: Queue[LogEvent]) -> None:
+ while True:
+ e = q.get()
+ if e is None:
+ break
+ q.task_done()
 
-q: Queue[DailyReading] = Queue(maxsize=1000)
-Thread(target=producer, args=(q, readings)).start()
+q: Queue[LogEvent] = Queue(maxsize=1000)
+Thread(target=producer, args=(q, events)).start()
 ```
 
 | | |
@@ -678,26 +678,26 @@ Thread(target=producer, args=(q, readings)).start()
 | **Time** | O(1) put/get typical |
 | **Space** | Bounded by `maxsize` |
 
-**Weather:** Back-pressure when live feed outpaces worker—`maxsize` prevents unbounded RAM.
+Back-pressure when the live feed outpaces the worker—`maxsize` prevents unbounded RAM.
 
 ---
 
-### `asyncio.Queue` — async export pipeline
+### `asyncio.Queue` — async job pipeline
 
 ```python
 import asyncio
 
-async def worker(q: asyncio.Queue[ExportJob]) -> None:
-    while True:
-        job = await q.get()
-        await generate_chart(job)
-        q.task_done()
+async def worker(q: asyncio.Queue[Job]) -> None:
+ while True:
+ job = await q.get()
+ await run_report(job)
+ q.task_done()
 
 async def main() -> None:
-    q: asyncio.Queue[ExportJob] = asyncio.Queue()
-    asyncio.create_task(worker(q))
-    await q.put(ExportJob("STN01", 2024, "temp_anomaly"))
-    await q.join()
+ q: asyncio.Queue[Job] = asyncio.Queue()
+ asyncio.create_task(worker(q))
+ await q.put(Job("task-01", 2024, "latency_summary"))
+ await q.join()
 ```
 
 | | |
@@ -716,16 +716,16 @@ For **n = 10,000** dequeues from a growing-then-shrinking queue:
 | `list.pop(0)` | Sum of 1..n → **O(n²)** |
 | `deque.popleft()` | **O(n)** total |
 
-You do not need to benchmark every script—if the queue is **per-month** (hundreds of readings), `list.pop(0)` might “feel fine.” If the queue is **year-long** or **multi-station streaming**, use `deque`.
+You do not need to benchmark every script—if the queue is **small** (hundreds of events), `list.pop(0)` might “feel fine.” If the queue is **long-running** or **high-throughput streaming**, use `deque`.
 
 ```mermaid
 flowchart LR
-  subgraph bad["list FIFO"]
-    L1["shift n-1 refs"] --> L2["each dequeue"]
-  end
-  subgraph good["deque FIFO"]
-    D1["drop left block"] --> D2["O(1) each"]
-  end
+ subgraph bad["list FIFO"]
+ L1["shift n-1 refs"] --> L2["each dequeue"]
+ end
+ subgraph good["deque FIFO"]
+ D1["drop left block"] --> D2["O(1) each"]
+ end
 ```
 
 ---
@@ -736,19 +736,19 @@ When edge weights are 0 or 1, use `deque` and push to front on 0-cost edges:
 
 ```python
 def zero_one_bfs(start: int, adj: dict[int, list[tuple[int, int]]]) -> dict[int, int]:
-    dist = {start: 0}
-    q: deque[int] = deque([start])
-    while q:
-        u = q.popleft()
-        for v, w in adj.get(u, []):
-            nd = dist[u] + w
-            if v not in dist or nd < dist[v]:
-                dist[v] = nd
-                if w == 0:
-                    q.appendleft(v)
-                else:
-                    q.append(v)
-    return dist
+ dist = {start: 0}
+ q: deque[int] = deque([start])
+ while q:
+ u = q.popleft()
+ for v, w in adj.get(u, []):
+ nd = dist[u] + w
+ if v not in dist or nd < dist[v]:
+ dist[v] = nd
+ if w == 0:
+ q.appendleft(v)
+ else:
+ q.append(v)
+ return dist
 ```
 
 | | |
@@ -760,14 +760,14 @@ def zero_one_bfs(start: int, adj: dict[int, list[tuple[int, int]]]) -> dict[int,
 
 ## `DequeQueue` method checklist
 
-| Method | Time | Weather use |
+| Method | Time | Use case |
 | --- | --- | --- |
-| `enqueue` | O(1) | New reading arrives |
+| `enqueue` | O(1) | New event arrives |
 | `dequeue` | O(1) | Worker takes oldest |
 | `front` / `try_front` | O(1) | Preview next |
 | `rear` | O(1) | Newest in buffer |
-| `extend_enqueue` | O(k) | Bulk load month |
-| `clear` | O(1) | Reset on sensor swap |
+| `extend_enqueue` | O(k) | Bulk load batch |
+| `clear` | O(1) | Reset on reconnect |
 | `contains` | O(n) | Rare sanity check |
 
 ---
@@ -788,21 +788,21 @@ def zero_one_bfs(start: int, adj: dict[int, list[tuple[int, int]]]) -> dict[int,
 ```python
 from collections import deque
 
-q: deque[DailyReading] = deque()
-q.append(reading)
+q: deque[LogEvent] = deque()
+q.append(event)
 nxt = q[0]
 p = q.popleft()
 
 fq = DequeQueue()
-fq.enqueue(ExportJob("STN02", 2024, "precip_rate"))
+fq.enqueue(Job("task-02", 2024, "error_rate"))
 job = fq.dequeue()
 ```
 
-Use a **queue** when **first in, first out** fairness matters—live readings, BFS, job pipes. In Python, **`collections.deque`** is the default implementation; never dequeue with **`list.pop(0)`** at scale.
+Use a **queue** when **first in, first out** fairness matters—live events, BFS, job pipes. In Python, **`collections.deque`** is the default implementation; never dequeue with **`list.pop(0)`** at scale.
 
-**Weather pipeline checklist**
+**Queue usage checklist**
 
 1. **Live feed** — `deque` or `Queue`; producer `append`, worker `popleft`.
 2. **Measure** — if dequeue feels slow, check you are not using `pop(0)`.
-3. **BFS** — `deque` of visited frontier on graph of stations.
-4. **Not for** — archive sorting, random reading access, undo stacks.
+3. **BFS** — `deque` of visited frontier on a graph.
+4. **Not for** — archive sorting, random access, undo stacks.

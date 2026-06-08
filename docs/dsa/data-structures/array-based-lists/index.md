@@ -27,24 +27,24 @@ When you `append`, Python usually writes into the next free slot in O(1) time. W
 
 ```mermaid
 flowchart LR
-  subgraph logical["Logical list (what you see)"]
-    L0["items[0]"]
-    L1["items[1]"]
-    L2["items[2]"]
-    Ldots["…"]
-    Ln["items[n-1]"]
-  end
-  subgraph physical["Physical storage (conceptual)"]
-    P0["slot 0"]
-    P1["slot 1"]
-    P2["slot 2"]
-    Punused["unused capacity"]
-  end
-  L0 --> P0
-  L1 --> P1
-  L2 --> P2
-  Ln --> P2
-  Punused -.->|"reserved for growth"| P2
+ subgraph logical["Logical list (what you see)"]
+ L0["items[0]"]
+ L1["items[1]"]
+ L2["items[2]"]
+ Ldots["…"]
+ Ln["items[n-1]"]
+ end
+ subgraph physical["Physical storage (conceptual)"]
+ P0["slot 0"]
+ P1["slot 1"]
+ P2["slot 2"]
+ Punused["unused capacity"]
+ end
+ L0 --> P0
+ L1 --> P1
+ L2 --> P2
+ Ln --> P2
+ Punused -.->|"reserved for growth"| P2
 ```
 
 **Takeaway:** Random access by index is O(1) because the interpreter jumps straight to slot `i`. Inserting or deleting away from the end may move many references—that is the classic array-based trade-off.
@@ -61,16 +61,16 @@ flowchart LR
 
 ```mermaid
 sequenceDiagram
-  participant You
-  participant List as list object
-  participant Array as backing array
-  You->>List: xs.append(x)
-  List->>Array: write ref at index len
-  Note over List,Array: O(1) amortized if capacity exists
-  You->>List: xs.insert(0, x)
-  List->>Array: shift n refs right
-  List->>Array: write ref at index 0
-  Note over List,Array: O(n) time, O(1) extra space
+ participant You
+ participant List as list object
+ participant Array as backing array
+ You->>List: xs.append(x)
+ List->>Array: write ref at index len
+ Note over List,Array: O(1) amortized if capacity exists
+ You->>List: xs.insert(0, x)
+ List->>Array: shift n refs right
+ List->>Array: write ref at index 0
+ Note over List,Array: O(n) time, O(1) extra space
 ```
 
 Throughout this page, **n** means `len(xs)` unless stated otherwise. **k** means the size of another iterable you pass in.
@@ -161,8 +161,8 @@ matrix = [[1, 2, 3], [4, 5, 6]]
 flat = [cell for row in matrix for cell in row]
 flat_alt = []
 for row in matrix:
-    for cell in row:
-        flat_alt.append(cell)
+ for cell in row:
+ flat_alt.append(cell)
 ```
 
 ### 6. Generator expression + `list()`
@@ -247,20 +247,20 @@ reversed_list = list(reversed([1, 2, 3]))
 
 ```mermaid
 flowchart TD
-  Start([Need a list?])
-  Start --> Empty{Empty?}
-  Empty -->|yes| Lit["[] or list()"]
-  Empty -->|no| From{Source?}
-  From -->|fixed values| Literal["[a, b, c]"]
-  From -->|transform iterable| Comp["[f(x) for x in it]"]
-  From -->|copy iterable| Cons["list(it)"]
-  From -->|sorted copy| Sort["sorted(it)"]
-  From -->|repeat pattern| Mul["[x] * n"]
-  Lit --> Done([list object])
-  Comp --> Done
-  Cons --> Done
-  Sort --> Done
-  Mul --> Done
+ Start([Need a list?])
+ Start --> Empty{Empty?}
+ Empty -->|yes| Lit["[] or list()"]
+ Empty -->|no| From{Source?}
+ From -->|fixed values| Literal["[a, b, c]"]
+ From -->|transform iterable| Comp["[f(x) for x in it]"]
+ From -->|copy iterable| Cons["list(it)"]
+ From -->|sorted copy| Sort["sorted(it)"]
+ From -->|repeat pattern| Mul["[x] * n"]
+ Lit --> Done([list object])
+ Comp --> Done
+ Cons --> Done
+ Sort --> Done
+ Mul --> Done
 ```
 
 ---
@@ -354,7 +354,7 @@ assert a * 3 == [1, 2, 1, 2, 1, 2]
 ```python
 total = 0
 for x in xs:
-    total += x
+ total += x
 ```
 
 | | |
@@ -370,23 +370,23 @@ Python lists expose **eleven** methods on the type. They always mutate **in plac
 
 ```mermaid
 flowchart TB
-  subgraph mutate["Mutate in place"]
-    append
-    extend
-    insert
-    remove
-    pop
-    clear
-    sort
-    reverse
-  end
-  subgraph query["Read-only on self"]
-    count
-    index
-  end
-  subgraph copy["Shallow copy"]
-    copy["copy()"]
-  end
+ subgraph mutate["Mutate in place"]
+ append
+ extend
+ insert
+ remove
+ pop
+ clear
+ sort
+ reverse
+ end
+ subgraph query["Read-only on self"]
+ count
+ index
+ end
+ subgraph copy["Shallow copy"]
+ copy["copy()"]
+ end
 ```
 
 ### `append(x)` — add one element at the end
@@ -407,16 +407,16 @@ assert xs == [1, 2, 3, [4, 5]]
 
 ```mermaid
 sequenceDiagram
-  participant A as append(x)
-  participant L as list
-  A->>L: len < allocated?
-  alt yes
-    L-->>A: store ref at len, increment len
-  else no
-    L->>L: allocate bigger array
-    L->>L: copy n references
-    L-->>A: store ref at len
-  end
+ participant A as append(x)
+ participant L as list
+ A->>L: len < allocated?
+ alt yes
+ L-->>A: store ref at len, increment len
+ else no
+ L->>L: allocate bigger array
+ L->>L: copy n references
+ L-->>A: store ref at len
+ end
 ```
 
 ### `extend(iterable)` — add many elements at the end
@@ -463,18 +463,18 @@ xs.insert(len(xs), 99)
 
 ```mermaid
 flowchart LR
-  subgraph before["Before insert(1, X)"]
-    A0["0: a"]
-    A1["1: b"]
-    A2["2: c"]
-  end
-  subgraph after["After"]
-    B0["0: a"]
-    B1["1: X"]
-    B2["2: b"]
-    B3["3: c"]
-  end
-  before -->|"shift right from index 1"| after
+ subgraph before["Before insert(1, X)"]
+ A0["0: a"]
+ A1["1: b"]
+ A2["2: c"]
+ end
+ subgraph after["After"]
+ B0["0: a"]
+ B1["1: X"]
+ B2["2: b"]
+ B3["3: c"]
+ end
+ before -->|"shift right from index 1"| after
 ```
 
 ### `remove(x)` — delete first equal element
@@ -578,10 +578,10 @@ assert pairs == [(1, "a"), (1, "c"), (2, "b")]
 
 ```mermaid
 flowchart TD
-  S([sort called])
-  S --> T[Timsort: identify monotonic runs]
-  T --> M[Merge runs as needed]
-  M --> Done([list reordered in place])
+ S([sort called])
+ S --> T[Timsort: identify monotonic runs]
+ T --> M[Merge runs as needed]
+ M --> Done([list reordered in place])
 ```
 
 **`sort` vs `sorted`:**
@@ -672,7 +672,7 @@ assert any(x > 4 for x in nums)
 assert all(x > 0 for x in nums)
 
 for i, value in enumerate(["a", "b"]):
-  pass
+ pass
 ```
 
 ---
@@ -696,15 +696,15 @@ assert top == "second" and stack == ["first"]
 
 ```mermaid
 sequenceDiagram
-  participant User
-  participant Stack as list (stack)
-  User->>Stack: append("A")
-  Note over Stack: top = A
-  User->>Stack: append("B")
-  Note over Stack: top = B
-  User->>Stack: pop()
-  Stack-->>User: "B"
-  Note over Stack: top = A
+ participant User
+ participant Stack as list (stack)
+ User->>Stack: append("A")
+ Note over Stack: top = A
+ User->>Stack: append("B")
+ Note over Stack: top = B
+ User->>Stack: pop()
+ Stack-->>User: "B"
+ Note over Stack: top = A
 ```
 
 ---
@@ -724,17 +724,17 @@ For production FIFO queues, use `collections.deque` (O(1) at both ends). See [De
 
 ```mermaid
 flowchart LR
-  subgraph bad["list as queue — dequeue pop(0)"]
-    direction TB
-    B1["shift all elements left"]
-    B2["O(n) per dequeue"]
-  end
-  subgraph good["collections.deque"]
-    direction TB
-    G1["O(1) popleft"]
-    G2["O(1) append"]
-  end
-  bad -.->|"prefer at scale"| good
+ subgraph bad["list as queue — dequeue pop(0)"]
+ direction TB
+ B1["shift all elements left"]
+ B2["O(n) per dequeue"]
+ end
+ subgraph good["collections.deque"]
+ direction TB
+ G1["O(1) popleft"]
+ G2["O(1) append"]
+ end
+ bad -.->|"prefer at scale"| good
 ```
 
 ---
@@ -775,8 +775,8 @@ Let **n** = `len(xs)`, **k** = length of another iterable, **i** = index.
 ```python
 result = []
 for x in range(5):
-    if x % 2 == 0:
-        result.append(x * 10)
+ if x % 2 == 0:
+ result.append(x * 10)
 
 result2 = [x * 10 for x in range(5) if x % 2 == 0]
 assert result == result2 == [0, 20, 40]
@@ -799,13 +799,13 @@ nums[:] = [x for x in nums if x % 2 == 0]
 
 ```python
 def unique_keep_order(items: list) -> list:
-    seen = set()
-    out = []
-    for x in items:
-        if x not in seen:
-            seen.add(x)
-            out.append(x)
-    return out
+ seen = set()
+ out = []
+ for x in items:
+ if x not in seen:
+ seen.add(x)
+ out.append(x)
+ return out
 ```
 
 | | |
@@ -834,7 +834,7 @@ assert i == 2
 
 ## Common pitfalls (and what to do instead)
 
-| Pitfall | Why it hurts | Better atemp_anomalyoach |
+| Pitfall | Why it hurts | Better approach |
 | --- | --- | --- |
 | `xs = xs.sort()` | `sort` returns `None` | `xs.sort()` alone, or `xs = sorted(xs)` |
 | `[[0]*n]*m` | shared inner lists | `[[0]*n for _ in range(m)]` |

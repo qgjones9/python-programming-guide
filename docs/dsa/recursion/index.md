@@ -19,9 +19,9 @@ If either is missing or the recursive step does not shrink the problem, you get 
 
 ```python
 def factorial(n: int) -> int:
-    if n <= 1:          # base case
-        return 1
-    return n * factorial(n - 1)   # recursive case: smaller n
+ if n <= 1: # base case
+ return 1
+ return n * factorial(n - 1) # recursive case: smaller n
 ```
 
 ## Call stack intuition
@@ -31,11 +31,11 @@ Each call waits for the next to finish. Python keeps **stack frames**: local var
 For `factorial(3)`:
 
 ```text
-factorial(3)  →  waits on 3 * factorial(2)
-  factorial(2)  →  waits on 2 * factorial(1)
-    factorial(1)  →  returns 1   (base case)
-  factorial(2)  →  returns 2 * 1 = 2
-factorial(3)  →  returns 3 * 2 = 6
+factorial(3) → waits on 3 * factorial(2)
+ factorial(2) → waits on 2 * factorial(1)
+ factorial(1) → returns 1 (base case)
+ factorial(2) → returns 2 * 1 = 2
+factorial(3) → returns 3 * 2 = 6
 ```
 
 **Space:** If the chain has depth *d*, the call stack uses O(*d*) auxiliary space. Deep recursion on large *n* can overflow the stack before time becomes an issue—see [complexity analysis](../complexity/index.md).
@@ -64,9 +64,9 @@ Tracing on paper or with a few `print` depths helps at first; later you rely on 
 
 ```python
 def sum_list(values: list[int]) -> int:
-    if not values:
-        return 0
-    return values[0] + sum_list(values[1:])
+ if not values:
+ return 0
+ return values[0] + sum_list(values[1:])
 ```
 
 Time O(*n*), stack depth O(*n*). An iterative loop uses O(1) extra space and is often preferable for long lists in Python.
@@ -75,15 +75,15 @@ Time O(*n*), stack depth O(*n*). An iterative loop uses O(1) extra space and is 
 
 ```python
 class Node:
-    def __init__(self, value: int, left: "Node | None" = None, right: "Node | None" = None):
-        self.value = value
-        self.left = left
-        self.right = right
+ def __init__(self, value: int, left: "Node | None" = None, right: "Node | None" = None):
+ self.value = value
+ self.left = left
+ self.right = right
 
 def height(root: Node | None) -> int:
-    if root is None:
-        return 0
-    return 1 + max(height(root.left), height(root.right))
+ if root is None:
+ return 0
+ return 1 + max(height(root.left), height(root.right))
 ```
 
 Matches how [binary trees](../data-structures/binary-search-tree/index.md) are defined: a node plus left and right subtrees.
@@ -92,16 +92,16 @@ Matches how [binary trees](../data-structures/binary-search-tree/index.md) are d
 
 ```python
 def binary_search_rec(
-    sorted_values: list[int], target: int, lo: int, hi: int
+ sorted_values: list[int], target: int, lo: int, hi: int
 ) -> int | None:
-    if lo > hi:
-        return None
-    mid = (lo + hi) // 2
-    if sorted_values[mid] == target:
-        return mid
-    if sorted_values[mid] < target:
-        return binary_search_rec(sorted_values, target, mid + 1, hi)
-    return binary_search_rec(sorted_values, target, lo, mid - 1)
+ if lo > hi:
+ return None
+ mid = (lo + hi) // 2
+ if sorted_values[mid] == target:
+ return mid
+ if sorted_values[mid] < target:
+ return binary_search_rec(sorted_values, target, mid + 1, hi)
+ return binary_search_rec(sorted_values, target, lo, mid - 1)
 ```
 
 Depth O(log *n*) for *n* elements.

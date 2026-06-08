@@ -6,37 +6,37 @@ An abstract collection of **unique** elements where **membership**, **insert**, 
 | --- | --- |
 | **What it is** | No duplicate members; typical ops: `add`, `discard`, `in`, and set algebra (`|`, `&`, `-`, `^`). |
 | **Core operations** | Average O(1) hash set ops; O(log n) tree set ops; algebra on two sets of size n, m is O(n + m) with hashing. |
-| **When to use** | Deduplication, fast membership, climate-zone pools, station tags, and combining station groups. |
+| **When to use** | Deduplication, fast membership, permission pools, feature tags, and combining user groups. |
 | **Trade-off** | Hash sets sacrifice sorted iteration; tree sets cost more per op but give order. |
 
-In **daily weather data analysis**, sets model **climate regions**, **active station lists**, **condition tags**, and **"which stations reported rain in both months"** style questions without duplicate rows. You will still join large tables in **pandas**—sets excel for **small-to-medium unique collections** and **algebra** on station ids.
+In **application code**, sets model **permission groups**, **active session ids**, **feature tags**, and **"which users logged in both months"** style questions without duplicate rows. You will still join large tables in **pandas** or SQL—sets excel for **small-to-medium unique collections** and **algebra** on ids.
 
-This page is your **ready reference**: ADT semantics, hash vs tree implementations, full Python patterns, every operation with weather-flavored examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: ADT semantics, hash vs tree implementations, full Python patterns, every operation with practical examples, and **time and space complexity**. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How sets fit weather-shaped problems
+## How sets fit common problems
 
-| Weather idea | Set view | Typical op |
+| Application | Set view | Typical op |
 | --- | --- | --- |
-| **Pacific Northwest stations** | 4 station ids | `membership`, iterate |
-| **Stations with rain in Jan and Feb** | Intersection of two condition sets | `&` |
-| **All coastal minus offline** | Difference | `-` |
-| **Home or remote sensors** | Union of two sensor sets | `\|` |
-| **Unique station ids in file** | Dedup from list | `set(list)` |
-| **Frozen region snapshot** | Immutable set | `frozenset` |
+| **Beta testers** | 4 user ids | `membership`, iterate |
+| **Users active in Jan and Feb** | Intersection of two login sets | `&` |
+| **All premium minus churned** | Difference | `-` |
+| **Web or mobile clients** | Union of two client sets | `\|` |
+| **Unique user ids in file** | Dedup from list | `set(list)` |
+| **Frozen permission snapshot** | Immutable set | `frozenset` |
 
 ```mermaid
 flowchart LR
-  subgraph ops["Set algebra on station ids"]
-    A["Pacific_NW"]
-    B["High_Anomaly_2024"]
-    A --> I["A & B — in both"]
-    A --> U["A | B — either"]
-    A --> D["A - B — NW not high anomaly"]
-  end
+ subgraph ops["Set algebra on user ids"]
+ A["Beta_Users"]
+ B["Premium_2024"]
+ A --> I["A & B — in both"]
+ A --> U["A | B — either"]
+ A --> D["A - B — beta not premium"]
+ end
 ```
 
 Throughout this page, **n** = \|set A\|, **m** = \|set B\|, **u** = universe size for bitset discussion.
@@ -51,30 +51,30 @@ Throughout this page, **n** = \|set A\|, **m** = \|set B\|, **u** = universe siz
 | **`in`** | O(1) avg hash | O(1) with Counter | O(1) avg | O(n) |
 | **Order** | Unordered (Py 3.7+ insertion order incidental) | Varies | Insertion order 3.7+ | Index order |
 | **Algebra** | Built-in | `Counter` arithmetic | Key sets only | Manual |
-| **Weather fit** | Regions, tags | Reading counts per station | Stats per id | Reading sequence |
+| **Typical fit** | Permission pools, tags | Event counts per user | Stats per id | Event sequence |
 
 ---
 
 ## ADT operations (abstract)
 
-| Operation | Meaning | Weather example |
+| Operation | Meaning | Example |
 | --- | --- | --- |
-| `insert(x)` | Add if absent | Add station to region |
-| `remove(x)` | Delete if present | Remove decommissioned station id |
-| `contains(x)` | Membership test | Is `station_id` in high-anomaly set? |
-| `size()` | Count distinct | Active station count (unique ids) |
-| `union(A,B)` | All in either | Coastal \| mountain sensors |
-| `intersection(A,B)` | In both | Rain days ∩ cold-front days |
-| `difference(A,B)` | In A not B | Active minus offline |
+| `insert(x)` | Add if absent | Add user to beta group |
+| `remove(x)` | Delete if present | Remove deactivated account id |
+| `contains(x)` | Membership test | Is `user_id` in admin set? |
+| `size()` | Count distinct | Active session count (unique ids) |
+| `union(A,B)` | All in either | Web \| mobile clients |
+| `intersection(A,B)` | In both | Login days ∩ error days |
+| `difference(A,B)` | In A not B | Active minus churned |
 | `symmetric_difference` | In exactly one | XOR of two month lists |
 
 ```mermaid
 flowchart TB
-  subgraph venn["Intersection & union"]
-    direction TB
-    U["Union A ∪ B"]
-    I["Intersection A ∩ B"]
-  end
+ subgraph venn["Intersection & union"]
+ direction TB
+ U["Union A ∪ B"]
+ I["Intersection A ∩ B"]
+ end
 ```
 
 ---
@@ -84,7 +84,7 @@ flowchart TB
 ### 1. Empty set — **not** `{}` (that is a dict)
 
 ```python
-pacific_nw: set[str] = set()
+beta_users: set[str] = set()
 ```
 
 | | |
@@ -95,7 +95,7 @@ pacific_nw: set[str] = set()
 ### 2. Literal with members
 
 ```python
-pacific_nw = {"SEA-01", "PDX-01", "EUG-01", "BOI-01"}
+beta_users = {"u-101", "u-102", "u-103", "u-104"}
 ```
 
 | | |
@@ -103,10 +103,10 @@ pacific_nw = {"SEA-01", "PDX-01", "EUG-01", "BOI-01"}
 | **Time** | O(k) for k members (hash each) |
 | **Space** | O(k) |
 
-### 3. From iterable — dedup reading ids
+### 3. From iterable — dedup session ids
 
 ```python
-rainy_days = set(row["reading_id"] for row in january_rain_rows)
+jan_logins = set(row["session_id"] for row in january_login_rows)
 ```
 
 | | |
@@ -117,7 +117,7 @@ rainy_days = set(row["reading_id"] for row in january_rain_rows)
 ### 4. Set comprehension
 
 ```python
-coastal = {s["station_id"] for s in stations if s["zone"] in {"coastal", "maritime"}}
+admins = {u["user_id"] for u in users if u["role"] in {"admin", "superuser"}}
 ```
 
 | | |
@@ -125,11 +125,11 @@ coastal = {s["station_id"] for s in stations if s["zone"] in {"coastal", "mariti
 | **Time** | O(n) |
 | **Space** | O(output) |
 
-### 5. `frozenset` — immutable region snapshot
+### 5. `frozenset` — immutable permission snapshot
 
 ```python
-region_2024 = frozenset(["SEA-01", "PDX-01", "EUG-01", "BOI-01"])
-rules_cache[region_2024] = calibration_policy
+admin_perms = frozenset(["read", "write", "admin"])
+rules_cache[admin_perms] = access_policy
 ```
 
 | | |
@@ -142,13 +142,13 @@ rules_cache[region_2024] = calibration_policy
 ```python
 import pandas as pd
 
-stations = set(df["station_id"].dropna().unique())
+users = set(df["user_id"].dropna().unique())
 ```
 
 | | |
 | --- | --- |
 | **Time** | O(n) scan |
-| **Space** | O(unique stations) |
+| **Space** | O(unique users) |
 
 ---
 
@@ -158,10 +158,10 @@ Conceptual buckets: `hash(x) % table_size` → chain or open addressing (CPython
 
 ```python
 def demo_membership() -> None:
-    high_anomaly = {"SEA-01", "DEN-01", "PHX-01", "MIA-01"}
-    assert "SEA-01" in high_anomaly
-    high_anomaly.add("ORD-01")
-    high_anomaly.discard("DEN-01")
+ admins = {"u-101", "u-201", "u-301", "u-401"}
+ assert "u-101" in admins
+ admins.add("u-501")
+ admins.discard("u-201")
 ```
 
 | Operation | Average time | Worst time | Notes |
@@ -181,12 +181,12 @@ Used in C++ `std::set`, Java `TreeSet`—not Python stdlib. **Red–black** or s
 
 ```python
 class OrderedSet:
-    def __init__(self) -> None:
-        self.root = None
+ def __init__(self) -> None:
+ self.root = None
 
-    def insert(self, key: str) -> None: ...
-    def contains(self, key: str) -> bool: ...
-    def inorder(self) -> list[str]: ...
+ def insert(self, key: str) -> None: ...
+ def contains(self, key: str) -> bool: ...
+ def inorder(self) -> list[str]: ...
 ```
 
 | Operation | Time | Space |
@@ -194,33 +194,33 @@ class OrderedSet:
 | `insert` / `contains` / `remove` | O(log n) | O(1) |
 | In-order iterate | O(n) | O(n) output |
 
-**Weather use:** walk stations in alphabetical order for printed reports without sorting each time.
+**Use case:** Walk usernames in alphabetical order for printed reports without sorting each time.
 
 ---
 
 ## Set algebra (full reference)
 
 ```python
-pacific = {"SEA-01", "PDX-01", "EUG-01", "BOI-01"}
-high_anomaly = {"SEA-01", "DEN-01", "PHX-01", "MIA-01"}
+beta = {"u-101", "u-102", "u-103", "u-104"}
+premium = {"u-101", "u-201", "u-301", "u-401"}
 
-both = pacific & high_anomaly
-either = pacific | high_anomaly
-nw_only = pacific - high_anomaly
-symmetric = pacific ^ high_anomaly
+both = beta & premium
+either = beta | premium
+beta_only = beta - premium
+symmetric = beta ^ premium
 
-pacific |= {"BOI-01"}
-pacific &= high_anomaly
+beta |= {"u-105"}
+beta &= premium
 ```
 
 ```mermaid
 flowchart LR
-  A["Set A<br/>January rain days"]
-  B["Set B<br/>February rain days"]
-  A --> I["A & B — rain both months"]
-  A --> D["A - B — only January"]
-  B --> D2["B - A — only February"]
-  A --> X["A ^ B — exactly one month"]
+ A["Set A<br/>January logins"]
+ B["Set B<br/>February logins"]
+ A --> I["A & B — logged in both months"]
+ A --> D["A - B — only January"]
+ B --> D2["B - A — only February"]
+ A --> X["A ^ B — exactly one month"]
 ```
 
 | Operation | Operator / method | Time (hash) | Space |
@@ -234,12 +234,12 @@ flowchart LR
 
 ---
 
-## All operations (weather examples + complexity)
+## All operations (with examples and complexity)
 
-### `add(x)` — tag station as flagged
+### `add(x)` — tag user as flagged
 
 ```python
-flagged.add("SEA-01")
+flagged.add("u-101")
 ```
 
 | **Time** | O(1) average |
@@ -248,18 +248,18 @@ flagged.add("SEA-01")
 ### `discard(x)` / `remove(x)`
 
 ```python
-flagged.discard("DEN-99")
-flagged.remove("SEA-01")
+flagged.discard("u-999")
+flagged.remove("u-101")
 ```
 
 | **Time** | O(1) average |
 | **Space** | O(1) |
 
-### `in` — is station in region?
+### `in` — is user in beta group?
 
 ```python
-if "SEA-01" in pacific_nw:
-    apply_coastal_calibration()
+if "u-101" in beta_users:
+ enable_beta_features()
 ```
 
 | **Time** | O(1) average |
@@ -268,7 +268,7 @@ if "SEA-01" in pacific_nw:
 ### Copy and freeze
 
 ```python
-live = {"SEA-01", "DEN-01"}
+live = {"u-101", "u-201"}
 snapshot = live.copy()
 frozen = frozenset(live)
 ```
@@ -281,42 +281,42 @@ frozen = frozenset(live)
 ### Pop arbitrary element
 
 ```python
-station = flagged.pop()
+user_id = flagged.pop()
 ```
 
 | **Time** | O(1) average |
 
 ---
 
-## Weather application: climate region pools
+## Application: permission group pools
 
 ```python
-PACIFIC_NW = frozenset({"SEA-01", "PDX-01", "EUG-01", "BOI-01"})
-SOUTHWEST = frozenset({"PHX-01", "LAS-01", "ABQ-01", "ELP-01"})
-WEST = PACIFIC_NW | SOUTHWEST
+READ_ONLY = frozenset({"read", "list"})
+WRITE = frozenset({"read", "write", "delete"})
+ADMIN = READ_ONLY | WRITE | frozenset({"admin"})
 
-def same_region(s1: str, s2: str) -> bool:
-    for region in (PACIFIC_NW, SOUTHWEST):
-        if s1 in region and s2 in region:
-            return True
-    return False
+def same_tier(p1: str, p2: str) -> bool:
+ for tier in (READ_ONLY, WRITE, ADMIN):
+ if p1 in tier and p2 in tier:
+ return True
+ return False
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(1) membership per region check with small frozensets |
-| **Space** | O(stations in archive) |
+| **Time** | O(1) membership per tier check with small frozensets |
+| **Space** | O(permissions in policy) |
 
 ---
 
-## Weather application: two-month rain overlap
+## Application: two-month login overlap
 
 ```python
-def reading_ids_with_rain(rows: list[dict]) -> set[int]:
-    return {r["reading_id"] for r in rows if r["summary"] == "rain"}
+def session_ids_with_login(rows: list[dict]) -> set[str]:
+ return {r["session_id"] for r in rows if r["event"] == "login"}
 
-jan = reading_ids_with_rain(january_readings)
-feb = reading_ids_with_rain(february_readings)
+jan = session_ids_with_login(january_events)
+feb = session_ids_with_login(february_events)
 repeat = jan & feb
 only_jan = jan - feb
 ```
@@ -324,18 +324,18 @@ only_jan = jan - feb
 | | |
 | --- | --- |
 | **Time** | O(n_jan + n_feb) build + O(min) intersect |
-| **Space** | O(unique readings) |
+| **Space** | O(unique sessions) |
 
 ---
 
-## Weather application: condition filter set
+## Application: error-type filter set
 
 ```python
-WINDY = frozenset({"windy", "gusty", "storm"})
-windy_stations = {
-    s["station_id"]
-    for s in stations
-    if s["dominant_condition"] in WINDY
+RETRYABLE = frozenset({"timeout", "503", "connection_reset"})
+retryable_hosts = {
+ h["host"]
+ for h in hosts
+ if h["last_error"] in RETRYABLE
 }
 ```
 
@@ -343,20 +343,20 @@ windy_stations = {
 
 ## Bitset set (honorable implementation note)
 
-When universe is **small and fixed** (32 climate zones, 64 station index), bit vectors give O(1) word-sized ops.
+When universe is **small and fixed** (32 feature flags, 64 host index), bit vectors give O(1) word-sized ops.
 
 ```python
 def bitset_from_ids(ids: list[int], universe: int = 32) -> int:
-    mask = 0
-    for i in ids:
-        mask |= 1 << i
-    return mask
+ mask = 0
+ for i in ids:
+ mask |= 1 << i
+ return mask
 
 def in_bitset(mask: int, i: int) -> bool:
-    return (mask >> i) & 1 == 1
+ return (mask >> i) & 1 == 1
 
 def union_masks(a: int, b: int) -> int:
-    return a | b
+ return a | b
 ```
 
 | Operation | Time | Space |
@@ -369,17 +369,17 @@ def union_masks(a: int, b: int) -> int:
 
 | Type | Mutable | Hashable | Use |
 | --- | --- | --- | --- |
-| `set` | Yes | No | Live station tags, monthly builds |
-| `frozenset` | No | Yes | Region constants, dict keys |
+| `set` | Yes | No | Live session tags, batch builds |
+| `frozenset` | No | Yes | Permission constants, dict keys |
 
 ```python
 import networkx as nx
 
 G = nx.Graph()
-G.add_edge("SEA-01", "DEN-01")
+G.add_edge("alice", "bob")
 ```
 
-**networkx** models **graphs** ([graphs](../graphs/index.md)), not replacement for `set`—listed when you cross station **networks** with set **nodes**.
+**networkx** models **graphs** ([graphs](../graphs/index.md)), not replacement for `set`—listed when you cross social **networks** with set **nodes**.
 
 ---
 
@@ -398,24 +398,24 @@ G.add_edge("SEA-01", "DEN-01")
 
 ---
 
-## When to pick which structure (weather context)
+## When to pick which structure
 
 ```mermaid
 flowchart TD
-  Q([Unique ids?])
-  Q --> N{Need sorted walk?}
-  N -->|no| HS["set / frozenset"]
-  N -->|yes| TS["tree set / sorted keys"]
-  Q --> L{Huge table column?}
-  L -->|yes| PD["pandas.unique / categorical"]
+ Q([Unique ids?])
+ Q --> N{Need sorted walk?}
+ N -->|no| HS["set / frozenset"]
+ N -->|yes| TS["tree set / sorted keys"]
+ Q --> L{Huge table column?}
+ L -->|yes| PD["pandas.unique / categorical"]
 ```
 
 | Scenario | Best tool |
 | --- | --- |
-| 4-station region membership | `frozenset` |
-| 50k reading dedup ids | `set` or pandas |
-| Ordered station report | `sorted(set)` once or tree set |
-| Fixed 32-zone universe bitwise | bitset |
+| Small permission group membership | `frozenset` |
+| 50k session dedup ids | `set` or pandas |
+| Ordered username report | `sorted(set)` once or tree set |
+| Fixed 32-flag universe bitwise | bitset |
 
 ---
 
@@ -426,7 +426,7 @@ flowchart TD
 | `s = {}` for empty set | Creates dict | `s = set()` |
 | Lists in set | Unhashable TypeError | Use ids/tuples |
 | Relying on set order for logic | Order not semantic in theory | Sort for display |
-| O(n²) `in` in loop over list | Slow station scans | Build `set` once |
+| O(n²) `in` in loop over list | Slow user scans | Build `set` once |
 | Mutating set while iterating | RuntimeError | Iterate on `list(s)` copy |
 
 ---
@@ -446,20 +446,20 @@ flowchart TD
 ## Quick reference card
 
 ```python
-stations = set()
-stations = {"SEA-01", "DEN-01"}
-region = frozenset(["SEA-01", "PDX-01", "EUG-01", "BOI-01"])
-from_list = set(station_ids)
+users = set()
+users = {"u-101", "u-201"}
+perms = frozenset(["read", "write", "admin"])
+from_list = set(user_ids)
 
-"x" in stations
-stations.add("ORD-01")
-stations.discard("DEN-01")
+"x" in users
+users.add("u-301")
+users.discard("u-201")
 
 a | b; a & b; a - b; a ^ b
 a |= b; a <= b; a.isdisjoint(b)
 
-stations.copy()
-frozenset(stations)
+users.copy()
+frozenset(users)
 ```
 
-Use **`set`** for **fast unique membership and algebra** on weather station ids—use **pandas** for **column-wide** archive tables.
+Use **`set`** for **fast unique membership and algebra** on user or session ids—use **pandas** or SQL for **column-wide** archive tables.

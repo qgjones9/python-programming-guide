@@ -6,41 +6,41 @@ An **abstract data type (ADT)** that always returns the element with the **highe
 | --- | --- |
 | **What it is** | `insert` any time; `extract_best` removes and returns the highest-priority item; optional `peek`, `decrease_priority`, `merge`. |
 | **Core operations** | `push` / `insert`, `pop` / `extract_best`, `peek`—typically O(log n) with a binary heap. |
-| **When to use** | Alert urgency, forecast-review scheduling, Dijkstra on station networks, A* on route trees, event simulation. |
+| **When to use** | Task urgency, deadline scheduling, Dijkstra on weighted graphs, A* on route trees, event simulation. |
 | **Trade-off** | No time-order fairness; two items with equal priority need a tie-break policy. |
 
-In **daily weather data analysis**, a priority queue models **“work the most important item next”**: queue **anomaly reviews** by absolute temp-anomaly magnitude, schedule **chart exports** by analyst urgency, or drive **Dijkstra** on a **station network graph** for shortest-path distance estimates. Live sensor tick ingestion order stays FIFO ([Queue](../queue/index.md)); priority queues reorder by **score**, not **clock**.
+In **task scheduling and graph algorithms**, a priority queue models **“work the most important item next”**: queue **review tasks** by priority score, schedule **report exports** by analyst urgency, or drive **Dijkstra** on a **weighted graph** for shortest-path distance estimates. Live event ingestion order stays FIFO ([Queue](../queue/index.md)); priority queues reorder by **score**, not **clock**.
 
-This page is your **ready reference**: ADT contract, heap-backed and `heapq` implementations, every way to create a PQ, every operation with daily weather examples, and **time and space complexity**. For Big-O notation and weather-scale *n*, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: ADT contract, heap-backed and `heapq` implementations, every way to create a PQ, every operation with practical examples, and **time and space complexity**. For Big-O notation and large-scale *n*, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Data structures](../index.md)
 
 ---
 
-## How a priority queue fits daily weather analysis
+## How a priority queue fits common applications
 
-| Weather analysis idea | Priority key | Operation |
+| Use case | Priority key | Operation |
 | --- | --- | --- |
-| **Anomaly review queue** | Absolute temp anomaly | `extract_best` = most extreme |
-| **Alert desk** | Severity × station coverage | Highest risk first |
-| **Station ranking alerts** | Projected anomaly delta | Pop best candidate |
+| **Task review queue** | Absolute priority score | `extract_best` = most urgent |
+| **Alert desk** | Severity × coverage | Highest risk first |
+| **Candidate ranking** | Projected score delta | Pop best candidate |
 | **Graph: shortest path** | Tentative distance | Min-priority queue in Dijkstra |
-| **Live “next chart to render”** | Analyst star rating | Push new; pop best |
+| **Live “next report to render”** | Analyst star rating | Push new; pop best |
 
 **Use a FIFO queue** when fairness is **first submitted, first processed**. **Use a priority queue** when **importance** dominates **arrival time**.
 
 ```mermaid
 flowchart TB
-  subgraph pq["Priority queue — not FIFO"]
-    IN1["push: alert A prio 3"] --> HEAP
-    IN2["push: alert B prio 9"] --> HEAP
-    IN3["push: alert C prio 5"] --> HEAP
-    HEAP["internal heap"]
-    HEAP --> OUT["pop → B (9)"]
-  end
+ subgraph pq["Priority queue — not FIFO"]
+ IN1["push: alert A prio 3"] --> HEAP
+ IN2["push: alert B prio 9"] --> HEAP
+ IN3["push: alert C prio 5"] --> HEAP
+ HEAP["internal heap"]
+ HEAP --> OUT["pop → B (9)"]
+ end
 ```
 
-Throughout this page, **n** is the number of items in the queue (e.g. pending alerts in one dashboard session). In production weather pipelines, **n** per queue is often moderate while multi-year archives live in tables.
+Throughout this page, **n** is the number of items in the queue (e.g. pending alerts in one dashboard session). In production data pipelines, **n** per queue is often moderate while multi-year archives live in tables.
 
 ---
 
@@ -53,16 +53,16 @@ Throughout this page, **n** is the number of items in the queue (e.g. pending al
 | **Implementation** | Often binary heap | deque / [linked list](../linked-list/index.md) | Concrete structure | list |
 | **`insert`** | O(log n) typical | O(1) | O(log n) | O(n) |
 | **`extract_best`** | O(log n) | O(1) dequeue | O(log n) | O(1) pop |
-| **Weather fit** | Alert urgency | Sensor tick stream | Same as PQ backend | Static climatology table |
+| **Typical fit** | Task urgency | Event stream | Same as PQ backend | Static lookup table |
 
 ```mermaid
 sequenceDiagram
-  participant Analyst
-  participant PQ as priority queue
-  Analyst->>PQ: push(alert, prio=2)
-  Analyst->>PQ: push(alert, prio=8)
-  Analyst->>PQ: pop → prio 8 first
-  Note over Analyst,PQ: FIFO queue would pop prio 2 first
+ participant Analyst
+ participant PQ as priority queue
+ Analyst->>PQ: push(alert, prio=2)
+ Analyst->>PQ: push(alert, prio=8)
+ Analyst->>PQ: pop → prio 8 first
+ Note over Analyst,PQ: FIFO queue would pop prio 2 first
 ```
 
 ---
@@ -80,9 +80,9 @@ The **implementation** is usually a **[max heap](../max-heap/index.md)** (max-pr
 
 ```mermaid
 flowchart LR
-  ADT["PriorityQueue ADT"] --> IMPL["Binary heap array"]
-  IMPL --> SU["sift_up on push"]
-  IMPL --> SD["sift_down on pop"]
+ ADT["PriorityQueue ADT"] --> IMPL["Binary heap array"]
+ IMPL --> SU["sift_up on push"]
+ IMPL --> SD["sift_down on pop"]
 ```
 
 | Step | Cost driver |
@@ -93,7 +93,7 @@ flowchart LR
 
 ---
 
-## Daily weather data types for examples
+## Example data types
 
 ```python
 from __future__ import annotations
@@ -102,24 +102,24 @@ from dataclasses import dataclass, field
 
 
 @dataclass(order=True, slots=True)
-class AlertTask:
-    neg_anomaly: float
-    reading_id: int = field(compare=False)
-    analyst: str = field(compare=False, default="")
+class ReviewTask:
+ neg_priority: float
+ record_id: int = field(compare=False)
+ analyst: str = field(compare=False, default="")
 
 
 @dataclass(frozen=True, slots=True)
-class DailyReading:
-    reading_id: int
-    temp_anomaly: float
-    summary: str
+class DataRecord:
+ record_id: int
+ value: float
+ label: str
 
 
 @dataclass(frozen=True, slots=True)
-class WeatherAlert:
-    station: str
-    severity: int
-    coverage_pct: float
+class SystemAlert:
+ source: str
+ severity: int
+ coverage_pct: float
 ```
 
 ---
@@ -141,7 +141,7 @@ assert pq.is_empty()
 ### 2. From iterable of `(priority, item)` pairs
 
 ```python
-tasks = [(8.0, AlertTask(-8.0, 101)), (3.0, AlertTask(-3.0, 102))]
+tasks = [(8.0, ReviewTask(-8.0, 101)), (3.0, ReviewTask(-3.0, 102))]
 pq = PriorityQueue.from_pairs(tasks, max_queue=True)
 ```
 
@@ -155,13 +155,13 @@ pq = PriorityQueue.from_pairs(tasks, max_queue=True)
 ```python
 import heapq
 
-pq: list[tuple[float, int, DailyReading]] = []
+pq: list[tuple[float, int, DataRecord]] = []
 counter = 0
 
-def push(reading: DailyReading, priority: float) -> None:
-    global counter
-    heapq.heappush(pq, (priority, counter, reading))
-    counter += 1
+def push(record: DataRecord, priority: float) -> None:
+ global counter
+ heapq.heappush(pq, (priority, counter, record))
+ counter += 1
 ```
 
 | | |
@@ -174,8 +174,8 @@ def push(reading: DailyReading, priority: float) -> None:
 ```python
 from queue import PriorityQueue as ThreadSafePQ
 
-tpq: ThreadSafePQ[tuple[float, DailyReading]] = ThreadSafePQ()
-tpq.put((7.5, reading))
+tpq: ThreadSafePQ[tuple[float, DataRecord]] = ThreadSafePQ()
+tpq.put((7.5, record))
 item = tpq.get()
 ```
 
@@ -195,15 +195,15 @@ Store `(priority, id, item)`; mark ids deleted in a set; pop until valid top.
 
 ```mermaid
 flowchart TD
-  Q([Create priority queue?])
-  Q --> T{Thread-safe?}
-  T -->|yes| TPQ["queue.PriorityQueue"]
-  T -->|no| L{Max or min priority?}
-  L -->|max| MH["MaxHeap / negated heapq"]
-  L -->|min| HQ["heapq min-heap"]
-  Q --> D{Need decrease-key?}
-  D -->|yes| IDX["heap + id→index map"]
-  D -->|no| SIMPLE["simple heap"]
+ Q([Create priority queue?])
+ Q --> T{Thread-safe?}
+ T -->|yes| TPQ["queue.PriorityQueue"]
+ T -->|no| L{Max or min priority?}
+ L -->|max| MH["MaxHeap / negated heapq"]
+ L -->|min| HQ["heapq min-heap"]
+ Q --> D{Need decrease-key?}
+ D -->|yes| IDX["heap + id→index map"]
+ D -->|no| SIMPLE["simple heap"]
 ```
 
 ---
@@ -223,115 +223,115 @@ T = TypeVar("T")
 
 @dataclass
 class _PQEntry(Generic[T]):
-    priority: float
-    seq: int
-    item: T
+ priority: float
+ seq: int
+ item: T
 
 
 class PriorityQueue(Generic[T]):
-    def __init__(self, max_queue: bool = True) -> None:
-        self._heap: list[_PQEntry[T]] = []
-        self._seq = 0
-        self._max_queue = max_queue
+ def __init__(self, max_queue: bool = True) -> None:
+ self._heap: list[_PQEntry[T]] = []
+ self._seq = 0
+ self._max_queue = max_queue
 
-    @classmethod
-    def from_pairs(
-        cls, pairs: Iterable[tuple[float, T]], *, max_queue: bool = True
-    ) -> PriorityQueue[T]:
-        pq: PriorityQueue[T] = cls(max_queue=max_queue)
-        for prio, item in pairs:
-            pq.push(item, prio)
-        return pq
+ @classmethod
+ def from_pairs(
+ cls, pairs: Iterable[tuple[float, T]], *, max_queue: bool = True
+ ) -> PriorityQueue[T]:
+ pq: PriorityQueue[T] = cls(max_queue=max_queue)
+ for prio, item in pairs:
+ pq.push(item, prio)
+ return pq
 
-    def __len__(self) -> int:
-        return len(self._heap)
+ def __len__(self) -> int:
+ return len(self._heap)
 
-    def is_empty(self) -> bool:
-        return not self._heap
+ def is_empty(self) -> bool:
+ return not self._heap
 
-    def clear(self) -> None:
-        self._heap.clear()
-        self._seq = 0
+ def clear(self) -> None:
+ self._heap.clear()
+ self._seq = 0
 
-    def push(self, item: T, priority: float) -> None:
-        entry = _PQEntry(priority, self._seq, item)
-        self._seq += 1
-        self._heap.append(entry)
-        self._sift_up(len(self._heap) - 1)
+ def push(self, item: T, priority: float) -> None:
+ entry = _PQEntry(priority, self._seq, item)
+ self._seq += 1
+ self._heap.append(entry)
+ self._sift_up(len(self._heap) - 1)
 
-    def pop(self) -> T:
-        if not self._heap:
-            raise IndexError("pop from empty priority queue")
-        self._swap(0, len(self._heap) - 1)
-        entry = self._heap.pop()
-        if self._heap:
-            self._sift_down(0)
-        return entry.item
+ def pop(self) -> T:
+ if not self._heap:
+ raise IndexError("pop from empty priority queue")
+ self._swap(0, len(self._heap) - 1)
+ entry = self._heap.pop()
+ if self._heap:
+ self._sift_down(0)
+ return entry.item
 
-    def peek(self) -> T:
-        if not self._heap:
-            raise IndexError("peek from empty priority queue")
-        return self._heap[0].item
+ def peek(self) -> T:
+ if not self._heap:
+ raise IndexError("peek from empty priority queue")
+ return self._heap[0].item
 
-    def peek_priority(self) -> float:
-        if not self._heap:
-            raise IndexError("peek from empty priority queue")
-        return self._heap[0].priority
+ def peek_priority(self) -> float:
+ if not self._heap:
+ raise IndexError("peek from empty priority queue")
+ return self._heap[0].priority
 
-    def merge(self, other: PriorityQueue[T]) -> None:
-        temp: list[tuple[float, T]] = []
-        while not other.is_empty():
-            temp.append((other.peek_priority(), other.pop()))
-        for prio, item in temp:
-            self.push(item, prio)
+ def merge(self, other: PriorityQueue[T]) -> None:
+ temp: list[tuple[float, T]] = []
+ while not other.is_empty():
+ temp.append((other.peek_priority(), other.pop()))
+ for prio, item in temp:
+ self.push(item, prio)
 
-    def _better(self, a: _PQEntry[T], b: _PQEntry[T]) -> bool:
-        if self._max_queue:
-            if a.priority != b.priority:
-                return a.priority > b.priority
-        else:
-            if a.priority != b.priority:
-                return a.priority < b.priority
-        return a.seq < b.seq
+ def _better(self, a: _PQEntry[T], b: _PQEntry[T]) -> bool:
+ if self._max_queue:
+ if a.priority != b.priority:
+ return a.priority > b.priority
+ else:
+ if a.priority != b.priority:
+ return a.priority < b.priority
+ return a.seq < b.seq
 
-    def _parent(self, i: int) -> int:
-        return (i - 1) // 2
+ def _parent(self, i: int) -> int:
+ return (i - 1) // 2
 
-    def _left(self, i: int) -> int:
-        return 2 * i + 1
+ def _left(self, i: int) -> int:
+ return 2 * i + 1
 
-    def _right(self, i: int) -> int:
-        return 2 * i + 2
+ def _right(self, i: int) -> int:
+ return 2 * i + 2
 
-    def _swap(self, i: int, j: int) -> None:
-        self._heap[i], self._heap[j] = self._heap[j], self._heap[i]
+ def _swap(self, i: int, j: int) -> None:
+ self._heap[i], self._heap[j] = self._heap[j], self._heap[i]
 
-    def _sift_up(self, i: int) -> None:
-        while i > 0:
-            p = self._parent(i)
-            if self._better(self._heap[p], self._heap[i]):
-                break
-            self._swap(p, i)
-            i = p
+ def _sift_up(self, i: int) -> None:
+ while i > 0:
+ p = self._parent(i)
+ if self._better(self._heap[p], self._heap[i]):
+ break
+ self._swap(p, i)
+ i = p
 
-    def _sift_down(self, i: int) -> None:
-        n = len(self._heap)
-        while True:
-            best = i
-            left = self._left(i)
-            right = self._right(i)
-            if left < n and self._better(self._heap[left], self._heap[best]):
-                best = left
-            if right < n and self._better(self._heap[right], self._heap[best]):
-                best = right
-            if best == i:
-                break
-            self._swap(i, best)
-            i = best
+ def _sift_down(self, i: int) -> None:
+ n = len(self._heap)
+ while True:
+ best = i
+ left = self._left(i)
+ right = self._right(i)
+ if left < n and self._better(self._heap[left], self._heap[best]):
+ best = left
+ if right < n and self._better(self._heap[right], self._heap[best]):
+ best = right
+ if best == i:
+ break
+ self._swap(i, best)
+ i = best
 
-    def __iter__(self) -> Iterator[T]:
-        for e in self._heap:
-            yield e.item
+ def __iter__(self) -> Iterator[T]:
+ for e in self._heap:
+ yield e.item
 ```
 
 | | |
@@ -347,73 +347,73 @@ For Dijkstra and schedulers that **improve** a vertex’s distance, keep **`id �
 
 ```python
 class IndexedMinPQ:
-    def __init__(self, n: int) -> None:
-        self._pq: list[int] = []
-        self._qp: list[int] = [-1] * n
-        self._keys: list[float] = [float("inf")] * n
+ def __init__(self, n: int) -> None:
+ self._pq: list[int] = []
+ self._qp: list[int] = [-1] * n
+ self._keys: list[float] = [float("inf")] * n
 
-    def insert(self, i: int, key: float) -> None:
-        self._keys[i] = key
-        self._qp[i] = len(self._pq)
-        self._pq.append(i)
-        self._sift_up(self._qp[i])
+ def insert(self, i: int, key: float) -> None:
+ self._keys[i] = key
+ self._qp[i] = len(self._pq)
+ self._pq.append(i)
+ self._sift_up(self._qp[i])
 
-    def decrease_key(self, i: int, key: float) -> None:
-        if key >= self._keys[i]:
-            return
-        self._keys[i] = key
-        self._sift_up(self._qp[i])
+ def decrease_key(self, i: int, key: float) -> None:
+ if key >= self._keys[i]:
+ return
+ self._keys[i] = key
+ self._sift_up(self._qp[i])
 
-    def pop_min(self) -> tuple[int, float]:
-        if not self._pq:
-            raise IndexError("empty")
-        root = self._pq[0]
-        self._swap(0, len(self._pq) - 1)
-        self._qp[root] = -1
-        self._pq.pop()
-        if self._pq:
-            self._sift_down(0)
-        return root, self._keys[root]
+ def pop_min(self) -> tuple[int, float]:
+ if not self._pq:
+ raise IndexError("empty")
+ root = self._pq[0]
+ self._swap(0, len(self._pq) - 1)
+ self._qp[root] = -1
+ self._pq.pop()
+ if self._pq:
+ self._sift_down(0)
+ return root, self._keys[root]
 
-    def _better(self, i: int, j: int) -> bool:
-        return self._keys[i] < self._keys[j]
+ def _better(self, i: int, j: int) -> bool:
+ return self._keys[i] < self._keys[j]
 
-    def _swap(self, a: int, b: int) -> None:
-        i, j = self._pq[a], self._pq[b]
-        self._pq[a], self._pq[b] = j, i
-        self._qp[i], self._qp[j] = b, a
+ def _swap(self, a: int, b: int) -> None:
+ i, j = self._pq[a], self._pq[b]
+ self._pq[a], self._pq[b] = j, i
+ self._qp[i], self._qp[j] = b, a
 
-    def _parent(self, i: int) -> int:
-        return (i - 1) // 2
+ def _parent(self, i: int) -> int:
+ return (i - 1) // 2
 
-    def _left(self, i: int) -> int:
-        return 2 * i + 1
+ def _left(self, i: int) -> int:
+ return 2 * i + 1
 
-    def _right(self, i: int) -> int:
-        return 2 * i + 2
+ def _right(self, i: int) -> int:
+ return 2 * i + 2
 
-    def _sift_up(self, j: int) -> None:
-        while j > 0:
-            p = self._parent(j)
-            if self._better(self._pq[p], self._pq[j]):
-                break
-            self._swap(p, j)
-            j = p
+ def _sift_up(self, j: int) -> None:
+ while j > 0:
+ p = self._parent(j)
+ if self._better(self._pq[p], self._pq[j]):
+ break
+ self._swap(p, j)
+ j = p
 
-    def _sift_down(self, j: int) -> None:
-        n = len(self._pq)
-        while True:
-            best = j
-            left = self._left(j)
-            right = self._right(j)
-            if left < n and self._better(self._pq[left], self._pq[best]):
-                best = left
-            if right < n and self._better(self._pq[right], self._pq[best]):
-                best = right
-            if best == j:
-                break
-            self._swap(j, best)
-            j = best
+ def _sift_down(self, j: int) -> None:
+ n = len(self._pq)
+ while True:
+ best = j
+ left = self._left(j)
+ right = self._right(j)
+ if left < n and self._better(self._pq[left], self._pq[best]):
+ best = left
+ if right < n and self._better(self._pq[right], self._pq[best]):
+ best = right
+ if best == j:
+ break
+ self._swap(j, best)
+ j = best
 ```
 
 | Operation | Time | Space |
@@ -422,7 +422,7 @@ class IndexedMinPQ:
 | `decrease_key` | O(log n) | O(1) |
 | `pop_min` | O(log n) | O(1) |
 
-**Weather graph example:** nodes = stations; edge weight = distance in km; Dijkstra pops min distance next.
+**Graph example:** nodes = vertices; edge weight = cost; Dijkstra pops min distance next.
 
 ---
 
@@ -430,23 +430,23 @@ class IndexedMinPQ:
 
 ```mermaid
 flowchart TB
-  subgraph o1["O(1)"]
-    peek
-    len_op["len / is_empty"]
-  end
-  subgraph olog["O(log n)"]
-    push
-    pop
-    decrease["decrease_key"]
-  end
+ subgraph o1["O(1)"]
+ peek
+ len_op["len / is_empty"]
+ end
+ subgraph olog["O(log n)"]
+ push
+ pop
+ decrease["decrease_key"]
+ end
 ```
 
 ### `push(item, priority)`
 
 ```python
-reviews = PriorityQueue[AlertTask]()
-reviews.push(AlertTask(-9.0, 4021, "Chen"), priority=9.0)
-reviews.push(AlertTask(-3.0, 4018, "Chen"), priority=3.0)
+reviews = PriorityQueue[ReviewTask]()
+reviews.push(ReviewTask(-9.0, 4021, "Chen"), priority=9.0)
+reviews.push(ReviewTask(-3.0, 4018, "Chen"), priority=3.0)
 ```
 
 | | |
@@ -469,10 +469,10 @@ urgent = reviews.pop()
 
 ```mermaid
 sequenceDiagram
-  participant PQ as priority queue
-  PQ->>PQ: swap root with last
-  PQ->>PQ: sift_down root
-  PQ-->>Analyst: return best item
+ participant PQ as priority queue
+ PQ->>PQ: swap root with last
+ PQ->>PQ: sift_down root
+ PQ-->>Analyst: return best item
 ```
 
 ---
@@ -493,7 +493,7 @@ prio = reviews.peek_priority()
 
 ### `decrease_key` / `increase_key` (indexed PQ)
 
-When a reading’s anomaly estimate improves, update its priority without re-inserting a duplicate.
+When an item’s priority estimate improves, update its priority without re-inserting a duplicate.
 
 | | |
 | --- | --- |
@@ -543,17 +543,17 @@ Toggle `max_queue=False` on `PriorityQueue` or negate priorities for max behavio
 
 ---
 
-## Daily weather patterns with priority queues
+## Application patterns with priority queues
 
-### Anomaly review desk
+### Priority task desk
 
 ```python
-def process_reviews(tasks: list[tuple[float, AlertTask]]) -> list[AlertTask]:
-    pq = PriorityQueue.from_pairs(tasks)
-    done: list[AlertTask] = []
-    while not pq.is_empty():
-        done.append(pq.pop())
-    return done
+def process_reviews(tasks: list[tuple[float, ReviewTask]]) -> list[ReviewTask]:
+ pq = PriorityQueue.from_pairs(tasks)
+ done: list[ReviewTask] = []
+ while not pq.is_empty():
+ done.append(pq.pop())
+ return done
 ```
 
 | | |
@@ -563,30 +563,30 @@ def process_reviews(tasks: list[tuple[float, AlertTask]]) -> list[AlertTask]:
 
 ---
 
-### Dijkstra on station network (min-priority)
+### Dijkstra on weighted graph (min-priority)
 
 ```python
 def dijkstra(adj: dict[int, list[tuple[int, float]]], start: int, n: int) -> list[float]:
-    dist = [float("inf")] * n
-    dist[start] = 0.0
-    pq = IndexedMinPQ(n)
-    pq.insert(start, 0.0)
-    while True:
-        try:
-            u, du = pq.pop_min()
-        except IndexError:
-            break
-        if du > dist[u]:
-            continue
-        for v, w in adj.get(u, []):
-            nd = du + w
-            if nd < dist[v]:
-                dist[v] = nd
-                if pq._qp[v] < 0:
-                    pq.insert(v, nd)
-                else:
-                    pq.decrease_key(v, nd)
-    return dist
+ dist = [float("inf")] * n
+ dist[start] = 0.0
+ pq = IndexedMinPQ(n)
+ pq.insert(start, 0.0)
+ while True:
+ try:
+ u, du = pq.pop_min()
+ except IndexError:
+ break
+ if du > dist[u]:
+ continue
+ for v, w in adj.get(u, []):
+ nd = du + w
+ if nd < dist[v]:
+ dist[v] = nd
+ if pq._qp[v] < 0:
+ pq.insert(v, nd)
+ else:
+ pq.decrease_key(v, nd)
+ return dist
 ```
 
 | | |
@@ -594,11 +594,11 @@ def dijkstra(adj: dict[int, list[tuple[int, float]]], start: int, n: int) -> lis
 | **Time** | O((V + E) log V) with binary heap |
 | **Space** | O(V) |
 
-Nodes = weather stations; weights = distance in km—the same PQ machinery as forecast routing sketches.
+Nodes = vertices; edge weights = cost—the same PQ machinery as routing and pathfinding.
 
 ---
 
-### Top-k warmest days (max-priority, size cap)
+### Top-k highest scores (max-priority, size cap)
 
 Same as [Max heap](../max-heap/index.md) size-k pattern—PQ language emphasizes **pop best** repeatedly.
 
@@ -606,14 +606,14 @@ Same as [Max heap](../max-heap/index.md) size-k pattern—PQ language emphasizes
 import heapq
 
 
-def warmest_days(candidates: list[tuple[float, str]], k: int) -> list[str]:
-    heap: list[tuple[float, str]] = []
-    for anomaly, date_label in candidates:
-        if len(heap) < k:
-            heapq.heappush(heap, (anomaly, date_label))
-        elif anomaly > heap[0][0]:
-            heapq.heapreplace(heap, (anomaly, date_label))
-    return [label for _, label in sorted(heap, reverse=True)]
+def top_k_scores(candidates: list[tuple[float, str]], k: int) -> list[str]:
+ heap: list[tuple[float, str]] = []
+ for score, label in candidates:
+ if len(heap) < k:
+ heapq.heappush(heap, (score, label))
+ elif score > heap[0][0]:
+ heapq.heapreplace(heap, (score, label))
+ return [label for _, label in sorted(heap, reverse=True)]
 ```
 
 | | |
@@ -623,13 +623,13 @@ def warmest_days(candidates: list[tuple[float, str]], k: int) -> list[str]:
 
 ---
 
-### Event simulation (forecast timeline)
+### Event simulation (discrete timeline)
 
 ```python
 @dataclass(order=True)
 class Event:
-    time: float
-    kind: str = field(compare=False)
+ time: float
+ kind: str = field(compare=False)
 
 events = PriorityQueue[Event](max_queue=False)
 events.push(Event(0.0, "midnight run"), priority=0.0)
@@ -655,13 +655,13 @@ next_ev = events.pop()
 
 ```mermaid
 flowchart TD
-  Q([n items, m operations?])
-  Q --> S{n < 50?}
-  S -->|yes| SL["sorted list OK"]
-  S -->|no| H["binary heap"]
-  H --> D{decrease-key heavy?}
-  D -->|yes| IDX["indexed heap"]
-  D -->|no| HQ["heapq"]
+ Q([n items, m operations?])
+ Q --> S{n < 50?}
+ S -->|yes| SL["sorted list OK"]
+ S -->|no| H["binary heap"]
+ H --> D{decrease-key heavy?}
+ D -->|yes| IDX["indexed heap"]
+ D -->|no| HQ["heapq"]
 ```
 
 ---
@@ -680,8 +680,8 @@ flowchart TD
 import asyncio
 
 async def schedule():
-    apq: asyncio.PriorityQueue[tuple[int, str]] = asyncio.PriorityQueue()
-    await apq.put((1, "anomaly chart render"))
+ apq: asyncio.PriorityQueue[tuple[int, str]] = asyncio.PriorityQueue()
+ await apq.put((1, "report render"))
 ```
 
 ---
@@ -701,24 +701,24 @@ async def schedule():
 
 ---
 
-## When to pick which structure (weather context)
+## When to pick which structure
 
 ```mermaid
 flowchart TD
-  Q([Process order?])
-  Q --> F{Fair arrival order?}
-  F -->|yes| FIFO["Queue / deque"]
-  F -->|no| P{By score / distance?}
-  P -->|yes| PQ["Priority queue"]
-  P -->|no| L["list scan"]
+ Q([Process order?])
+ Q --> F{Fair arrival order?}
+ F -->|yes| FIFO["Queue / deque"]
+ F -->|no| P{By score / distance?}
+ P -->|yes| PQ["Priority queue"]
+ P -->|no| L["list scan"]
 ```
 
 | Scenario | Best tool |
 | --- | --- |
-| Live sensor tick feed | [Queue](../queue/index.md) |
-| Anomaly urgency | Priority queue |
+| Live event feed | [Queue](../queue/index.md) |
+| Task urgency | Priority queue |
 | Shortest path in graph | Min indexed PQ |
-| Static season climatology | pandas sort |
+| Static lookup table | pandas sort |
 | Top 10 only | `nlargest` |
 
 ---
@@ -727,7 +727,7 @@ flowchart TD
 
 | Pitfall | Why it hurts | Fix |
 | --- | --- | --- |
-| Using PQ for FIFO ticks | Starvation of early items | Use [Queue](../queue/index.md) |
+| Using PQ for FIFO events | Starvation of early items | Use [Queue](../queue/index.md) |
 | Equal priorities undefined | Non-deterministic pop order | Tie-break with `seq` counter |
 | `heapq` max without negation | Pops minimum | Negate or `max_queue=True` |
 | Stale entries after decrease-key | Wrong pop | Indexed PQ or lazy deletion |
@@ -753,7 +753,7 @@ flowchart TD
 ## Quick reference card
 
 ```python
-pq = PriorityQueue[AlertTask]()
+pq = PriorityQueue[ReviewTask]()
 pq.push(task, priority=9.0)
 best = pq.pop()
 top = pq.peek()
@@ -766,15 +766,15 @@ ipq.insert(v, key)
 ipq.decrease_key(v, new_key)
 v, d = ipq.pop_min()
 
-heapq.nlargest(10, readings, key=lambda r: r.temp_anomaly)
+heapq.nlargest(10, records, key=lambda r: r.value)
 ```
 
-Use a **priority queue** when **importance or distance** determines **what goes next**—alert desks, graph algorithms, and schedulers. Use a **FIFO queue** for **sensor tick streams**; use **sort** for **full static climatology tables**.
+Use a **priority queue** when **importance or distance** determines **what goes next**—task desks, graph algorithms, and schedulers. Use a **FIFO queue** for **event streams**; use **sort** for **full static lookup tables**.
 
-**Weather pipeline checklist**
+**Application checklist**
 
 1. **Live ingest order** — [Queue](../queue/index.md), not PQ.
-2. **Urgent anomalies** — max-priority queue with temp-anomaly key.
-3. **Station network paths** — min indexed priority queue.
+2. **Urgent tasks** — max-priority queue with score key.
+3. **Graph shortest paths** — min indexed priority queue.
 4. **Tie equal priorities** — monotonic sequence counter.
 5. **Top-k only** — `heapq.nlargest`, not full PQ drain.

@@ -9,38 +9,38 @@ A **distribution sort** that maps each key into one of **m buckets** (usually by
 | **When to use** | Uniform floats in `[0, 1)`, fixed-width bins on normalized metrics, external sort chunks. |
 | **Trade-off** | Needs **extra space** O(n + m); not in-place; worst case Θ(n²) without many buckets. |
 
-In **daily weather data analysis**, bucket sort fits **“sort readings by day-of-year within a month window”** when timestamps spread evenly—you map `t` to bucket `⌊m · (t − t_min) / (t_max − t_min)⌋`. If every reading shares the **same day** (one fat bucket), you fall back to Θ(n²) inner sort. For **archive-scale tables**, use **pandas** `sort_values`; bucket sort teaches **distribution** thinking alongside [Radix sort](../radix-sort/index.md).
+In **software and data systems**, bucket sort fits **“sort entries by day-of-year within a time window”** when timestamps spread evenly—you map `t` to bucket `⌊m · (t − t_min) / (t_max − t_min)⌋`. If every entry shares the **same timestamp** (one fat bucket), you fall back to Θ(n²) inner sort. For **archive-scale tables**, use **pandas** `sort_values`; bucket sort teaches **distribution** thinking alongside [Radix sort](../radix-sort/index.md).
 
-This page is your **ready reference**: scatter/gather mechanics, full Python implementations (floats, integers, readings, stations), every creation variant, traces, complexity tables, pitfalls, and weather patterns. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: scatter/gather mechanics, full Python implementations (floats, integers, entries, entities), every creation variant, traces, complexity tables, pitfalls, and application patterns. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
 [Parent: Algorithms](../index.md)
 
 ---
 
-## How bucket sort fits daily weather analysis
+## Practical applications
 
-| Weather analysis idea | Bucket key | Uniform when |
+| Use case | Bucket key | Uniform when |
 | --- | --- | --- |
 | **Day-of-year within month** | Ordinal day 1..31 | Spread across the month |
-| **Normalized precipitation** | `precip / max_precip` in [0,1) | Many distinct amounts |
-| **Temp anomaly (bounded clip)** | Clip to [-7, 7] then bin | Roughly flat histogram |
-| **Station ID bins** | 0–99 → 10 buckets | Depends on network |
+| **Normalized throughput** | `amount / max_amount` in [0,1) | Many distinct amounts |
+| **Score (bounded clip)** | Clip to [-7, 7] then bin | Roughly flat histogram |
+| **TaskItem ID bins** | 0–99 → 10 buckets | Depends on network |
 | **Percentile buckets** | Pre-scaled rank / n | By construction uniform |
 
-**Use `sort_values` or `sorted`** for million-row observation tables. **Use bucket sort** when keys are **uniform in a known range** or you are **chunking external sort** on disk.
+**Use `sort_values` or `sorted`** for million-row event tables. **Use bucket sort** when keys are **uniform in a known range** or you are **chunking external sort** on disk.
 
 ```mermaid
 flowchart TD
-  IN["n keys"] --> SC["scatter into m buckets"]
-  SC --> B0["bucket 0"]
-  SC --> B1["bucket 1"]
-  SC --> Bm["bucket m-1"]
-  B0 --> S0["sort bucket 0"]
-  B1 --> S1["sort bucket 1"]
-  Bm --> Sm["sort bucket m-1"]
-  S0 --> OUT["concatenate → sorted output"]
-  S1 --> OUT
-  Sm --> OUT
+ IN["n keys"] --> SC["scatter into m buckets"]
+ SC --> B0["bucket 0"]
+ SC --> B1["bucket 1"]
+ SC --> Bm["bucket m-1"]
+ B0 --> S0["sort bucket 0"]
+ B1 --> S1["sort bucket 1"]
+ Bm --> Sm["sort bucket m-1"]
+ S0 --> OUT["concatenate → sorted output"]
+ S1 --> OUT
+ Sm --> OUT
 ```
 
 Throughout this page, **n** = number of keys, **m** = number of buckets, **k** = items in one bucket.
@@ -57,19 +57,19 @@ Throughout this page, **n** = number of keys, **m** = number of buckets, **k** =
 | **Space** | O(n + m) | O(log n) stack | O(n + σ) | O(n) |
 | **Stable** | Yes* | No | Yes | Yes |
 | **Range needed** | Often yes | No | Fixed digit alphabet | No |
-| **Weather fit** | Normalized timing | General | Fixed-width ints | Default |
+| **Good fit** | Normalized timing | General | Fixed-width ints | Default |
 
 *Stable if scatter is FIFO append and inner sort is stable.
 
 ```mermaid
 sequenceDiagram
-  participant A as keys
-  participant B as buckets
-  A->>B: scatter by range index
-  loop each bucket
-    B->>B: sort small bucket
-  end
-  B-->>Meteorologist: gather in bucket order
+ participant A as keys
+ participant B as buckets
+ A->>B: scatter by range index
+ loop each bucket
+ B->>B: sort small bucket
+ end
+ B-->>Output: gather in bucket order
 ```
 
 ---
@@ -90,20 +90,20 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-  subgraph scatter["Scatter O(n)"]
-    K1["0.12"] --> B0
-    K2["0.91"] --> B3
-    K3["0.15"] --> B0
-  end
-  subgraph gather["Gather O(n)"]
-    B0 --> OUT["sorted list"]
-    B3 --> OUT
-  end
+ subgraph scatter["Scatter O(n)"]
+ K1["0.12"] --> B0
+ K2["0.91"] --> B3
+ K3["0.15"] --> B0
+ end
+ subgraph gather["Gather O(n)"]
+ B0 --> OUT["sorted list"]
+ B3 --> OUT
+ end
 ```
 
 ---
 
-## Weather data types for examples
+## Data types for examples
 
 ```python
 from __future__ import annotations
@@ -111,18 +111,18 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
-class DailyReading:
-    reading_id: int
-    month: int
-    day_of_year: float
-    temp_anomaly: float
-    summary: str
+class LogEntry:
+ entry_id: int
+ month: int
+ sequence_num: float
+ score: float
+ summary: str
 
 @dataclass(frozen=True, slots=True)
-class Station:
-    name: str
-    station_id: int
-    precip_mm: int
+class TaskItem:
+ name: str
+ service_id: int
+ bytes_sent: int
 ```
 
 ---
@@ -156,8 +156,8 @@ bucket_sort_range(times, m=8)
 ### 3. Integer keys 0..max_val with m buckets
 
 ```python
-station_ids = [12, 87, 12, 45, 9]
-bucket_sort_integers(station_ids, max_val=99, m=10)
+service_ids = [12, 87, 12, 45, 9]
+bucket_sort_integers(service_ids, max_val=99, m=10)
 ```
 
 | | |
@@ -165,10 +165,10 @@ bucket_sort_integers(station_ids, max_val=99, m=10)
 | **Time** | Θ(n + m) average |
 | **Space** | O(n + m) |
 
-### 4. Objects with key function (readings by time)
+### 4. Objects with key function (entries by time)
 
 ```python
-sorted_month = bucket_sort_readings_by_day(month_readings, m=8)
+sorted_month = bucket_sort_entries_by_offset(month_readings, m=8)
 ```
 
 | | |
@@ -198,13 +198,13 @@ Write each bucket to disk file, sort files, k-way merge—bucket sort as **first
 
 ```mermaid
 flowchart TD
-  Q([Choose bucket count m?])
-  Q --> U{Keys uniform?}
-  U -->|yes| MN["m ≈ n"]
-  U -->|no| HQ["more buckets or different sort"]
-  Q --> R{Known range?}
-  R -->|no| QS["quicksort / sort_values"]
-  R -->|yes| BS["bucket sort"]
+ Q([Choose bucket count m?])
+ Q --> U{Keys uniform?}
+ U -->|yes| MN["m ≈ n"]
+ U -->|no| HQ["more buckets or different sort"]
+ Q --> R{Known range?}
+ R -->|no| QS["quicksort / sort_values"]
+ R -->|yes| BS["bucket sort"]
 ```
 
 ---
@@ -221,112 +221,112 @@ from typing import Callable, TypeVar
 T = TypeVar("T")
 
 def bucket_index(value: float, lo: float, hi: float, m: int) -> int:
-    span = hi - lo
-    if span == 0:
-        return 0
-    t = (value - lo) / span
-    idx = int(t * m)
-    if idx >= m:
-        idx = m - 1
-    if idx < 0:
-        idx = 0
-    return idx
+ span = hi - lo
+ if span == 0:
+ return 0
+ t = (value - lo) / span
+ idx = int(t * m)
+ if idx >= m:
+ idx = m - 1
+ if idx < 0:
+ idx = 0
+ return idx
 
 def bucket_sort_unit_interval(nums: list[float], m: int | None = None) -> list[float]:
-    if not nums:
-        return []
-    if m is None:
-        m = max(len(nums), 1)
-    buckets: list[list[float]] = [[] for _ in range(m)]
-    for x in nums:
-        idx = min(int(x * m), m - 1) if x < 1.0 else m - 1
-        if idx < 0:
-            idx = 0
-        buckets[idx].append(x)
-    out: list[float] = []
-    for b in buckets:
-        b.sort()
-        out.extend(b)
-    return out
+ if not nums:
+ return []
+ if m is None:
+ m = max(len(nums), 1)
+ buckets: list[list[float]] = [[] for _ in range(m)]
+ for x in nums:
+ idx = min(int(x * m), m - 1) if x < 1.0 else m - 1
+ if idx < 0:
+ idx = 0
+ buckets[idx].append(x)
+ out: list[float] = []
+ for b in buckets:
+ b.sort()
+ out.extend(b)
+ return out
 
 def bucket_sort_range_inplace(nums: list[float], m: int) -> None:
-    if len(nums) <= 1:
-        return
-    lo, hi = min(nums), max(nums)
-    buckets: list[list[float]] = [[] for _ in range(m)]
-    for x in nums:
-        buckets[bucket_index(x, lo, hi, m)].append(x)
-    nums[:] = [x for b in buckets for x in sorted(b)]
+ if len(nums) <= 1:
+ return
+ lo, hi = min(nums), max(nums)
+ buckets: list[list[float]] = [[] for _ in range(m)]
+ for x in nums:
+ buckets[bucket_index(x, lo, hi, m)].append(x)
+ nums[:] = [x for b in buckets for x in sorted(b)]
 
 def bucket_sort_stable(nums: list[float], m: int) -> list[float]:
-    if not nums:
-        return []
-    lo, hi = min(nums), max(nums)
-    buckets: list[deque[float]] = [deque() for _ in range(m)]
-    for x in nums:
-        buckets[bucket_index(x, lo, hi, m)].append(x)
-    out: list[float] = []
-    for b in buckets:
-        sorted_chunk = sorted(b)
-        out.extend(sorted_chunk)
-    return out
+ if not nums:
+ return []
+ lo, hi = min(nums), max(nums)
+ buckets: list[deque[float]] = [deque() for _ in range(m)]
+ for x in nums:
+ buckets[bucket_index(x, lo, hi, m)].append(x)
+ out: list[float] = []
+ for b in buckets:
+ sorted_chunk = sorted(b)
+ out.extend(sorted_chunk)
+ return out
 
 def bucket_sort_integers(nums: list[int], max_val: int, m: int) -> list[int]:
-    if not nums:
-        return []
-    buckets: list[list[int]] = [[] for _ in range(m)]
-    for x in nums:
-        idx = bucket_index(float(x), 0.0, float(max_val), m)
-        buckets[idx].append(x)
-    return [x for b in buckets for x in sorted(b)]
+ if not nums:
+ return []
+ buckets: list[list[int]] = [[] for _ in range(m)]
+ for x in nums:
+ idx = bucket_index(float(x), 0.0, float(max_val), m)
+ buckets[idx].append(x)
+ return [x for b in buckets for x in sorted(b)]
 
 def bucket_sort_by_key(items: list[T], m: int, key: Callable[[T], float]) -> list[T]:
-    if not items:
-        return []
-    keys = [key(x) for x in items]
-    lo, hi = min(keys), max(keys)
-    buckets: list[list[T]] = [[] for _ in range(m)]
-    for item in items:
-        buckets[bucket_index(key(item), lo, hi, m)].append(item)
-    out: list[T] = []
-    for b in buckets:
-        b.sort(key=key)
-        out.extend(b)
-    return out
+ if not items:
+ return []
+ keys = [key(x) for x in items]
+ lo, hi = min(keys), max(keys)
+ buckets: list[list[T]] = [[] for _ in range(m)]
+ for item in items:
+ buckets[bucket_index(key(item), lo, hi, m)].append(item)
+ out: list[T] = []
+ for b in buckets:
+ b.sort(key=key)
+ out.extend(b)
+ return out
 
 @dataclass(frozen=True, slots=True)
-class DailyReading:
-    reading_id: int
-    month: int
-    day_of_year: float
-    temp_anomaly: float
-    summary: str = ""
+class LogEntry:
+ entry_id: int
+ month: int
+ sequence_num: float
+ score: float
+ summary: str = ""
 
-def bucket_sort_readings_by_day(readings: list[DailyReading], m: int) -> list[DailyReading]:
-    return bucket_sort_by_key(readings, m, key=lambda s: s.day_of_year)
+def bucket_sort_entries_by_offset(readings: list[LogEntry], m: int) -> list[LogEntry]:
+ return bucket_sort_by_key(readings, m, key=lambda s: s.sequence_num)
 
 def bucket_sort_insertion_inner(nums: list[float], m: int) -> list[float]:
 
-    def insertion_sort(arr: list[float]) -> None:
-        for i in range(1, len(arr)):
-            v = arr[i]
-            j = i - 1
-            while j >= 0 and arr[j] > v:
-                arr[j + 1] = arr[j]
-                j -= 1
-            arr[j + 1] = v
+ def insertion_sort(arr: list[float]) -> None:
+ for i in range(1, len(arr)):
+ v = arr[i]
+ j = i - 1
+ while j >= 0 and arr[j] > v:
+ arr[j + 1] = arr[j]
+ j -= 1
+ arr[j + 1] = v
 
-    if not nums:
-        return []
-    lo, hi = min(nums), max(nums)
-    buckets: list[list[float]] = [[] for _ in range(m)]
-    for x in nums:
-        buckets[bucket_index(x, lo, hi, m)].append(x)
-    out: list[float] = []
-    for b in buckets:
-        insertion_sort(b)
-        out.extend(b)
-    return out
+ if not nums:
+ return []
+ lo, hi = min(nums), max(nums)
+ buckets: list[list[float]] = [[] for _ in range(m)]
+ for x in nums:
+ buckets[bucket_index(x, lo, hi, m)].append(x)
+ out: list[float] = []
+ for b in buckets:
+ insertion_sort(b)
+ out.extend(b)
+ return out
 ```
 
 | | |
@@ -341,13 +341,13 @@ def bucket_sort_insertion_inner(nums: list[float], m: int) -> list[float]:
 
 ```mermaid
 flowchart TB
-  subgraph on["O(n)"]
-    scatter
-    gather
-  end
-  subgraph ok["O(k log k) per bucket"]
-    inner_sort["sort bucket size k"]
-  end
+ subgraph on["O(n)"]
+ scatter
+ gather
+ end
+ subgraph ok["O(k log k) per bucket"]
+ inner_sort["sort bucket size k"]
+ end
 ```
 
 ### Scatter — assign keys to buckets
@@ -356,8 +356,8 @@ flowchart TB
 m = 4
 buckets: list[list[float]] = [[] for _ in range(m)]
 for x in [0.12, 0.91, 0.15, 0.88]:
-    idx = min(int(x * m), m - 1)
-    buckets[idx].append(x)
+ idx = min(int(x * m), m - 1)
+ buckets[idx].append(x)
 ```
 
 | | |
@@ -367,11 +367,11 @@ for x in [0.12, 0.91, 0.15, 0.88]:
 
 ```mermaid
 sequenceDiagram
-  participant K as key 0.15
-  participant F as f(key)
-  participant B as bucket 0
-  K->>F: index = floor(0.15 * m)
-  F->>B: append
+ participant K as key 0.15
+ participant F as f(key)
+ participant B as bucket 0
+ K->>F: index = floor(0.15 * m)
+ F->>B: append
 ```
 
 ---
@@ -380,7 +380,7 @@ sequenceDiagram
 
 ```python
 for b in buckets:
-    b.sort()
+ b.sort()
 ```
 
 | | |
@@ -397,7 +397,7 @@ for b in buckets:
 ```python
 out: list[float] = []
 for b in buckets:
-    out.extend(b)
+ out.extend(b)
 ```
 
 | | |
@@ -418,7 +418,7 @@ sorted_norm = bucket_sort_unit_interval([0.12, 0.91, 0.15, 0.88], m=4)
 | **Time** | Θ(n) average uniform |
 | **Space** | O(n + m) |
 
-**Weather:** Normalized **day-of-year within month** after dividing by window length.
+**Example:** Normalized **timestamp within batch** after dividing by range length.
 
 ---
 
@@ -441,19 +441,19 @@ Mutates `nums` via reassignment `nums[:] = ...`.
 | **Space** | O(n + m) |
 | **Stability** | Yes — FIFO deque + stable sort |
 
-Use when equal timestamps must keep **reading_id** submission order (sort objects with tie key).
+Use when equal timestamps must keep **entry_id** submission order (sort objects with tie key).
 
 ---
 
-### `bucket_sort_readings_by_day(readings, m)`
+### `bucket_sort_entries_by_offset(readings, m)`
 
 ```python
 month_window = [
-    DailyReading(1, 1, 120.0, 0.1, "clear"),
-    DailyReading(2, 1, 3600.0, 0.5, "rain"),
-    DailyReading(3, 1, 900.0, -0.2, "overcast"),
+ LogEntry(1, 1, 120.0, 0.1, "clear"),
+ LogEntry(2, 1, 3600.0, 0.5, "beta"),
+ LogEntry(3, 1, 900.0, -0.2, "warning"),
 ]
-ordered = bucket_sort_readings_by_day(month_window, m=4)
+ordered = bucket_sort_entries_by_offset(month_window, m=4)
 ```
 
 | | |
@@ -465,7 +465,7 @@ ordered = bucket_sort_readings_by_day(month_window, m=4)
 
 ### `bucket_sort_by_key(items, m, key=...)`
 
-Generic pattern for **Station** by `precip_mm`, **DailyReading** by `temp_anomaly`, etc.
+Generic pattern for **TaskItem** by `bytes_sent`, **LogEntry** by `score`, etc.
 
 | | |
 | --- | --- |
@@ -496,15 +496,15 @@ Keys in `[0, 1)`: `[0.12, 0.91, 0.15, 0.88]`, `m = 4`
 
 ```mermaid
 flowchart LR
-  B0["b0: .12,.15"] --> O["out"]
-  B3["b3: .88,.91"] --> O
+ B0["b0: .12,.15"] --> O["out"]
+ B3["b3: .88,.91"] --> O
 ```
 
 ---
 
-## Trace: clustered same-day readings (worst case)
+## Trace: clustered same-timestamp records (worst case)
 
-All readings within 0.1 day units—**one bucket** gets all n items.
+All records within 0.1 time units—**one bucket** gets all n items.
 
 ```python
 clustered = [100.0, 100.01, 100.02, 100.03, 100.04]
@@ -518,16 +518,16 @@ bucket_sort_range_inplace(clustered, m=8)
 
 ---
 
-## Weather patterns with bucket sort
+## Application patterns with bucket sort
 
-### Sort one month window by day-of-year
+### Sort one time window by day-of-year
 
 ```python
-def order_month_window(readings: list[DailyReading]) -> list[DailyReading]:
-    if len(readings) <= 1:
-        return readings[:]
-    m = max(len(readings), 4)
-    return bucket_sort_readings_by_day(readings, m=m)
+def order_time_window(readings: list[LogEntry]) -> list[LogEntry]:
+ if len(readings) <= 1:
+ return readings[:]
+ m = max(len(readings), 4)
+ return bucket_sort_entries_by_offset(readings, m=m)
 ```
 
 | | |
@@ -535,19 +535,19 @@ def order_month_window(readings: list[DailyReading]) -> list[DailyReading]:
 | **Time** | Θ(n) average uniform times |
 | **Space** | O(n + m) |
 
-For **single month windows** (n < 31), **`sorted(readings, key=...)`** is simpler—bucket sort illustrates **distribution**.
+For **single time windows** (n < 31), **`sorted(readings, key=...)`** is simpler—bucket sort illustrates **distribution**.
 
 ---
 
-### Histogram-equalized anomaly bins (analytics prep)
+### Histogram-equalized score bins (analytics prep)
 
 ```python
-def anomaly_bins(anomalies: list[float], m: int = 10) -> list[list[float]]:
-    lo, hi = min(anomalies), max(anomalies)
-    buckets: list[list[float]] = [[] for _ in range(m)]
-    for x in anomalies:
-        buckets[bucket_index(x, lo, hi, m)].append(x)
-    return buckets
+def score_bins(scores: list[float], m: int = 10) -> list[list[float]]:
+ lo, hi = min(scores), max(scores)
+ buckets: list[list[float]] = [[] for _ in range(m)]
+ for x in scores:
+ buckets[bucket_index(x, lo, hi, m)].append(x)
+ return buckets
 ```
 
 | | |
@@ -559,11 +559,11 @@ Related to **`pd.cut`** / **`pd.qcut`**—bucket sort is the algorithmic scatter
 
 ---
 
-### Station ID station list sort (integers 0–99)
+### TaskItem ID service list sort (integers 0–99)
 
 ```python
-station_ids = [12, 87, 12, 45, 9, 99]
-sorted_ids = bucket_sort_integers(station_ids, max_val=99, m=10)
+service_ids = [12, 87, 12, 45, 9, 99]
+sorted_ids = bucket_sort_integers(service_ids, max_val=99, m=10)
 ```
 
 | | |
@@ -573,18 +573,18 @@ sorted_ids = bucket_sort_integers(station_ids, max_val=99, m=10)
 
 ---
 
-### Stable sort with reading_id tie-break
+### Stable sort with entry_id tie-break
 
 ```python
-def stable_reading_sort(readings: list[DailyReading], m: int) -> list[DailyReading]:
-    return bucket_sort_by_key(
-        readings,
-        m,
-        key=lambda s: (s.day_of_year, s.reading_id),
-    )
+def stable_entry_sort(readings: list[LogEntry], m: int) -> list[LogEntry]:
+ return bucket_sort_by_key(
+ readings,
+ m,
+ key=lambda s: (s.sequence_num, s.entry_id),
+ )
 ```
 
-Use tuple keys so inner `sort` orders ties by `reading_id`.
+Use tuple keys so inner `sort` orders ties by `entry_id`.
 
 | | |
 | --- | --- |
@@ -604,12 +604,12 @@ Use tuple keys so inner `sort` orders ties by `reading_id`.
 
 ```mermaid
 flowchart TD
-  Q([Pick m])
-  Q --> A{Uniform keys?}
-  A -->|yes| N["m = n or c·n"]
-  A -->|no| B["m larger + monitor max bucket size"]
-  B --> F{max bucket > threshold?}
-  F -->|yes| FALL["fall back to quicksort"]
+ Q([Pick m])
+ Q --> A{Uniform keys?}
+ A -->|yes| N["m = n or c·n"]
+ A -->|no| B["m larger + monitor max bucket size"]
+ B --> F{max bucket > threshold?}
+ F -->|yes| FALL["fall back to quicksort"]
 ```
 
 **Rule:** if max bucket size exceeds threshold (e.g. 32), re-sort that bucket with [Quicksort](../quicksort/index.md) or switch algorithm.
@@ -620,21 +620,21 @@ flowchart TD
 
 ```python
 def hybrid_bucket_sort(nums: list[float], m: int, threshold: int = 32) -> list[float]:
-    if not nums:
-        return []
-    lo, hi = min(nums), max(nums)
-    buckets: list[list[float]] = [[] for _ in range(m)]
-    for x in nums:
-        buckets[bucket_index(x, lo, hi, m)].append(x)
-    out: list[float] = []
-    for b in buckets:
-        if len(b) > threshold:
-            from quicksort import quicksort
-            quicksort(b)
-        else:
-            b.sort()
-        out.extend(b)
-    return out
+ if not nums:
+ return []
+ lo, hi = min(nums), max(nums)
+ buckets: list[list[float]] = [[] for _ in range(m)]
+ for x in nums:
+ buckets[bucket_index(x, lo, hi, m)].append(x)
+ out: list[float] = []
+ for b in buckets:
+ if len(b) > threshold:
+ from quicksort import quicksort
+ quicksort(b)
+ else:
+ b.sort()
+ out.extend(b)
+ return out
 ```
 
 | | |
@@ -648,17 +648,17 @@ def hybrid_bucket_sort(nums: list[float], m: int, threshold: int = 32) -> list[f
 
 | Task | Tool |
 | --- | --- |
-| Full archive sort | `df.sort_values("day_of_year")` |
+| Full archive sort | `df.sort_values("sequence_num")` |
 | Uniform unit floats teaching | `bucket_sort_unit_interval` |
-| Top-k anomaly | `heapq.nlargest` — not bucket sort |
+| Top-k score | `heapq.nlargest` — not bucket sort |
 | Integer digits | [Radix sort](../radix-sort/index.md) |
 | General comparison | `sorted()` |
 
 ```python
 import pandas as pd
 
-df.sort_values(["station_id", "reading_id"])
-df["anomaly_bin"] = pd.cut(df["temp_anomaly"], bins=10)
+df.sort_values(["service_id", "entry_id"])
+df["score_bin"] = pd.cut(df["score"], bins=10)
 ```
 
 **`pd.qcut`** builds **equal-frequency** buckets—analytics twin to choosing m for uniform **rank** keys.
@@ -685,18 +685,18 @@ Let **n** = keys, **m** = buckets, **k_i** = size of bucket i, **k_max** = max b
 
 ---
 
-## When to use / avoid (weather context)
+## When to use / avoid
 
 ```mermaid
 flowchart TD
-  Q([Sort keys?])
-  Q --> R{Known bounded range?}
-  R -->|no| CMP["comparison sort"]
-  R -->|yes| U{Uniform distribution?}
-  U -->|yes| BS["bucket sort"]
-  U -->|no| Q2{Heavy tail?}
-  Q2 -->|yes| PD["pandas qcut / many buckets"]
-  Q2 -->|no| BS2["bucket + hybrid fallback"]
+ Q([Sort keys?])
+ Q --> R{Known bounded range?}
+ R -->|no| CMP["comparison sort"]
+ R -->|yes| U{Uniform distribution?}
+ U -->|yes| BS["bucket sort"]
+ U -->|no| Q2{Heavy tail?}
+ Q2 -->|yes| PD["pandas qcut / many buckets"]
+ Q2 -->|no| BS2["bucket + hybrid fallback"]
 ```
 
 | Use bucket sort | Avoid bucket sort |
@@ -704,7 +704,7 @@ flowchart TD
 | Normalized day-of-year in [0,1) | Arbitrary string names |
 | Fixed histogram bins | Need worst-case Θ(n log n) guarantee alone |
 | External sort teaching | Single small window—use `sorted` |
-| Uniform simulated metrics | Clustered same-hour readings without tuning m |
+| Uniform simulated metrics | Clustered same-timestamp entries without tuning m |
 
 ---
 
@@ -717,8 +717,8 @@ flowchart TD
 | Too many buckets | O(m) empty scan | Use √n or n |
 | Unstable inner sort | Tie order lost | Stable sort or deque FIFO |
 | Keys outside [0,1) assumed | Wrong bucket | Clamp or use `bucket_index` |
-| Skewed anomaly tail | One fat bucket | Quantile bins, hybrid sort |
-| Sorting station names | No numeric range | Comparison sort |
+| Skewed score tail | One fat bucket | Quantile bins, hybrid sort |
+| Sorting service names | No numeric range | Comparison sort |
 
 ---
 
@@ -742,17 +742,17 @@ sorted_norm = bucket_sort_unit_interval(normalized, m=len(normalized))
 times = [120.5, 3600.0, 900.2]
 bucket_sort_range_inplace(times, m=8)
 
-ordered = bucket_sort_readings_by_day(month_window, m=8)
+ordered = bucket_sort_entries_by_offset(month_window, m=8)
 
 sorted_stable = bucket_sort_stable(values, m=16)
 
-df.sort_values("day_of_year")
-pd.cut(df["temp_anomaly"], bins=10)
+df.sort_values("sequence_num")
+pd.cut(df["score"], bins=10)
 ```
 
-**Bucket sort:** **scatter** → **sort buckets** → **gather**—**Θ(n) average** when keys spread evenly; watch **worst-case pile-up** on clustered same-day readings. Pair with [Radix sort](../radix-sort/index.md) for digit models; use **pandas** for observation tables.
+**Bucket sort:** **scatter** → **sort buckets** → **gather**—**Θ(n) average** when keys spread evenly; watch **worst-case pile-up** on clustered same-timestamp entries. Pair with [Radix sort](../radix-sort/index.md) for digit models; use **pandas** for event tables.
 
-**Weather pipeline checklist**
+**Quick checklist**
 
 1. **Full archive sort** — `sort_values`, not buckets.
 2. **Normalized month timing** — bucket sort teaching fit.

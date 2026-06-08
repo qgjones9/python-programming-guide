@@ -1,6 +1,6 @@
 # Insertion sort
 
-A **comparison sort** that builds a **sorted prefix** at the left of the array. Each new element is **inserted** into its correct position among the already-sorted items—like ordering a handful of daily station cards as you pull them from an ingest pile.
+A **comparison sort** that builds a **sorted prefix** at the left of the array. Each new element is **inserted** into its correct position among the already-sorted items—like ordering a handful of index cards as you pull them from a pile.
 
 | | |
 | --- | --- |
@@ -11,17 +11,17 @@ A **comparison sort** that builds a **sorted prefix** at the left of the array. 
 | **In-place** | **Yes**. |
 | **When to use** | Very small *n*, nearly sorted slices, or as the base case inside better hybrids (e.g. Timsort). |
 
-For **daily weather data analysis**, insertion sort mirrors how you might manually order five **station readings** by `temp_anomaly`: pick the next `DailyReading`, slide down anyone with a lower anomaly. At archive scale (thousands of rows), use **`sort_values`**; insertion sort shines when *n* &lt; ~20 or data are **already almost sorted** (e.g. readings mostly ordered by `reading_id` with a few corrections).
+Insertion sort mirrors how you might manually order five **records** by `score`: pick the next `Record`, slide down anyone with a lower score. At scale (thousands of rows), use **`sort_values`**; insertion sort shines when *n* &lt; ~20 or data are **already almost sorted** (e.g. records mostly ordered by `record_id` with a few corrections).
 
 [Complexity analysis](../../complexity/index.md) · [Parent: Algorithms](../index.md)
 
 ---
 
-## Weather-shaped use cases
+## Typical use cases
 
 | Task | Why insertion sort fits mentally | Production choice |
 | --- | --- | --- |
-| Sort 8 days in one station window | O(n²) is tiny | `sorted(..., key=lambda r: r.temp_anomaly)` |
+| Sort 8 records in one batch by `score` | O(n²) is tiny | `sorted(..., key=lambda r: r.score)` |
 | Fix a nearly sorted ingest batch after one edit | O(n) best case | `sort_values` or insert in order |
 | Teach "growing sorted region" | Clear invariant | This page |
 | Hybrid sort inner loop | Timsort uses insertion for runs | CPython internals |
@@ -34,7 +34,7 @@ For **daily weather data analysis**, insertion sort mirrors how you might manual
 | --- | --- |
 | **Best time** | O(n) — inner while never runs |
 | **Average time** | Θ(n²) |
-| **Worst time** | Θ(n²) — reverse anomaly order |
+| **Worst time** | Θ(n²) — reverse score order |
 | **Space** | O(1) |
 | **Stable** | Yes |
 | **In-place** | Yes |
@@ -55,13 +55,13 @@ For **daily weather data analysis**, insertion sort mirrors how you might manual
 
 ```mermaid
 flowchart TD
-  Start([i = 1]) --> Loop{i < n?}
-  Loop -->|no| Done([Done])
-  Loop -->|yes| Key[key = A[i], j = i-1]
-  Key --> Shift{j >= 0 and A[j] > key?}
-  Shift -->|yes| Move[A[j+1] = A[j]; j -= 1] --> Shift
-  Shift -->|no| Place[A[j+1] = key]
-  Place --> Inc[i += 1] --> Loop
+ Start([i = 1]) --> Loop{i < n?}
+ Loop -->|no| Done([Done])
+ Loop -->|yes| Key[key = A[i], j = i-1]
+ Key --> Shift{j >= 0 and A[j] > key?}
+ Shift -->|yes| Move[A[j+1] = A[j]; j -= 1] --> Shift
+ Shift -->|no| Place[A[j+1] = key]
+ Place --> Inc[i += 1] --> Loop
 ```
 
 ---
@@ -70,13 +70,13 @@ flowchart TD
 
 ```text
 INSERTION_SORT(A):
-    for i = 1 to n - 1:
-        key = A[i]
-        j = i - 1
-        while j >= 0 and A[j] > key:
-            A[j + 1] = A[j]
-            j = j - 1
-        A[j + 1] = key
+ for i = 1 to n - 1:
+ key = A[i]
+ j = i - 1
+ while j >= 0 and A[j] > key:
+ A[j + 1] = A[j]
+ j = j - 1
+ A[j + 1] = key
 ```
 
 ---
@@ -90,34 +90,34 @@ from dataclasses import dataclass
 
 
 def insertion_sort(nums: list[float]) -> None:
-    for i in range(1, len(nums)):
-        key = nums[i]
-        j = i - 1
-        while j >= 0 and nums[j] > key:
-            nums[j + 1] = nums[j]
-            j -= 1
-        nums[j + 1] = key
+ for i in range(1, len(nums)):
+ key = nums[i]
+ j = i - 1
+ while j >= 0 and nums[j] > key:
+ nums[j + 1] = nums[j]
+ j -= 1
+ nums[j + 1] = key
 
 
 @dataclass(frozen=True, slots=True)
-class DailyReading:
-    reading_id: int
-    station_id: str
-    temp_anomaly: float
-    summary: str
+class Record:
+ record_id: int
+ timestamp: float
+ score: float
+ label: str
 
 
-def insertion_sort_readings(
-    readings: list[DailyReading], *, key=lambda r: r.temp_anomaly
+def insertion_sort_records(
+ records: list[Record], *, key=lambda r: r.score
 ) -> None:
-    for i in range(1, len(readings)):
-        current = readings[i]
-        k = key(current)
-        j = i - 1
-        while j >= 0 and key(readings[j]) > k:
-            readings[j + 1] = readings[j]
-            j -= 1
-        readings[j + 1] = current
+ for i in range(1, len(records)):
+ current = records[i]
+ k = key(current)
+ j = i - 1
+ while j >= 0 and key(records[j]) > k:
+ records[j + 1] = records[j]
+ j -= 1
+ records[j + 1] = current
 ```
 
 | | |
@@ -127,11 +127,11 @@ def insertion_sort_readings(
 
 ---
 
-## Trace: reading IDs in one station window
+## Trace: record IDs in one batch
 
-Sort ascending by **`reading_id`** (stable on equal IDs if we use strict `>`).
+Sort ascending by **`record_id`** (stable on equal IDs if we use strict `>`).
 
-Start: `[405, 101, 101, 203]` (two rows share `reading_id` 101)
+Start: `[405, 101, 101, 203]` (two rows share `record_id` 101)
 
 | i | key | Shifts | Result |
 | ---: | ---: | --- | --- |
@@ -139,7 +139,7 @@ Start: `[405, 101, 101, 203]` (two rows share `reading_id` 101)
 | 2 | 101 | none (405>101) | `[101, 101, 405, 203]` |
 | 3 | 203 | none | `[101, 101, 405, 203]` |
 
-Equal `reading_id` **101** stayed in original relative order → **stable**.
+Equal `record_id` **101** stayed in original relative order → **stable**.
 
 ---
 
@@ -148,12 +148,12 @@ Equal `reading_id` **101** stayed in original relative order → **stable**.
 | Tool | When it wins | vs insertion sort |
 | --- | --- | --- |
 | `list.sort` | Timsort combines merge + insertion on **runs**; O(n log n) worst, often faster on real ingest order | Production default |
-| `heapq` | Top-*k* warmest days, not full prefix sort | Different problem |
-| Insertion sort | Best didactic match for "one reading at a time"; same Θ(n²) class as bubble/selection but **fewer writes** on average and **O(n)** on sorted `reading_id` streams | Pedagogy and tiny *n* |
+| `heapq` | Top-*k* scores, not full prefix sort | Different problem |
+| Insertion sort | Best didactic match for "one record at a time"; same Θ(n²) class as bubble/selection but **fewer writes** on average and **O(n)** on sorted `record_id` streams | Pedagogy and tiny *n* |
 
 ```python
-def one_pass_fix(reading_ids: list[int]) -> bool:
-    return all(reading_ids[i] <= reading_ids[i + 1] for i in range(len(reading_ids) - 1))
+def one_pass_fix(record_ids: list[int]) -> bool:
+ return all(record_ids[i] <= record_ids[i + 1] for i in range(len(record_ids) - 1))
 ```
 
 ---
@@ -162,14 +162,14 @@ def one_pass_fix(reading_ids: list[int]) -> bool:
 
 | Use | Avoid |
 | --- | --- |
-| *n* &lt; 15 in a notebook demo | Full multi-year station archive |
+| *n* &lt; 15 in a notebook demo | Full multi-year archives |
 | Educational "sorted prefix" | Latency-critical APIs |
 | Custom tiny embedded lists | pandas `groupby` + `sort_values` |
 
 ```python
 import pandas as pd
 
-df = daily_stats.sort_values(["month", "temp_anomaly"], ascending=[True, False])
+df = events.sort_values(["month", "score"], ascending=[True, False])
 ```
 
 ---
@@ -208,9 +208,9 @@ df = daily_stats.sort_values(["month", "temp_anomaly"], ascending=[True, False])
 ## Quick reference
 
 ```python
-insertion_sort(anomalies)
-insertion_sort_readings(window)
-window.sort(key=lambda r: r.temp_anomaly)
+insertion_sort(scores)
+insertion_sort_records(window)
+window.sort(key=lambda r: r.score)
 ```
 
-**Insertion sort:** stable, in-place, adaptive—ideal for **small or nearly sorted** weather slices, not multi-year archives.
+**Insertion sort:** stable, in-place, adaptive—ideal for **small or nearly sorted** slices, not large archives.

@@ -9,34 +9,34 @@ A linear collection where **each node** points to both the **next** and **previo
 | **When to use** | Frequent adds/removes at **both** ends, bidirectional traversal, or algorithms that need the predecessor without a separate scan. |
 | **Trade-off** | Two pointers per node (more memory than singly linked); still no O(1) random access by index. |
 
-This page is your **ready reference**: structure, a complete Python implementation, every way to create it, every method with daily weather data examples, and **time and space complexity** on each operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
+This page is your **ready reference**: structure, a complete Python implementation, every way to create it, every method with worked examples, and **time and space complexity** on each operation. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
-## How a doubly linked list fits daily weather analysis
+## Practical applications: what a doubly linked list models
 
-| Weather analysis idea | Doubly linked view | Why `prev` helps |
+| Application idea | Doubly linked view | Why `prev` helps |
 | --- | --- | --- |
-| **Daily observation chain** | Head = oldest day in window; tail = latest | Walk backward from an unusual or sudden change in data (such as a temperature jump) to see the prior day’s reading |
-| **Timeline scrubber** | Current node = day on chart; `next` / `prev` = step forward/back | No full rescan from head for “previous day” |
-| **Recent readings buffer** | Fixed window of last *k* days; drop oldest from head while appending newest at tail | O(1) at both ends |
-| **Merge two sorted station streams** | You have two lists of weather data, each sorted by station and reading. | As you join them into one list, you can insert pieces in the middle (not just the ends) more easily, because each node links to both its next and previous neighbors. This makes reorganizing parts of the list quicker than with a singly linked list.
-| **Undo stack on forecast editor** | Remove “current” edit and restore neighbor links | O(1) removal with node reference |
+| **Ordered entry chain** | Head = oldest item in buffer; tail = latest | Walk backward from the current page to see the prior history entry |
+| **Browser history scrubber** | Current node = page on screen; `next` / `prev` = step forward/back | No full rescan from head for "previous page" |
+| **Recent history buffer** | Fixed window of last *k* entries; drop oldest from head while appending newest at tail | O(1) at both ends |
+| **Merge two sorted entry streams** | You have two sorted entry streams, each sorted by tab and entry id. | As you join them into one list, you can insert pieces in the middle (not just the ends) more easily, because each node links to both its next and previous neighbors. This makes reorganizing parts of the list quicker than with a singly linked list.
+| **Undo stack on text editor** | Remove "current" edit and restore neighbor links | O(1) removal with node reference |
 
-**Use a Python `list` or DataFrame** when you filter 50,000 daily rows, compute multi-year climate aggregates, or need `readings[i]` in a tight loop. **Use a doubly linked list (or `collections.deque`)** when the problem is a **mutable ordered chain** with heavy **both-end** or **bidirectional** traffic on a **small** *n* (one month window, one station chunk, one dashboard session).
+**Use a Python `list` or DataFrame** when you filter 50,000 table rows, compute large aggregate queries, or need `items[i]` in a tight loop. **Use a doubly linked list (or `collections.deque`)** when the problem is a **mutable ordered chain** with heavy **both-end** or **bidirectional** traffic on a **small** *n* (one bounded buffer, one session chunk, one browser session).
 
 ```mermaid
 flowchart LR
-  subgraph dll["Doubly linked daily readings"]
-    NIL1["None"] <--> H["Day 1"]
-    H <--> N2["Day 2"]
-    N2 <--> N3["Day 3"]
-    N3 <--> T["Day 4"]
+  subgraph dll["Doubly linked history entries"]
+    NIL1["None"] <--> H["Entry 1"]
+    H <--> N2["Entry 2"]
+    N2 <--> N3["Entry 3"]
+    N3 <--> T["Entry 4"]
     T <--> NIL2["None"]
   end
   head["head"] --> H
   tail["tail"] --> T
 ```
 
-Throughout this page, **n** is the number of nodes (e.g. days in one analysis window). **i** is a zero-based index.
+Throughout this page, **n** is the number of nodes (e.g. pages in one browser session). **i** is a zero-based index.
 
 ---
 
@@ -49,34 +49,34 @@ Throughout this page, **n** is the number of nodes (e.g. days in one analysis wi
 | **Delete node you hold** | O(1) rewire | O(n) unless copy-value hack | O(n) shift |
 | **Access by index `i`** | O(n) forward walk from head | O(n) from head only | O(1) |
 | **Memory** | Highest per element | Medium | Compact + cache-friendly |
-| **Weather fit** | Bidirectional timeline UI, both-end window | Head-heavy live ingest, merge drills | Full daily observation table |
+| **Typical fit** | Bidirectional history UI, both-end window | Head-heavy live ingest, merge drills | Full in-memory table |
 
 ```mermaid
 sequenceDiagram
-  participant Analyst
+  participant Client
   participant DLL as doubly linked series
-  Analyst->>DLL: go to current day (node ref)
-  DLL-->>Analyst: prev — previous reading O(1)
-  DLL-->>Analyst: next — next reading O(1)
-  Note over Analyst,DLL: Singly linked "prev" would cost O(n) from head
+  Client->>DLL: go to current item (node ref)
+  DLL-->>Client: prev — previous entry O(1)
+  DLL-->>Client: next — next entry O(1)
+  Note over Client,DLL: Singly linked "prev" would cost O(n) from head
 ```
 
 ---
 
 ## Node definition
 
-Every node stores **data** (e.g. a daily weather row), **next**, and **prev**.
+Every node stores **data** (e.g. a browser history entry), **next**, and **prev**.
 
 ```python
 from dataclasses import dataclass
 
 
 @dataclass
-class DailyReading:
-    reading_id: int
-    month: int
-    temp_anomaly: float
-    summary: str
+class HistoryEntry:
+    entry_id: int
+    tab_id: int
+    duration_ms: float
+    title: str
 
 
 class Node:
@@ -94,7 +94,7 @@ class Node:
 ```mermaid
 flowchart TB
   subgraph node["Node"]
-    D["data: DailyReading"]
+    D["data: HistoryEntry"]
     P["prev"]
     N["next"]
   end
@@ -139,7 +139,7 @@ assert series.is_empty()
 ### 3. Single-node list
 
 ```python
-node = Node(DailyReading(101, 2, 0.4, "partly cloudy"))
+node = Node(HistoryEntry(101, 2, 0.4, "Home"))
 head = tail = node
 ```
 
@@ -148,9 +148,9 @@ head = tail = node
 | **Time** | O(1) |
 | **Space** | O(1) one node |
 
-### 4. Build from iterable — append at tail (chronological day order)
+### 4. Build from iterable — append at tail (chronological item order)
 
-Preserves CSV / API order: day 101 → 102 → 103.
+Preserves CSV / API order: entry 101 → 102 → 103.
 
 ```python
 def from_iterable_tail(items):
@@ -166,17 +166,17 @@ def from_iterable_tail(items):
             tail = node
     return head, tail
 
-readings = [
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(102, 2, -1.2, "cold front"),
-    DailyReading(103, 2, 0.1, "light rain"),
+entries = [
+    HistoryEntry(101, 2, 0.4, "Home"),
+    HistoryEntry(102, 2, -1.2, "Docs"),
+    HistoryEntry(103, 2, 0.1, "Settings"),
 ]
-head, tail = from_iterable_tail(readings)
+head, tail = from_iterable_tail(entries)
 ```
 
 | | |
 | --- | --- |
-| **Time** | O(k) for *k* readings |
+| **Time** | O(k) for *k* entries |
 | **Space** | O(k) nodes |
 
 ### 5. Build from iterable — push at head (reversed order)
@@ -204,11 +204,11 @@ def from_iterable_head(items):
 
 ```python
 series = DoublyLinkedList()
-for reading in [
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(102, 2, -1.2, "cold front"),
+for entry in [
+    HistoryEntry(101, 2, 0.4, "Home"),
+    HistoryEntry(102, 2, -1.2, "Docs"),
 ]:
-    series.append(reading)
+    series.append(entry)
 ```
 
 | | |
@@ -219,9 +219,9 @@ for reading in [
 ### 7. Manual wiring (tests, diagrams, interviews)
 
 ```python
-n1 = Node(DailyReading(101, 2, 0.4, "partly cloudy"))
-n2 = Node(DailyReading(102, 2, -1.2, "cold front"))
-n3 = Node(DailyReading(103, 2, 0.1, "light rain"))
+n1 = Node(HistoryEntry(101, 2, 0.4, "Home"))
+n2 = Node(HistoryEntry(102, 2, -1.2, "Docs"))
+n3 = Node(HistoryEntry(103, 2, 0.1, "Settings"))
 n1.next = n2
 n2.prev = n1
 n2.next = n3
@@ -234,15 +234,15 @@ head, tail = n1, n3
 | **Time** | O(k) |
 | **Space** | O(k) |
 
-### 8. From an existing Python `list` of daily readings
+### 8. From an existing Python `list` of history entries
 
 ```python
-readings_list = [
-    DailyReading(201, 1, 0.2, "overcast"),
-    DailyReading(202, 1, 1.1, "warm spell"),
+entries_list = [
+    HistoryEntry(201, 1, 0.2, "About"),
+    HistoryEntry(202, 1, 1.1, "Profile"),
 ]
 series = DoublyLinkedList()
-series.extend(readings_list)
+series.extend(entries_list)
 ```
 
 | | |
@@ -254,11 +254,11 @@ series.extend(readings_list)
 
 ```mermaid
 flowchart TD
-  Start([Building a daily reading chain?])
+  Start([Building a history entry chain?])
   Start --> Empty{Empty?}
   Empty -->|yes| E["DoublyLinkedList()"]
   Empty -->|no| Order{Order matters?}
-  Order -->|chronological| Tail["append each reading — O(1) per day"]
+  Order -->|chronological| Tail["append each entry — O(1) per item"]
   Order -->|newest-first ingest| Head["push each — then maybe reverse"]
   Order -->|3–5 nodes in test| Manual["wire prev/next by hand"]
   E --> Done([ready])
@@ -495,7 +495,7 @@ class DoublyLinkedList:
             return None
         return self.tail.data
 
-    def oldest_in_window(self):
+    def oldest_in_buffer(self):
         if self.is_empty():
             return None
         return self.head.data
@@ -505,14 +505,14 @@ class DoublyLinkedList:
             return None
         return self.head.data
 
-    def find_reading(self, reading_id):
+    def find_entry(self, entry_id):
         current = self.head
         while current is not None:
             data = current.data
-            if hasattr(data, "reading_id"):
-                if data.reading_id == reading_id:
+            if hasattr(data, "entry_id"):
+                if data.entry_id == entry_id:
                     return data
-            elif data == reading_id:
+            elif data == entry_id:
                 return data
             current = current.next
         return None
@@ -540,7 +540,7 @@ class DoublyLinkedList:
 
 ---
 
-## All operations (weather examples + complexity)
+## All operations (examples + complexity)
 
 ```mermaid
 flowchart TB
@@ -551,7 +551,7 @@ flowchart TB
     pop
   end
   subgraph scan["O(n) scan"]
-    find_reading
+    find_entry
     index_of
     get_at["_node_at(i)"]
   end
@@ -560,10 +560,10 @@ flowchart TB
 Helper used in several examples:
 
 ```python
-def make_series(readings):
+def make_series(entries):
     series = DoublyLinkedList()
-    for reading in readings:
-        series.append(reading)
+    for entry in entries:
+        series.append(entry)
     return series
 ```
 
@@ -576,9 +576,9 @@ series = DoublyLinkedList()
 assert series.is_empty()
 assert len(series) == 0
 
-series.append(DailyReading(101, 2, 0.4, "partly cloudy"))
+series.append(HistoryEntry(101, 2, 0.4, "Home"))
 assert len(series) == 1
-assert series[0].reading_id == 101
+assert series[0].entry_id == 101
 ```
 
 | | |
@@ -588,16 +588,16 @@ assert series[0].reading_id == 101
 
 ---
 
-### `push(data)` — new reading before the oldest day
+### `push(data)` — new entry before the oldest item
 
 Create a node, wire `next`/`prev` to the current head (or set both `head` and `tail` when empty), increment `size`, and return **`self`**.
 
-Example: push a **backfilled observation** reclassified as the first row in a corrected daily chain.
+Example: push a **backfilled observation** reclassified as the first row in a corrected entry chain.
 
 ```python
-series = make_series([DailyReading(102, 2, -1.2, "cold front")])
-series.push(DailyReading(101, 2, 0.4, "partly cloudy"))
-assert series.get(0).reading_id == 101
+series = make_series([HistoryEntry(102, 2, -1.2, "Docs")])
+series.push(HistoryEntry(101, 2, 0.4, "Home"))
+assert series.get(0).entry_id == 101
 ```
 
 | | |
@@ -608,7 +608,7 @@ assert series.get(0).reading_id == 101
 ```mermaid
 sequenceDiagram
   participant D as series
-  participant New as new reading node
+  participant New as new entry node
   participant Old as old head
   D->>New: create node; New.next = head
   New->>Old: Old.prev = New
@@ -617,15 +617,15 @@ sequenceDiagram
 
 ---
 
-### `append(data)` — next day in the series
+### `append(data)` — next item in the series
 
 Create a node, link it after `tail` (or set both `head` and `tail` when empty), and increment `size`. Does not return `self`.
 
 ```python
 series = DoublyLinkedList()
-series.append(DailyReading(101, 2, 0.4, "partly cloudy"))
-series.append(DailyReading(102, 2, -1.2, "cold front"))
-assert list(series)[-1].summary == "cold front"
+series.append(HistoryEntry(101, 2, 0.4, "Home"))
+series.append(HistoryEntry(102, 2, -1.2, "Docs"))
+assert list(series)[-1].title == "Docs"
 ```
 
 | | |
@@ -635,7 +635,7 @@ assert list(series)[-1].summary == "cold front"
 
 ---
 
-### `insert(index, data)` — insert a reading mid-series
+### `insert(index, data)` — insert an entry mid-series
 
 Valid indices are `0 … size` (inclusive upper bound). Index **`0`** delegates to **`push(data)`**. Otherwise **`_node_at(index - 1)`** finds the predecessor, splices the new node between it and its successor, increments `size`, and returns **`self`**.
 
@@ -643,12 +643,12 @@ Insert a **corrected sensor spike** before the row currently at index 2.
 
 ```python
 series = make_series([
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(102, 2, -1.2, "cold front"),
-    DailyReading(104, 2, 0.1, "overcast"),
+    HistoryEntry(101, 2, 0.4, "Home"),
+    HistoryEntry(102, 2, -1.2, "Docs"),
+    HistoryEntry(104, 2, 0.1, "About"),
 ])
-series.insert(2, DailyReading(103, 2, 2.1, "sensor correction"))
-ids = [s.reading_id for s in series]
+series.insert(2, HistoryEntry(103, 2, 2.1, "correction"))
+ids = [s.entry_id for s in series]
 assert ids == [101, 102, 103, 104]
 ```
 
@@ -659,9 +659,9 @@ assert ids == [101, 102, 103, 104]
 
 ```mermaid
 flowchart LR
-  A["day A"] <--> B["day B"]
-  B <--> C["day C"]
-  B <--> NEW["new reading"]
+  A["entry A"] <--> B["entry B"]
+  B <--> C["entry C"]
+  B <--> NEW["new entry"]
   NEW <--> C
 ```
 
@@ -672,11 +672,11 @@ flowchart LR
 Both use **`_node_at(index)`**, which walks forward from the head and raises **`IndexError("index out of bounds")`** when **`index < 0`** or **`index >= size`**. **`set`** mutates **`node.data`** in place and returns **`self`**.
 
 ```python
-series = make_series([DailyReading(i, 1, 0.0, f"day {i}") for i in range(10)])
-assert series.get(0).reading_id == 0
-assert series.get(9).reading_id == 9
-series.set(5, DailyReading(99, 1, 0.0, "replaced"))
-assert series.get(5).reading_id == 99
+series = make_series([HistoryEntry(i, 1, 0.0, f"entry {i}") for i in range(10)])
+assert series.get(0).entry_id == 0
+assert series.get(9).entry_id == 9
+series.set(5, HistoryEntry(99, 1, 0.0, "replaced"))
+assert series.get(5).entry_id == 99
 ```
 
 | | |
@@ -684,22 +684,22 @@ assert series.get(5).reading_id == 99
 | **Time** | O(i) ≤ O(n) |
 | **Space** | O(1) |
 
-For thousands of daily rows, store an index in a **`dict[reading_id, DailyReading]`** beside the chain—not `get(i)` in a hot loop.
+For thousands of table rows, store an index in a **`dict[entry_id, HistoryEntry]`** beside the chain—not `get(i)` in a hot loop.
 
 ---
 
-### `remove(0)` — drop the oldest day from the window
+### `remove(0)` — drop the oldest item from the window
 
 Head removal is handled by `remove(0)` (internally `_pop_head`).
 
 ```python
 series = make_series([
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(102, 2, -1.2, "cold front"),
+    HistoryEntry(101, 2, 0.4, "Home"),
+    HistoryEntry(102, 2, -1.2, "Docs"),
 ])
 old_first = series.remove(0)
-assert old_first.reading_id == 101
-assert series.get(0).reading_id == 102
+assert old_first.entry_id == 101
+assert series.get(0).entry_id == 102
 ```
 
 | | |
@@ -709,17 +709,17 @@ assert series.get(0).reading_id == 102
 
 ---
 
-### `pop()` — remove the latest reading (e.g. undo last annotation)
+### `pop()` — remove the latest entry (e.g. undo last edit)
 
 Removes the **tail** node, returns its **data**, and decrements **`size`**. On a one-node list, sets both **`head`** and **`tail`** to **`None`**. Singly linked lists need an O(n) scan for the predecessor; **doubly linked does not**.
 
 ```python
 series = make_series([
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(102, 2, -1.2, "cold front"),
+    HistoryEntry(101, 2, 0.4, "Home"),
+    HistoryEntry(102, 2, -1.2, "Docs"),
 ])
 last = series.pop()
-assert last.reading_id == 102
+assert last.entry_id == 102
 assert len(series) == 1
 ```
 
@@ -744,12 +744,12 @@ Returns the removed **data**. Index **`0`** calls **`_pop_head()`**; index **`si
 
 ```python
 series = make_series([
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(102, 2, -1.2, "cold front"),
-    DailyReading(103, 2, 0.1, "light rain"),
+    HistoryEntry(101, 2, 0.4, "Home"),
+    HistoryEntry(102, 2, -1.2, "Docs"),
+    HistoryEntry(103, 2, 0.1, "Settings"),
 ])
-assert series.remove(1).reading_id == 102
-assert [s.reading_id for s in series] == [101, 103]
+assert series.remove(1).entry_id == 102
+assert [s.entry_id for s in series] == [101, 103]
 ```
 
 | | |
@@ -759,20 +759,20 @@ assert [s.reading_id for s in series] == [101, 103]
 
 ---
 
-### `find_reading(reading_id)` / `index_of` / `contains`
+### `find_entry(entry_id)` / `index_of` / `contains`
 
-`find_reading` returns the **data** (not the node). It matches objects with a `reading_id` attribute or raw values.
+`find_entry` returns the **data** (not the node). It matches objects with a `entry_id` attribute or raw values.
 
 ```python
 series = make_series([
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(102, 2, -1.2, "cold front"),
+    HistoryEntry(101, 2, 0.4, "Home"),
+    HistoryEntry(102, 2, -1.2, "Docs"),
 ])
-reading = series.find_reading(102)
-assert reading is not None and reading.summary == "cold front"
-assert series.contains(DailyReading(101, 2, 0.4, "partly cloudy"))
-assert series.index_of(DailyReading(102, 2, -1.2, "cold front")) == 1
-assert series.index_of(DailyReading(999, 1, 0.0, "missing")) == -1
+entry = series.find_entry(102)
+assert entry is not None and entry.title == "Docs"
+assert series.contains(HistoryEntry(101, 2, 0.4, "Home"))
+assert series.index_of(HistoryEntry(102, 2, -1.2, "Docs")) == 1
+assert series.index_of(HistoryEntry(999, 1, 0.0, "missing")) == -1
 ```
 
 | | |
@@ -788,13 +788,13 @@ Forward iteration uses **`__iter__`** (yields each node's **data** from head to 
 
 ```python
 series = make_series([
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(102, 2, -1.2, "cold front"),
-    DailyReading(103, 2, 0.1, "light rain"),
+    HistoryEntry(101, 2, 0.4, "Home"),
+    HistoryEntry(102, 2, -1.2, "Docs"),
+    HistoryEntry(103, 2, 0.1, "Settings"),
 ])
 
-forward_anomaly = [s.temp_anomaly for s in series]
-backward_anomaly = [s.temp_anomaly for s in series.walk_backward_from(series.tail)]
+forward_anomaly = [s.duration_ms for s in series]
+backward_anomaly = [s.duration_ms for s in series.walk_backward_from(series.tail)]
 assert forward_anomaly == [0.4, -1.2, 0.1]
 assert backward_anomaly == [0.1, -1.2, 0.4]
 ```
@@ -811,12 +811,12 @@ assert backward_anomaly == [0.1, -1.2, 0.4]
 
 ---
 
-### `clear()` — reset forecast editor
+### `clear()` — reset text editor
 
 Sets **`head`**, **`tail`**, and **`size`** back to empty state. Returns **`self`**.
 
 ```python
-series = make_series([DailyReading(101, 2, 0.4, "partly cloudy")])
+series = make_series([HistoryEntry(101, 2, 0.4, "Home")])
 series.clear()
 assert series.is_empty()
 ```
@@ -828,14 +828,14 @@ assert series.is_empty()
 
 ---
 
-### `copy()` — duplicate chain for forecast scenario
+### `copy()` — duplicate chain for branch scenario
 
-Shallow copy: new nodes, **same** `DailyReading` objects.
+Shallow copy: new nodes, **same** `HistoryEntry` objects.
 
 ```python
-original = make_series([DailyReading(101, 2, 0.4, "partly cloudy")])
+original = make_series([HistoryEntry(101, 2, 0.4, "Home")])
 branch = original.copy()
-branch.append(DailyReading(999, 2, 0.0, "forecast scenario"))
+branch.append(HistoryEntry(999, 2, 0.0, "branch scenario"))
 assert len(original) == 1 and len(branch) == 2
 assert branch.head is not original.head
 ```
@@ -856,9 +856,9 @@ Useful after **push-heavy** ingest to get chronological order.
 ```python
 series = DoublyLinkedList()
 for pid in [103, 102, 101]:
-    series.push(DailyReading(pid, 2, 0.0, "x"))
+    series.push(HistoryEntry(pid, 2, 0.0, "x"))
 series.reverse()
-assert [s.reading_id for s in series] == [101, 102, 103]
+assert [s.entry_id for s in series] == [101, 102, 103]
 ```
 
 | | |
@@ -868,18 +868,18 @@ assert [s.reading_id for s in series] == [101, 102, 103]
 
 ---
 
-### `sort()` — order readings by comparable data
+### `sort()` — order entries by comparable data
 
 Exports values with **`to_list()`**, sorts in place with Python's **`list.sort()`** (data must be mutually comparable), clears the chain, and rebuilds with **`append`**. No-op when **`size < 2`**. Returns **`self`**.
 
 ```python
 series = make_series([
-    DailyReading(103, 2, 0.0, "c"),
-    DailyReading(101, 2, 0.0, "a"),
-    DailyReading(102, 2, 0.0, "b"),
+    HistoryEntry(103, 2, 0.0, "c"),
+    HistoryEntry(101, 2, 0.0, "a"),
+    HistoryEntry(102, 2, 0.0, "b"),
 ])
 series.sort()
-assert [s.reading_id for s in series] == [101, 102, 103]
+assert [s.entry_id for s in series] == [101, 102, 103]
 ```
 
 | | |
@@ -894,8 +894,8 @@ assert [s.reading_id for s in series] == [101, 102, 103]
 When **`items`** is another **`DoublyLinkedList`**: empty source is a no-op; if **`self`** is empty, adopt the other chain's **`head`**, **`tail`**, and **`size`**; otherwise splice at the tail in O(1). Any other iterable appends one item at a time. Returns **`self`**. **`to_list()`** walks head→tail and returns a Python list of data.
 
 ```python
-series = make_series([DailyReading(101, 2, 0.4, "partly cloudy")])
-series.extend([DailyReading(102, 2, -1.2, "cold front"), DailyReading(103, 2, 0.1, "light rain")])
+series = make_series([HistoryEntry(101, 2, 0.4, "Home")])
+series.extend([HistoryEntry(102, 2, -1.2, "Docs"), HistoryEntry(103, 2, 0.1, "Settings")])
 rows = series.to_list()
 assert len(rows) == 3
 ```
@@ -913,15 +913,15 @@ assert len(rows) == 3
 **`trim_front(count)`** loops up to **count** times, calling **`remove(0)`** until empty. **`trim_back(keep)`** loops **`pop()`** while **`size > keep`**. Both return **`self`**.
 
 ```python
-series = make_series([DailyReading(i, 1, 0.0, f"day {i}") for i in range(10)])
+series = make_series([HistoryEntry(i, 1, 0.0, f"entry {i}") for i in range(10)])
 series.trim_front(5)
 assert len(series) == 5
-assert series.get(0).reading_id == 5
+assert series.get(0).entry_id == 5
 
-series2 = make_series([DailyReading(i, 1, 0.0, f"day {i}") for i in range(10)])
+series2 = make_series([HistoryEntry(i, 1, 0.0, f"entry {i}") for i in range(10)])
 series2.trim_back(5)
 assert len(series2) == 5
-assert series2.get(4).reading_id == 4
+assert series2.get(4).entry_id == 4
 ```
 
 | Operation | Time | Space |
@@ -931,15 +931,15 @@ assert series2.get(4).reading_id == 4
 
 ---
 
-### `latest()` / `oldest_in_window()` / `current()`
+### `latest()` / `oldest_in_buffer()` / `current()`
 
-**`latest()`** returns **`tail.data`**; **`oldest_in_window()`** and **`current()`** both return **`head.data`**. Each returns **`None`** when the list is empty. These are fixed head/tail accessors—not a movable cursor (see **`ReadingNavigator`** below for prev/next scrubbing).
+**`latest()`** returns **`tail.data`**; **`oldest_in_buffer()`** and **`current()`** both return **`head.data`**. Each returns **`None`** when the list is empty. These are fixed head/tail accessors—not a movable cursor (see **`HistoryNavigator`** below for prev/next scrubbing).
 
 ```python
-series = make_series([DailyReading(101, 2, 0.4, "a"), DailyReading(102, 2, -1.2, "b")])
-assert series.latest().reading_id == 102
-assert series.oldest_in_window().reading_id == 101
-assert series.current().reading_id == 101
+series = make_series([HistoryEntry(101, 2, 0.4, "a"), HistoryEntry(102, 2, -1.2, "b")])
+assert series.latest().entry_id == 102
+assert series.oldest_in_buffer().entry_id == 101
+assert series.current().entry_id == 101
 ```
 
 | | |
@@ -949,31 +949,31 @@ assert series.current().reading_id == 101
 
 ---
 
-## Weather application: recent readings buffer
+## Application: recent history buffer
 
 ```python
-class RecentReadings:
-    def __init__(self, max_readings=5):
+class RecentHistory:
+    def __init__(self, max_entries=5):
         self._chain = DoublyLinkedList()
-        self._max = max_readings
+        self._max = max_entries
 
-    def push(self, reading):
-        self._chain.append(reading)
+    def push(self, entry):
+        self._chain.append(entry)
         while self._chain.size > self._max:
             self._chain.remove(0)
 
     def latest(self):
         return self._chain.latest()
 
-    def oldest_in_window(self):
-        return self._chain.oldest_in_window()
+    def oldest_in_buffer(self):
+        return self._chain.oldest_in_buffer()
 
 
-feed = RecentReadings(max_readings=3)
+feed = RecentHistory(max_entries=3)
 for rid in range(10):
-    feed.push(DailyReading(rid, 1, 0.0, f"day {rid}"))
-assert feed.latest().reading_id == 9
-assert feed.oldest_in_window().reading_id == 7
+    feed.push(HistoryEntry(rid, 1, 0.0, f"entry {rid}"))
+assert feed.latest().entry_id == 9
+assert feed.oldest_in_buffer().entry_id == 7
 ```
 
 | Operation | Time | Space |
@@ -982,10 +982,10 @@ assert feed.oldest_in_window().reading_id == 7
 
 ---
 
-## Weather application: reading navigator (prev / next)
+## Application: history navigator (prev / next)
 
 ```python
-class ReadingNavigator:
+class HistoryNavigator:
     def __init__(self, series):
         self._series = series
         self._current = series.head
@@ -993,13 +993,13 @@ class ReadingNavigator:
     def current(self):
         return None if self._current is None else self._current.data
 
-    def next_reading(self):
+    def next_entry(self):
         if self._current is None or self._current.next is None:
             return None
         self._current = self._current.next
         return self._current.data
 
-    def prev_reading(self):
+    def prev_entry(self):
         if self._current is None or self._current.prev is None:
             return None
         self._current = self._current.prev
@@ -1007,20 +1007,20 @@ class ReadingNavigator:
 
 
 series = make_series([
-    DailyReading(101, 2, 0.4, "partly cloudy"),
-    DailyReading(102, 2, -1.2, "cold front"),
-    DailyReading(103, 2, 0.1, "light rain"),
+    HistoryEntry(101, 2, 0.4, "Home"),
+    HistoryEntry(102, 2, -1.2, "Docs"),
+    HistoryEntry(103, 2, 0.1, "Settings"),
 ])
-nav = ReadingNavigator(series)
-assert nav.current().reading_id == 101
-assert nav.next_reading().reading_id == 102
-assert nav.prev_reading().reading_id == 101
+nav = HistoryNavigator(series)
+assert nav.current().entry_id == 101
+assert nav.next_entry().entry_id == 102
+assert nav.prev_entry().entry_id == 101
 ```
 
 | Step | Time | Space |
 | --- | --- | --- |
-| `next_reading` / `prev_reading` | O(1) | O(1) |
-| Jump to arbitrary `reading_id` | O(n) search first | O(1) after found |
+| `next_entry` / `prev_entry` | O(1) | O(1) |
+| Jump to arbitrary `entry_id` | O(n) search first | O(1) after found |
 
 ---
 
@@ -1031,14 +1031,14 @@ assert nav.prev_reading().reading_id == 101
 Simplify deletion near ends when you do not keep a full `DoublyLinkedList` class.
 
 ```python
-def remove_readings_with_negative_anomaly(head):
-    dummy = Node(DailyReading(0, 0, 0.0, "sentinel"))
+def remove_entries_with_negative_duration(head):
+    dummy = Node(HistoryEntry(0, 0, 0.0, "sentinel"))
     dummy.next = head
     if head is not None:
         head.prev = dummy
     cur = dummy
     while cur.next is not None:
-        if cur.next.data.temp_anomaly < 0:
+        if cur.next.data.duration_ms < 0:
             nxt = cur.next.next
             if nxt is not None:
                 nxt.prev = cur
@@ -1056,16 +1056,16 @@ def remove_readings_with_negative_anomaly(head):
 | **Time** | O(n) |
 | **Space** | O(1) extra for dummy |
 
-### Merge two sorted station chains by `reading_id`
+### Merge two sorted entry chains by `entry_id`
 
 Same pointer technique as singly linked merge; doubly linked lets you splice without rebuilding `prev` if you assign both links.
 
 ```python
-def merge_by_reading_id(a, b):
-    dummy = Node(DailyReading(0, 0, 0.0, ""))
+def merge_by_entry_id(a, b):
+    dummy = Node(HistoryEntry(0, 0, 0.0, ""))
     tail = dummy
     while a is not None and b is not None:
-        if a.data.reading_id <= b.data.reading_id:
+        if a.data.entry_id <= b.data.entry_id:
             tail.next = a
             a.prev = tail
             a = a.next
@@ -1091,11 +1091,11 @@ def merge_by_reading_id(a, b):
 
 ```mermaid
 sequenceDiagram
-  participant A as Station A chain
-  participant B as Station B chain
+  participant A as Chain A
+  participant B as Chain B
   participant M as merged chain
   loop while both non-empty
-    M->>A: compare reading_id at heads
+    M->>A: compare entry_id at heads
     M->>M: attach smaller node, fix prev/next
   end
   M->>M: attach remainder
@@ -1111,8 +1111,8 @@ CPython's `deque` is implemented as a **block doubly linked list** at C level—
 from collections import deque
 
 recent = deque(maxlen=5)
-recent.append(DailyReading(101, 2, 0.4, "partly cloudy"))
-recent.appendleft(DailyReading(100, 2, 0.0, "backfill"))
+recent.append(HistoryEntry(101, 2, 0.4, "Home"))
+recent.appendleft(HistoryEntry(100, 2, 0.0, "backfill"))
 assert len(recent) <= 5
 ```
 
@@ -1121,9 +1121,9 @@ assert len(recent) <= 5
 | `append` / `appendleft` | O(1) | `append` / `push` O(1) |
 | `pop` / `popleft` | O(1) | `pop` / `remove(0)` O(1) |
 | Indexing `dq[i]` | O(n) | O(n) via `get` / `__getitem__` |
-| Custom `DailyReading` + `find_reading` | Use your class | Use your class |
+| Custom `HistoryEntry` + `find_entry` | Use your class | Use your class |
 
-**Rule of thumb:** ship **`deque`** in production weather dashboards; implement **`DoublyLinkedList`** to learn and to pass interviews.
+**Rule of thumb:** ship **`deque`** in production production apps; implement **`DoublyLinkedList`** to learn and to pass interviews.
 
 ---
 
@@ -1140,8 +1140,8 @@ Let **n** = `len(series)`, **i** = index.
 | `get` / `set` at *i* | O(i) | O(1) | forward walk from head |
 | `remove(0)` / `pop()` | O(1) | O(1) | |
 | `remove(i)` mid-list | O(n) | O(1) | ends delegate to `_pop_head` / `pop` |
-| `find_reading` / `contains` | O(n) | O(1) | |
-| `latest` / `oldest_in_window` / `current` | O(1) | O(1) | `None` if empty |
+| `find_entry` / `contains` | O(n) | O(1) | |
+| `latest` / `oldest_in_buffer` / `current` | O(1) | O(1) | `None` if empty |
 | `walk_forward_from` / `walk_backward_from` | O(k) | O(k) | returns list of data |
 | `len` (cached) | O(1) | O(1) | |
 | Forward `__iter__` | O(n) | O(1) | yields data, head → tail |
@@ -1158,27 +1158,27 @@ Let **n** = `len(series)`, **i** = index.
 
 ---
 
-## When to pick which structure (weather context)
+## When to pick which structure
 
 ```mermaid
 flowchart TD
   Q([What is the job?])
-  Q --> S{Multi-year / table analytics?}
+  Q --> S{Large-scale / table analytics?}
   S -->|yes| DF["pandas DataFrame or list of dicts"]
-  S -->|no| B{Need prev/next from current day?}
-  B -->|yes| DLL["Doubly linked or ReadingNavigator"]
+  S -->|no| B{Need prev/next from current item?}
+  B -->|yes| DLL["Doubly linked or HistoryNavigator"]
   B -->|no| E{Only head inserts?}
   E -->|yes| SLL["Singly linked or deque"]
-  E -->|no| L["Python list — index readings[i]"]
+  E -->|no| L["Python list — index items[i]"]
 ```
 
 | Scenario | Best tool |
 | --- | --- |
-| Multi-year climate aggregates | pandas, not linked list |
-| One month window, timeline prev/next | Doubly linked or `deque` + index |
-| Live "last 5 days" ticker | `deque(maxlen=5)` or `remove(0)` loop |
-| Merge sorted reading-id streams (exercise) | Doubly or singly linked merge |
-| Random access `readings[412]` in loop | `list` |
+| Large aggregate queries | pandas, not linked list |
+| Bounded buffer, history prev/next | Doubly linked or `deque` + index |
+| Live "last 5 items" ticker | `deque(maxlen=5)` or `remove(0)` loop |
+| Merge sorted entry-id streams (exercise) | Doubly or singly linked merge |
+| Random access `items[412]` in loop | `list` |
 
 ---
 
@@ -1191,9 +1191,9 @@ flowchart TD
 | Forgetting to update `prev` on splice | Broken backward walk | Always set both `prev` and `next` |
 | Losing `head` / `tail` after delete | Orphan chain | Branch on whether node is head or tail |
 | Storing full archive in DLL | O(n) lookups, huge memory | DataFrame + optional small DLL per window |
-| Expecting `find_reading` to return a node | API returns data | Use `series.head` / `_node_at` when you need the node |
-| Shallow copy shares `DailyReading` | Mutate one branch, affects other | `copy.deepcopy` if needed |
-| Using DLL for `readings[i]` hot loop | O(n) per access | `list` or columnar store |
+| Expecting `find_entry` to return a node | API returns data | Use `series.head` / `_node_at` when you need the node |
+| Shallow copy shares `HistoryEntry` | Mutate one branch, affects other | `copy.deepcopy` if needed |
+| Using DLL for `items[i]` hot loop | O(n) per access | `list` or columnar store |
 
 ---
 
@@ -1203,7 +1203,7 @@ flowchart TD
 | --- | --- |
 | [Singly linked list](../linked-list/index.md) | One pointer; O(n) `pop_tail` |
 | [Circularly linked list](../circularly-linked-list/index.md) | Ring of nodes; round-robin |
-| [Array-based lists](../array-based-lists/index.md) | Python `list` for observation tables |
+| [Array-based lists](../array-based-lists/index.md) | Python `list` for tabular data |
 | [Deque](../dequeue-deque/index.md) | Production O(1) both ends |
 | [Complexity analysis](../../complexity/index.md) | Big-O reference |
 
@@ -1213,18 +1213,18 @@ flowchart TD
 
 ```python
 series = DoublyLinkedList()
-for r in [reading1, reading2]:
+for r in [entry1, entry2]:
     series.append(r)
 
-series.push(reading)
-series.append(reading)
+series.push(entry)
+series.append(entry)
 series.remove(0)
 series.pop()
 series.get(i)
 series[i]
-series.insert(i, reading)
+series.insert(i, entry)
 series.remove(i)
-series.find_reading(reading_id)
+series.find_entry(entry_id)
 
 
 for r in series: ...
@@ -1235,7 +1235,7 @@ series.walk_backward_from(series.tail)
 series.trim_front(3)
 series.trim_back(5)
 series.latest()
-series.oldest_in_window()
+series.oldest_in_buffer()
 ```
 
-Use a **doubly linked list** when the problem is an **ordered chain** and you need **both ends** or **backward steps** without rescanning from the head—then reach for **`deque`** when you ship real weather analysis tooling.
+Use a **doubly linked list** when the problem is an **ordered chain** and you need **both ends** or **backward steps** without rescanning from the head—then reach for **`deque`** when you ship real production tooling.
