@@ -178,6 +178,11 @@ flowchart TD
 
 ## Reference implementation: `Trie` with full API
 
+Canonical source: [`examples/trie/trie.py`](../examples/trie/trie.py).
+
+Empty string `""` is a valid key (it marks the root as a word end). Re-inserting an
+existing key updates `value` without changing `len`.
+
 ```python
 class TrieNode:
     def __init__(self):
@@ -198,7 +203,15 @@ class Trie:
         self.root = TrieNode()
         self._size = 0
 
+    @staticmethod
+    def _validate_key(key, *, name='word'):
+        if not isinstance(key, str):
+            raise TypeError(
+                f'{name} must be str, not {type(key).__name__}',
+            )
+
     def insert(self, word, value=None):
+        self._validate_key(word)
         node = self.root
         for ch in word:
             if ch not in node.children:
@@ -209,20 +222,8 @@ class Trie:
         node.is_end = True
         node.value = value
 
-    def search(self, word):
-        node = self._find_node(word)
-        if node is None or not node.is_end:
-            return None
-        return node.value
-
-    def contains(self, word):
-        node = self._find_node(word)
-        return node is not None and node.is_end
-
-    def starts_with(self, prefix):
-        return self._find_node(prefix) is not None
-
     def _find_node(self, prefix):
+        self._validate_key(prefix, name='prefix')
         node = self.root
         for ch in prefix:
             if ch not in node.children:
@@ -230,43 +231,58 @@ class Trie:
             node = node.children[ch]
         return node
 
-    def delete(self, word):
-        def _delete(node, depth):
-            if depth == len(word):
-                if not node.is_end:
-                    return False
-                node.is_end = False
-                node.value = None
-                return len(node.children) == 0
-            ch = word[depth]
-            if ch not in node.children:
-                return False
-            child = node.children[ch]
-            should_prune = _delete(child, depth + 1)
-            if should_prune:
-                del node.children[ch]
-            return len(node.children) == 0 and not node.is_end
-
-        if _delete(self.root, 0):
-            self._size -= 1
-            return True
+    def search(self, word):
+        self._validate_key(word)
         node = self._find_node(word)
-        if node and node.is_end:
+        if node is None or not node.is_end:
+            return None
+        return node.value
+
+    def contains(self, word):
+        self._validate_key(word)
+        node = self._find_node(word)
+        return node is not None and node.is_end
+
+    def starts_with(self, prefix):
+        self._validate_key(prefix, name='prefix')
+        return self._find_node(prefix) is not None
+
+    def _delete_from(self, node, word, depth):
+        if depth == len(word):
+            if not node.is_end:
+                return False, False
             node.is_end = False
             node.value = None
+            return True, len(node.children) == 0
+        ch = word[depth]
+        if ch not in node.children:
+            return False, False
+        child = node.children[ch]
+        removed, should_prune = self._delete_from(child, word, depth + 1)
+        if should_prune:
+            del node.children[ch]
+        return removed, len(node.children) == 0 and not node.is_end
+
+    def delete(self, word):
+        self._validate_key(word)
+        removed, _ = self._delete_from(self.root, word, 0)
+        if removed:
             self._size -= 1
             return True
         return False
 
-    def collect(self, prefix=""):
+    def collect(self, prefix=''):
+        self._validate_key(prefix, name='prefix')
         node = self._find_node(prefix)
         if node is None:
             return []
         out = []
-        self._dfs_words(node, prefix, out)
+        parts = list(prefix)
+        self._dfs_words(node, parts, out)
         return out
 
-    def collect_values(self, prefix=""):
+    def collect_values(self, prefix=''):
+        self._validate_key(prefix, name='prefix')
         node = self._find_node(prefix)
         if node is None:
             return []
@@ -274,16 +290,20 @@ class Trie:
         self._dfs_values(node, out)
         return out
 
-    def _dfs_words(self, node, path, out):
+    def _dfs_words(self, node, parts, out):
         if node.is_end:
-            out.append(path)
+            out.append(''.join(parts))
         for ch, child in sorted(node.children.items()):
-            self._dfs_words(child, path + ch, out)
+            parts.append(ch)
+            self._dfs_words(child, parts, out)
+            parts.pop()
 
     def _dfs_values(self, node, out):
         if node.is_end and node.value is not None:
             out.append(node.value)
-        for child in node.children.values():
+        for child in (
+            child for _, child in sorted(node.children.items())
+        ):
             self._dfs_values(child, out)
 
     def longest_common_prefix(self):
@@ -292,7 +312,7 @@ class Trie:
         while len(node.children) == 1 and not node.is_end:
             ch, node = next(iter(node.children.items()))
             prefix.append(ch)
-        return "".join(prefix)
+        return ''.join(prefix)
 ```
 
 ---
@@ -315,72 +335,389 @@ flowchart TB
 
 ### `insert(word, value=None)`
 
+Adds `word` to the trie and optionally attaches `value` to that word’s terminal node. Every path from `root` spells a **prefix**; insertion walks the word one character at a time, creating missing edges as it goes, then marks the last node as a complete word.
+
 ```python
 trie = Trie()
 trie.insert("analytics", Product("prd-001", "Analytics", "saas", 49.0))
 trie.insert("analytics pro", Product("prd-002", "Analytics Pro", "saas", 99.0))
 ```
 
+#### Implementation (step by step)
+
+```python
+def insert(self, word, value=None):
+    self._validate_key(word)            # 0. reject non-str keys
+    node = self.root                    # 1. start at the empty root
+    for ch in word:                     # 2. walk one character at a time
+        if ch not in node.children:
+            node.children[ch] = TrieNode()  # create edge if missing
+        node = node.children[ch]          # descend to the child
+    if not node.is_end:                 # 3. count only new words
+        self._size += 1
+    node.is_end = True                  # 4. mark end-of-word
+    node.value = value                  # 5. attach optional payload
+```
+
+| Step | What happens |
+| --- | --- |
+| **1. Start at root** | `self.root` is an empty `TrieNode` — it holds no characters, only child links. Every lookup and insert begins here. |
+| **2. Walk each character** | For each `ch` in `word`, follow `node.children[ch]` if it exists; otherwise create a new `TrieNode` and store it under `ch`. Then set `node` to that child and repeat. |
+| **3. Update size** | Increment `_size` only when `is_end` was `False` — the word is genuinely new, not a re-insert. |
+| **4. Mark end-of-word** | Set `is_end = True` on the node reached after the last character. A node can exist on a longer word’s path without being its own word (see pitfalls below). |
+| **5. Store value** | Save `value` on that terminal node; `search(word)` returns it later. Re-inserting the same word overwrites the previous value. |
+
+Each `TrieNode` carries three fields:
+
+| Field | Role |
+| --- | --- |
+| `children` | `dict` mapping the next character → child `TrieNode` |
+| `is_end` | `True` when a stored word ends at this node |
+| `value` | Optional payload (`Product`, route handler, etc.) attached to that word |
+
+#### Walkthrough: inserting `"cat"`
+
+| Character | Action | `node` after step |
+| --- | --- | --- |
+| *(start)* | — | `root` |
+| `c` | Create child `c` under `root` | `c` node |
+| `a` | Create child `a` under `c` | `a` node |
+| `t` | Create child `t` under `a` | `t` node |
+| *(end)* | `is_end = True`, `_size += 1` | same `t` node |
+
+Tree after `"cat"`:
+
+```text
+root
+ └── c
+      └── a
+           └── t   (is_end=True)
+```
+
+#### Prefix sharing: inserting `"coat"` after `"cat"`
+
+Only the **shared prefix** is reused. After `"cat"` is in the trie, inserting `"coat"` walks `c → o → a → t`:
+
+| Character | Action |
+| --- | --- |
+| `c` | **Reuse** existing child under `root` — no new node |
+| `o` | **Create** new child under `c` (not present yet) |
+| `a` | **Create** new child under `o` |
+| `t` | **Create** new child under that `a` |
+| *(end)* | Mark `t` as `is_end=True`; `_size` becomes 2 |
+
+```text
+root
+ └── c
+      ├── a
+      │    └── t   (is_end=True)   ← "cat"
+      └── o
+           └── a
+                └── t   (is_end=True)   ← "coat"
+```
+
+Important: the `a` in `"coat"` is **not** the same node as the `a` in `"cat"`. Same letter, different position in the tree — `c → a` and `c → o → a` are different paths. `contains("cat")` and `contains("coat")` both return `True`; `contains("co")` is still `False` because no node on the `c → o` path has `is_end=True`.
+
+#### Walkthrough: product names (shared prefix)
+
+The example at the top of this section inserts two product names. After `"analytics"`:
+
+```text
+root → a → n → a → l → y → t → i → c → s   (is_end=True, Product prd-001)
+```
+
+Inserting `"analytics pro"` reuses the entire `"analytics"` path, then adds ` ` (space) → `p` → `r` → `o`:
+
+```text
+root → … → s (is_end=True, prd-001)
+            └── (space) → p → r → o   (is_end=True, prd-002)
+```
+
+Both words are stored; `"analytics"` remains searchable on its own because its terminal `s` node still has `is_end=True` even though `"analytics pro"` continues past it. See [Spaces and multi-word keys](#spaces-and-multi-word-keys) for how spaces behave in prefix queries.
+
+#### Design notes
+
+| Behavior | Why it matters |
+| --- | --- |
+| **Path vs word** | A node may exist as part of a longer key without being a word itself. `"ca"` is not in the trie after inserting `"cat"` unless you also insert `"ca"`. |
+| **Idempotent size** | Re-inserting `"cat"` does not increment `_size` again; it only refreshes `value`. |
+| **Prefix compression** | Common prefixes share nodes, saving space vs storing whole strings separately in a flat list or hash map scan. |
+| **Exact lookup elsewhere** | For slug-only exact match with no prefix UX, a [Hash table](../hash-table/index.md) is still O(1) avg; tries complement hashes for type-ahead. |
+
 | | |
 | --- | --- |
-| **Time** | O(L) |
-| **Space** | O(L) new nodes worst case (no shared prefix) |
+| **Time** | O(L) — one dict lookup/create per character |
+| **Space** | O(L) new nodes worst case when no shared prefix with existing keys |
 
 ```mermaid
-sequenceDiagram
-  participant T as trie
-  T->>T: walk/create s,e,a,...
-  T->>T: mark is_end at leaf
+flowchart TD
+  Start([insert word]) --> R[node = root]
+  R --> Loop{more chars?}
+  Loop -->|yes| C{ch in children?}
+  C -->|no| New[create TrieNode for ch]
+  C -->|yes| Descend[descend to child]
+  New --> Descend
+  Descend --> Loop
+  Loop -->|no| E{is_end already?}
+  E -->|no| Inc[_size += 1]
+  E -->|yes| Mark[is_end = True, value = payload]
+  Inc --> Mark
+  Mark --> Done([done])
 ```
+
+---
+
+### `_find_node(prefix)` — walk to a prefix node
+
+Private helper that **follows a character path** from `root` and returns the `TrieNode` at the end. It does **not** check `is_end` — callers decide whether the path is a complete word, a prefix only, or missing.
+
+```python
+trie.insert("analytics", product_obj)
+trie.insert("analytics pro", other_product)
+
+node = trie._find_node("ana")       # TrieNode after a → n → a (path exists)
+trie._find_node("analytics")        # terminal node of "analytics"
+trie._find_node("zzz")              # None — no z child under root
+```
+
+#### Implementation (step by step)
+
+```python
+def _find_node(self, prefix):
+    self._validate_key(prefix, name='prefix')  # 0. reject non-str keys
+    node = self.root                    # 1. start at the empty root
+    for ch in prefix:                   # 2. walk one character at a time
+        if ch not in node.children:
+            return None                 # 3. abort on missing edge
+        node = node.children[ch]        # 4. descend to the child
+    return node                         # 5. return node at end of path
+```
+
+| Step | What happens |
+| --- | --- |
+| **1. Start at root** | Every lookup begins at `self.root`, which holds no characters — only outgoing edges. |
+| **2. Walk each character** | For each `ch` in `prefix`, look up `node.children[ch]`. |
+| **3. Missing edge** | If `ch` is not a key in `children`, the path was never inserted; return `None` immediately. |
+| **4. Descend** | Move `node` to the child and continue with the next character. |
+| **5. Return node** | After the last character, return the `TrieNode` reached — even if `is_end` is `False`. |
+
+#### Used by public methods
+
+`_find_node` is the shared O(L) descent used across the trie. Each caller adds its own semantics on top:
+
+| Method | How it uses `_find_node` |
+| --- | --- |
+| `search(word)` | Requires `node is not None` **and** `node.is_end`; then returns `node.value` |
+| `contains(word)` | Returns `node is not None and node.is_end` |
+| `starts_with(prefix)` | Returns `node is not None` — path existence is enough |
+| `collect(prefix)` | If `node is None`, returns `[]`; otherwise DFS from `node` |
+| `collect_values(prefix)` | Same as `collect`, but gathers payloads |
+| `delete(word)` | Uses result to confirm the word exists before pruning |
+
+#### Walkthrough: after `"cat"` and `"coat"`
+
+With the trie from the insert walkthrough:
+
+| Query | Result | `is_end` at node | Meaning |
+| --- | --- | --- | --- |
+| `"cat"` | `t` node on `c → a` path | `True` | Full word — `search` / `contains` succeed |
+| `"coat"` | `t` node on `c → o → a` path | `True` | Full word on a different branch |
+| `"co"` | `o` node on `c → o` path | `False` | Path exists; `_find_node` returns the node, but it is not a stored word |
+| `"ca"` | `a` node on `c → a` path | `False` | Prefix of `"cat"` only |
+| `"dog"` | `None` | — | No `d` edge under `root` |
+
+| | |
+| --- | --- |
+| **Time** | O(L) — one dict lookup per character |
+| **Space** | O(1) |
 
 ---
 
 ### `search(word)` — exact match
 
+Looks up a **complete word** in the trie and returns the **value** stored at its terminal node. Returns `None` when the character path does not exist, when the path is only a prefix of a longer word, or when the word was inserted without a payload.
+
 ```python
-product = trie.search("analytics")
+trie.insert("analytics", Product("prd-001", "Analytics", "saas", 49.0))
+trie.insert("car")  # no value argument
+
+p = trie.search("analytics")  # Product("prd-001", ...)
+trie.search("car")            # None — word exists but no value was set
+trie.search("ana")            # None — prefix exists, not a complete word
+trie.search("dog")            # None — path does not exist
 ```
+
+#### Implementation (step by step)
+
+```python
+def search(self, word):
+    self._validate_key(word)               # 0. reject non-str keys
+    node = self._find_node(word)           # 1. walk to the terminal node
+    if node is None or not node.is_end:    # 2. reject missing / prefix-only paths
+        return None
+    return node.value                      # 3. return stored payload
+```
+
+| Step | What happens |
+| --- | --- |
+| **1. Find node** | `_find_node(word)` walks from `root` along each character. If any edge is missing, it returns `None`; otherwise it returns the node at the end of the path. |
+| **2. Validate word** | `node is None` means the word was never inserted. `not node.is_end` means the path exists but nothing was marked as a complete word — for example `"ca"` after inserting only `"cat"`. |
+| **3. Return value** | When the node exists and `is_end` is `True`, return `node.value` from `insert(word, value=...)`. |
 
 | | |
 | --- | --- |
-| **Time** | O(L) |
+| **Time** | O(L) — one dict lookup per character via `_find_node` |
 | **Space** | O(1) |
-
-Returns attached `Product` or `None`.
 
 ---
 
-### `contains(word)`
+### `contains(word)` — membership test
+
+Returns `True` when `word` is a **complete stored word** in the trie, `False` otherwise. Unlike `search`, it returns only a boolean — it does not fetch `node.value`.
+
+```python
+trie.insert("cat")
+trie.insert("coat")
+
+trie.contains("cat")    # True
+trie.contains("coat")   # True
+trie.contains("ca")     # False — prefix only, not a stored word
+trie.contains("dog")    # False — path does not exist
+```
+
+#### Implementation (step by step)
+
+```python
+def contains(self, word):
+    self._validate_key(word)                  # 0. reject non-str keys
+    node = self._find_node(word)              # 1. walk to the terminal node
+    return node is not None and node.is_end   # 2. path exists and marks a word
+```
+
+| Step | What happens |
+| --- | --- |
+| **1. Find node** | `_find_node(word)` follows the character path from `root`, same as `search`. |
+| **2. Test membership** | `node is not None` confirms every character in the path was inserted. `node.is_end` confirms that path is a complete word, not just a prefix of a longer key. Both must be true. |
+
+#### `contains` vs `search`
+
+| Method | Returns | Use when |
+| --- | --- | --- |
+| `contains(word)` | `True` or `False` | You only need to know whether the word is stored |
+| `search(word)` | `node.value` or `None` | You need the payload attached at insert time |
+
+A word with no `value` still returns `True` from `contains` but `None` from `search`.
+
+#### Walkthrough: after `"cat"` and `"coat"`
+
+| Query | `_find_node` result | `is_end` | `contains` returns |
+| --- | --- | --- | --- |
+| `"cat"` | terminal `t` on `c → a` path | `True` | `True` |
+| `"coat"` | terminal `t` on `c → o → a` path | `True` | `True` |
+| `"co"` | `o` node on `c → o` path | `False` | `False` |
+| `"ca"` | `a` node on `c → a` path | `False` | `False` |
+| `"dog"` | `None` | — | `False` |
 
 | | |
 | --- | --- |
-| **Time** | O(L) |
+| **Time** | O(L) — one dict lookup per character via `_find_node` |
 | **Space** | O(1) |
 
 ---
 
 ### `starts_with(prefix)` — any word under prefix?
 
+Returns `True` when at least one stored word **begins with** `prefix` — that is, when the character path exists in the trie. Unlike `contains`, it does **not** require `is_end`; a prefix of a longer word is enough.
+
 ```python
-assert trie.starts_with("ana")
-assert not trie.starts_with("zzz")
+trie.insert("analytics", product_obj)
+trie.insert("analytics pro", other_product)
+
+trie.starts_with("ana")     # True — path to analytics exists
+trie.starts_with("an")      # True — shared prefix of both products
+trie.starts_with("analytics")  # True — full word is also a valid prefix
+trie.starts_with("zzz")     # False — no z child under root
 ```
+
+#### Implementation (step by step)
+
+```python
+def starts_with(self, prefix):
+    self._validate_key(prefix, name='prefix')  # 0. reject non-str keys
+    return self._find_node(prefix) is not None   # path exists?
+```
+
+| Step | What happens |
+| --- | --- |
+| **1. Find node** | `_find_node(prefix)` walks from `root` along each character in `prefix`. |
+| **2. Test path** | Return `True` if the node is reached; `False` if any edge along the path is missing. `is_end` is not consulted — `"ana"` is valid even when only `"analytics"` and `"analytics pro"` are stored. |
+
+#### `starts_with` vs `contains`
+
+| Method | Checks | Example after inserting `"cat"` only |
+| --- | --- | --- |
+| `starts_with(prefix)` | Path exists | `starts_with("ca")` → `True` |
+| `contains(word)` | Path exists **and** `is_end` | `contains("ca")` → `False` |
+
+Use `starts_with` to gate autocomplete UI (for example, show suggestions only after 3+ characters match a known prefix). Follow with `collect(prefix)` to list completions.
+
+#### Walkthrough: after `"cat"` and `"coat"`
+
+| Query | `_find_node` result | `is_end` | `starts_with` returns |
+| --- | --- | --- | --- |
+| `"c"` | `c` node under `root` | `False` | `True` — both words share this prefix |
+| `"ca"` | `a` node on `c → a` path | `False` | `True` — prefix of `"cat"` |
+| `"co"` | `o` node on `c → o` path | `False` | `True` — prefix of `"coat"` |
+| `"cat"` | terminal `t` on `c → a` path | `True` | `True` — full word counts too |
+| `"dog"` | `None` | — | `False` |
 
 | | |
 | --- | --- |
-| **Time** | O(L) |
+| **Time** | O(L) — one dict lookup per character via `_find_node` |
 | **Space** | O(1) |
-
-**UI note:** Enable autocomplete dropdown after user types 3+ chars.
 
 ---
 
 ### `collect(prefix)` — all completions
 
+Returns every stored key that starts with `prefix`, sorted alphabetically (DFS visits
+children in `sorted(node.children.items())` order).
+
 ```python
 matches = trie.collect("ana")
-# ["analytics", "analytics pro"] sorted by DFS order
+# ["analytics", "analytics pro"]
 ```
+
+#### Implementation (step by step)
+
+```python
+def collect(self, prefix=''):
+    self._validate_key(prefix, name='prefix')
+    node = self._find_node(prefix)       # 1. walk to prefix node
+    if node is None:
+        return []                        # 2. missing path → no matches
+    out = []
+    parts = list(prefix)                 # 3. mutable char buffer for current word
+    self._dfs_words(node, parts, out)    # 4. DFS from prefix node
+    return out
+
+def _dfs_words(self, node, parts, out):
+    if node.is_end:
+        out.append(''.join(parts))       # word end → join buffer
+    for ch, child in sorted(node.children.items()):
+        parts.append(ch)                 # extend path
+        self._dfs_words(child, parts, out)
+        parts.pop()                      # backtrack for siblings
+```
+
+| Step | What happens |
+| --- | --- |
+| **1. Find node** | `_find_node(prefix)` walks from `root`. Returns `None` when any edge is missing. |
+| **2. Early exit** | No node under `prefix` means no completions — return `[]`. |
+| **3. Seed buffer** | `parts = list(prefix)` copies characters already consumed during navigation. |
+| **4. DFS** | `_dfs_words` appends at word ends and uses append/pop on `parts` so siblings share one buffer instead of copying strings at every step. |
+
+See [`examples/trie/collect.md`](../examples/trie/collect.md) for a full line-by-line walkthrough.
 
 | | |
 | --- | --- |
@@ -390,6 +727,9 @@ matches = trie.collect("ana")
 ---
 
 ### `collect_values(prefix)` — payload objects
+
+Same prefix walk as `collect`, but gathers `node.value` payloads in DFS order.
+Children are visited in sorted order; entries with `value is None` are skipped.
 
 ```python
 products = trie.collect_values("ana")
@@ -402,18 +742,164 @@ products = trie.collect_values("ana")
 
 ---
 
-### `delete(word)`
+### `delete(word)` — remove a word and prune dead branches
+
+Removes a **complete word** from the trie: clears `is_end` and `value` at its terminal node, then **prunes** nodes that no longer lead anywhere (no children and not the end of another word). Returns `True` when the word was present and removed, `False` when it was not in the trie.
 
 ```python
-trie.delete("analytics pro")
+trie.insert("analytics", product_a)
+trie.insert("analytics pro", product_b)
+
+trie.delete("analytics pro")   # True — removes pro; "analytics" remains
+trie.contains("analytics")     # True
+trie.contains("analytics pro") # False
+
+trie.delete("dog")             # False — word never inserted
 ```
+
+#### Implementation (step by step)
+
+`delete` delegates to `_delete_from(node, word, depth)`, a post-order recursive
+helper that returns a pair `(removed, should_prune)`:
+
+| Return component | Meaning |
+| --- | --- |
+| `removed` | `True` when the terminal node was unmarked (word was stored) |
+| `should_prune` | `True` when the parent should delete its edge to this node |
+
+```python
+def _delete_from(self, node, word, depth):
+    if depth == len(word):                  # 1. reached terminal node
+        if not node.is_end:
+            return False, False             # word not stored here
+        node.is_end = False                 # 2. unmark word
+        node.value = None
+        return True, len(node.children) == 0  # removed; prune if now a leaf
+    ch = word[depth]
+    if ch not in node.children:
+        return False, False                 # path does not exist
+    child = node.children[ch]
+    removed, should_prune = self._delete_from(child, word, depth + 1)
+    if should_prune:
+        del node.children[ch]               # 3. remove dead edge
+    return removed, len(node.children) == 0 and not node.is_end  # 4. bubble up
+
+def delete(self, word):
+    self._validate_key(word)
+    removed, _ = self._delete_from(self.root, word, 0)
+    if removed:                             # 5. update size from removed flag
+        self._size -= 1
+        return True
+    return False
+```
+
+| Step | What happens |
+| --- | --- |
+| **1. Terminal check** | At `depth == len(word)`, the walker is on the node that would end the key. If `is_end` is `False`, the word was never stored — return `(False, False)`. |
+| **2. Unmark** | Clear `is_end` and `value` on the terminal node. Return `(True, should_prune)` where `should_prune` is `True` when the node has no children left. |
+| **3. Recurse** | Follow `word[depth]` into `children` and call `_delete_from` on the child with `depth + 1`. |
+| **4. Prune child** | When the child reports `should_prune`, delete that edge from `node.children`. Bubble `(removed, …)` up; parent prunes when it has no children and is not itself `is_end`. |
+| **5. Update size** | The outer `delete` checks `removed` (not `should_prune`) to decrement `_size` and return `True`. |
+
+#### Why pruning matters
+
+Without pruning, `delete` would only flip `is_end` to `False`, leaving orphaned nodes in the tree. Pruning reclaims nodes that are no longer on any path to a stored word.
+
+| After delete | Keep node? | Reason |
+| --- | --- | --- |
+| `"coat"` from `"cat"` + `"coat"` | Prune `c → o → a → t` branch | No other word uses that path |
+| `"analytics pro"` when `"analytics"` remains | Keep `… → s` node | `"analytics"` still ends there with `is_end=True` |
+| `"cat"` when `"coat"` remains | Keep `c` node | `c → o → …` branch still needed for `"coat"` |
+
+#### Walkthrough: delete `"coat"` after `"cat"` and `"coat"`
+
+```text
+Before:
+root → c → a → t (is_end, "cat")
+            └── o → a → t (is_end, "coat")
+
+After delete("coat"):
+root → c → a → t (is_end, "cat")
+```
+
+| Phase | Action |
+| --- | --- |
+| Descend | Follow `c → o → a → t` |
+| Terminal | Clear `is_end` on `coat`’s `t`; no children → signal prune |
+| Unwind | Remove `t`, then `a`, then `o` under `c` — each becomes a leaf with `is_end=False` |
+| Stop | `c` still has child `a` for `"cat"` — keep `c` |
+
+`contains("coat")` → `False`. `contains("cat")` → `True`.
+
+#### Walkthrough: delete `"analytics pro"`
+
+With both product names inserted (see insert walkthrough), deleting the longer name removes only the ` → pro` suffix branch. The `s` node at the end of `"analytics"` keeps `is_end=True` and its `Product` payload.
 
 | | |
 | --- | --- |
-| **Time** | O(L) |
+| **Time** | O(L) — one descent per character, plus O(L) unwind for pruning |
 | **Space** | O(L) recursion stack |
 
-Prune nodes that become useless branches.
+#### What delete does
+
+If the step-by-step implementation above still feels opaque, this section ties the pieces together.
+
+`delete(word)` has two jobs:
+
+1. **Unmark** the terminal node — set `is_end = False` and clear `value` so the string is no longer a stored key.
+2. **Prune** on the way back up — remove child links whose nodes are no longer needed (not a word end and have no children).
+
+The helper `_delete_from(node, word, depth)` does both with **post-order recursion**: walk down along `word[depth]`, fix the terminal node, then unwind and delete dead edges.
+
+| `_delete_from` return | Meaning |
+| --- | --- |
+| `(False, False)` | Word not found, or path missing — nothing changed at this branch |
+| `(True, True)` | Word removed **and** this node is a useless leaf — parent should drop the edge |
+| `(True, False)` | Word removed but node still needed (has children or is another word’s end) |
+
+The `removed` flag propagates up unchanged so the outer `delete` knows whether to
+decrement `_size`. The `should_prune` flag is local to each parent/child link.
+
+**Base case** (`depth == len(word)`): you are on the node that would end the key. If `is_end` is `False`, the word was never inserted — return `(False, False)`. Otherwise clear the word marker and return `(True, should_prune)`.
+
+**Recursive case**: follow the next character into `children`, recurse, and if the child reports `should_prune`, `del node.children[ch]`. Return `(removed, len(node.children) == 0 and not node.is_end)`.
+
+##### Shared prefix: delete `"cat"` when `"car"` remains
+
+```text
+root → c → a → t (is_end)
+              └→ r (is_end)
+```
+
+| Phase | What happens |
+| --- | --- |
+| Descend | Follow `c → a → t` |
+| Terminal | Clear `is_end` on `t`; no children → return `(True, True)` |
+| Unwind | `a` removes the `t` edge; `r` remains → `a` returns `(True, False)` |
+| Result | `"car"` still works; `"cat"` is gone |
+
+The `c` and `a` nodes stay because `"car"` still needs them. Only the orphaned `t` node is removed.
+
+##### Outer wrapper: size and return value
+
+After `_delete_from(self.root, word, 0)` finishes, the outer method checks `removed`:
+
+| Outcome | Effect |
+| --- | --- |
+| `removed` is `True` | `_size -= 1`, return `True` |
+| `removed` is `False` | Word was not in the trie; return `False`, `_size` unchanged |
+
+When the deleted word shared a prefix with another key, the unmark still happens
+inside `_delete_from` during the unwind. The root often returns `should_prune=False`
+because other branches remain — only useless suffix nodes are removed. The `removed`
+flag ensures the caller still gets `True` and an accurate `len(trie)`.
+
+##### Return values (caller view)
+
+| Situation | `delete` returns |
+| --- | --- |
+| Word not in trie (missing path or not `is_end`) | `False` |
+| Word removed (any prefix layout) | `True` |
 
 ---
 
@@ -610,9 +1096,12 @@ flowchart TD
 | Pitfall | Fix |
 | --- | --- |
 | Storing uppercase mixed keys | Normalize to `.lower()` on insert/search |
-| Empty string insert | Define policy (usually skip) |
+| Empty string insert | Supported — `insert("")` marks `root` as `is_end`; useful for sentinel keys |
 | Huge alphabet Unicode | Use dict children, not array[65536] |
-| Duplicate insert same word | Decide overwrite vs ignore |
+| Non-`str` key passed to any method | `_validate_key` raises `TypeError` |
+| Duplicate insert same word | Overwrites `value`; `_size` unchanged |
+| Middle-word search (`"status"` → `"git status"`) | Trie cannot — use scan, inverted index, or token-level structure |
+| Double spaces in keys vs queries | Paths must match exactly; normalize on insert |
 | Trie for ~20 routes only | Overkill — use list |
 | Not attaching `product_id` at leaf | Store payload in `value` |
 
@@ -672,18 +1161,9 @@ Use **`dict` children** for full names with mixed characters.
 
 ---
 
-## Insert walkthrough (mermaid)
+## Insert walkthrough
 
-```mermaid
-sequenceDiagram
-  participant T as Trie
-  T->>T: start at root
-  loop each character in "analytics"
-    T->>T: create child if missing
-    T->>T: descend
-  end
-  T->>T: is_end=True, value=Product(...)
-```
+See [`insert(word, value=None)`](#insertword-value) above for the full step-by-step explanation, `"cat"` / `"coat"` prefix-sharing example, product-name walkthrough, and flowchart.
 
 ---
 
@@ -815,15 +1295,80 @@ Rebuild trie when the product catalog updates, not on every HTTP request.
 
 ---
 
+## Spaces and multi-word keys
+
+A trie has **no word tokenizer**. Every character in the key — letters, digits,
+punctuation, **spaces** — becomes one edge in the tree. Multi-word phrases such as
+`"git status"` or `"analytics pro"` are stored as a single continuous path:
+
+```text
+"git status"  →  g → i → t → (space) → s → t → a → t → u → s
+"analytics pro"  →  … → s (is_end) → (space) → p → r → o (is_end)
+```
+
+Shorter keys can still end **before** a space branch. After inserting both
+`"analytics"` and `"analytics pro"`, the terminal `s` on the shared prefix keeps
+`is_end=True`, so `contains("analytics")` and `collect("analytics")` still include
+the shorter name even though longer keys continue past it.
+
+### Prefix queries with spaces
+
+`collect(prefix)` and `starts_with(prefix)` match keys that **begin with the exact
+character sequence** you pass — including any spaces inside the prefix.
+
+Assume the trie stores `"git commit"`, `"git push"`, and `"git status"`:
+
+| Query | `collect(query)` returns |
+| --- | --- |
+| `"git"` | all three git commands |
+| `"git "` | all three (trailing space is part of the prefix) |
+| `"git s"` | `"git status"` only |
+| `"git c"` | `"git commit"` only |
+| `"status"` | `[]` — no key **starts with** `"status"` |
+| `"analytics "` | `"analytics lite"`, `"analytics pro"` (not plain `"analytics"`) |
+| `"analytics p"` | `"analytics pro"` only |
+
+The last two rows assume `"analytics"`, `"analytics lite"`, and
+`"analytics pro"` are all stored.
+
+### What tries do not do with spaces
+
+| Expectation | Reality |
+| --- | --- |
+| Type `"status"` → find `"git status"` | No — trie is **prefix-only**, not substring or “any word in phrase” |
+| `"git  status"` (two spaces) matches `"git status"` | No — each space is its own edge; paths must match exactly |
+| Collapse or trim internal spaces | No — normalize keys **before** insert if you need that policy |
+
+### Normalization at the app boundary
+
+The trie itself does not strip or lower-case keys. Application code often does:
+
+```python
+query = user_input.strip().lower()
+results = trie.collect(query)
+```
+
+| Layer | Behavior |
+| --- | --- |
+| **Trie** | Uses the string exactly as passed to `insert` / `collect` |
+| **App** | `.strip()` removes leading/trailing spaces from the **query** only; `.lower()` applies case policy on both insert and search |
+
+Insert and search with the same normalization (for example `.lower()` on both sides)
+so `"Git Status"` in the UI matches `"git status"` in the tree.
+
+---
+
 ## Prefix vs substring
 
 | Query | Structure |
 | --- | --- |
 | Keys **starting with** `"ana"` | Trie |
-| Keys **containing** `"lytics"` | Scan all keys O(n) or full-text index |
+| Keys **starting with** `"git s"` | Trie — space is part of the prefix (see [Spaces and multi-word keys](#spaces-and-multi-word-keys)) |
+| Keys **containing** `"lytics"` or middle word `"status"` | Scan all keys O(n) or full-text index |
 | Exact `slug` | `dict` |
 
-Document your search product: trie is **prefix-only**.
+Document your search product: trie is **prefix-only** — it matches from the **start**
+of each stored key, character by character, not from the middle of a phrase.
 
 ---
 
