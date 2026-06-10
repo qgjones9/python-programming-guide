@@ -1,7 +1,7 @@
-"""Max heap reference implementation from the max-heap teaching page.
+"""Min heap reference implementation from the min-heap teaching page.
 
 0-based array-backed binary heap with optional satellite data per key.
-Matches docs/dsa/data-structures/max-heap/index.md.
+Matches docs/dsa/data-structures/min-heap/index.md.
 """
 
 from dataclasses import dataclass
@@ -13,8 +13,8 @@ class _Entry:
     value: object = None
 
 
-class MaxHeap:
-    """Generic max heap over comparable keys with optional satellite values."""
+class MinHeap:
+    """Generic min heap over comparable keys with optional satellite values."""
 
     def __init__(self, items=None):
         self._data = []
@@ -46,9 +46,9 @@ class MaxHeap:
     def clear(self):
         self._data.clear()
 
-    def peek_max(self):
+    def peek_min(self):
         if not self._data:
-            raise IndexError("peek_max from empty heap")
+            raise IndexError("peek_min from empty heap")
         return self._data[0].key
 
     def peek_entry(self):
@@ -61,13 +61,13 @@ class MaxHeap:
         self._data.append(_Entry(key, value))
         self._sift_up(len(self._data) - 1)
 
-    def extract_max(self):
+    def extract_min(self):
         key, _ = self.extract_entry()
         return key
 
     def extract_entry(self):
         if not self._data:
-            raise IndexError("extract_max from empty heap")
+            raise IndexError("extract_min from empty heap")
         root = self._data[0]
         last = self._data.pop()
         if self._data:
@@ -75,7 +75,7 @@ class MaxHeap:
             self._sift_down(0)
         return root.key, root.value
 
-    def replace_max(self, key, value=None):
+    def replace_min(self, key, value=None):
         if not self._data:
             self.insert(key, value)
             return key
@@ -85,11 +85,11 @@ class MaxHeap:
         self._sift_up(0)
         return old
 
-    def increase_key_at(self, index, new_key):
+    def decrease_key_at(self, index, new_key):
         if not (0 <= index < len(self._data)):
             raise IndexError(index)
-        if new_key < self._data[index].key:
-            raise ValueError("new_key must be >= current key for increase_key")
+        if new_key > self._data[index].key:
+            raise ValueError("new_key must be <= current key for decrease_key")
         self._data[index].key = new_key
         self._sift_up(index)
 
@@ -104,7 +104,7 @@ class MaxHeap:
     def validate(self):
         for i in range(1, len(self._data)):
             p = (i - 1) // 2
-            if self._data[p].key < self._data[i].key:
+            if self._data[p].key > self._data[i].key:
                 return False
         return True
 
@@ -120,7 +120,7 @@ class MaxHeap:
     def _sift_up(self, i):
         while i > 0:
             p = self._parent(i)
-            if self._data[p].key >= self._data[i].key:
+            if self._data[p].key <= self._data[i].key:
                 break
             self._data[p], self._data[i] = self._data[i], self._data[p]
             i = p
@@ -128,17 +128,17 @@ class MaxHeap:
     def _sift_down(self, i):
         n = len(self._data)
         while True:
-            largest = i
+            smallest = i
             left = self._left(i)
             right = self._right(i)
-            if left < n and self._data[left].key > self._data[largest].key:
-                largest = left
-            if right < n and self._data[right].key > self._data[largest].key:
-                largest = right
-            if largest == i:
+            if left < n and self._data[left].key < self._data[smallest].key:
+                smallest = left
+            if right < n and self._data[right].key < self._data[smallest].key:
+                smallest = right
+            if smallest == i:
                 break
-            self._data[i], self._data[largest] = self._data[largest], self._data[i]
-            i = largest
+            self._data[i], self._data[smallest] = self._data[smallest], self._data[i]
+            i = smallest
 
     def __iter__(self):
         for e in self._data:

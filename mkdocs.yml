@@ -1028,6 +1028,7 @@ nav:
       - AVL tree: dsa/data-structures/avl-tree/index.md
       - Red–black tree: dsa/data-structures/red-black-tree/index.md
       - Max heap: dsa/data-structures/max-heap/index.md
+      - Min heap: dsa/data-structures/min-heap/index.md
       - Priority queue: dsa/data-structures/priority-queue/index.md
       - Heap sort: dsa/data-structures/heap-sort/index.md
       - Treaps: dsa/data-structures/treaps/index.md

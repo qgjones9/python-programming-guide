@@ -17,6 +17,7 @@ This hub lists every data-structure page in this section. Each page opens with a
 | AVL tree | Self-balancing BST: rotations keep height O(log n). | [AVL tree](avl-tree/index.md) |
 | Red–black tree | Self-balancing BST with a coloring rule; used in many library maps/sets. | [Red–black tree](red-black-tree/index.md) |
 | Max heap | Complete binary tree where each parent is ≥ its children; supports fast max extract. | [Max heap](max-heap/index.md) |
+| Min heap | Complete binary tree where each parent is ≤ its children; supports fast min extract. | [Min heap](min-heap/index.md) |
 | Priority queue | ADT: always return the element with the highest (or custom) priority. | [Priority queue](priority-queue/index.md) |
 | Heap sort | In-place sort: build a heap, then repeatedly take the extrema. | [Heap sort](heap-sort/index.md) |
 | Treaps | BST where nodes carry random heap priority—simple randomized balance. | [Treaps](treaps/index.md) |
