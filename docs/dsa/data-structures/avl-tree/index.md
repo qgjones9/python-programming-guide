@@ -1,4 +1,4 @@
-# AVL tree
+my# AVL tree
 
 A **self-balancing binary search tree** where the **height difference** (balance factor) between left and right subtrees is at most **1** at every node. After each insert or delete, **rotations** restore that invariant so height stays **O(log n)**—guaranteed fast lookup even when keys arrive **sorted by priority** or **record ID**.
 
@@ -59,7 +59,7 @@ Throughout this page, **n** = nodes, **h** = O(log n) guaranteed.
 | **Teaching fit** | Rotation drills | Baseline invariant | "Why not RB in Python dict" | `id` lookup |
 
 !!! note "Python `dict` uses hashing, not AVL"
- CPython **`dict`** is a **hash table** (open addressing with perturbation). It does **not** keep keys in sorted order by comparison. For sorted maps in Python ecosystems, see **`sortedcontainers`**, **`bisect`** on a list, or databases with indexes.
+    CPython **`dict`** is a **hash table** (open addressing with perturbation). It does **not** keep keys in sorted order by comparison. For sorted maps in Python ecosystems, see **`sortedcontainers`**, **`bisect`** on a list, or databases with indexes.
 
 ---
 
