@@ -13,7 +13,7 @@ A max heap is the right mental model for **“always pull the highest-priority i
 
 This page is your **ready reference**: array indexing, a complete Python `MaxHeap` class, every way to create a heap, every operation with scheduler and top-k examples, and **time and space complexity** on each. For Big-O notation, see [Complexity analysis](../../complexity/index.md).
 
-[Parent: Data structures](../index.md)
+[MaxHeap heapsort](https://youtu.be/GnKHVXv_rlQ)
 
 ---
 

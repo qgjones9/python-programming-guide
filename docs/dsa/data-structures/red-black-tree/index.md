@@ -2,6 +2,8 @@
 
 A **self-balancing binary search tree** where every node is colored **red** or **black** and five **coloring rules** guarantee height **O(log n)**. Inserts and deletes fix violations with **recoloring** and at most **two rotations**—the design behind many language **sorted maps** (C++ `std::map`, Java `TreeMap`), though **Python’s built-in `dict` is not a red–black tree**.
 
+!!! note "Not required to code from scratch for interview"
+
 | | |
 | --- | --- |
 | **What it is** | A [BST](../binary-search-tree/index.md) plus color bit and color invariants; root is black; no two consecutive reds on a path. |

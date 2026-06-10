@@ -1,13 +1,15 @@
 my# AVL tree
 
-A **self-balancing binary search tree** where the **height difference** (balance factor) between left and right subtrees is at most **1** at every node. After each insert or delete, **rotations** restore that invariant so height stays **O(log n)**—guaranteed fast lookup even when keys arrive **sorted by priority** or **record ID**.
+A **self-balancing binary search tree** where the **height difference** (balance factor) between the left and right subtrees at any node never exceeds **1**. After each insert or delete, **rotations** are used to maintain this tight balance, keeping the tree’s height at **O(log n)**—which ensures fast lookups even if keys are added in strictly sorted or reverse order (like by priority or record ID).
+
+!!! note "Not required to code from scratch for interview"
 
 | | |
 | --- | --- |
 | **What it is** | A [BST](../binary-search-tree/index.md) plus balance factors in {−1, 0, +1} and single/double rotations on violation. |
 | **Core operations** | Same as BST—`search`, `insert`, `delete`, traversals—with **O(log n)** worst case. |
 | **Balance factor** | `height(left) − height(right)`; must be −1, 0, or +1. |
-| **When to use** | Teaching strict balancing; guaranteed log height when plain BST would skew. |
+| **When to use** | Guaranteed log height when plain BST would skew. |
 | **Trade-off** | More bookkeeping and rotations than [red–black](../red-black-tree/index.md); stricter balance → slightly fewer compares on lookup, more work on write. |
 
 An AVL tree models a **live ordered index** that stays balanced as you insert `(priority, record_id, label)` pairs in **sorted or alphabetical order**—the case that breaks a plain BST. Use it to understand **rotations** before [red–black trees](../red-black-tree/index.md) (used in many language runtimes). For production Python, you still reach for **`dict`** or **`sortedcontainers`**; AVL is for **learning and interviews**.

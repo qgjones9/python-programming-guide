@@ -2,6 +2,8 @@
 
 A **binary search tree** ordered by **key**, where each node also carries a **random priority** obeying a **max-heap** rule (parent priority ≥ children’s). The name blends **tree** + **heap**; random priorities keep height **O(log n)** in expectation without red–black coloring rules.
 
+!!! note "Not required to code from scratch for interview"
+
 | | |
 | --- | --- |
 | **What it is** | BST on keys; heap on priorities. Insert assigns a random priority and **rotates** until heap order is restored while preserving BST order. |

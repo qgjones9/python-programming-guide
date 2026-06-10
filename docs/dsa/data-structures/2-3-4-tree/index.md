@@ -2,6 +2,8 @@
 
 A **2-3-4 tree** is a **B-tree of order 4**: every **internal** node has **2, 3, or 4 children** and **1, 2, or 3 keys** separating child ranges. All **leaves** sit at the **same depth**—the tree stays **perfectly balanced** without rotations in the red–black sense (splits and merges on nodes instead).
 
+!!! note "Not required to code from scratch for interview"
+
 | | |
 | --- | --- |
 | **What it is** | Search tree where nodes are 2-node, 3-node, or 4-node by key count; 4-node splits upward on insert. |
