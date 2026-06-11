@@ -56,7 +56,7 @@ Tracing on paper or with a few `print` depths helps at first; later you rely on 
 | **Linear recursion** | One recursive call per step | Walk a [linked list](../data-structures/linked-list/index.md); factorial |
 | **Tree recursion** | Multiple recursive calls (children) | [BST](../data-structures/binary-search-tree/index.md) search; tree height |
 | **Divide and conquer** | Split input, recurse on parts, merge | [Merge sort](../algorithms/merge-sort/index.md), [quicksort](../algorithms/quicksort/index.md) |
-| **Graph / state search** | Recurse on neighbors or choices; track visited | DFS on [graphs](../data-structures/graphs/index.md); backtracking (Phase 5+) |
+| **Graph / state search** | Recurse on neighbors or choices; track visited | DFS on [graphs](../data-structures/graphs/index.md); [backtracking](../algorithms/backtracking/index.md) |
 
 ## Examples
 

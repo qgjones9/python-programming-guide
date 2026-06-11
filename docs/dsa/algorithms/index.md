@@ -14,5 +14,7 @@ This hub lists every algorithm page in this section. Each page opens with a shor
 | Bubble sort | Swaps adjacent out-of-order pairs until no swaps—simple, usually slow. | [Bubble sort](bubble-sort/index.md) |
 | Quickselect | Finds the k-th element using quicksort-style partitioning. | [Quickselect](quickselect/index.md) |
 | Bucket sort | Spreads values into buckets, sorts each bucket, then concatenates. | [Bucket sort](bucket-sort/index.md) |
+| Backtracking | Choose, explore, undo — systematic search over combinations and constrained paths. | [Backtracking](backtracking/index.md) |
+| Dynamic programming | Overlapping subproblems solved once via memoization or tabulation. | [Dynamic programming](dynamic-programming/index.md) |
 
 Back to the [DSA overview](../index.md).

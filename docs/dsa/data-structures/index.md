@@ -8,6 +8,7 @@ This hub lists every data-structure page in this section. Each page opens with a
 | Doubly linked list | Like a linked list, but each node also points to the previous node. | [Doubly linked list](doubly-linked-list/index.md) |
 | Circularly linked list | Last node’s next points to the first—forms a ring; handy for round-robin iteration. | [Circularly linked list](circularly-linked-list/index.md) |
 | Array-based lists | A list backed by a contiguous array (fixed or resizable, e.g. `vector` / `ArrayList`). | [Array-based lists](array-based-lists/index.md) |
+| 2D grids | Rectangular tables as nested lists; indexing, traversal, and grid-as-graph patterns. | [2D grids](2d-grids/index.md) |
 | Stacks | LIFO structure: `push` / `pop` (and usually `peek`). | [Stacks](stacks/index.md) |
 | Queue | FIFO structure: `enqueue` at one end, `dequeue` at the other. | [Queue](queue/index.md) |
 | Dequeue (deque) | Double-ended queue: O(1) add/remove at both ends. | [Dequeue (deque)](dequeue-deque/index.md) |
@@ -22,7 +23,7 @@ This hub lists every data-structure page in this section. Each page opens with a
 | Heap sort | In-place sort: build a heap, then repeatedly take the extrema. | [Heap sort](heap-sort/index.md) |
 | Treaps | BST where nodes carry random heap priority—simple randomized balance. | [Treaps](treaps/index.md) |
 | Sets | Collection of unique elements, usually via hash or tree behind the scenes. | [Sets](sets/index.md) |
-| Graphs | Vertices and edges; used for networks, dependencies, and paths. | [Graphs](graphs/index.md) |
+| Graphs | Vertices and edges; BFS/DFS and topo on the hub; Dijkstra, Bellman–Ford, Floyd–Warshall, A*, MST, and graph theory on subpages. | [Graphs](graphs/index.md) |
 | 2-3-4 tree | Self-balancing search tree; nodes with 2, 3, or 4 children (B-tree family). | [2-3-4 tree](2-3-4-tree/index.md) |
 | Honorable mention ADT | Other classic ADTs worth a nod when they do not have their own page here. | [Honorable mention ADT](honorable-mention-adt/index.md) |
 

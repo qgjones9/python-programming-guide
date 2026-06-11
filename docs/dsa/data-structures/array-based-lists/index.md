@@ -198,6 +198,8 @@ grid[0][0] = 1
 assert grid[1][0] == 0
 ```
 
+Full 2D patterns (spiral, rotate, grid BFS/DFS): [2D grids](../2d-grids/index.md).
+
 ### 8. Unpacking into a new list
 
 ```python

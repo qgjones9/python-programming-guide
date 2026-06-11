@@ -333,7 +333,7 @@ flowchart TB
   end
 ```
 
-### `insert(word, value=None)`
+### `insert(word, value=None)` {#insert-word}
 
 Adds `word` to the trie and optionally attaches `value` to that word’s terminal node. Every path from `root` spells a **prefix**; insertion walks the word one character at a time, creating missing edges as it goes, then marks the last node as a complete word.
 
@@ -678,7 +678,7 @@ Use `starts_with` to gate autocomplete UI (for example, show suggestions only af
 
 ---
 
-### `collect(prefix)` — all completions
+### `collect(prefix)` — all completions {#collect-prefix}
 
 Returns every stored key that starts with `prefix`, sorted alphabetically (DFS visits
 children in `sorted(node.children.items())` order).
@@ -717,7 +717,7 @@ def _dfs_words(self, node, parts, out):
 | **3. Seed buffer** | `parts = list(prefix)` copies characters already consumed during navigation. |
 | **4. DFS** | `_dfs_words` appends at word ends and uses append/pop on `parts` so siblings share one buffer instead of copying strings at every step. |
 
-See [`examples/trie/collect.md`](../examples/trie/collect.md) for a full line-by-line walkthrough.
+See the [`collect(prefix)`](#collect-prefix) section above for a full line-by-line walkthrough.
 
 | | |
 | --- | --- |
@@ -1163,7 +1163,7 @@ Use **`dict` children** for full names with mixed characters.
 
 ## Insert walkthrough
 
-See [`insert(word, value=None)`](#insertword-value) above for the full step-by-step explanation, `"cat"` / `"coat"` prefix-sharing example, product-name walkthrough, and flowchart.
+See [`insert(word, value=None)`](#insert-word) above for the full step-by-step explanation, `"cat"` / `"coat"` prefix-sharing example, product-name walkthrough, and flowchart.
 
 ---
 

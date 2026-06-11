@@ -1019,6 +1019,7 @@ nav:
       - Doubly linked list: dsa/data-structures/doubly-linked-list/index.md
       - Circularly linked list: dsa/data-structures/circularly-linked-list/index.md
       - Array-based lists: dsa/data-structures/array-based-lists/index.md
+      - 2D grids: dsa/data-structures/2d-grids/index.md
       - Stacks: dsa/data-structures/stacks/index.md
       - Queue: dsa/data-structures/queue/index.md
       - Dequeue (deque): dsa/data-structures/dequeue-deque/index.md
@@ -1033,7 +1034,14 @@ nav:
       - Heap sort: dsa/data-structures/heap-sort/index.md
       - Treaps: dsa/data-structures/treaps/index.md
       - Sets: dsa/data-structures/sets/index.md
-      - Graphs: dsa/data-structures/graphs/index.md
+      - Graphs:
+        - Graphs: dsa/data-structures/graphs/index.md
+        - Dijkstra: dsa/data-structures/graphs/dijkstra/index.md
+        - Bellman–Ford: dsa/data-structures/graphs/bellman-ford/index.md
+        - Floyd–Warshall: dsa/data-structures/graphs/floyd-warshall/index.md
+        - A*: dsa/data-structures/graphs/a-star/index.md
+        - Minimum spanning tree: dsa/data-structures/graphs/minimum-spanning-tree/index.md
+        - Graph theory: dsa/data-structures/graphs/graph-theory/index.md
       - 2-3-4 tree: dsa/data-structures/2-3-4-tree/index.md
       - Honorable mention ADT: dsa/data-structures/honorable-mention-adt/index.md
     - Algorithms:
@@ -1048,6 +1056,8 @@ nav:
       - Radix sort: dsa/algorithms/radix-sort/index.md
       - Selection sort: dsa/algorithms/selection-sort/index.md
       - Shell sort: dsa/algorithms/shell-sort/index.md
+      - Backtracking: dsa/algorithms/backtracking/index.md
+      - Dynamic programming: dsa/algorithms/dynamic-programming/index.md
   - LeetCode:
     - LeetCode: leetcode/index.md
     - Blind 75:
