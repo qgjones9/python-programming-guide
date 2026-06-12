@@ -1,0 +1,64 @@
+In this first video, we're going to solve the famous cryptography question, Two Sum. Our array has 5 integers: nums = [2, 1, 3, 5, 8] and the target = 9.
+
+In this problem, we are given an array of integers. The array can be sorted or unsorted, and we are given an integer target. We have to find a pair of elements that add up to the target, and we need to return the indices of this pair.
+
+For example, with the array and target given above, target equals nine. In this array, we can add two integers to get that target nine. So, we find the pair 1 and 8. Let's write down their indices: zero, one, two, three, four. The index of 1 is one, and the index of 8 is four. We should return these indices of the pair that add to the target.
+
+In this problem, we are guaranteed that there is always one valid pair that adds to the target. We can return the indices in any order. For example, we can return [1, 4] or [4, 1]. The order doesn't matter. If we are given this array and target nine, we have to return indices one and four, in any order.
+
+Let’s look at a few more examples. If we are given the array [2, 7, 11, 15] and the target 17, we need to add arr[0] and arr[3] to get the target 17 (because 15 plus 2 equals 17). The index of 2 is zero, and the index of fifteen is three. So we return [0, 3].
+
+Another example: if the array is [3, 2, 4] and the target is 6, we see that arr[1] + arr[2] gives us 6. The indices here are one and two.
+
+I hope you have understood this problem. We are given an array of integers and an integer target. We have to find the indices of the pair from nums that add up to that target.
+
+Now, let's talk about how to solve this problem.
+
+For sake of understanding, let's assume we are given this array of integers [2,1,3,5,8]  and we are given target equals to 9. We have to find out the indices of two element from this array that add up to nine. Add to the target nine We are guaranteed that we have one valid pair in the given array nums that add to that target. How we can solve this problem? Pause this video right here and try to think about how you can find out a pair from this array that add to that target.
+
+[paused]
+
+Let’s consider the simplest way to solve this problem: check every possible pair of elements in the array and see if their sum equals the target. To do this, we use two nested for loops, examining each unique pair of indices. This method is called the brute force approach. Although it requires very little additional memory (O(1) space complexity), it’s not efficient for large arrays because it has a time complexity of O(n²)—since we might need to check nearly every pair.
+
+Can we do better than O(n²) time? The answer is yes! By using a different strategy, we can bring the time complexity down to O(n). However, to achieve this faster speed, we must use extra memory (O(n) space complexity). This is a typical trade-off: faster algorithms often use more space. The most efficient solution for this problem uses both linear time and linear space. We'll now explore this approach in detail. Remember, understanding the reasoning behind the algorithm is vital—not just memorizing steps. Try to follow along and think through the logic as we go!
+
+A brute force approach is not ideal—let’s think about a more efficient way. Can we solve this problem in linear time, that is, by making only one pass through the array? Here’s how: as we go through each number from left to right, for every current element (let’s say 5), we want to know if there’s a value to its left that, when added to 5, equals the target (which is 9). In other words, we check if (9 - 5) = 4 has already been seen earlier in the array.
+
+So as we visit each number, we keep track of which numbers we have already seen. If we see 2, then 1, then 3, and now 5, we ask: did we already see a 4? If so, we found a pair that sums to 9.
+
+After checking, we also store 5 as a seen value and continue. Moving on to the next element, 8, we check if we’ve seen (9 - 8) = 1 before. In this case, yes, we have already seen 1. So, we’ve found our valid pair: 1 and 8.
+
+However, the problem asks for the indices, not just the values. To get constant-time lookups and still know the indices, we shouldn’t just use a set—we should use a hash map (dictionary) that stores the value as the key and its corresponding index as the value. This way, when we find a match, we can immediately return the required indices.
+
+To solve this problem efficiently, we need to store both the element values and their indices as we scan through the array. This is where a hash map (or dictionary) is extremely useful because it allows us to quickly check if a value we've seen earlier completes a pair that sums to the target.
+
+Here's how the hash map approach works:
+
+- We scan the array from left to right, examining each element and its index.
+- For each current element, we calculate its complement: `complement = target - current_element`.
+- We check if this complement already exists in the hash map.
+    - If it does, we've found our answer! Since the hash map stores the index of the complement, we simply return both indices.
+- If the complement isn't in the hash map, we add the current element and its index to the hash map for future lookups.
+
+Step by step example for the array [2, 1, 3, 5, 8] and target 9:
+
+1. Current element: 2 (index 0)
+    - Complement: 7
+    - 7 is not in the hash map. Add 2:0 to the hash map.
+2. Current element: 1 (index 1)
+    - Complement: 8
+    - 8 is not in the hash map. Add 1:1 to the hash map.
+3. Current element: 3 (index 2)
+    - Complement: 6
+    - 6 is not in the hash map. Add 3:2 to the hash map.
+4. Current element: 5 (index 3)
+    - Complement: 4
+    - 4 is not in the hash map. Add 5:3 to the hash map.
+5. Current element: 8 (index 4)
+    - Complement: 1
+    - 1 **is** in the hash map at index 1. So, indices [1, 4] are the answer.
+
+In summary, by storing each number along with its index in a hash map, and checking if the complement exists as we iterate, we can solve the Two Sum problem in linear time and space complexity.
+
+
+So, by following this approach, we can successfully find the required pair of indices. This hash map method is the most efficient way to solve the Two Sum problem. The time complexity is O(n) because we scan through the array just once from left to right, examining each element only one time. The space complexity is also O(n), since we use a hash map to keep track of each element and its index; in the worst case, every number is stored in the hash map. This gives us a fast and memory-efficient solution. I hope this explanation makes the logic clear. Now, let's proceed to implement this algorithm.

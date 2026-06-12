@@ -59,9 +59,9 @@ from functools import lru_cache
 
 @lru_cache(maxsize=None)
 def climb_stairs(n):
- if n <= 2:
- return n
- return climb_stairs(n - 1) + climb_stairs(n - 2)
+    if n <= 2:
+        return n
+    return climb_stairs(n - 1) + climb_stairs(n - 2)
 ```
 
 | | |
@@ -75,13 +75,13 @@ Fill a table in dependency order (usually increasing index).
 
 ```python
 def climb_stairs_tab(n):
- if n <= 2:
- return n
- dp = [0] * (n + 1)
- dp[1], dp[2] = 1, 2
- for i in range(3, n + 1):
- dp[i] = dp[i - 1] + dp[i - 2]
- return dp[n]
+    if n <= 2:
+        return n
+    dp = [0] * (n + 1)
+    dp[1], dp[2] = 1, 2
+    for i in range(3, n + 1):
+        dp[i] = dp[i - 1] + dp[i - 2]
+    return dp[n]
 ```
 
 | | |
@@ -110,10 +110,10 @@ Count ways to reach step `n` taking 1 or 2 steps at a time.
 
 ```python
 def climb_stairs(n):
- one, two = 1, 1
- for _ in range(n - 1):
- one, two = two, one + two
- return two
+    one, two = 1, 1
+    for _ in range(n - 1):
+        one, two = two, one + two
+    return two
 ```
 
 | | |
@@ -129,10 +129,10 @@ Max sum with no two adjacent houses robbed.
 
 ```python
 def rob(nums):
- prev2 = prev1 = 0
- for x in nums:
- prev2, prev1 = prev1, max(prev1, prev2 + x)
- return prev1
+    prev2 = prev1 = 0
+    for x in nums:
+        prev2, prev1 = prev1, max(prev1, prev2 + x)
+    return prev1
 ```
 
 State meaning: `prev1` = best including up to previous house; rolling update replaces `dp[i]`.
@@ -145,13 +145,13 @@ Return fewest coins to make `amount`, or `-1` if impossible.
 
 ```python
 def coin_change(coins, amount):
- dp = [float("inf")] * (amount + 1)
- dp[0] = 0
- for a in range(1, amount + 1):
- for c in coins:
- if c <= a:
- dp[a] = min(dp[a], dp[a - c] + 1)
- return dp[amount] if dp[amount] != float("inf") else -1
+    dp = [float("inf")] * (amount + 1)
+    dp[0] = 0
+    for a in range(1, amount + 1):
+        for c in coins:
+            if c <= a:
+                dp[a] = min(dp[a], dp[a - c] + 1)
+    return dp[amount] if dp[amount] != float("inf") else -1
 ```
 
 | | |
@@ -169,11 +169,11 @@ Move only **right** or **down** from top-left to bottom-right.
 
 ```python
 def unique_paths(rows, cols):
- dp = [[1] * cols for _ in range(rows)]
- for r in range(1, rows):
- for c in range(1, cols):
- dp[r][c] = dp[r - 1][c] + dp[r][c - 1]
- return dp[rows - 1][cols - 1]
+    dp = [[1] * cols for _ in range(rows)]
+    for r in range(1, rows):
+        for c in range(1, cols):
+            dp[r][c] = dp[r - 1][c] + dp[r][c - 1]
+    return dp[rows - 1][cols - 1]
 ```
 
 Recurrence: `dp[r][c] = dp[r-1][c] + dp[r][c-1]` because every path arrives from above or left.
@@ -191,15 +191,15 @@ See [2D grids](../../data-structures/2d-grids/index.md) for grid indexing and tr
 
 ```python
 def lcs(a, b):
- m, n = len(a), len(b)
- dp = [[0] * (n + 1) for _ in range(m + 1)]
- for i in range(1, m + 1):
- for j in range(1, n + 1):
- if a[i - 1] == b[j - 1]:
- dp[i][j] = dp[i - 1][j - 1] + 1
- else:
- dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
- return dp[m][n]
+    m, n = len(a), len(b)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if a[i - 1] == b[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1] + 1
+            else:
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+    return dp[m][n]
 ```
 
 | | |
@@ -215,21 +215,21 @@ Minimum insertions, deletions, replacements to transform `a` into `b`.
 
 ```python
 def edit_distance(a, b):
- m, n = len(a), len(b)
- dp = [[0] * (n + 1) for _ in range(m + 1)]
- for i in range(m + 1):
- dp[i][0] = i
- for j in range(n + 1):
- dp[0][j] = j
- for i in range(1, m + 1):
- for j in range(1, n + 1):
- cost = 0 if a[i - 1] == b[j - 1] else 1
- dp[i][j] = min(
- dp[i - 1][j] + 1, # delete
- dp[i][j - 1] + 1, # insert
- dp[i - 1][j - 1] + cost, # replace or match
- )
- return dp[m][n]
+    m, n = len(a), len(b)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(m + 1):
+        dp[i][0] = i
+    for j in range(n + 1):
+        dp[0][j] = j
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            cost = 0 if a[i - 1] == b[j - 1] else 1
+            dp[i][j] = min(
+                dp[i - 1][j] + 1,      # delete
+                dp[i][j - 1] + 1,      # insert
+                dp[i - 1][j - 1] + cost  # replace or match
+            )
+    return dp[m][n]
 ```
 
 ---
@@ -309,12 +309,12 @@ Always verify dependencies before overwriting cells you still need.
 # Memo
 @lru_cache(maxsize=None)
 def f(state):
- ...
+    ...
 
 # Tabulation
 dp = [0] * (n + 1)
 for i in range(1, n + 1):
- dp[i] = ...
+    dp[i] = ...
 ```
 
 **Recognition hints:** “minimum/maximum number of…”, “how many ways…”, “longest/shortest sub…”, “with constraints on adjacent elements”, grid paths with only right/down moves.
