@@ -240,10 +240,10 @@ def edit_distance(a, b):
 | --- | --- | --- | --- |
 | **Subproblems** | Overlap; cache them | One local choice | Explore tree |
 | **Optimality** | Proven via recurrence | Needs greedy-choice proof | Finds all / one valid |
-| **Example** | Min coins | Activity selection (some variants) | All permutations |
+| **Example** | Min coins | [Activity selection](../greedy/index.md#pattern-1--interval-scheduling-earliest-finish-time) | All permutations |
 | **Time** | Polynomial in state count | Often O(n log n) or O(n) | Often exponential |
 
-If a greedy argument is **not** obvious, try DP first for min/max/count problems.
+If a greedy argument is **not** obvious, try DP first for min/max/count problems. See [Greedy](../greedy/index.md) for interval, heap, and sort-and-scan patterns.
 
 ---
 

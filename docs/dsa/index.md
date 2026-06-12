@@ -84,7 +84,7 @@ With structures in place, study classic algorithms and their tradeoffs:
 
 **Searching and selection** — binary search on sorted arrays; [quickselect](algorithms/quickselect/index.md) for order statistics.
 
-**Beyond sorting** — [backtracking](algorithms/backtracking/index.md), [dynamic programming](algorithms/dynamic-programming/index.md), graph algorithms (flows, MSTs), and greedy methods. Tackle these after Phases 1–4 when you can write recurrences and trace choose/undo search.
+**Beyond sorting** — [backtracking](algorithms/backtracking/index.md), [greedy](algorithms/greedy/index.md), [dynamic programming](algorithms/dynamic-programming/index.md), and graph algorithms (shortest paths, MSTs). Tackle these after Phases 1–4 when you can write recurrences, justify local choices, and trace choose/undo search.
 
 ### Phase 6 — Practice and integration
 

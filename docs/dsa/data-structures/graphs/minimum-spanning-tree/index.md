@@ -315,6 +315,7 @@ The MST is a **lower bound** on connectivity cost—not the final design. Produc
 | Page | Relationship |
 | --- | --- |
 | [Graphs](../index.md) | Representations, weighted graphs, Dijkstra |
+| [Greedy](../../../algorithms/greedy/index.md) | General greedy paradigm; Kruskal/Prim are graph instances |
 | [Union-Find](../../honorable-mention-adt/index.md) | Kruskal connectivity merges |
 | [Priority queue](../../priority-queue/index.md) | Prim min-heap frontier |
 | [Min heap](../../min-heap/index.md) | Heap mechanics behind `heapq` |

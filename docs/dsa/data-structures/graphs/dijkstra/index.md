@@ -279,6 +279,7 @@ for city, miles, route in route_report(roads, "new_orleans"):
 | Page | Relationship |
 | --- | --- |
 | [Graphs hub](../index.md) | `WeightedGraph`, BFS/DFS, representations |
+| [Greedy](../../../algorithms/greedy/index.md) | General greedy paradigm; Dijkstra is a graph instance |
 | [Bellman–Ford](../bellman-ford/index.md) | Negative weights and cycle detection |
 | [Priority queue](../../priority-queue/index.md) | Min-PQ drives Dijkstra; indexed decrease-key |
 | [Min heap](../../min-heap/index.md) | `heapq` / sift-up frontier semantics |

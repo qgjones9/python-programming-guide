@@ -1057,6 +1057,7 @@ nav:
       - Selection sort: dsa/algorithms/selection-sort/index.md
       - Shell sort: dsa/algorithms/shell-sort/index.md
       - Backtracking: dsa/algorithms/backtracking/index.md
+      - Greedy: dsa/algorithms/greedy/index.md
       - Dynamic programming: dsa/algorithms/dynamic-programming/index.md
   - LeetCode:
     - LeetCode: leetcode/index.md

@@ -267,7 +267,7 @@ def solve_n_queens(n):
 | **Dynamic programming** | Overlapping subproblems once | Memo/table | Optimal value or count |
 | **Greedy** | One local choice per step | No search tree | One constructed answer |
 
-Use backtracking when you need **all** valid configurations or must **try and revert** choices. Switch to [Dynamic programming](../dynamic-programming/index.md) when subproblems repeat and optimal structure exists.
+Use backtracking when you need **all** valid configurations or must **try and revert** choices. Switch to [Greedy](../greedy/index.md) when a locally best choice is provably safe, or [Dynamic programming](../dynamic-programming/index.md) when subproblems repeat and optimal structure exists.
 
 ---
 
