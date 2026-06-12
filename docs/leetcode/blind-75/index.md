@@ -5,6 +5,7 @@
 | 1    | [Two Sum](two-sum/index.md)                       | Easy       |
 | 121  | [Best Time to Buy and Sell Stock](best-time-to-buy-and-sell-stock/index.md) | Easy       |
 | 217  | [Contains Duplicate](contains-duplicate/index.md) | Easy       |
+| 238  | [Product of Array Except Self](product-of-array-except-self/index.md) | Medium       |
 | 128  | [Longest Consecutive Sequence](longest-consecutive-sequence/index.md) | Medium       |
 | 3    | [Longest Substring Without Repeating Characters](longest-substring-without-repeating-characters/index.md) | Medium       |
 | 5    | [Longest Palindromic Substring](longest-palindromic-substring/index.md) | Medium       |
@@ -71,7 +72,6 @@
 | 104  | [Maximum Depth of Binary Tree](maximum-depth-of-binary-tree/index.md) | Easy       |
 | 105  | [Construct Binary Tree from Preorder and Inorder Traversal](construct-binary-tree-from-preorder-and-inorder-traversal/index.md) | Medium       |
 | 235  | [Lowest Common Ancestor of a Binary Search Tree](lowest-common-ancestor-of-a-binary-search-tree/index.md) | Medium       |
-| 238  | [Product of Array Except Self](product-of-array-except-self/index.md) | Medium       |
 | 242  | [Valid Anagram](valid-anagram/index.md)           | Easy       |
 | 371  | [Sum of Two Integers](sum-of-two-integers/index.md) | Medium       |
 | 252  | [Meeting Rooms](meeting-rooms/index.md)           | Easy       |
