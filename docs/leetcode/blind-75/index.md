@@ -4,6 +4,7 @@
 |------|-------------------------------------------------|------------|
 | 1    | [Two Sum](two-sum/index.md)                       | Easy       |
 | 121  | [Best Time to Buy and Sell Stock](best-time-to-buy-and-sell-stock/index.md) | Easy       |
+| 217  | [Contains Duplicate](contains-duplicate/index.md) | Easy       |
 | 128  | [Longest Consecutive Sequence](longest-consecutive-sequence/index.md) | Medium       |
 | 3    | [Longest Substring Without Repeating Characters](longest-substring-without-repeating-characters/index.md) | Medium       |
 | 5    | [Longest Palindromic Substring](longest-palindromic-substring/index.md) | Medium       |
@@ -58,7 +59,6 @@
 | 211  | [Design Add and Search Words Data Structure](design-add-and-search-words-data-structure/index.md) | Medium       |
 | 212  | [Word Search II](word-search-ii/index.md)         | Hard       |
 | 213  | [House Robber II](house-robber-ii/index.md)       | Medium       |
-| 217  | [Contains Duplicate](contains-duplicate/index.md) | Easy       |
 | 91   | [Decode Ways](decode-ways/index.md)               | Medium       |
 | 347  | [Top K Frequent Elements](top-k-frequent-elements/index.md) | Medium       |
 | 253  | [Meeting Rooms II](meeting-rooms-ii/index.md)     | Medium       |
