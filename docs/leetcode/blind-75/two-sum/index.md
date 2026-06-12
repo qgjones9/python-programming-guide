@@ -31,6 +31,68 @@ Output: [0,1]
 *Only one valid answer exists.*
 
 
+## Approach
+
+You need two indices whose values sum to `target`. Start with the obvious baseline—check every pair—then upgrade to a one-pass hash map. That second approach is what you should reach for in an interview.
+
+### Brute force: check every pair
+
+The simplest idea is to try every unique pair of indices with two nested loops and return the first pair whose values add up to `target`. You can code this in minutes, but ask yourself whether it scales.
+
+| Aspect | Detail |
+|--------|--------|
+| Time | O(n²) — up to every pair may be checked |
+| Space | O(1) — no extra structure beyond loop variables |
+| Drawback | Too slow for large arrays |
+
+It works for small inputs, but when `n` grows, the nested loops become a bottleneck.
+
+### Hash map: one pass with complements
+
+You can do better by scanning left to right **once**. At each element, ask: *have I already seen the number I need to reach the target?*
+
+For a current value `x`, that needed value is the **complement**:
+
+NOTE: Complement is the number that, when added to the current value, equals the target. For example, if the current value is 2 and the target is 9, the complement is 7 (9 - 2 = 7). It is called complement because it complements the current value to reach the target. 
+
+$$
+\text{complement} = \text{target} - x
+$$
+
+If the complement was seen earlier, we have the pair. Otherwise, record the current value and its index and continue.
+
+Because the problem asks for **indices**, a **set** is not enough — use a **hash map (dictionary)** mapping each seen value to the index where it appeared. That gives O(1) average lookup and lets you return both indices immediately when a match is found.
+
+| Step | Action |
+|------|--------|
+| 0 | Initialize an empty dictionary, `map = {}`, to store the seen values and their indices. |
+| 1 | Scan `nums` from left to right with index `i`, starting at `i = 0`. |
+| 2 | Compute `complement = target - nums[i]`. This is the number that, when added to `nums[i]`, equals `target`. |
+| 3 | If `complement` is already in the map, return `[map[complement], i]`. This is the pair of indices that add up to `target`. |
+| 4 | Otherwise, store `nums[i] : i` in the map and move on. This stores the current number and its index in the map for future lookups. |
+
+That is the classic **time-for-space** trade-off: O(n) time instead of O(n²), at the cost of O(n) extra memory. Memorizing the steps is not enough—understand *why* storing complements as you go makes the second lookup O(1).
+
+### Walkthrough: `nums = [2, 1, 3, 5, 8]`, `target = 9`
+
+| Step | Current | Index | Complement | Map before | Result |
+|------|---------|-------|------------|------------|--------|
+| 1 | 2 | 0 | 7 | `{}` | Add `{2: 0}` |
+| 2 | 1 | 1 | 8 | `{2: 0}` | Add `{1: 1}` |
+| 3 | 3 | 2 | 6 | `{2: 0, 1: 1}` | Add `{3: 2}` |
+| 4 | 5 | 3 | 4 | `{2: 0, 1: 1, 3: 2}` | Add `{5: 3}` |
+| 5 | 8 | 4 | 1 | `{2: 0, 1: 1, 3: 2, 5: 3}` | `1` is in the map at index 1 → return `[1, 4]` |
+
+At index 4, `8` needs complement `1`; we already saw `1` at index 1, so the answer is `[1, 4]` (order does not matter).
+
+### Complexity of the hash map approach
+
+| Time | Space | Why |
+|------|-------|-----|
+| O(n) | O(n) | One left-to-right pass; in the worst case every element is stored in the map |
+
+The implementations below lead with the hash map solution, then show brute force and sorted-array variants so you can compare trade-offs side by side.
+
 ## Solution 1: Hash Table (Best for Interview)
 
 | Time Complexity | Space Complexity |
@@ -65,6 +127,25 @@ def two_sum_hash_table(nums, target):
             return [seen[complement], i]
         seen[current_num] = i # store the current number and its index in the seen dictionary
     return [] # if no pair is found, return an empty list
+```
+
+```java
+public class TwoSum {
+    public int[] twoSum(int[] nums, int target) {
+        // write your code here
+        Map<Integer, Integer> seen = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            int current_num = nums[i];
+            int complement = target - current_num;
+            if (seen.containsKey(complement)) {
+                return new int[] {seen.get(complement), i};
+            }
+            seen.put(current_num, i);
+        }
+        return new int[] {};
+    }
+}
+
 ```
 
 ## Solution 2: Brute Force

@@ -2,8 +2,8 @@
 
 | #    | Problem                                         | Acceptance Rate | Difficulty |
 |------|-------------------------------------------------|-----------------|------------|
-| 128  | [Longest Consecutive Sequence](longest-consecutive-sequence/index.md) | 47.1%           | Med.       |
 | 1    | [Two Sum](two-sum/index.md)                       | 57.6%           | Easy       |
+| 128  | [Longest Consecutive Sequence](longest-consecutive-sequence/index.md) | 47.1%           | Med.       |
 | 3    | [Longest Substring Without Repeating Characters](longest-substring-without-repeating-characters/index.md) | 39.1%           | Med.       |
 | 5    | [Longest Palindromic Substring](longest-palindromic-substring/index.md) | 37.9%           | Med.       |
 | 133  | [Clone Graph](clone-graph/index.md)               | 65.4%           | Med.       |
