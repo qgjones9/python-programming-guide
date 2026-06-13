@@ -10,6 +10,7 @@
 | 152  | [Maximum Product Subarray](maximum-product-subarray/index.md)                                                                   | Medium  |
 | 153  | [Find Minimum in Rotated Sorted Array](find-minimum-in-rotated-sorted-array/index.md)                                           | Medium  |
 | 33   | [Search in Rotated Sorted Array](search-in-rotated-sorted-array/index.md)                                                       | Medium  |
+| 15   | [3Sum](3sum/index.md)                                                                                                           | Medium  |
 | 128  | [Longest Consecutive Sequence](longest-consecutive-sequence/index.md)                                                           | Medium  |
 | 3    | [Longest Substring Without Repeating Characters](longest-substring-without-repeating-characters/index.md)                       | Medium  |
 | 105  | [Construct Binary Tree from Preorder and Inorder Traversal](construct-binary-tree-from-preorder-and-inorder-traversal/index.md) | Medium  |
@@ -22,7 +23,6 @@
 | 139  | [Word Break](word-break/index.md)                                                                                               | Medium  |
 | 141  | [Linked List Cycle](linked-list-cycle/index.md)                                                                                 | Easy    |
 | 268  | [Missing Number](missing-number/index.md)                                                                                       | Easy    |
-| 15   | [3Sum](3sum/index.md)                                                                                                           | Medium  |
 | 143  | [Reorder List](reorder-list/index.md)                                                                                           | Medium  |
 | 269  | [Alien Dictionary](alien-dictionary/index.md)                                                                                   | Hard    |
 | 271  | [Encode and Decode Strings](encode-and-decode-strings/index.md)                                                                 | Medium  |
