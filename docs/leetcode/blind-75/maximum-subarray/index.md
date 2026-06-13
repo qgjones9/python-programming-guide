@@ -119,6 +119,10 @@ When `current_sum` is reset and the next element is added, that is equivalent to
 
 The implementations below lead with the extend-or-restart form, then the reset variant, then brute force so you can compare trade-offs side by side.
 
+## Implementation
+
+Runnable code: [main.py](main.py)
+
 ## Solution 1: Kadane's Algorithm — extend or restart (Best for Interview)
 
 | Time Complexity | Space Complexity |
@@ -243,3 +247,7 @@ if __name__ == "__main__":
     print("Kadane (reset):", max_subarray_kadane_reset(nums))
     print("Brute Force:", max_subarray_brute_force(nums))
 ```
+
+## Internal References
+
+- [Maximum Product Subarray](../maximum-product-subarray/index.md) — same contiguous-subarray pattern with **product**; track min and max running products when negatives flip signs.

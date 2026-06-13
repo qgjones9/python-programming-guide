@@ -109,6 +109,10 @@ Final answer: `[24, 12, 8, 6]`.
 
 The implementations below lead with the optimized two-pass solution, then show the separate prefix/suffix arrays version for clarity.
 
+## Implementation
+
+Runnable code: [main.py](main.py)
+
 ## Solution 1: Two-Pass with Running Products (Best for Interview)
 
 | Time Complexity | Space Complexity |
@@ -219,3 +223,8 @@ if __name__ == "__main__":
     print("Two Pass (zeros):", product_except_self(nums_with_zero))
     print("Prefix/Suffix (zeros):", product_except_self_prefix_suffix(nums_with_zero))
 ```
+
+## Internal References
+
+- [Maximum Product Subarray](../maximum-product-subarray/index.md) — another array product pattern; contiguous max product vs prefix/suffix "except self".
+- [Maximum Subarray](../maximum-subarray/index.md) — contiguous subarray with **sum** instead of product (Kadane).

@@ -6,6 +6,7 @@
 | 121  | [Best Time to Buy and Sell Stock](best-time-to-buy-and-sell-stock/index.md) | Easy       |
 | 217  | [Contains Duplicate](contains-duplicate/index.md) | Easy       |
 | 238  | [Product of Array Except Self](product-of-array-except-self/index.md) | Medium       |
+| 53   | [Maximum Subarray](maximum-subarray/index.md)     | Medium       |
 | 152  | [Maximum Product Subarray](maximum-product-subarray/index.md) | Medium       |
 | 128  | [Longest Consecutive Sequence](longest-consecutive-sequence/index.md) | Medium       |
 | 3    | [Longest Substring Without Repeating Characters](longest-substring-without-repeating-characters/index.md) | Medium       |
@@ -36,7 +37,6 @@
 | 48   | [Rotate Image](rotate-image/index.md)             | Medium       |
 | 49   | [Group Anagrams](group-anagrams/index.md)         | Medium       |
 | 435  | [Non-overlapping Intervals](non-overlapping-intervals/index.md) | Medium       |
-| 53   | [Maximum Subarray](maximum-subarray/index.md)     | Medium       |
 | 54   | [Spiral Matrix](spiral-matrix/index.md)           | Medium       |
 | 55   | [Jump Game](jump-game/index.md)                   | Medium       |
 | 56   | [Merge Intervals](merge-intervals/index.md)       | Medium       |
