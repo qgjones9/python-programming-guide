@@ -79,11 +79,11 @@ if __name__ == "__main__":
     """
     leetcode_1 = [2, 3, -2, 4]
     leetcode_2 = [-2, 0, -1]
-    lecture = [-1, -2, -3, 0, 3, 5, -1, -2]
+    walkthrough = [-1, -2, -3, 0, 3, 5, -1, -2]
 
     print("LeetCode example 1:", max_product_subarray(leetcode_1))
     print("LeetCode example 2:", max_product_subarray(leetcode_2))
-    print("Lecture array:", max_product_subarray(lecture))
+    print("Walkthrough input:", max_product_subarray(walkthrough))
 
     print("Brute force (example 1):", max_product_subarray_brute_force(leetcode_1))
-    print("Brute force (lecture):", max_product_subarray_brute_force(lecture))
+    print("Brute force (walkthrough):", max_product_subarray_brute_force(walkthrough))

@@ -31,23 +31,23 @@ The product of any subarray of `nums` is guaranteed to fit in a 32-bit integer.
     You will find the maximum product of any contiguous subarray in one pass by tracking both the smallest and largest product ending at each index, handle zeros as segment breaks, and explain why Kadane's sum algorithm is not enough when negatives flip signs.
 
 
-## Lecture walkthrough data
+## Worked example data
 
-The primary array used step-by-step in the lecture:
+Primary input for the full index-by-index trace below:
 
 ```text
-# collection of data used in the problem statement
+# primary walkthrough input
 nums = [-1, -2, -3, 0, 3, 5, -1, -2]
-# expected answer from lecture: 30  (subarray [3, 5, -1, -2])
+# expected output: 30  (subarray [3, 5, -1, -2])
 ```
 
-| Array (lecture intro) | Corrected / note | Answer |
-|-----------------------|------------------|--------|
-| `[1, 2, 2, 4]` (ASR: "one times two…") | `[1, 2, 3, 4]` | 24 |
-| `[-2, -3, 4, -4, -5]` (garbled) | `[-2, -3, 4]` segment | 24 |
-| `[2, 3]` | — | 6 |
-| `[3, 5, -1, -2]` | — | 30 |
-| `[-1, -2, -3, 0, 3, 5, -1, -2]` | Main walkthrough | 30 |
+| Example | Notes | Answer |
+|---------|-------|--------|
+| `[1, 2, 3, 4]` | All positive | 24 |
+| `[-2, -3, 4]` | Two negatives then positive | 24 |
+| `[2, 3]` | Short positive window | 6 |
+| `[3, 5, -1, -2]` | Best subarray after zero | 30 |
+| `[-1, -2, -3, 0, 3, 5, -1, -2]` | Full walkthrough below | 30 |
 
 
 ## Approach
@@ -132,7 +132,7 @@ flowchart TD
     loop --> done[Return answer]
 ```
 
-### Walkthrough: lecture array `nums = [-1, -2, -3, 0, 3, 5, -1, -2]`
+### Walkthrough: `nums = [-1, -2, -3, 0, 3, 5, -1, -2]`
 
 | Index | `nums[i]` | `cur_min` | `cur_max` | `answer` |
 |-------|-----------|-----------|-----------|----------|
@@ -147,7 +147,7 @@ flowchart TD
 
 After index 3, trackers reset to `1` (not shown as numeric rows). The winning subarray on the right segment is `[3, 5, -1, -2]` with product `30`.
 
-!!! success "Lecture walkthrough confirmed"
+!!! success "Walkthrough confirmed"
     For `nums = [-1, -2, -3, 0, 3, 5, -1, -2]`, the algorithm returns **30**. The prefix before the zero peaks at **6**; the global best is **30** after the final `-2`.
 
 ### Walkthrough: `nums = [2, 3, -2, 4]`
@@ -285,11 +285,11 @@ if __name__ == "__main__":
     """
     leetcode_1 = [2, 3, -2, 4]
     leetcode_2 = [-2, 0, -1]
-    lecture = [-1, -2, -3, 0, 3, 5, -1, -2]
+    walkthrough = [-1, -2, -3, 0, 3, 5, -1, -2]
 
     print("Min/Max Scan:", max_product_subarray(leetcode_1))
     print("Min/Max Scan (zeros):", max_product_subarray(leetcode_2))
-    print("Min/Max Scan (lecture):", max_product_subarray(lecture))
+    print("Min/Max Scan (walkthrough):", max_product_subarray(walkthrough))
     print("Brute Force:", max_product_subarray_brute_force(leetcode_1))
 ```
 

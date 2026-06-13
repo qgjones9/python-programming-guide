@@ -5,7 +5,7 @@
 1. `# [Title](https://leetcode.com/problems/{slug})` — official description
 2. `## Example 1..N` + `## Constraints` — **plain**
 3. `## :material-school: What you'll learn` + `!!! abstract`
-4. `## Lecture walkthrough data` — plain ` ```text ` block + optional table of other lecture arrays
+4. `## Worked example data` — plain ` ```text ` block + optional example table
 5. `## Approach` — brute → optimal; mermaid; walkthrough tables; admonitions at placement slots only
 6. `## Implementation` — `Runnable code: [main.py](main.py)`
 7. `## Solution 1: … (Best for Interview)` — 🎯 one line; complexity + Python + Java
@@ -16,17 +16,38 @@
 12. `## Internal References` — 🔗 repo links
 13. `## External References` — `:fontawesome-solid-link:` URLs
 
+## Worked example data template
+
+```markdown
+## Worked example data
+
+Primary input for the full index-by-index trace below:
+
+```text
+# primary walkthrough input
+nums = [-1, -2, -3, 0, 3, 5, -1, -2]
+# expected output: 30  (subarray [3, 5, -1, -2])
+```
+
+| Example | Notes | Answer |
+|---------|-------|--------|
+| `[1, 2, 3, 4]` | All positive | 24 |
+| `[-1, -2, -3, 0, 3, 5, -1, -2]` | Full walkthrough below | 30 |
+```
+
+**Reader-facing rules:** No lecture, transcript, ASR, professor, or video wording. Example table lists **correct** arrays only with short **Notes** (pattern labels), not transcription corrections.
+
 ## Admonition placement map
 
 ```
 Constraints          → plain only
 What you'll learn    → !!! abstract
-Lecture data         → plain text block
+Worked example data  → plain text block + optional table
 Approach             → prose + tables default
                      → !!! info after recurrence / variable table
                      → !!! warning after edge cases (zero, sign flip)
                      → plain walkthrough table
-                     → !!! success below table (confirmed answer)
+                     → !!! success "Walkthrough confirmed" below table
                      → optional !!! success "30-second interview script"
 Solution 1           → plain code; 🎯 in prose before heading
 Key takeaways        → emoji bullets, no admonition wrapper
@@ -43,7 +64,7 @@ Industry scenarios   → emoji bullets only
 | 🧩 | Edge case |
 | 💡 | Intuition (max 2 in Approach) |
 | 🔗 | Internal References |
-| 📊 | Optional near lecture data block |
+| 📊 | Optional near worked example data block |
 | 📈 📡 🎮 | Industry scenarios (finance, networking, gaming) |
 
 Material icons: `:material-school:` on What you'll learn; `:material-lightbulb:` on Key takeaways. **One anchor per heading** — emoji or Material, not both.
@@ -99,21 +120,23 @@ $$
 \text{cur\_min} = \min(nums[i],\ nums[i] \times \text{cur\_max},\ nums[i] \times \text{cur\_min})
 $$
 
-## Lecture sanitization
+## Source sanitization (agent-only — never expose in index.md)
 
-Remove: welcome/intro, "let's implement", side conversations, repeated "now let's see how to solve".
+Remove from distilled content: welcome/intro, "let's implement", side conversations, repeated "now let's see how to solve".
 
 Keep: variable definitions, step traces, complexity, inline arrays.
 
-Fix: ASR garbled numbers (lecture "fifty" at index 5 often means **15**); mid-lecture zero-reset to 0 vs final reset to 1 — **canonical is reset to 1**.
+Fix silently in output: garbled numbers in transcription; wrong zero-reset (canonical: reset to **1**). Document traps in `!!! warning` without citing the source.
 
 ## Validation checklist (copy per run)
 
 - [ ] `python3 .../main.py` passes
 - [ ] LeetCode examples verified against official page
-- [ ] Lecture array output matches walkthrough table
+- [ ] Walkthrough array output matches trace table
 - [ ] Snippet ↔ `main.py` sync
 - [ ] Examples/Constraints: no admonitions/emojis
+- [ ] **`index.md` has zero lecture/transcript/ASR/professor/video mentions**
+- [ ] `# primary walkthrough input` in worked example block
 - [ ] 3–4 admonitions for medium problems
-- [ ] At least one `!!! warning` if lecture was wrong
+- [ ] At least one `!!! warning` when source had a common trap
 - [ ] No back-to-back admonitions
