@@ -31,6 +31,30 @@ Output: [0,1]
 *Only one valid answer exists.*
 
 
+## :material-school: What you'll learn
+
+!!! abstract "Learning objectives"
+    You will find two indices that sum to a target using a one-pass hash map of complements, compare brute force and sorted-array variants, and explain why a set alone is not enough when the answer must be indices.
+
+
+## Worked example data
+
+Primary input for the step-by-step trace below:
+
+```text
+# primary walkthrough input
+nums = [2, 1, 3, 5, 8]
+target = 9
+# expected output: [1, 4]
+```
+
+| Example | Notes | Output |
+|---------|-------|--------|
+| `[2, 1, 3, 5, 8]`, target `9` | Full walkthrough below | `[1, 4]` |
+| `[3, 2, 4]`, target `6` | LeetCode example 2 | `[1, 2]` |
+| `[3, 3]`, target `6` | Duplicate values | `[0, 1]` |
+
+
 ## Approach
 
 You need two indices whose values sum to `target`. Start with the obvious baseline—check every pair—then upgrade to a one-pass hash map. That second approach is what you should reach for in an interview.
@@ -53,7 +77,8 @@ You can do better by scanning left to right **once**. At each element, ask: *hav
 
 For a current value `x`, that needed value is the **complement**:
 
-NOTE: Complement is the number that, when added to the current value, equals the target. For example, if the current value is 2 and the target is 9, the complement is 7 (9 - 2 = 7). It is called complement because it complements the current value to reach the target. 
+!!! info "Complement"
+    The complement is `target - x`—the value that completes `x` to the target. At index `i`, if that complement is already in your map, you have the pair.
 
 $$
 \text{complement} = \text{target} - x
@@ -61,7 +86,10 @@ $$
 
 If the complement was seen earlier, we have the pair. Otherwise, record the current value and its index and continue.
 
-Because the problem asks for **indices**, a **set** is not enough — use a **hash map (dictionary)** mapping each seen value to the index where it appeared. That gives O(1) average lookup and lets you return both indices immediately when a match is found.
+!!! warning "Interview trap: set vs hash map"
+    A **set** only tells you whether a value exists—it does not store **indices**. This problem requires returning positions, so use a **dictionary** mapping value → index.
+
+Because the problem asks for **indices**, use a **hash map (dictionary)** mapping each seen value to the index where it appeared. That gives O(1) average lookup and lets you return both indices immediately when a match is found.
 
 | Step | Action |
 |------|--------|
@@ -85,6 +113,9 @@ That is the classic **time-for-space** trade-off: O(n) time instead of O(n²), a
 
 At index 4, `8` needs complement `1`; we already saw `1` at index 1, so the answer is `[1, 4]` (order does not matter).
 
+!!! success "Walkthrough confirmed"
+    For `nums = [2, 1, 3, 5, 8]` and `target = 9`, the hash map returns **`[1, 4]`** when `8` finds complement `1` at index 1.
+
 ### Complexity of the hash map approach
 
 | Time | Space | Why |
@@ -92,6 +123,12 @@ At index 4, `8` needs complement `1`; we already saw `1` at index 1, so the answ
 | O(n) | O(n) | One left-to-right pass; in the worst case every element is stored in the map |
 
 The implementations below lead with the hash map solution, then show brute force and sorted-array variants so you can compare trade-offs side by side.
+
+## Implementation
+
+Runnable code: [main.py](main.py)
+
+🎯 Reach for the one-pass hash map in an interview—it is the standard O(n) solution.
 
 ## Solution 1: Hash Table (Best for Interview)
 
@@ -279,3 +316,26 @@ if __name__ == "__main__":
     print("Two Pointers:", two_sum_two_pointers(nums, target))
     print("Binary Search:", two_sum_binary_search(nums, target))
 ```
+
+## Industry scenarios
+
+- 📈 **Portfolio pairs:** Find two holdings whose combined weight hits a target allocation—same complement lookup once values are in a hash map.
+- 🔒 **Credential checks:** Pair a user id with a session token that sums (or hashes) to an expected key—two-pointer variants apply when the key space is sorted.
+- 🎮 **Loot matching:** Two items whose stat bonuses combine to a build threshold—brute force works for tiny inventories; hash map scales.
+
+
+## :material-lightbulb: Key takeaways
+
+- 🔑 Store **value → index** as you scan; ask whether `target - nums[i]` was seen already.
+- ⚡ One pass with a hash map: O(n) time, O(n) space.
+- 🧩 A set answers “exists?” but not “where?”—indices require a map.
+
+
+## Internal References
+
+- 🔗 [Contains Duplicate](../contains-duplicate/index.md) — hash-set membership pattern without needing indices.
+
+
+## External References
+
+- :fontawesome-solid-link: [Two Sum — LeetCode #1](https://leetcode.com/problems/two-sum/)

@@ -24,6 +24,28 @@ Explanation: Prices only decrease, so no profitable transaction exists.
 `0` <= `prices[i]` <= `10^4`
 
 
+## :material-school: What you'll learn
+
+!!! abstract "Learning objectives"
+    You will maximize profit from one buy and one sell in a single pass by tracking the lowest price seen so far, handle decreasing markets that return zero, and contrast that with an O(n²) brute-force scan.
+
+
+## Worked example data
+
+Primary input for the step-by-step trace below:
+
+```text
+# primary walkthrough input
+prices = [7, 1, 5, 3, 6, 4]
+# expected output: 5  (buy at 1, sell at 6)
+```
+
+| Example | Notes | Output |
+|---------|-------|--------|
+| `[7, 1, 5, 3, 6, 4]` | Full walkthrough below | `5` |
+| `[7, 6, 4, 3, 1]` | Strictly decreasing | `0` |
+
+
 ## Approach
 
 You need the largest positive difference `prices[sell] - prices[buy]` where `sell > buy`. Start with the obvious baseline—try every buy day and look right for the best sell—then upgrade to a single left-to-right pass that tracks the cheapest buy so far. That second approach is what you should reach for in an interview.
@@ -83,6 +105,9 @@ Because you only need the **minimum prefix price**, not every past price, this i
 
 The best transaction is buy at `1`, sell at `6`, for profit `5`. On a strictly decreasing array like `[7, 6, 4, 3, 1]`, every `profit_today` is negative and `max_profit` stays `0`.
 
+!!! success "Walkthrough confirmed"
+    For `prices = [7, 1, 5, 3, 6, 4]`, the one-pass scan returns **`5`**.
+
 ### Complexity of the one-pass approach
 
 | Time | Space | Why |
@@ -90,6 +115,12 @@ The best transaction is buy at `1`, sell at `6`, for profit `5`. On a strictly d
 | O(n) | O(1) | One left-to-right pass; only `min_price` and `max_profit` are stored |
 
 The implementations below lead with the one-pass solution, then show brute force so you can compare trade-offs side by side.
+
+## Implementation
+
+Runnable code: [main.py](main.py)
+
+🎯 Reach for the one-pass `min_price` / `max_profit` scan in an interview.
 
 ## Solution 1: One Pass (Best for Interview)
 
@@ -186,3 +217,21 @@ if __name__ == "__main__":
     print("One Pass:", max_profit_one_pass(prices))
     print("Brute Force:", max_profit_brute_force(prices))
 ```
+
+## Industry scenarios
+
+- 📈 **Single trade timing:** Pick one buy day and one later sell day from historical quotes—the same prefix-minimum logic applies to any one-shot transaction.
+- 📡 **Capacity planning:** Minimum resource cost seen so far vs current demand spike—profit analog is “margin if you commit at the cheapest prior point.”
+- 🎮 **Market arbitrage:** One purchase and one resale window in a game economy; decreasing price series correctly yields zero profit.
+
+
+## :material-lightbulb: Key takeaways
+
+- 🔑 Track **`min_price`** (best buy so far) and **`max_profit`** (best sell-so-far margin).
+- ⚡ One left-to-right pass: O(n) time, O(1) space.
+- 🧩 Initialize **`max_profit = 0`** so all-decreasing arrays return zero.
+
+
+## External References
+
+- :fontawesome-solid-link: [Best Time to Buy and Sell Stock — LeetCode #121](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/)

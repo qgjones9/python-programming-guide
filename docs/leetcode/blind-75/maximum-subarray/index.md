@@ -27,6 +27,29 @@ Explanation: The subarray `[5, 4, -1, 7, 8]` has the largest sum `23`.
 `-10^4` <= `nums[i]` <= `10^4`
 
 
+## :material-school: What you'll learn
+
+!!! abstract "Learning objectives"
+    You will find the maximum contiguous subarray sum with Kadane’s algorithm, compare extend-or-restart vs reset-when-negative templates, and explain why a negative running sum should be dropped.
+
+
+## Worked example data
+
+Primary input for the step-by-step trace below:
+
+```text
+# primary walkthrough input
+nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+# expected output: 6  (subarray [4, -1, 2, 1])
+```
+
+| Example | Notes | Output |
+|---------|-------|--------|
+| `[-2, 1, -3, 4, -1, 2, 1, -5, 4]` | Full Kadane walkthrough below | `6` |
+| `[5, 4, -1, 7, 8]` | All-positive tail | `23` |
+| `[1]` | Single element | `1` |
+
+
 ## Approach
 
 You need the largest sum among all **continuous** subarrays. Start with the obvious baseline—generate every contiguous subarray and track the best sum—then upgrade to Kadane's algorithm with two running variables. That second approach is what you should reach for in an interview.
@@ -72,7 +95,8 @@ $$
 | 3 | Update `max` with the best sum seen so far. |
 | 4 | Return `max`. |
 
-**Intuition:** if the running sum before `nums[i]` is negative, dropping it and starting at `nums[i]` cannot hurt the maximum ending here. That is why `max(nums[i], current + nums[i])` works.
+!!! info "Kadane intuition"
+    If the running sum before `nums[i]` is negative, dropping it and starting at `nums[i]` cannot hurt the maximum ending here. That is why `max(nums[i], current + nums[i])` works.
 
 ### Walkthrough: `nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]`
 
@@ -90,6 +114,9 @@ $$
 
 The answer is `6`, from subarray `[4, -1, 2, 1]`. One pass, two variables—O(n) time and O(1) space.
 
+!!! success "Walkthrough confirmed"
+    For `nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]`, Kadane returns **`6`**.
+
 ### Kadane's algorithm: reset when negative (alternative)
 
 The same O(n) scan appears often on LeetCode with a running sum that **resets to zero** once it goes negative:
@@ -101,6 +128,9 @@ The same O(n) scan appears often on LeetCode with a running sum that **resets to
 | 3 | If `current_sum < 0`, set `current_sum = 0` (drop the prefix; it cannot help any future subarray). |
 
 When `current_sum` is reset and the next element is added, that is equivalent to `max(nums[i], current + nums[i])` — both are Kadane's algorithm.
+
+!!! warning "Two Kadane templates"
+    **`current` / `best` (extend or restart)** matches the recurrence directly and extends cleanly if you need subarray **indices**. **Reset when negative** is a common LeetCode shorthand—same O(n) time, equivalent for sum-only answers. Prefer extend-or-restart in interviews.
 
 | Aspect | `current` / `best` (extend or restart) | Reset when negative |
 |--------|----------------------------------------|---------------------|
@@ -122,6 +152,8 @@ The implementations below lead with the extend-or-restart form, then the reset v
 ## Implementation
 
 Runnable code: [main.py](main.py)
+
+🎯 Reach for extend-or-restart Kadane (`current` / `best`) in an interview.
 
 ## Solution 1: Kadane's Algorithm — extend or restart (Best for Interview)
 
@@ -248,6 +280,25 @@ if __name__ == "__main__":
     print("Brute Force:", max_subarray_brute_force(nums))
 ```
 
+## Industry scenarios
+
+- 📈 **Rolling P&L:** Best contiguous window of daily returns—Kadane finds the peak cumulative segment.
+- 📡 **Signal processing:** Maximum-energy contiguous sample block in a noisy stream.
+- 🎮 **Combo scoring:** Longest streak of net-positive move chains in a fight log.
+
+
+## :material-lightbulb: Key takeaways
+
+- 🔑 At each index: `current = max(nums[i], current + nums[i])`, then `max = max(max, current)`.
+- ⚡ One pass: O(n) time, O(1) space.
+- 🧩 Extend-or-restart and reset-when-negative are equivalent for sum-only answers; prefer extend-or-restart for index tracking.
+
+
 ## Internal References
 
-- [Maximum Product Subarray](../maximum-product-subarray/index.md) — same contiguous-subarray pattern with **product**; track min and max running products when negatives flip signs.
+- 🔗 [Maximum Product Subarray](../maximum-product-subarray/index.md) — same contiguous pattern with **product**; track min and max running products when negatives flip signs.
+
+
+## External References
+
+- :fontawesome-solid-link: [Maximum Subarray — LeetCode #53](https://leetcode.com/problems/maximum-subarray/)

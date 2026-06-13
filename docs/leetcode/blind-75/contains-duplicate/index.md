@@ -25,6 +25,29 @@ Output: true
 `-10^9` <= `nums[i]` <= `10^9`
 
 
+## :material-school: What you'll learn
+
+!!! abstract "Learning objectives"
+    You will detect duplicate values with a one-pass hash set, compare sorting and brute-force approaches, and choose the linear-time membership pattern for interviews.
+
+
+## Worked example data
+
+Primary input for the step-by-step trace below:
+
+```text
+# primary walkthrough input
+nums = [2, 1, 5, 4, 5]
+# expected output: true
+```
+
+| Example | Notes | Output |
+|---------|-------|--------|
+| `[2, 1, 5, 4, 5]` | Full walkthrough below | `true` |
+| `[1, 2, 3, 4]` | All distinct | `false` |
+| `[1, 2, 3, 1]` | LeetCode example 1 | `true` |
+
+
 ## Approach
 
 You need to know whether any number appears more than once. Start with the obvious baseline—compare every pair—then upgrade through sorting and finally a one-pass hash set. The hash set is what you should reach for in an interview.
@@ -79,6 +102,9 @@ Set membership is O(1) average, so the whole scan is O(n) time at the cost of O(
 
 For `nums = [1, 2, 3, 4]`, every value is new until the loop ends, so the answer is `false`.
 
+!!! success "Walkthrough confirmed"
+    For `nums = [2, 1, 5, 4, 5]`, the second `5` is already in `seen` → return **`true`**.
+
 ### Complexity of the hash set approach
 
 | Time | Space | Why |
@@ -86,6 +112,12 @@ For `nums = [1, 2, 3, 4]`, every value is new until the loop ends, so the answer
 | O(n) | O(n) | One pass; in the worst case every element is stored in the set |
 
 The implementations below lead with the hash set solution, then show sorting and brute force so you can compare trade-offs side by side.
+
+## Implementation
+
+Runnable code: [main.py](main.py)
+
+🎯 Reach for the hash set one-pass scan in an interview.
 
 ## Solution 1: Hash Set (Best for Interview)
 
@@ -206,3 +238,26 @@ if __name__ == "__main__":
     print("Sorting:", contains_duplicate_sort(nums))
     print("Brute Force:", contains_duplicate_brute_force(nums))
 ```
+
+## Industry scenarios
+
+- 🔒 **Duplicate detection:** Usernames, emails, or device ids in a signup stream—return early on first repeat.
+- 📡 **Packet deduplication:** Sequence numbers seen in a sliding window—set membership is the core check.
+- 🎮 **Inventory uniqueness:** Whether a loadout contains duplicate item ids before committing a build.
+
+
+## :material-lightbulb: Key takeaways
+
+- 🔑 One pass: if `num in seen`, return `true`; else add and continue.
+- ⚡ Hash set: O(n) time, O(n) space.
+- 🧩 Sorting works but costs O(n log n)—use when you cannot afford extra space and input order may change.
+
+
+## Internal References
+
+- 🔗 [Two Sum](../two-sum/index.md) — hash map variant when you need indices, not just existence.
+
+
+## External References
+
+- :fontawesome-solid-link: [Contains Duplicate — LeetCode #217](https://leetcode.com/problems/contains-duplicate/)

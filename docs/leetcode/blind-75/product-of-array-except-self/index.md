@@ -25,11 +25,36 @@ The input is generated such that `answer[i]` is guaranteed to fit in a 32-bit in
 *Follow up: Can you solve the problem in O(1) extra space complexity? (The output array does not count as extra space.)*
 
 
+## :material-school: What you'll learn
+
+!!! abstract "Learning objectives"
+    You will build each answer from left and right running products without division, reduce two auxiliary arrays to one output array plus a suffix variable, and handle zeros and negatives safely.
+
+
+## Worked example data
+
+Primary input for the step-by-step trace below:
+
+```text
+# primary walkthrough input
+nums = [1, 2, 3, 4]
+# expected output: [24, 12, 8, 6]
+```
+
+| Example | Notes | Output |
+|---------|-------|--------|
+| `[1, 2, 3, 4]` | Full two-pass walkthrough below | `[24, 12, 8, 6]` |
+| `[-1, 1, 0, -3, 3]` | Zero in array | `[0, 0, 9, 0, 0]` |
+
+
 ## Approach
 
 For each index `i`, you need the product of everything **left** of `i` times everything **right** of `i`. Division would make this trivial—multiply all elements, then divide out `nums[i]`—but the problem forbids division. The interview path is **prefix products** and **suffix products**.
 
 ### Why not division?
+
+!!! info "No division allowed"
+    If division were allowed, multiply all elements then divide out `nums[i]`. Zeros and negatives make that fragile—and LeetCode forbids division here—so use prefix and suffix **products** only.
 
 If division were allowed, compute the total product of all elements, then set `answer[i] = total / nums[i]`. For `nums = [1, 2, 3, 4]`, total is `24`, and dividing by each element gives `[24, 12, 8, 6]`. Zeros and negatives make division fragile, and LeetCode disallows it here—so use multiplication-only logic instead.
 
@@ -101,6 +126,9 @@ After pass 1: `answer = [1, 1, 2, 6]`.
 
 Final answer: `[24, 12, 8, 6]`.
 
+!!! success "Walkthrough confirmed"
+    For `nums = [1, 2, 3, 4]`, the optimized two-pass method returns **`[24, 12, 8, 6]`**.
+
 ### Complexity of the optimized approach
 
 | Time | Space | Why |
@@ -112,6 +140,8 @@ The implementations below lead with the optimized two-pass solution, then show t
 ## Implementation
 
 Runnable code: [main.py](main.py)
+
+🎯 Reach for the two-pass running prefix/suffix solution in an interview—O(n) time and O(1) extra space.
 
 ## Solution 1: Two-Pass with Running Products (Best for Interview)
 
@@ -224,7 +254,26 @@ if __name__ == "__main__":
     print("Prefix/Suffix (zeros):", product_except_self_prefix_suffix(nums_with_zero))
 ```
 
+## Industry scenarios
+
+- 📊 **Normalized metrics:** Each row’s score divided by the product of peer factors—when division is unavailable, prefix/suffix products build “everyone except me” ratios.
+- 📡 **Sensor arrays:** Total gain through a chain minus one component—left and right running products mirror signal path math.
+- 🎮 **Crafting recipes:** Output from all ingredients except one slot—same except-self structure without dividing by a single ingredient count.
+
+
+## :material-lightbulb: Key takeaways
+
+- 🔑 `answer[i] = (product left of i) × (product right of i)`—no division.
+- ⚡ Two passes with running `prefix` and `suffix` variables: O(n) time, O(1) extra space.
+- 🧩 Separate prefix/suffix arrays clarify the idea; optimize to one output array for interviews.
+
+
 ## Internal References
 
-- [Maximum Product Subarray](../maximum-product-subarray/index.md) — another array product pattern; contiguous max product vs prefix/suffix "except self".
-- [Maximum Subarray](../maximum-subarray/index.md) — contiguous subarray with **sum** instead of product (Kadane).
+- 🔗 [Maximum Product Subarray](../maximum-product-subarray/index.md) — contiguous max **product** vs prefix/suffix “except self”.
+- 🔗 [Maximum Subarray](../maximum-subarray/index.md) — contiguous subarray with **sum** instead of product (Kadane).
+
+
+## External References
+
+- :fontawesome-solid-link: [Product of Array Except Self — LeetCode #238](https://leetcode.com/problems/product-of-array-except-self/)
