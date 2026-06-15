@@ -219,7 +219,14 @@ Bitwise operations are **foundational low-level machinery**. In Python they are 
 
 ---
 
+## Practice
+
+Work through predict-the-output drills, flag/packing exercises, and small coding tasks on the [practice page](practice.md). Tier 5 uses [practice.py](practice.py): fill in the `TODO` functions and run `python practice.py` until all checks pass.
+
+---
+
 ## See also
 
+- [Practice](practice.md) — tiered drills and a runnable helper exercise file.
 - [Binary arithmetic](../../../../../../dsa/binary-arithmetic/index.md) — column addition, XOR/carry loops, two's complement, and a practice ladder for bit-manipulation problems.
 - [Sum of Two Integers](../../../../../../leetcode/blind-75/sum-of-two-integers/index.md) — add two integers without `+` using the carry loop.

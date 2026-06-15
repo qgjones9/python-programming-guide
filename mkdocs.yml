@@ -376,7 +376,9 @@ nav:
             - Additional Methods on Complex: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-complex/index.md
             - Additional Methods on Float: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-float/index.md
             - Additional Methods on Integer Types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/additional-methods-on-integer-types/index.md
-            - Bitwise Operations on Integer Types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/bitwise-operations-on-integer-types/index.md
+            - Bitwise Operations on Integer Types:
+              - Bitwise Operations on Integer Types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/bitwise-operations-on-integer-types/index.md
+              - Practice: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/bitwise-operations-on-integer-types/practice.md
             - Hashing of numeric types: versions/3.14.5/standard-library/built-in-types/numeric-types-int-float-complex/hashing-of-numeric-types/index.md
           - Other Built-in Types: versions/3.14.5/standard-library/built-in-types/other-built-in-types/index.md
           - Sequence Types — list, tuple, range:
