@@ -12,6 +12,7 @@
 | 33   | [Search in Rotated Sorted Array](search-in-rotated-sorted-array/index.md)                                                       | Medium  |
 | 15   | [3Sum](3sum/index.md)                                                                                                           | Medium  |
 | 11   | [Container With Most Water](container-with-most-water/index.md)                                                                 | Medium  |
+| 371  | [Sum of Two Integers](sum-of-two-integers/index.md) | Medium       |
 | 128  | [Longest Consecutive Sequence](longest-consecutive-sequence/index.md)                                                           | Medium  |
 | 3    | [Longest Substring Without Repeating Characters](longest-substring-without-repeating-characters/index.md)                       | Medium  |
 | 105  | [Construct Binary Tree from Preorder and Inorder Traversal](construct-binary-tree-from-preorder-and-inorder-traversal/index.md) | Medium  |
@@ -73,7 +74,6 @@
 | 104  | [Maximum Depth of Binary Tree](maximum-depth-of-binary-tree/index.md) | Easy       |
 | 235  | [Lowest Common Ancestor of a Binary Search Tree](lowest-common-ancestor-of-a-binary-search-tree/index.md) | Medium       |
 | 242  | [Valid Anagram](valid-anagram/index.md)           | Easy       |
-| 371  | [Sum of Two Integers](sum-of-two-integers/index.md) | Medium       |
 | 252  | [Meeting Rooms](meeting-rooms/index.md)           | Easy       |
 | 124  | [Binary Tree Maximum Path Sum](binary-tree-maximum-path-sum/index.md) | Hard       |
 | 125  | [Valid Palindrome](valid-palindrome/index.md)     | Easy       |
