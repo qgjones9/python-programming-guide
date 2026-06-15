@@ -1,0 +1,13 @@
+# Container With Most Water
+
+
+```text
+arr = [1, 8, 6, 2, 5, 4, 8, 3, 7]
+```
+
+
+water falls in between index 1 and index 8. 
+
+width = 8 - 1 = 7
+
+Welcome back to this video. In this video, we're going to solve the coding interview question "Container with most water". In this problem, we are given an array of integers. This is the array of integers. Here we have the index number, the index number of the array element. Here we have the array. We see that the array contains integers. The integers represent the line height on a plane. Here we have 1, the height of this line is 1. Here we have 8, the height of this line is 8. Here we have 6. The height of this line is six, here we have two, the height of this line is two, and so on. Now if we assume A lot of rainwater is falling here. A lot of rainwater is falling here. We have to find out the container that contains the most water, the maximum water. Here we see that this is our containers. This container stores, this container stores the maximum amount of water. How can compute the amount of water? We can compute the amount of water. Here we have this line and we have this line. The distance between the This two line, let's compute the distance between the two line. The distance is eight minus one, we're subtracting just the index number. So we get here seven, we get here seven, and we see the minimum height here is this, seven. The minimum height of this two boundary is seven. So we can't consider this height because if we have water this much, then the waters we have above this This level will overflow, so we have to consider this minimum level. If the distance is seven, the distance is seven, and if The minimum height is 7, so 7 times 7. 7 times 7 equals to 49. So the maximum amount of water this container can contains 49. If we assume this, this is contains the maximum water. We can realize visually, if we have this, if we have these containers, this container will hold maximum amount of water. Now, if I assume these two line, here we will have waters, here we may have some more water, we visually saw that in this in this empty spot, we'll not have more water than we have here, in between these two, right? Here. So you can visually realize that this container will hold the maximum amount of water. Now let's compare it for these two line. Here we see the high Eight is eight. So eight times the distance in between these two is six minus one, which is five. So five times eight equals to forty. You see that? Forty-nine greater than forty. So we have to return forty-nine. Now let's see how to solve this problem. I just
