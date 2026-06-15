@@ -31,20 +31,7 @@ The same pattern should work for any pair in the constraint range:
 
 We focus on **`a = 5`, `b = 14`** for the full bitwise walkthrough, then note how negatives fit in at the end.
 
-## Step 3: Brute force baseline
-
-Move one unit at a time from `b` into `a` until `b` reaches zero. Without `+` or `-`, each single-step move still reduces to bit-level carry—so this approach is slow and does not scale.
-
-```python
-# Conceptual only — still needs a way to increment without +/-
-while b != 0:
-    # add 1 to a, subtract 1 from b  (not allowed as written)
-    pass
-```
-
-This is **O(|b|)** at best and impractical for large integers.
-
-## Step 4: Bitwise setup — sum and carry
+## Step 3: Bitwise setup — sum and carry
 
 Binary addition splits into two pieces at each bit position:
 
@@ -68,7 +55,7 @@ while b:
 return a
 ```
 
-## Step 5: Binary view of `a = 5`, `b = 14`
+## Step 4: Binary view of `a = 5`, `b = 14`
 
 ```text
   5 = 0101
@@ -79,7 +66,7 @@ Adding column by column: `1+0=1`, `0+1=1`, `1+1=0 carry 1`, `0+1+carry=0 carry 1
 
 The bitwise loop computes the same result in carry rounds instead of one `+` operator.
 
-## Step 6: First iteration — `a = 5`, `b = 14`
+## Step 5: First iteration — `a = 5`, `b = 14`
 
 ```text
   a = 0101  (5)
@@ -94,7 +81,7 @@ a = 11
 b = 8
 ```
 
-## Step 7: Second iteration — `a = 11`, `b = 8`
+## Step 6: Second iteration — `a = 11`, `b = 8`
 
 ```text
   a = 1011  (11)
@@ -109,7 +96,7 @@ a = 3
 b = 16
 ```
 
-## Step 8: Third iteration — `a = 3`, `b = 16`
+## Step 7: Third iteration — `a = 3`, `b = 16`
 
 ```text
   a = 0011   (3)
@@ -126,7 +113,7 @@ b = 0
 
 `b` is zero, so the loop stops.
 
-## Step 9: Full iteration table
+## Step 8: Full iteration table
 
 | Iteration | `a` (start) | `b` (start) | `a ^ b` (new `a`) | `(a & b) << 1` (new `b`) |
 |-----------|-------------|-------------|-------------------|--------------------------|
@@ -136,7 +123,7 @@ b = 0
 
 After iteration 3, carry is zero and the answer is **19**.
 
-## Step 10: Negative inputs — `a = -20`, `b = -30`
+## Step 9: Negative inputs — `a = -20`, `b = -30`
 
 Two's complement still applies: the same XOR/carry loop adds signed integers bit by bit. In **Python**, integers are unbounded, so an unmasked loop can run forever on negatives because carry never settles.
 

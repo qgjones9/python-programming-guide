@@ -22,6 +22,9 @@ Output: `5`
 !!! abstract "Learning objectives"
     You will add two integers using only bitwise XOR, AND, and left shift—modeling sum and carry the same way hardware adders do—and handle signed 32-bit results correctly in Python.
 
+!!! tip "Prerequisite"
+    If XOR, AND, and carries are new, read [Binary arithmetic](../../dsa/binary-arithmetic/index.md) first, then return here for the full LeetCode walkthrough.
+
 
 ## Worked example data
 

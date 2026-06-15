@@ -216,3 +216,10 @@ In fixed-width languages, `~MASK` often must be combined with a width mask (for 
 | Pure business logic with no binary protocols or flag APIs | Rarely |
 
 Bitwise operations are **foundational low-level machinery**. In Python they are a focused tool for bit-packed data and power-of-two math, not something most high-level code needs on every line. When you do need them, the operators in the table above are the direct way to express that logic; when you do not, prefer `enum`, `struct`, or domain-specific modules so intent stays clear.
+
+---
+
+## See also
+
+- [Binary arithmetic](../../../../../../dsa/binary-arithmetic/index.md) — column addition, XOR/carry loops, two's complement, and a practice ladder for bit-manipulation problems.
+- [Sum of Two Integers](../../../../../../leetcode/blind-75/sum-of-two-integers/index.md) — add two integers without `+` using the carry loop.

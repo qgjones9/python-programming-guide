@@ -3,6 +3,7 @@
 | Section | Topic | Highlights |
 |---|---|---|
 | :material-chart-timeline-variant: [Complexity analysis](complexity/index.md) | Foundations | Big-O, time and space, best / average / worst case, amortized cost |
+| :material-numeric-2-box: [Binary arithmetic](binary-arithmetic/index.md) | Foundations | Base-2 place value, column addition, XOR/carry loops, two's complement |
 | :material-source-branch: [Recursion](recursion/index.md) | Foundations | Base cases, call stack, divide-and-conquer, trees and graph DFS |
 | :material-graph: [Data Structures](data-structures/index.md) | Data structures | Arrays, linked lists, trees, graphs, 2D grids, hash tables, heaps, queues, stacks |
 | :material-sort-variant: [Algorithms](algorithms/index.md) | Algorithms | Sorting, searching, backtracking, dynamic programming, graph algorithms, greedy methods |
@@ -19,8 +20,9 @@ Before diving into implementations, be comfortable with:
 | # | Topic | Description |
 |---|-----------|-------------|
 | 1 | [Complexity analysis](complexity/index.md) | Big-O time and space; best, average, and worst case; how to read cost rows on other pages. |
-| 2 | [Recursion](recursion/index.md) | Base cases, call stack intuition, and when recursion maps naturally to trees and divide-and-conquer. |
-| 3 | [Python tutorial](../versions/3.14.5/tutorial/index.md) | Lists, dicts, sets, and loops; you will reimplement many of these ideas by hand in the DSA pages. |
+| 2 | [Binary arithmetic](binary-arithmetic/index.md) | Read before bit-manipulation interview problems: binary columns, XOR/AND carries, 32-bit masking in Python. |
+| 3 | [Recursion](recursion/index.md) | Base cases, call stack intuition, and when recursion maps naturally to trees and divide-and-conquer. |
+| 4 | [Python tutorial](../versions/3.14.5/tutorial/index.md) | Lists, dicts, sets, and loops; you will reimplement many of these ideas by hand in the DSA pages. |
 
 
 ### Phase 1 — Linear structures

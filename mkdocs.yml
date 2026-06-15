@@ -1012,6 +1012,7 @@ nav:
   - Data structures and algorithms:
     - Overview: dsa/index.md
     - Complexity analysis: dsa/complexity/index.md
+    - Binary arithmetic: dsa/binary-arithmetic/index.md
     - Recursion: dsa/recursion/index.md
     - Data structures:
       - Data structures: dsa/data-structures/index.md

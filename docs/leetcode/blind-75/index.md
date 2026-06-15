@@ -16,8 +16,11 @@
 | 15   | [3Sum](3sum/index.md)                                                                                                            | Medium     |
 | 11   | [Container With Most Water](container-with-most-water/index.md)                                                                  | Medium     |
     
-## Binary     
-    
+## Binary
+
+!!! tip "Study first"
+    New to bits? Work through [Binary arithmetic](../../dsa/binary-arithmetic/index.md) before these problems—especially column addition and the XOR/carry loop.
+
 | #    | Problem                                                                                                                          | Difficulty |
 |------|----------------------------------------------------------------------------------------------------------------------------------|------------|
 | 371  | [Sum of Two Integers](sum-of-two-integers/index.md)                                                                              | Medium     |

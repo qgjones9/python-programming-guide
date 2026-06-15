@@ -78,7 +78,6 @@ if __name__ == "__main__":
     walkthrough_b = 14
     print("Bitwise:", get_sum_bitwise(walkthrough_a, walkthrough_b))
     print("Recursive:", get_sum_recursive(walkthrough_a, walkthrough_b))
-
     print("LeetCode ex1:", get_sum_bitwise(1, 2))
     print("LeetCode ex2:", get_sum_bitwise(2, 3))
     print("Negatives:", get_sum_bitwise(-20, -30))
