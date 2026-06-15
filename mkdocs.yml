@@ -1071,7 +1071,7 @@ nav:
       - Climbing Stairs: leetcode/blind-75/climbing-stairs/index.md
       - Clone Graph: leetcode/blind-75/clone-graph/index.md
       - Coin Change: leetcode/blind-75/coin-change/index.md
-      - Combination Sum: leetcode/blind-75/combination-sum/index.md
+      - Combination Sum IV: leetcode/blind-75/combination-sum-iv/index.md
       - Construct Binary Tree from Preorder and Inorder Traversal: leetcode/blind-75/construct-binary-tree-from-preorder-and-inorder-traversal/index.md
       - Container With Most Water: leetcode/blind-75/container-with-most-water/index.md
       - Contains Duplicate: leetcode/blind-75/contains-duplicate/index.md
@@ -1091,7 +1091,7 @@ nav:
       - Invert Binary Tree: leetcode/blind-75/invert-binary-tree/index.md
       - Jump Game: leetcode/blind-75/jump-game/index.md
       - Kth Smallest Element in a BST: leetcode/blind-75/kth-smallest-element-in-a-bst/index.md
-      - Linked List Cycle: leetcode/blind-75/linked-list-cycle/index.md
+      - Detect Cycle in a Linked List: leetcode/blind-75/detect-cycle-in-a-linked-list/index.md
       - Longest Common Subsequence: leetcode/blind-75/longest-common-subsequence/index.md
       - Longest Consecutive Sequence: leetcode/blind-75/longest-consecutive-sequence/index.md
       - Longest Increasing Subsequence: leetcode/blind-75/longest-increasing-subsequence/index.md
