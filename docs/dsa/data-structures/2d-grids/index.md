@@ -71,7 +71,7 @@ Use a `set` of `(r, c)` tuples when you only visit a sparse subset.
 
 ```python
 def in_bounds(r, c, rows, cols):
- return 0 <= r < rows and 0 <= c < cols
+    return 0 <= r < rows and 0 <= c < cols
 ```
 
 | Access | Meaning | Time |
@@ -123,8 +123,8 @@ For **8-direction** (including diagonals), add `(-1,-1), (-1,1), (1,-1), (1,1)`.
 
 ```python
 for r in range(rows):
- for c in range(cols):
- process(grid[r][c])
+    for c in range(cols):
+        process(grid[r][c])
 ```
 
 | | |
@@ -136,8 +136,8 @@ for r in range(rows):
 
 ```python
 for c in range(cols):
- for r in range(rows):
- process(grid[r][c])
+    for r in range(rows):
+        process(grid[r][c])
 ```
 
 ### Spiral order (boundary shrinking)
@@ -146,27 +146,46 @@ Track `top`, `bottom`, `left`, `right`. Walk each side, then shrink the box.
 
 ```python
 def spiral_order(grid):
- if not grid:
- return []
- rows, cols = len(grid), len(grid[0])
- top, bottom, left, right = 0, rows - 1, 0, cols - 1
- out = []
- while top <= bottom and left <= right:
- for c in range(left, right + 1):
- out.append(grid[top][c])
- top += 1
- for r in range(top, bottom + 1):
- out.append(grid[r][right])
- right -= 1
- if top <= bottom:
- for c in range(right, left - 1, -1):
- out.append(grid[bottom][c])
- bottom -= 1
- if left <= right:
- for r in range(bottom, top - 1, -1):
- out.append(grid[r][left])
- left += 1
- return out
+    """
+    Returns a list of the elements in the grid traversed in spiral order.
+
+    Args:
+        grid (List[List[Any]]): The 2D grid to traverse.
+
+    Returns:
+        List[Any]: Elements of grid in spiral order.
+    """
+    if not grid or not grid[0]:
+        return []
+    
+    rows, cols = len(grid), len(grid[0])
+    top, bottom, left, right = 0, rows - 1, 0, cols - 1
+    out = []
+    
+    while top <= bottom and left <= right:
+        # Traverse from left to right along the top row
+        for c in range(left, right + 1):
+            out.append(grid[top][c])
+        top += 1
+
+        # Traverse from top to bottom along the right column
+        for r in range(top, bottom + 1):
+            out.append(grid[r][right])
+        right -= 1
+
+        # Traverse from right to left along the bottom row, if still in bounds
+        if top <= bottom:
+            for c in range(right, left - 1, -1):
+                out.append(grid[bottom][c])
+            bottom -= 1
+
+        # Traverse from bottom to top along the left column, if still in bounds
+        if left <= right:
+            for r in range(bottom, top - 1, -1):
+                out.append(grid[r][left])
+            left += 1
+
+    return out
 ```
 
 | | |
